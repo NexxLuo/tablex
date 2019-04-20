@@ -1,0 +1,10 @@
+.__cell
+{
+background-color: #ffffff;
+padding: 5px 10px;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+border-bottom: 1px solid #e8e8e8;
+box-sizing: border-box;
+}
