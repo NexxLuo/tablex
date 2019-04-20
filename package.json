@@ -8,6 +8,8 @@
     "build": "umi-lib build",
     "test": "umi-test",
     "doc": "umi-lib doc dev",
+    "docp": "umi-lib doc deploy",
+    "docb": "umi-lib doc build",
     "pub": "umi-lib build&&npm publish"
   },
   "keywords": [],

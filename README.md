@@ -1,6 +1,8 @@
 # Tablex
+
 基于<a href="https://github.com/bvaughn/react-window">react-window</a>的表格组件
 
+<a href="https://nexxluo.github.io/tablex/" >Demo</a>
 
 ## 特性
 
@@ -8,9 +10,9 @@
 
 2.自适应宽、高
 
-3.仿antd table样式
+3.仿 antd table 样式
 
-4.兼容ant table api 
+4.兼容 ant table api
 
 5.支持树形数据
 
@@ -33,4 +35,3 @@
 8.自动记忆表格配置
 
 9.表格编辑
-
