@@ -1,10 +1,10 @@
 {
-  "vendors.js": "/bar/static/js/vendors.a83b2cec.js",
-  "readme~src-table~src-tree-table.css": "/bar/static/css/readme~src-table~src-tree-table.3a4aded974d44a9ce6fe.css",
-  "readme~src-table~src-tree-table.js": "/bar/static/js/readme~src-table~src-tree-table.52d661ab.js",
-  "app.js": "/bar/static/js/app.3a4aded974d44a9ce6fe.js",
-  "readme.js": "/bar/static/js/readme.ffc92dee.js",
-  "src-table.js": "/bar/static/js/src-table.fe2e278c.js",
-  "src-tree-table.js": "/bar/static/js/src-tree-table.b502b889.js",
-  "index.html": "/bar/index.html"
+  "vendors.js": "/tablex/static/js/vendors.87048219.js",
+  "readme~src-table~src-tree-table.css": "/tablex/static/css/readme~src-table~src-tree-table.1ea3477999eb40f9710e.css",
+  "readme~src-table~src-tree-table.js": "/tablex/static/js/readme~src-table~src-tree-table.52d661ab.js",
+  "app.js": "/tablex/static/js/app.1ea3477999eb40f9710e.js",
+  "readme.js": "/tablex/static/js/readme.ffc92dee.js",
+  "src-table.js": "/tablex/static/js/src-table.fe2e278c.js",
+  "src-tree-table.js": "/tablex/static/js/src-tree-table.b502b889.js",
+  "index.html": "/tablex/index.html"
 }
