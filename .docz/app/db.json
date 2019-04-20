@@ -141,32 +141,21 @@
   ],
   "entries": [
     {
-      "key": "src/index.mdx",
+      "key": "src/table.mdx",
       "value": {
-        "0": "n",
-        "1": "a",
-        "2": "m",
-        "3": "e",
-        "4": ":",
-        "5": "T",
-        "6": "a",
-        "7": "b",
-        "8": "l",
-        "9": "e",
-        "10": " ",
-        "11": "r",
-        "12": "o",
-        "13": "u",
-        "14": "t",
-        "15": "e",
-        "16": ":",
-        "17": "/",
-        "id": "6576455a124f9aaefd860597f03a8fe4",
-        "filepath": "src/index.mdx",
+        "0": "r",
+        "1": "o",
+        "2": "u",
+        "3": "t",
+        "4": "e",
+        "5": ":",
+        "6": "/",
+        "id": "c989fa652c2f5b4677c92423b2dbfd4d",
+        "filepath": "src/table.mdx",
         "link": "",
-        "slug": "src-index",
-        "route": "/src-index",
-        "name": "Index",
+        "slug": "src-table",
+        "route": "/src-table",
+        "name": "Table",
         "menu": "",
         "headings": [
           {
@@ -183,6 +172,42 @@
             "slug": "basic-usage",
             "depth": 2,
             "value": "Basic usage"
+          }
+        ]
+      }
+    },
+    {
+      "key": "src/treeTable.mdx",
+      "value": {
+        "0": "r",
+        "1": "o",
+        "2": "u",
+        "3": "t",
+        "4": "e",
+        "5": ":",
+        "6": "/",
+        "id": "7a6037f72ef1af05e001c0475c61861c",
+        "filepath": "src/treeTable.mdx",
+        "link": "",
+        "slug": "src-tree-table",
+        "route": "/src-tree-table",
+        "name": "Tree table",
+        "menu": "",
+        "headings": [
+          {
+            "slug": "table",
+            "depth": 1,
+            "value": "Table"
+          },
+          {
+            "slug": "properties",
+            "depth": 2,
+            "value": "Properties"
+          },
+          {
+            "slug": "usage",
+            "depth": 2,
+            "value": "Usage"
           }
         ]
       }
