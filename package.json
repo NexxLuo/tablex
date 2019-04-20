@@ -8,8 +8,8 @@
     "build": "umi-lib build",
     "test": "umi-test",
     "doc": "umi-lib doc dev",
-    "docp": "umi-lib doc deploy",
-    "docb": "umi-lib doc build",
+    "docp": "umi-lib doc deploy --base='/tablex/'",
+    "docb": "umi-lib doc build --base='/tablex/'",
     "pub": "umi-lib build&&npm publish"
   },
   "keywords": [],

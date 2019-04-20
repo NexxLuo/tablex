@@ -28,7 +28,7 @@
         "filepath": "README.mdx",
         "link": "",
         "slug": "readme",
-        "route": "/readme",
+        "route": "/tablex/readme",
         "name": "Readme",
         "menu": "",
         "headings": [
@@ -74,7 +74,7 @@
         "filepath": "src/table.mdx",
         "link": "",
         "slug": "src-table",
-        "route": "/src-table",
+        "route": "/tablex/src-table",
         "name": "Table",
         "menu": "",
         "headings": [
@@ -110,7 +110,7 @@
         "filepath": "src/treeTable.mdx",
         "link": "",
         "slug": "src-tree-table",
-        "route": "/src-tree-table",
+        "route": "/tablex/src-tree-table",
         "name": "Tree table",
         "menu": "",
         "headings": [

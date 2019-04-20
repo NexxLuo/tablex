@@ -2,7 +2,7 @@
 
 基于<a href="https://github.com/bvaughn/react-window">react-window</a>的表格组件
 
-<a href="https://nexxluo.github.io/tablex/" >Demo</a>
+<a href="https://nexxluo.github.io/tablex/src-table#basic-usage" >Demo</a>
 
 ## 特性
 
