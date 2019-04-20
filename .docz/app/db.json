@@ -1,0 +1,119 @@
+{
+  "config": {
+    "title": "Tablex",
+    "description": "My awesome app using docz",
+    "menu": [],
+    "version": "1.0.0",
+    "repository": false,
+    "native": false,
+    "codeSandbox": true,
+    "themeConfig": {},
+    "separator": "-",
+    "typescript": false,
+    "theme": "/media/nexx/DevelopEnvironment/WebRoot/tablex/tablex/node_modules/docz-theme-umi/es/index.js",
+    "plugins": [
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "entries": [
+    {
+      "key": "src/index.mdx",
+      "value": {
+        "0": "n",
+        "1": "a",
+        "2": "m",
+        "3": "e",
+        "4": ":",
+        "5": "T",
+        "6": "a",
+        "7": "b",
+        "8": "l",
+        "9": "e",
+        "10": " ",
+        "11": "r",
+        "12": "o",
+        "13": "u",
+        "14": "t",
+        "15": "e",
+        "16": ":",
+        "17": "/",
+        "id": "6576455a124f9aaefd860597f03a8fe4",
+        "filepath": "src/index.mdx",
+        "link": "",
+        "slug": "src-index",
+        "route": "/src-index",
+        "name": "Index",
+        "menu": "",
+        "headings": [
+          {
+            "slug": "table",
+            "depth": 1,
+            "value": "Table"
+          },
+          {
+            "slug": "basic",
+            "depth": 2,
+            "value": "Basic"
+          }
+        ]
+      }
+    }
+  ],
+  "props": [
+    {
+      "key": "src/index.js",
+      "value": [
+        {
+          "description": "",
+          "displayName": "Table",
+          "methods": [],
+          "actualName": "Table"
+        }
+      ]
+    },
+    {
+      "key": "src/components/body.js",
+      "value": [
+        {
+          "description": "",
+          "displayName": "TableBody",
+          "methods": [
+            {
+              "name": "columnWidth",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "index",
+                  "type": null
+                },
+                {
+                  "name": "width",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "renderCell",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "{ columnIndex, rowIndex, style }",
+                  "type": null
+                }
+              ],
+              "returns": null
+            }
+          ],
+          "actualName": "TableBody"
+        }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,12 @@
+
+.tablex
+{
+    height: 100%;
+    widows: 100%;
+    border: 1px solid #e8e8e8;
+    overflow: hidden;
+}
+
 .__cell
 {
 background-color: #ffffff;
@@ -6,5 +15,6 @@ white-space: nowrap;
 overflow: hidden;
 text-overflow: ellipsis;
 border-bottom: 1px solid #e8e8e8;
+border-right: 1px solid #e8e8e8;
 box-sizing: border-box;
 }

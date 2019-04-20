@@ -1,7 +1,6 @@
 import React from 'react';
 import { VariableSizeGrid as Grid } from 'react-window';
 import AutoSizer from "react-virtualized-auto-sizer";
-import "./index.css"
 
 const Cell = ({ columnIndex, rowIndex, style }) => (
 
@@ -34,7 +33,7 @@ class TableBody extends React.Component {
     }
 
 
-    columnWidth = (index,width) => {
+    columnWidth = (index, width) => {
 
         let { columns, dataSource } = this.props;
 
@@ -44,24 +43,24 @@ class TableBody extends React.Component {
         });
 
 
-        let column=columns[index];
+        let column = columns[index];
 
         if (column) {
-            return column.width || 100 
+            return column.width || 100
         }
 
-        return width-cw
+        return width - cw
 
-      
+
     }
 
     renderCell = ({ columnIndex, rowIndex, style }) => {
 
         let { columns, dataSource } = this.props;
 
-       
 
-        let column=columns[index];
+
+        let column = columns[columnIndex];
 
         if (column) {
             let c = column.dataIndex;
@@ -69,15 +68,15 @@ class TableBody extends React.Component {
 
             return <div className="__cell" style={style}>
 
-            {row[c]}
+                {row[c]}
 
-        </div>
+            </div>
         }
 
         return <div className="__cell" style={style}>
 
 
-    </div>
+        </div>
     }
 
 
@@ -85,19 +84,33 @@ class TableBody extends React.Component {
 
         let { columns, dataSource } = this.props;
 
-    
+
+        let colLength = columns.length + 1;
+
+        let columnWidth = 0;
+        columns.forEach(d => {
+            columnWidth += d.width || 100;
+        })
+
 
         // let cols = columns.concat([{
         //   __placeholdercolumn:true
         // }])
 
         return <AutoSizer>
-            {({ height, width }) => (
-                <Grid
+            {({ height, width }) => {
 
-                    columnCount={columns.length+1}
+                let len = columns.length;
 
-                    columnWidth={(i)=>this.columnWidth(i,width)}
+                if (width > columnWidth) {
+                    len = len + 1;
+                }
+
+                return <Grid
+
+                    columnCount={len}
+
+                    columnWidth={(i) => this.columnWidth(i, width)}
 
                     height={height}
 
@@ -112,7 +125,7 @@ class TableBody extends React.Component {
                     {this.renderCell}
 
                 </Grid>
-            )}
+            }}
         </AutoSizer>
 
 
