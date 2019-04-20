@@ -22,45 +22,6 @@
   "props": [],
   "entries": [
     {
-      "key": "README.mdx",
-      "value": {
-        "id": "075c8e9dd56c748f3da128a33861a770",
-        "filepath": "README.mdx",
-        "link": "",
-        "slug": "readme",
-        "route": "/tablex/readme",
-        "name": "Readme",
-        "menu": "",
-        "headings": [
-          {
-            "slug": "tablex",
-            "depth": 1,
-            "value": "Tablex"
-          },
-          {
-            "slug": "特性",
-            "depth": 2,
-            "value": "特性"
-          },
-          {
-            "slug": "roadmap",
-            "depth": 2,
-            "value": "Roadmap"
-          },
-          {
-            "slug": "properties",
-            "depth": 2,
-            "value": "Properties"
-          },
-          {
-            "slug": "basic-usage",
-            "depth": 2,
-            "value": "Basic usage"
-          }
-        ]
-      }
-    },
-    {
       "key": "src/table.mdx",
       "value": {
         "0": "r",
@@ -74,7 +35,7 @@
         "filepath": "src/table.mdx",
         "link": "",
         "slug": "src-table",
-        "route": "/tablex/src-table",
+        "route": "/src-table",
         "name": "Table",
         "menu": "",
         "headings": [
@@ -110,7 +71,7 @@
         "filepath": "src/treeTable.mdx",
         "link": "",
         "slug": "src-tree-table",
-        "route": "/tablex/src-tree-table",
+        "route": "/src-tree-table",
         "name": "Tree table",
         "menu": "",
         "headings": [
