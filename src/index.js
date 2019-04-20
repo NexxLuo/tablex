@@ -1,64 +1,61 @@
-import React from 'react';
-import TableBody from './components/body';
-import TableHead from './components/head';
-import "./index.css"
-
-
-
-const columns = [{
-    title: 'Name',
-    dataIndex: 'name',
-    width:200
-  }, {
-    title: 'Age',
-    dataIndex: 'age',
-    width:200
-  }, {
-    title: 'Address',
-    dataIndex: 'address',
-    width:200
-  }];
-  
-  const data = [];
-  for (let i = 0; i < 46; i++) {
-    data.push({
-      key: i, 
-      name: `Edward King ${i}`,
-      age: 32,
-      address: `London, Park Lane no. ${i}`,
-    });
-  }
-
-
+import React from "react";
+import PropTypes from "prop-types";
+import TableBody from "./components/body";
+import TableHead from "./components/head";
+import "./index.css";
+import { treeToList } from "./tree-data-utils";
 
 class Table extends React.Component {
+  state = {
+    columns: [],
+    dataSource: []
+  };
 
+  onBodyScroll = ({ scrollLeft }) => {
+    let head = this.refs["head"];
+    head.scrollTo(scrollLeft, 0);
+  };
 
+  render() {
+    let { columns, dataSource } = this.props;
 
-    state = {
-        columns:columns,
-        dataSource: data
-    }
+    let { leafs, list } = treeToList(columns);
 
-
-
-    render() {
-
-
-        let { columns, dataSource } = this.state;
-
-
-        return <div style={{height:400,width:600}}>
-
+    return (
         <div className="tablex">
-            {/* <TableHead columns={columns} ></TableHead> */}
+          <div className="tablex-head" ref="head">
+            <TableHead columns={columns} columnLeafs={leafs} />
+          </div>
 
-            <TableBody columns={columns} dataSource={dataSource} ></TableBody>
-            </div>
-
+          <div className="tablex-body">
+            <TableBody
+              columns={columns}
+              columnLeafs={leafs}
+              dataSource={dataSource}
+              onScroll={this.onBodyScroll}
+            />
+          </div>
         </div>
-    }
+    );
+  }
 }
 
+Table.defaultProps = {
+  columns: [],
+  dataSource: []
+};
+
+Table.propTypes = {
+  /**
+   * 表格列
+   *
+   */
+  columns: PropTypes.array.isRequired,
+
+  /**
+   * 表格数据
+   */
+  dataSource: PropTypes.array.isRequired
+};
 
 export default Table;

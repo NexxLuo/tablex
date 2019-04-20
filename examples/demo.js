@@ -1,21 +1,10 @@
----
-name:Table
-route:/
----
-
-import { Playground, Props } from "docz";
+import React from "react";
 import Table from "./index";
 
-# Table
+export default ()=>{
 
-## Properties
-
-<Props of={Table} />
-
-## Basic usage
-
-<Playground style={{height:400}} >
-<Table columns={[
+    return  <Table
+      columns={[
         {
           title: "Name",
           dataIndex: "name",
@@ -69,5 +58,6 @@ import Table from "./index";
          
         }
          return data;
-      })()}/>
-</Playground>
+      })()}
+    />
+}

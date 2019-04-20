@@ -10,7 +10,7 @@
     "themeConfig": {},
     "separator": "-",
     "typescript": false,
-    "theme": "/media/nexx/DevelopEnvironment/WebRoot/tablex/tablex/node_modules/docz-theme-umi/es/index.js",
+    "theme": "/home/nexx/develop/tablex/node_modules/docz-theme-umi/es/index.js",
     "plugins": [
       {},
       {},
@@ -19,6 +19,126 @@
       {}
     ]
   },
+  "props": [
+    {
+      "key": "src/components/head.js",
+      "value": [
+        {
+          "description": "",
+          "displayName": "TableHead",
+          "methods": [],
+          "actualName": "TableHead"
+        }
+      ]
+    },
+    {
+      "key": "src/components/body.js",
+      "value": [
+        {
+          "description": "",
+          "displayName": "TableBody",
+          "methods": [
+            {
+              "name": "getColumn",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "index",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "getColumnWidth",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "columnWidth",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "index",
+                  "type": null
+                },
+                {
+                  "name": "width",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "renderCell",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "{ columnIndex, rowIndex, style }",
+                  "type": null
+                }
+              ],
+              "returns": null
+            }
+          ],
+          "actualName": "TableBody"
+        }
+      ]
+    },
+    {
+      "key": "src/index.js",
+      "value": [
+        {
+          "description": "",
+          "displayName": "Table",
+          "methods": [
+            {
+              "name": "onBodyScroll",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "{ scrollLeft }",
+                  "type": null
+                }
+              ],
+              "returns": null
+            }
+          ],
+          "actualName": "Table",
+          "props": {
+            "columns": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "表格列",
+              "defaultValue": {
+                "value": "[]",
+                "computed": false
+              }
+            },
+            "dataSource": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "表格数据",
+              "defaultValue": {
+                "value": "[]",
+                "computed": false
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
   "entries": [
     {
       "key": "src/index.mdx",
@@ -55,65 +175,17 @@
             "value": "Table"
           },
           {
-            "slug": "basic",
+            "slug": "properties",
             "depth": 2,
-            "value": "Basic"
+            "value": "Properties"
+          },
+          {
+            "slug": "basic-usage",
+            "depth": 2,
+            "value": "Basic usage"
           }
         ]
       }
-    }
-  ],
-  "props": [
-    {
-      "key": "src/index.js",
-      "value": [
-        {
-          "description": "",
-          "displayName": "Table",
-          "methods": [],
-          "actualName": "Table"
-        }
-      ]
-    },
-    {
-      "key": "src/components/body.js",
-      "value": [
-        {
-          "description": "",
-          "displayName": "TableBody",
-          "methods": [
-            {
-              "name": "columnWidth",
-              "docblock": null,
-              "modifiers": [],
-              "params": [
-                {
-                  "name": "index",
-                  "type": null
-                },
-                {
-                  "name": "width",
-                  "type": null
-                }
-              ],
-              "returns": null
-            },
-            {
-              "name": "renderCell",
-              "docblock": null,
-              "modifiers": [],
-              "params": [
-                {
-                  "name": "{ columnIndex, rowIndex, style }",
-                  "type": null
-                }
-              ],
-              "returns": null
-            }
-          ],
-          "actualName": "TableBody"
-        }
-      ]
     }
   ]
 }

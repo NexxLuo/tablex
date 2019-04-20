@@ -7,8 +7,8 @@
 6 silly lifecycle tablex@1.0.0~predoc: no script for predoc, continuing
 7 info lifecycle tablex@1.0.0~doc: tablex@1.0.0
 8 verbose lifecycle tablex@1.0.0~doc: unsafe-perm in lifecycle true
-9 verbose lifecycle tablex@1.0.0~doc: PATH: /usr/share/npm/bin/node-gyp-bin:/media/nexx/DevelopEnvironment/WebRoot/tablex/tablex/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
-10 verbose lifecycle tablex@1.0.0~doc: CWD: /media/nexx/DevelopEnvironment/WebRoot/tablex/tablex
+9 verbose lifecycle tablex@1.0.0~doc: PATH: /usr/share/npm/bin/node-gyp-bin:/home/nexx/develop/tablex/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+10 verbose lifecycle tablex@1.0.0~doc: CWD: /home/nexx/develop/tablex
 11 silly lifecycle tablex@1.0.0~doc: Args: [ '-c', 'umi-lib doc dev' ]
 12 silly lifecycle tablex@1.0.0~doc: Returned: code: 1  signal: null
 13 info lifecycle tablex@1.0.0~doc: Failed to exec doc script
@@ -23,7 +23,7 @@
 14 verbose stack     at maybeClose (internal/child_process.js:925:16)
 14 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:209:5)
 15 verbose pkgid tablex@1.0.0
-16 verbose cwd /media/nexx/DevelopEnvironment/WebRoot/tablex/tablex
+16 verbose cwd /home/nexx/develop/tablex
 17 error Linux 4.18.0-17-generic
 18 error argv "/usr/bin/node" "/usr/bin/npm" "run" "doc"
 19 error node v8.10.0
