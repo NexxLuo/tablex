@@ -1,10 +1,9 @@
 {
   "vendors.js": "/tablex/static/js/vendors.87048219.js",
-  "readme~src-table~src-tree-table.css": "/tablex/static/css/readme~src-table~src-tree-table.1ea3477999eb40f9710e.css",
-  "readme~src-table~src-tree-table.js": "/tablex/static/js/readme~src-table~src-tree-table.52d661ab.js",
-  "app.js": "/tablex/static/js/app.1ea3477999eb40f9710e.js",
-  "readme.js": "/tablex/static/js/readme.ffc92dee.js",
-  "src-table.js": "/tablex/static/js/src-table.fe2e278c.js",
-  "src-tree-table.js": "/tablex/static/js/src-tree-table.b502b889.js",
+  "src-table~src-tree-table.css": "/tablex/static/css/src-table~src-tree-table.076a853dd4e4f428a551.css",
+  "src-table~src-tree-table.js": "/tablex/static/js/src-table~src-tree-table.8ec248c2.js",
+  "app.js": "/tablex/static/js/app.076a853dd4e4f428a551.js",
+  "src-table.js": "/tablex/static/js/src-table.a3456983.js",
+  "src-tree-table.js": "/tablex/static/js/src-tree-table.010e3f32.js",
   "index.html": "/tablex/index.html"
 }
