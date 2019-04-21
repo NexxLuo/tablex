@@ -1,9 +1,9 @@
 {
   "config": {
     "title": "Tablex",
-    "description": "My awesome app using docz",
+    "description": "table virtualized tree-table ",
     "menu": [],
-    "version": "1.0.0",
+    "version": "1.0.1",
     "repository": false,
     "native": false,
     "codeSandbox": true,
@@ -19,25 +19,86 @@
       {}
     ]
   },
+  "entries": [
+    {
+      "key": "examples/table.mdx",
+      "value": {
+        "0": "r",
+        "1": "o",
+        "2": "u",
+        "3": "t",
+        "4": "e",
+        "5": ":",
+        "6": "/",
+        "id": "512da6720107153f6d9a49c9e4a0144c",
+        "filepath": "examples/table.mdx",
+        "link": "https://github.com/NexxLuo/tablex/edit/master/examples/table.mdx",
+        "slug": "examples-table",
+        "route": "/examples-table",
+        "name": "Table",
+        "menu": "",
+        "headings": [
+          {
+            "slug": "table",
+            "depth": 1,
+            "value": "Table"
+          },
+          {
+            "slug": "properties",
+            "depth": 2,
+            "value": "Properties"
+          },
+          {
+            "slug": "basic-usage",
+            "depth": 2,
+            "value": "Basic usage"
+          }
+        ]
+      }
+    },
+    {
+      "key": "examples/treeTable.mdx",
+      "value": {
+        "0": "r",
+        "1": "o",
+        "2": "u",
+        "3": "t",
+        "4": "e",
+        "5": ":",
+        "6": "/",
+        "id": "1ca040ce53e2af802da2d6f5b65fb912",
+        "filepath": "examples/treeTable.mdx",
+        "link": "https://github.com/NexxLuo/tablex/edit/master/examples/treeTable.mdx",
+        "slug": "examples-tree-table",
+        "route": "/examples-tree-table",
+        "name": "Tree table",
+        "menu": "",
+        "headings": [
+          {
+            "slug": "table",
+            "depth": 1,
+            "value": "Table"
+          },
+          {
+            "slug": "properties",
+            "depth": 2,
+            "value": "Properties"
+          },
+          {
+            "slug": "usage",
+            "depth": 2,
+            "value": "Usage"
+          },
+          {
+            "slug": "lazy-load",
+            "depth": 2,
+            "value": "Lazy load"
+          }
+        ]
+      }
+    }
+  ],
   "props": [
-    {
-      "key": "src/components/loadingIcon.js",
-      "value": [
-        {
-          "description": "",
-          "methods": []
-        }
-      ]
-    },
-    {
-      "key": "src/components/noDataMsg.js",
-      "value": [
-        {
-          "description": "",
-          "methods": []
-        }
-      ]
-    },
     {
       "key": "src/components/body.js",
       "value": [
@@ -213,17 +274,19 @@
                 "value": "[]",
                 "computed": false
               }
+            },
+            "scrollbarWidth": {
+              "type": {
+                "name": "number"
+              },
+              "required": false,
+              "description": "",
+              "defaultValue": {
+                "value": "6",
+                "computed": false
+              }
             }
           }
-        }
-      ]
-    },
-    {
-      "key": "src/components/loading.js",
-      "value": [
-        {
-          "description": "",
-          "methods": []
         }
       ]
     },
@@ -407,109 +470,6 @@
           }
         }
       ]
-    },
-    {
-      "key": "examples/lazyLoad.js",
-      "value": [
-        {
-          "description": "",
-          "displayName": "LazyLoad",
-          "methods": [
-            {
-              "name": "loadChildrenData",
-              "docblock": null,
-              "modifiers": [],
-              "params": [
-                {
-                  "name": "row",
-                  "type": null
-                }
-              ],
-              "returns": null
-            }
-          ],
-          "actualName": "LazyLoad"
-        }
-      ]
-    }
-  ],
-  "entries": [
-    {
-      "key": "examples/table.mdx",
-      "value": {
-        "0": "r",
-        "1": "o",
-        "2": "u",
-        "3": "t",
-        "4": "e",
-        "5": ":",
-        "6": "/",
-        "id": "512da6720107153f6d9a49c9e4a0144c",
-        "filepath": "examples/table.mdx",
-        "link": "",
-        "slug": "examples-table",
-        "route": "/examples-table",
-        "name": "Table",
-        "menu": "",
-        "headings": [
-          {
-            "slug": "table",
-            "depth": 1,
-            "value": "Table"
-          },
-          {
-            "slug": "properties",
-            "depth": 2,
-            "value": "Properties"
-          },
-          {
-            "slug": "basic-usage",
-            "depth": 2,
-            "value": "Basic usage"
-          }
-        ]
-      }
-    },
-    {
-      "key": "examples/treeTable.mdx",
-      "value": {
-        "0": "r",
-        "1": "o",
-        "2": "u",
-        "3": "t",
-        "4": "e",
-        "5": ":",
-        "6": "/",
-        "id": "1ca040ce53e2af802da2d6f5b65fb912",
-        "filepath": "examples/treeTable.mdx",
-        "link": "",
-        "slug": "examples-tree-table",
-        "route": "/examples-tree-table",
-        "name": "Tree table",
-        "menu": "",
-        "headings": [
-          {
-            "slug": "table",
-            "depth": 1,
-            "value": "Table"
-          },
-          {
-            "slug": "properties",
-            "depth": 2,
-            "value": "Properties"
-          },
-          {
-            "slug": "usage",
-            "depth": 2,
-            "value": "Usage"
-          },
-          {
-            "slug": "lazy-load",
-            "depth": 2,
-            "value": "Lazy load"
-          }
-        ]
-      }
     }
   ]
 }

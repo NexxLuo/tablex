@@ -26,12 +26,13 @@ class TableBody extends React.Component {
   columnWidth = (index, width) => {
     let column = this.getColumn(index);
     let cw = this.getColumnWidth();
+    let sw = this.props.scrollbarWidth;
 
     if (column) {
       return column.width || 100;
     }
 
-    return width - cw - 6;
+    return width - cw - sw;
   };
 
   /**
@@ -190,7 +191,8 @@ TableBody.defaultProps = {
   dataSource: [],
   rowIndent: 20,
   expandedKeys: [],
-  loadingKeys: []
+  loadingKeys: [],
+  scrollbarWidth: 6
 };
 
 TableBody.propTypes = {
@@ -210,7 +212,8 @@ TableBody.propTypes = {
   onExpandChange: PropTypes.func,
   rowIndent: PropTypes.number,
   expandedKeys: PropTypes.array,
-  loadingKeys: PropTypes.array
+  loadingKeys: PropTypes.array,
+  scrollbarWidth: PropTypes.number
 };
 
 export default TableBody;

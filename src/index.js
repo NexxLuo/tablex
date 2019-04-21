@@ -3,9 +3,15 @@ import PropTypes from "prop-types";
 import TableBody from "./components/body";
 import TableHead from "./components/head";
 import "./index.css";
-import { treeToList, getDataListWithExpanded } from "./tree-data-utils";
+import {
+  treeToList,
+  getDataListWithExpanded,
+  getScrollbarWidth
+} from "./helper";
 
 import LoadingMsg from "./components/loading";
+
+let scrollbarWidth = getScrollbarWidth();
 
 class Table extends React.Component {
   state = {
@@ -162,7 +168,11 @@ class Table extends React.Component {
 
     return (
       <div className="tablex">
-        <div className="tablex-head" ref="head">
+        <div
+          className="tablex-head"
+          ref="head"
+          style={{ paddingRight: scrollbarWidth }}
+        >
           <TableHead columns={columns} columnLeafs={columnLeafs} />
         </div>
 
@@ -176,6 +186,7 @@ class Table extends React.Component {
             onExpandChange={this.onExpandChange}
             expandedKeys={expandedKeys}
             loadingKeys={loadingKeys}
+            scrollbarWidth={scrollbarWidth}
           />
           {loading === true ? <LoadingMsg /> : null}
         </div>

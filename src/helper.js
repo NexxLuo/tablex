@@ -1288,3 +1288,29 @@ export function getDataListWithExpanded(list, expandedKeys = [], rowKey) {
 
   return arr;
 }
+
+export function getScrollbarWidth() {
+  var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+
+  if (userAgent.indexOf("Chrome") > -1) {
+    return 6;
+  }
+
+  var oP = document.createElement("p"),
+    styles = {
+      width: "100px",
+      height: "100px",
+      overflowY: "scroll"
+    },
+    i,
+    scrollbarWidth;
+
+  for (i in styles) {
+    oP.style[i] = styles[i];
+  }
+  document.body.appendChild(oP);
+  scrollbarWidth = oP.offsetWidth - oP.clientWidth;
+  oP.remove();
+
+  return scrollbarWidth;
+}
