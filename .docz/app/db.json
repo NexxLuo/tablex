@@ -19,7 +19,246 @@
       {}
     ]
   },
-  "props": [],
+  "props": [
+    {
+      "key": "src/components/body.js",
+      "value": [
+        {
+          "description": "",
+          "displayName": "TableBody",
+          "methods": [
+            {
+              "name": "getColumn",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "index",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "getColumnWidth",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "columnWidth",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "index",
+                  "type": null
+                },
+                {
+                  "name": "width",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "expandableEl",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "columnIndex",
+                  "type": null
+                },
+                {
+                  "name": "rowIndex",
+                  "type": null
+                },
+                {
+                  "name": "row",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "renderCell",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "{ columnIndex, rowIndex, style }",
+                  "type": null
+                }
+              ],
+              "returns": null
+            }
+          ],
+          "actualName": "TableBody",
+          "props": {
+            "rowKey": {
+              "type": {
+                "name": "string"
+              },
+              "required": true,
+              "description": "主要用于行展开"
+            },
+            "columns": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "",
+              "defaultValue": {
+                "value": "[]",
+                "computed": false
+              }
+            },
+            "columnLeafs": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "",
+              "defaultValue": {
+                "value": "[]",
+                "computed": false
+              }
+            },
+            "dataSource": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "",
+              "defaultValue": {
+                "value": "[]",
+                "computed": false
+              }
+            },
+            "onScroll": {
+              "type": {
+                "name": "func"
+              },
+              "required": false,
+              "description": ""
+            },
+            "onExpandChange": {
+              "type": {
+                "name": "func"
+              },
+              "required": false,
+              "description": "@isExpand 是否展开\n@key 受影响的行数据key"
+            },
+            "rowIndent": {
+              "type": {
+                "name": "number"
+              },
+              "required": false,
+              "description": "",
+              "defaultValue": {
+                "value": "20",
+                "computed": false
+              }
+            },
+            "expandedKeys": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "",
+              "defaultValue": {
+                "value": "[]",
+                "computed": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "src/index.js",
+      "value": [
+        {
+          "description": "",
+          "displayName": "Table",
+          "methods": [
+            {
+              "name": "onBodyScroll",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "{ scrollLeft }",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "getDerivedStateFromProps",
+              "docblock": null,
+              "modifiers": [
+                "static"
+              ],
+              "params": [
+                {
+                  "name": "nextProps",
+                  "type": null
+                },
+                {
+                  "name": "prevState",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "onExpandChange",
+              "docblock": "@isExpand 是否展开\n@key 受影响的行数据key",
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "isExpand"
+                },
+                {
+                  "name": "key"
+                }
+              ],
+              "returns": null,
+              "description": null
+            }
+          ],
+          "actualName": "Table",
+          "props": {
+            "columns": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "表格列",
+              "defaultValue": {
+                "value": "[]",
+                "computed": false
+              }
+            },
+            "dataSource": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "表格数据",
+              "defaultValue": {
+                "value": "[]",
+                "computed": false
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
   "entries": [
     {
       "key": "src/table.mdx",

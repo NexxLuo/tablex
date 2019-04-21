@@ -7,7 +7,7 @@
 6 silly lifecycle tablex@1.0.0~predoc: no script for predoc, continuing
 7 info lifecycle tablex@1.0.0~doc: tablex@1.0.0
 8 verbose lifecycle tablex@1.0.0~doc: unsafe-perm in lifecycle true
-9 verbose lifecycle tablex@1.0.0~doc: PATH: /usr/share/npm/bin/node-gyp-bin:/home/nexx/develop/tablex/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+9 verbose lifecycle tablex@1.0.0~doc: PATH: /usr/share/npm/bin/node-gyp-bin:/home/nexx/develop/tablex/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 10 verbose lifecycle tablex@1.0.0~doc: CWD: /home/nexx/develop/tablex
 11 silly lifecycle tablex@1.0.0~doc: Args: [ '-c', 'umi-lib doc dev' ]
 12 silly lifecycle tablex@1.0.0~doc: Returned: code: 1  signal: null

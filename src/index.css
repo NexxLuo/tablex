@@ -94,7 +94,7 @@
   flex: 1;
 }
 
-.__cell {
+.tablex-cell {
   background-color: #ffffff;
   padding: 5px 10px;
   white-space: nowrap;
@@ -103,4 +103,31 @@
   border-bottom: 1px solid #e8e8e8;
   border-right: 1px solid #e8e8e8;
   box-sizing: border-box;
+}
+
+
+.tablex-row-expand-placeholder
+{
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+
+}
+
+.tablex-row-expand-icon
+{
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  text-align: center;
+  line-height: 14px;
+  border: 1px solid #e8e8e8;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background: #fff;
+  cursor: pointer;
+  margin-right: 8px;
 }

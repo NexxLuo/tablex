@@ -10,11 +10,14 @@
 
 2.自适应宽、高
 
-3.仿 antd table 样式
+3.无限级表头
 
-4.兼容 ant table api
+4.支持树形数据
 
-5.支持树形数据
+5.仿 antd table 样式
+
+6.兼容 ant table api
+
 
 
 
