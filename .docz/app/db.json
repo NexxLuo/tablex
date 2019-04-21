@@ -470,6 +470,641 @@
           }
         }
       ]
+    },
+    {
+      "key": "src/editable.js",
+      "value": [
+        {
+          "description": "可编辑表格",
+          "displayName": "EditableTable",
+          "methods": [
+            {
+              "name": "initRef",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "inst",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "isEditing",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "getDerivedStateFromProps",
+              "docblock": null,
+              "modifiers": [
+                "static"
+              ],
+              "params": [
+                {
+                  "name": "nextProps",
+                  "type": null
+                },
+                {
+                  "name": "prevState",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "updateComponent",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "delayUpdate",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "fn",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "addToChanged",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "newRow",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "editChange",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "newValues",
+                  "type": null
+                },
+                {
+                  "name": "row",
+                  "type": null
+                },
+                {
+                  "name": "index",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "setRowAttr",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "row",
+                  "type": null
+                },
+                {
+                  "name": "attr",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "getRowAttr",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "row",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "getValidate",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "row",
+                  "type": null
+                },
+                {
+                  "name": "key",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "validateRow",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "row",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "validateAsync",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "rows",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "validate",
+              "docblock": null,
+              "modifiers": [
+                "async"
+              ],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "validateAll",
+              "docblock": null,
+              "modifiers": [
+                "async"
+              ],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "setEditorIns",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "row",
+                  "type": null
+                },
+                {
+                  "name": "column",
+                  "type": null
+                },
+                {
+                  "name": "ins",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "getEditorIns",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "rowKey",
+                  "type": null
+                },
+                {
+                  "name": "columnKey",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "formatColumns",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "toggleSettingColumns",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "bl",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "editAll",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "endEdit",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "callBack",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "cancelEdit",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "editRows",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "keys",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "getChangedRows",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "getRows",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "addRow",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "r",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "setRows",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "arr",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "reset",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "focusInput",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "editor",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "getNextEditor",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "keyCode",
+                  "type": null
+                },
+                {
+                  "name": "row",
+                  "type": null
+                },
+                {
+                  "name": "column",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "onKeyDown",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "e",
+                  "type": null
+                },
+                {
+                  "name": "row",
+                  "type": null
+                },
+                {
+                  "name": "column",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "onClick",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "e",
+                  "type": null
+                },
+                {
+                  "name": "row",
+                  "type": null
+                },
+                {
+                  "name": "column",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "completeEdit",
+              "docblock": null,
+              "modifiers": [
+                "async"
+              ],
+              "params": [
+                {
+                  "name": "callBack",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "edit",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "delete",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "addRange",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "rowCount",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "editTools",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "getProps",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "bottomExtra",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "createToolBar",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            }
+          ],
+          "actualName": "EditableTable",
+          "props": {
+            "editTools": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "工具栏，工具按钮 ['edit', 'add','delete',{icon:\"\",text:\"\",props:{},handler:Function},Function] addSingle:单行新增",
+              "defaultValue": {
+                "value": "['edit', 'add']",
+                "computed": false
+              }
+            },
+            "editToolsConfig": {
+              "type": {
+                "name": "object"
+              },
+              "required": false,
+              "description": "工具栏，工具按钮属性配置{ position: \"bottom\", itemStyle: { marginLeft: \"5px\" }, editText: \"\", editIcon: \"\", addText: \"\", addIcon: \"\", deleteText: \"\", deleteIcon: \"\", okText: \"\", okIcon: \"\", cancelText: \"\", cancelIcon: \"\" }",
+              "defaultValue": {
+                "value": "{ position: \"bottom\", itemStyle: { marginLeft: \"5px\" }, editText: \"\", editIcon: \"\", addText: \"\", addIcon: \"\", deleteText: \"\", deleteIcon: \"\", okText: \"\", okIcon: \"\", cancelText: \"\", cancelIcon: \"\" }",
+                "computed": false
+              }
+            },
+            "isAppend": {
+              "type": {
+                "name": "bool"
+              },
+              "required": false,
+              "description": "新增行时，是追加，还是清空当前页数据",
+              "defaultValue": {
+                "value": "false",
+                "computed": false
+              }
+            },
+            "defaultAddCount": {
+              "type": {
+                "name": "number"
+              },
+              "required": false,
+              "description": "新增行时的默认条数",
+              "defaultValue": {
+                "value": "1",
+                "computed": false
+              }
+            },
+            "onEditSave": {
+              "type": {
+                "name": "func"
+              },
+              "required": false,
+              "description": "编辑确定事件"
+            },
+            "allowSaveEmpty": {
+              "type": {
+                "name": "bool"
+              },
+              "required": false,
+              "description": "当没有改变行数据时，是否仍然执行onEditSave",
+              "defaultValue": {
+                "value": "false",
+                "computed": false
+              }
+            },
+            "validateTrigger": {
+              "type": {
+                "name": "enum",
+                "value": [
+                  {
+                    "value": "'onChange'",
+                    "computed": false
+                  },
+                  {
+                    "value": "'onBlur'",
+                    "computed": false
+                  },
+                  {
+                    "value": "\"onSave\"",
+                    "computed": false
+                  }
+                ]
+              },
+              "required": false,
+              "description": "验证时机",
+              "defaultValue": {
+                "value": "\"onSave\"",
+                "computed": false
+              }
+            },
+            "validateDelay": {
+              "type": {
+                "name": "number"
+              },
+              "required": false,
+              "description": "验证延迟时间，当validateTrigger===\"onChange\"时有效",
+              "defaultValue": {
+                "value": "300",
+                "computed": false
+              }
+            },
+            "onBeforeAdd": {
+              "type": {
+                "name": "func"
+              },
+              "required": false,
+              "description": "新增按钮前置事件，返回false不进入新增状态"
+            },
+            "onAdd": {
+              "type": {
+                "name": "func"
+              },
+              "required": false,
+              "description": "新增按钮事件"
+            },
+            "onCancel": {
+              "type": {
+                "name": "func"
+              },
+              "required": false,
+              "description": "编辑取消事件"
+            },
+            "onBeforeEdit": {
+              "type": {
+                "name": "func"
+              },
+              "required": false,
+              "description": "编辑按钮前置事件，返回false不进入编辑状态"
+            },
+            "onEdit": {
+              "type": {
+                "name": "func"
+              },
+              "required": false,
+              "description": "编辑按钮事件"
+            },
+            "onBeforeDelete": {
+              "type": {
+                "name": "func"
+              },
+              "required": false,
+              "description": "删除按钮前置事件\n返回false 不可删除"
+            },
+            "onDelete": {
+              "type": {
+                "name": "func"
+              },
+              "required": false,
+              "description": ""
+            },
+            "alwaysValidate": {
+              "type": {
+                "name": "bool"
+              },
+              "required": false,
+              "description": "无论是否存在输入变化，是否始终验证",
+              "defaultValue": {
+                "value": "false",
+                "computed": false
+              }
+            },
+            "dataControled": {
+              "type": {
+                "name": "bool"
+              },
+              "required": false,
+              "description": "数据是否完全受控，如若受控，请在onEditSave、onCancel中自行更新数据源",
+              "defaultValue": {
+                "value": "false",
+                "computed": false
+              }
+            }
+          }
+        }
+      ]
     }
   ]
 }
