@@ -2,12 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import { VariableSizeGrid as Grid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-
-const expandIcon = ({ columnIndex, rowIndex, style }) => (
-  <div style={style}>
-    Item {rowIndex},{columnIndex}
-  </div>
-);
+import LoadingIcon from "./loadingIcon";
+import NoDataMsg from "./noDataMsg";
 
 class TableBody extends React.Component {
   getColumn = index => {
@@ -38,12 +34,23 @@ class TableBody extends React.Component {
     return width - cw - 6;
   };
 
+  /**
+   * 行是否正在加载子级
+   */
+  isLoadingChildren = key => {
+    let { loadingKeys } = this.props;
+
+    return loadingKeys.indexOf(key) > -1;
+  };
+
   expandableEl = (columnIndex, rowIndex, row) => {
     let { rowIndent, expandedKeys = [], rowKey } = this.props;
 
     let indent = (row.__depth || 0) * rowIndent;
 
     let key = row[rowKey];
+
+    let isLoading = this.isLoadingChildren(key);
 
     let isExpand = false;
     let icon = "+";
@@ -56,10 +63,10 @@ class TableBody extends React.Component {
       icon = "+";
     }
 
-    let expandIcon = <span className="tablex-row-expand-placeholder" />;
+    let iconFlag = <span className="tablex-row-expand-placeholder" />;
 
     if (row.children) {
-      expandIcon = (
+      iconFlag = (
         <span
           className="tablex-row-expand-icon"
           onClick={() => {
@@ -71,6 +78,10 @@ class TableBody extends React.Component {
       );
     }
 
+    if (isLoading === true) {
+      iconFlag = <LoadingIcon />;
+    }
+
     if (columnIndex === 0) {
       return (
         <>
@@ -80,7 +91,7 @@ class TableBody extends React.Component {
               style={{ marginLeft: indent }}
             />
           ) : null}
-          {expandIcon}
+          {iconFlag}
         </>
       );
     }
@@ -89,6 +100,10 @@ class TableBody extends React.Component {
 
   renderCell = ({ columnIndex, rowIndex, style }) => {
     let { dataSource } = this.props;
+
+    if (dataSource.length === 0) {
+      return <div />;
+    }
 
     let column = this.getColumn(columnIndex);
 
@@ -129,6 +144,8 @@ class TableBody extends React.Component {
       columnWidth += d.width || 100;
     });
 
+    let rowCount = dataSource.length;
+
     return (
       <AutoSizer>
         {({ height, width }) => {
@@ -138,18 +155,28 @@ class TableBody extends React.Component {
             len = len + 1;
           }
 
+          let NoData = null;
+
+          if (dataSource.length === 0) {
+            rowCount = 1;
+            NoData = <NoDataMsg />;
+          }
+
           return (
-            <Grid
-              columnCount={len}
-              columnWidth={i => this.columnWidth(i, width)}
-              height={height}
-              rowCount={dataSource.length}
-              rowHeight={() => 35}
-              width={width}
-              onScroll={onScroll}
-            >
-              {this.renderCell}
-            </Grid>
+            <>
+              {NoData}
+              <Grid
+                columnCount={len}
+                columnWidth={i => this.columnWidth(i, width)}
+                height={height}
+                rowCount={rowCount}
+                rowHeight={() => 35}
+                width={width}
+                onScroll={onScroll}
+              >
+                {this.renderCell}
+              </Grid>
+            </>
           );
         }}
       </AutoSizer>
@@ -162,7 +189,8 @@ TableBody.defaultProps = {
   columnLeafs: [],
   dataSource: [],
   rowIndent: 20,
-  expandedKeys: []
+  expandedKeys: [],
+  loadingKeys: []
 };
 
 TableBody.propTypes = {
@@ -181,7 +209,8 @@ TableBody.propTypes = {
    */
   onExpandChange: PropTypes.func,
   rowIndent: PropTypes.number,
-  expandedKeys: PropTypes.array
+  expandedKeys: PropTypes.array,
+  loadingKeys: PropTypes.array
 };
 
 export default TableBody;

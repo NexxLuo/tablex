@@ -7,7 +7,6 @@
   flex-direction: column;
 }
 
-
 .tablex ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -23,9 +22,6 @@
 .tablex ::-webkit-scrollbar-thumb:hover {
   background-color: #a8a8a8;
 }
-
-
-
 
 .tablex-head {
   font-weight: bold;
@@ -77,10 +73,7 @@
 
 .tablex-head-group-cell {
   border-right: 1px solid #e8e8e8;
-
 }
-
-
 
 .tablex-head-group-title {
   border-bottom: 1px solid #e8e8e8;
@@ -92,6 +85,7 @@
 .tablex-body {
   height: 100%;
   flex: 1;
+  position: relative;
 }
 
 .tablex-cell {
@@ -105,18 +99,14 @@
   box-sizing: border-box;
 }
 
-
-.tablex-row-expand-placeholder
-{
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
-
+.tablex-row-expand-placeholder {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
 }
 
-.tablex-row-expand-icon
-{
+.tablex-row-expand-icon {
   display: inline-block;
   width: 16px;
   height: 16px;
@@ -130,4 +120,38 @@
   background: #fff;
   cursor: pointer;
   margin-right: 8px;
+}
+
+@keyframes loadingCircle {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+.tablex-loading-icon {
+  display: inline-block;
+  color: inherit;
+  font-style: normal;
+  line-height: 0;
+  text-align: center;
+  text-transform: none;
+  vertical-align: -0.125em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  animation: loadingCircle 1s infinite linear;
+  margin-right: 10px;
+  color: #1890ff;
+}
+
+.tablex-nodata-msg {
+  height: 40px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  text-align: center;
+  color: #a8a8a8;
 }

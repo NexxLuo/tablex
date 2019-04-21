@@ -21,6 +21,24 @@
   },
   "props": [
     {
+      "key": "src/components/loadingIcon.js",
+      "value": [
+        {
+          "description": "",
+          "methods": []
+        }
+      ]
+    },
+    {
+      "key": "src/components/noDataMsg.js",
+      "value": [
+        {
+          "description": "",
+          "methods": []
+        }
+      ]
+    },
+    {
       "key": "src/components/body.js",
       "value": [
         {
@@ -61,6 +79,18 @@
                 }
               ],
               "returns": null
+            },
+            {
+              "name": "isLoadingChildren",
+              "docblock": "行是否正在加载子级",
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "key"
+                }
+              ],
+              "returns": null,
+              "description": "行是否正在加载子级"
             },
             {
               "name": "expandableEl",
@@ -172,8 +202,28 @@
                 "value": "[]",
                 "computed": false
               }
+            },
+            "loadingKeys": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "",
+              "defaultValue": {
+                "value": "[]",
+                "computed": false
+              }
             }
           }
+        }
+      ]
+    },
+    {
+      "key": "src/components/loading.js",
+      "value": [
+        {
+          "description": "",
+          "methods": []
         }
       ]
     },
@@ -228,6 +278,60 @@
               ],
               "returns": null,
               "description": null
+            },
+            {
+              "name": "expand",
+              "docblock": "展开",
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "key"
+                }
+              ],
+              "returns": null,
+              "description": "展开"
+            },
+            {
+              "name": "collapse",
+              "docblock": "折叠",
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "key"
+                }
+              ],
+              "returns": null,
+              "description": "折叠"
+            },
+            {
+              "name": "setLoadingChildren",
+              "docblock": "设置行的子级加载状态",
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "key"
+                },
+                {
+                  "name": "bl"
+                },
+                {
+                  "name": "callback"
+                }
+              ],
+              "returns": null,
+              "description": "设置行的子级加载状态"
+            },
+            {
+              "name": "loadChildrenData",
+              "docblock": "异步加载子级数据",
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "key"
+                }
+              ],
+              "returns": null,
+              "description": "异步加载子级数据"
             }
           ],
           "actualName": "Table",
@@ -253,15 +357,85 @@
                 "value": "[]",
                 "computed": false
               }
+            },
+            "rowKey": {
+              "type": {
+                "name": "string"
+              },
+              "required": true,
+              "description": "数据行主键字段\n主要用于行展开"
+            },
+            "onExpandedRowsChange": {
+              "type": {
+                "name": "func"
+              },
+              "required": false,
+              "description": "行展开变化事件\n@expandedRows 展开的行"
+            },
+            "rowIndent": {
+              "type": {
+                "name": "number"
+              },
+              "required": false,
+              "description": ""
+            },
+            "expandedKeys": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": ""
+            },
+            "loadChildrenData": {
+              "type": {
+                "name": "func"
+              },
+              "required": false,
+              "description": ""
+            },
+            "loading": {
+              "type": {
+                "name": "bool"
+              },
+              "required": false,
+              "description": "",
+              "defaultValue": {
+                "value": "false",
+                "computed": false
+              }
             }
           }
+        }
+      ]
+    },
+    {
+      "key": "examples/lazyLoad.js",
+      "value": [
+        {
+          "description": "",
+          "displayName": "LazyLoad",
+          "methods": [
+            {
+              "name": "loadChildrenData",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "row",
+                  "type": null
+                }
+              ],
+              "returns": null
+            }
+          ],
+          "actualName": "LazyLoad"
         }
       ]
     }
   ],
   "entries": [
     {
-      "key": "src/table.mdx",
+      "key": "examples/table.mdx",
       "value": {
         "0": "r",
         "1": "o",
@@ -270,11 +444,11 @@
         "4": "e",
         "5": ":",
         "6": "/",
-        "id": "c989fa652c2f5b4677c92423b2dbfd4d",
-        "filepath": "src/table.mdx",
+        "id": "512da6720107153f6d9a49c9e4a0144c",
+        "filepath": "examples/table.mdx",
         "link": "",
-        "slug": "src-table",
-        "route": "/src-table",
+        "slug": "examples-table",
+        "route": "/examples-table",
         "name": "Table",
         "menu": "",
         "headings": [
@@ -297,7 +471,7 @@
       }
     },
     {
-      "key": "src/treeTable.mdx",
+      "key": "examples/treeTable.mdx",
       "value": {
         "0": "r",
         "1": "o",
@@ -306,11 +480,11 @@
         "4": "e",
         "5": ":",
         "6": "/",
-        "id": "7a6037f72ef1af05e001c0475c61861c",
-        "filepath": "src/treeTable.mdx",
+        "id": "1ca040ce53e2af802da2d6f5b65fb912",
+        "filepath": "examples/treeTable.mdx",
         "link": "",
-        "slug": "src-tree-table",
-        "route": "/src-tree-table",
+        "slug": "examples-tree-table",
+        "route": "/examples-tree-table",
         "name": "Tree table",
         "menu": "",
         "headings": [
@@ -328,6 +502,11 @@
             "slug": "usage",
             "depth": 2,
             "value": "Usage"
+          },
+          {
+            "slug": "lazy-load",
+            "depth": 2,
+            "value": "Lazy load"
           }
         ]
       }
