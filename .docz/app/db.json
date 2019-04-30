@@ -10,7 +10,7 @@
     "themeConfig": {},
     "separator": "-",
     "typescript": false,
-    "theme": "/media/nexx/DevelopEnvironment/WebRoot/tablex/tablex/node_modules/docz-theme-umi/es/index.js",
+    "theme": "E:\\WebRoot\\tablex\\tablex\\node_modules\\docz-theme-umi\\es\\index.js",
     "plugins": [
       {},
       {},
@@ -19,6 +19,7 @@
       {}
     ]
   },
+  "props": [],
   "entries": [
     {
       "key": "src/index.mdx",
@@ -61,59 +62,6 @@
           }
         ]
       }
-    }
-  ],
-  "props": [
-    {
-      "key": "src/index.js",
-      "value": [
-        {
-          "description": "",
-          "displayName": "Table",
-          "methods": [],
-          "actualName": "Table"
-        }
-      ]
-    },
-    {
-      "key": "src/components/body.js",
-      "value": [
-        {
-          "description": "",
-          "displayName": "TableBody",
-          "methods": [
-            {
-              "name": "columnWidth",
-              "docblock": null,
-              "modifiers": [],
-              "params": [
-                {
-                  "name": "index",
-                  "type": null
-                },
-                {
-                  "name": "width",
-                  "type": null
-                }
-              ],
-              "returns": null
-            },
-            {
-              "name": "renderCell",
-              "docblock": null,
-              "modifiers": [],
-              "params": [
-                {
-                  "name": "{ columnIndex, rowIndex, style }",
-                  "type": null
-                }
-              ],
-              "returns": null
-            }
-          ],
-          "actualName": "TableBody"
-        }
-      ]
     }
   ]
 }
