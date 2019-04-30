@@ -1,19 +1,40 @@
 {
   "name": "tablex",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "1.0.1",
+  "description": "table virtualized tree-table ",
   "scripts": {
     "dev": "umi-lib build --watch",
     "build": "umi-lib build",
     "test": "umi-test",
     "doc": "umi-lib doc dev",
+    "docp": "umi-lib doc deploy",
+    "docb": "umi-lib doc build --base='/tablex/'",
     "pub": "umi-lib build&&npm publish"
   },
-  "keywords": [],
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "files": [
+    "lib",
+    "es"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NexxLuo/tablex"
+  },
+  "homepage": "https://nexxluo.github.io/tablex",
+  "keywords": [
+    "table",
+    "virtualized",
+    "tree-table",
+    "data-table",
+    "data-list",
+    "list"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "docz": "^1.0.4",
+    "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-virtualized-auto-sizer": "^1.0.2",

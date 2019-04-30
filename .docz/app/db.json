@@ -19,35 +19,206 @@
       {}
     ]
   },
-  "props": [],
+  "props": [
+    {
+      "key": "src\\index.js",
+      "value": [
+        {
+          "description": "",
+          "displayName": "Table",
+          "methods": [
+            {
+              "name": "onBodyScroll",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "{ scrollLeft }",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "getDerivedStateFromProps",
+              "docblock": null,
+              "modifiers": [
+                "static"
+              ],
+              "params": [
+                {
+                  "name": "nextProps",
+                  "type": null
+                },
+                {
+                  "name": "prevState",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "onExpandChange",
+              "docblock": "@isExpand 是否展开\r\n@key 受影响的行数据key",
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "isExpand"
+                },
+                {
+                  "name": "key"
+                }
+              ],
+              "returns": null,
+              "description": null
+            },
+            {
+              "name": "expand",
+              "docblock": "展开",
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "key"
+                }
+              ],
+              "returns": null,
+              "description": "展开"
+            },
+            {
+              "name": "collapse",
+              "docblock": "折叠",
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "key"
+                }
+              ],
+              "returns": null,
+              "description": "折叠"
+            },
+            {
+              "name": "setLoadingChildren",
+              "docblock": "设置行的子级加载状态",
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "key"
+                },
+                {
+                  "name": "bl"
+                },
+                {
+                  "name": "callback"
+                }
+              ],
+              "returns": null,
+              "description": "设置行的子级加载状态"
+            },
+            {
+              "name": "loadChildrenData",
+              "docblock": "异步加载子级数据",
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "key"
+                }
+              ],
+              "returns": null,
+              "description": "异步加载子级数据"
+            }
+          ],
+          "actualName": "Table",
+          "props": {
+            "columns": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "表格列",
+              "defaultValue": {
+                "value": "[]",
+                "computed": false
+              }
+            },
+            "dataSource": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "表格数据",
+              "defaultValue": {
+                "value": "[]",
+                "computed": false
+              }
+            },
+            "rowKey": {
+              "type": {
+                "name": "string"
+              },
+              "required": true,
+              "description": "数据行主键字段\r\n主要用于行展开"
+            },
+            "onExpandedRowsChange": {
+              "type": {
+                "name": "func"
+              },
+              "required": false,
+              "description": "行展开变化事件\r\n@expandedRows 展开的行"
+            },
+            "rowIndent": {
+              "type": {
+                "name": "number"
+              },
+              "required": false,
+              "description": ""
+            },
+            "expandedKeys": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": ""
+            },
+            "loadChildrenData": {
+              "type": {
+                "name": "func"
+              },
+              "required": false,
+              "description": ""
+            },
+            "loading": {
+              "type": {
+                "name": "bool"
+              },
+              "required": false,
+              "description": "",
+              "defaultValue": {
+                "value": "false",
+                "computed": false
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
   "entries": [
     {
-      "key": "src/index.mdx",
+      "key": "examples/table.mdx",
       "value": {
-        "0": "n",
-        "1": "a",
-        "2": "m",
-        "3": "e",
-        "4": ":",
-        "5": "T",
-        "6": "a",
-        "7": "b",
-        "8": "l",
-        "9": "e",
-        "10": " ",
-        "11": "r",
-        "12": "o",
-        "13": "u",
-        "14": "t",
-        "15": "e",
-        "16": ":",
-        "17": "/",
-        "id": "6576455a124f9aaefd860597f03a8fe4",
-        "filepath": "src/index.mdx",
+        "0": "r",
+        "1": "o",
+        "2": "u",
+        "3": "t",
+        "4": "e",
+        "5": ":",
+        "6": "/",
+        "id": "512da6720107153f6d9a49c9e4a0144c",
+        "filepath": "examples/table.mdx",
         "link": "",
-        "slug": "src-index",
-        "route": "/src-index",
-        "name": "Index",
+        "slug": "examples-table",
+        "route": "/examples-table",
+        "name": "Table",
         "menu": "",
         "headings": [
           {
@@ -56,9 +227,55 @@
             "value": "Table"
           },
           {
-            "slug": "basic",
+            "slug": "properties",
             "depth": 2,
-            "value": "Basic"
+            "value": "Properties"
+          },
+          {
+            "slug": "basic-usage",
+            "depth": 2,
+            "value": "Basic usage"
+          }
+        ]
+      }
+    },
+    {
+      "key": "examples/treeTable.mdx",
+      "value": {
+        "0": "r",
+        "1": "o",
+        "2": "u",
+        "3": "t",
+        "4": "e",
+        "5": ":",
+        "6": "/",
+        "id": "1ca040ce53e2af802da2d6f5b65fb912",
+        "filepath": "examples/treeTable.mdx",
+        "link": "",
+        "slug": "examples-tree-table",
+        "route": "/examples-tree-table",
+        "name": "Tree table",
+        "menu": "",
+        "headings": [
+          {
+            "slug": "table",
+            "depth": 1,
+            "value": "Table"
+          },
+          {
+            "slug": "properties",
+            "depth": 2,
+            "value": "Properties"
+          },
+          {
+            "slug": "usage",
+            "depth": 2,
+            "value": "Usage"
+          },
+          {
+            "slug": "lazy-load",
+            "depth": 2,
+            "value": "Lazy load"
           }
         ]
       }

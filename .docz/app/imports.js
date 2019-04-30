@@ -1,6 +1,10 @@
 export const imports = {
-  'src/index.mdx': () =>
+  'examples/table.mdx': () =>
     import(
-      /* webpackPrefetch: true, webpackChunkName: "src-index" */ 'src/index.mdx'
+      /* webpackPrefetch: true, webpackChunkName: "examples-table" */ 'examples/table.mdx'
+    ),
+  'examples/treeTable.mdx': () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "examples-tree-table" */ 'examples/treeTable.mdx'
     ),
 }
