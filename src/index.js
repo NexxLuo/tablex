@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import TableBody from "./components/body";
-import TableHead from "./components/head";
+import TableBody from "./base/fixedBody";
+import TableHead from "./base/head";
 import "./index.css";
 import {
   treeToList,
@@ -10,6 +10,7 @@ import {
 } from "./helper";
 
 import LoadingMsg from "./components/loading";
+import NoDataMsg from "./components/noDataMsg";
 
 let scrollbarWidth = getScrollbarWidth();
 
@@ -188,6 +189,7 @@ class Table extends React.Component {
             loadingKeys={loadingKeys}
             scrollbarWidth={scrollbarWidth}
           />
+          {dataList.length === 0 ? <NoDataMsg /> : null}
           {loading === true ? <LoadingMsg /> : null}
         </div>
       </div>

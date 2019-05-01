@@ -2,8 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { VariableSizeGrid as Grid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import LoadingIcon from "./loadingIcon";
-import NoDataMsg from "./noDataMsg";
+import LoadingIcon from "../components/loadingIcon";
 
 class TableBody extends React.Component {
   getColumn = index => {
@@ -156,16 +155,14 @@ class TableBody extends React.Component {
             len = len + 1;
           }
 
-          let NoData = null;
 
           if (dataSource.length === 0) {
             rowCount = 1;
-            NoData = <NoDataMsg />;
           }
 
           return (
             <>
-              {NoData}
+         
               <Grid
                 columnCount={len}
                 columnWidth={i => this.columnWidth(i, width)}

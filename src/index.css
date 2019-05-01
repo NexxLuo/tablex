@@ -81,11 +81,6 @@
   text-align: center;
 }
 
-.tablex-body {
-  height: 100%;
-  flex: 1;
-  position: relative;
-}
 
 .tablex-cell {
   background-color: #ffffff;
@@ -153,4 +148,29 @@
   margin: auto;
   text-align: center;
   color: #a8a8a8;
+}
+
+.tablex-body {
+  flex: 1;
+  position: relative;
+}
+
+
+
+.tablex-body-left,.tablex-body-middle,.tablex-body-right{
+  height: 100%;
+  flex: 1;
+  position: relative;
+}
+
+.tablex-body-left{
+float: left;
+}
+
+.tablex-body-middle{
+  
+}
+
+.tablex-body-right{
+  float: right
 }
