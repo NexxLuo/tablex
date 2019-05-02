@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import TableBody from "./base/fixedBody";
-import TableHead from "./base/head";
+import TableHead from "./base/fixedHead";
 import "./index.css";
 import {
   treeToList,
@@ -24,11 +24,6 @@ class Table extends React.Component {
 
     expandedKeys: [],
     loadingKeys: []
-  };
-
-  onBodyScroll = ({ scrollLeft }) => {
-    let head = this.refs["head"];
-    head.scrollTo(scrollLeft, 0);
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -156,6 +151,11 @@ class Table extends React.Component {
     }
   };
 
+  onBodyScroll = ({ scrollLeft }) => {
+    let head = this.headRef;
+    head && head.scrollTo({ scrollLeft });
+  };
+
   render() {
     let {
       columns,
@@ -169,12 +169,12 @@ class Table extends React.Component {
 
     return (
       <div className="tablex">
-        <div
-          className="tablex-head"
-          ref="head"
-          style={{ paddingRight: scrollbarWidth }}
-        >
-          <TableHead columns={columns} columnLeafs={columnLeafs} />
+        <div className="tablex-head" >
+          <TableHead
+            columns={columns}
+            columnLeafs={columnLeafs}
+            initRef={ins => (this.headRef = ins)}
+          />
         </div>
 
         <div className="tablex-body">

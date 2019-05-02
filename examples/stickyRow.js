@@ -52,17 +52,21 @@ const StickyList = ({ children, stickyIndices, ...rest }) => (
   </StickyListContext.Provider>
 );
 
-const rootElement = document.getElementById("root");
-render(
-  <StickyList
-    height={150}
-    innerElementType={innerElementType}
-    itemCount={1000}
-    itemSize={35}
-    stickyIndices={[0, 1]}
-    width={300}
-  >
-    {Row}
-  </StickyList>,
-  rootElement
-);
+
+const Example=()=>{
+
+  return <StickyList
+  height={150}
+  innerElementType={innerElementType}
+  itemCount={1000}
+  itemSize={35}
+  stickyIndices={[0, 1]}
+  width={300}
+>
+  {Row}
+</StickyList>
+}
+
+ 
+
+export default Example;

@@ -8,7 +8,7 @@ class LazyLoad extends React.Component {
         title: "Name",
         dataIndex: "name",
         width: 200,
-        fixed:"left2"
+        fixed: "left"
       },
       {
         title: "Age",
@@ -34,7 +34,7 @@ class LazyLoad extends React.Component {
         title: "Age2",
         dataIndex: "age2",
         width: 400,
-        fixed:"right2"
+        fixed: "right"
       }
     ],
     dataSource: []
@@ -57,18 +57,10 @@ class LazyLoad extends React.Component {
     this.setState({ dataSource: data });
   }
 
-   
-
   render() {
     let { dataSource, columns } = this.state;
 
-    return (
-      <Table
-        columns={columns}
-        dataSource={dataSource}
-        rowKey="key"
-      />
-    );
+    return <Table columns={columns} dataSource={dataSource} rowKey="key" />;
   }
 }
 

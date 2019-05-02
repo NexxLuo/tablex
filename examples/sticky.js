@@ -58,4 +58,4 @@ const Example = () => (
   </div>
 );
 
-ReactDOM.render(<Example />, document.getElementById("root"));
+export default Example;

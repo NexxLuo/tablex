@@ -5,6 +5,12 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import LoadingIcon from "../components/loadingIcon";
 
 class TableBody extends React.Component {
+
+
+
+ gridRef = React.createRef();
+
+
   getColumn = index => {
     let { columnLeafs } = this.props;
 
@@ -123,7 +129,7 @@ class TableBody extends React.Component {
         );
       } else {
         return (
-          <div className="tablex-cell" style={style}>
+          <div className="tablex-cell" style={{...style}}>
             {expandableEl}
             {cellData}
           </div>
@@ -136,8 +142,13 @@ class TableBody extends React.Component {
     );
   };
 
+
+  scrollTo=(pos)=>{
+    this.gridRef.current&&this.gridRef.current.scrollTo(pos);
+  }
+
   render() {
-    let { columns, columnLeafs, dataSource, onScroll } = this.props;
+    let { columns, columnLeafs, dataSource, onScroll,style } = this.props;
 
     let columnWidth = 0;
     columnLeafs.forEach(d => {
@@ -155,15 +166,14 @@ class TableBody extends React.Component {
             len = len + 1;
           }
 
-
           if (dataSource.length === 0) {
             rowCount = 1;
           }
 
           return (
             <>
-         
               <Grid
+                style={style}
                 columnCount={len}
                 columnWidth={i => this.columnWidth(i, width)}
                 height={height}
@@ -171,6 +181,7 @@ class TableBody extends React.Component {
                 rowHeight={() => 35}
                 width={width}
                 onScroll={onScroll}
+                ref={this.gridRef}
               >
                 {this.renderCell}
               </Grid>

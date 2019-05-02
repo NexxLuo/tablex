@@ -64,7 +64,14 @@ class TableBodyWithFixed extends React.Component {
     };
   };
 
-  onScroll=()=>{
+  onMiddleScroll=({scrollLeft,scrollTop})=>{
+     this.refs.leftTable.scrollTo({ scrollLeft: 0, scrollTop });
+     this.refs.rightTable.scrollTo({ scrollLeft: 0, scrollTop });
+
+
+    if (typeof this.props.onScroll==="function") {
+      this.props.onScroll({scrollLeft,scrollTop});
+    }
 
   }
 
@@ -95,7 +102,6 @@ class TableBodyWithFixed extends React.Component {
 
     let attrs = {
     
-      onScroll:this.onScroll,
       rowKey,
       dataSource,
       onExpandChange,
@@ -107,13 +113,13 @@ class TableBodyWithFixed extends React.Component {
     return (
       <>
         <div className="tablex-body-left" style={{width:leftColumnsWidth}}>
-          <TableBody {...attrs} columns={leftColumns} columnLeafs={leftColumnLeafs}  />
+          <TableBody {...attrs} columns={leftColumns} columnLeafs={leftColumnLeafs} style={{ overflow: "hidden" }} ref="leftTable" />
         </div>
-        <div className="tablex-body-middle" style={{marginLeft:leftColumnsWidth,marginRight:rightColumnsWidth}} >
-          <TableBody {...attrs}  columns={middleColumns}  columnLeafs={middleColumnLeafs} />
+        <div className="tablex-body-middle" >
+          <TableBody {...attrs}  columns={middleColumns}  columnLeafs={middleColumnLeafs}  onScroll={this.onMiddleScroll}  ref="middleTable" />
         </div>
         <div className="tablex-body-right"  style={{width:rightColumnsWidth}} >
-          <TableBody {...attrs}  columns={rightColumns}  columnLeafs={rightColumnLeafs} />
+          <TableBody {...attrs}  columns={rightColumns}  columnLeafs={rightColumnLeafs} style={{ overflow: "hidden" }}  ref="rightTable" />
         </div>
       </>
     );
