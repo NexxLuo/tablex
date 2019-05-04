@@ -83,7 +83,7 @@ class TableHeadWithFixed extends React.Component {
   }
 
   scrollTo = ({scrollLeft}) => {
-      console.log("a:",scrollLeft)
+ 
     this.headRef.current.scrollTo(scrollLeft,0);
   };
 

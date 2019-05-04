@@ -113,6 +113,16 @@ class TableBody extends React.Component {
 
     let column = this.getColumn(columnIndex);
 
+    let attr={};
+
+    // if (columnIndex===0) {
+    //   attr={
+    //     position:"sticky",
+    //     zIndex:1,
+    //     left:0
+    //   }
+    // }
+
     if (column) {
       let c = column.dataIndex;
       let row = dataSource[rowIndex];
@@ -128,8 +138,11 @@ class TableBody extends React.Component {
           </div>
         );
       } else {
+
+
+
         return (
-          <div className="tablex-cell" style={{...style}}>
+          <div className="tablex-cell" style={{...style,...attr}}>
             {expandableEl}
             {cellData}
           </div>

@@ -147,10 +147,9 @@
   display: flex;
 }
 
-
+ 
 
 .tablex-body-left,.tablex-body-middle,.tablex-body-right{
-  height: 100%;
   position: relative;
 }
 
@@ -162,6 +161,7 @@
 }
 
 .tablex-body-right{
+  border-left: 1px solid #e8e8e8;
 }
 
 
@@ -187,12 +187,10 @@ flex: 1;
 
 
 .tablex-head-left{
-height: 100%;
 overflow: hidden;
 }
 
 .tablex-head-right{
-height: 100%;
 overflow: hidden;
 border-left: 1px solid #e8e8e8;
 }
