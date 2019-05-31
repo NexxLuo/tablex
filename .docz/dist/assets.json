@@ -1,0 +1,12 @@
+{
+  "vendors.js": "/tablex/static/js/vendors.8d2d0b81.js",
+  "examples-fixed-columns~examples-table~examples-tree-table.css": "/tablex/static/css/examples-fixed-columns~examples-table~examples-tree-table.64a34c7497f1eec25b44.css",
+  "examples-fixed-columns~examples-table~examples-tree-table.js": "/tablex/static/js/examples-fixed-columns~examples-table~examples-tree-table.09dd09a4.js",
+  "app.js": "/tablex/static/js/app.64a34c7497f1eec25b44.js",
+  "examples-fixed-columns.js": "/tablex/static/js/examples-fixed-columns.40a28d8d.js",
+  "examples-sticky.css": "/tablex/static/css/examples-sticky.64a34c7497f1eec25b44.css",
+  "examples-sticky.js": "/tablex/static/js/examples-sticky.7102da49.js",
+  "examples-table.js": "/tablex/static/js/examples-table.f2c390d1.js",
+  "examples-tree-table.js": "/tablex/static/js/examples-tree-table.479d43f9.js",
+  "index.html": "/tablex/index.html"
+}
