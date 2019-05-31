@@ -34,7 +34,7 @@
         "filepath": "examples/fixedColumns.mdx",
         "link": "https://github.com/NexxLuo/tablex\\edit\\master\\examples/fixedColumns.mdx",
         "slug": "examples-fixed-columns",
-        "route": "/tablex/examples-fixed-columns",
+        "route": "/examples-fixed-columns",
         "name": "Fixed columns",
         "menu": "",
         "headings": [
@@ -65,7 +65,7 @@
         "filepath": "examples/sticky.mdx",
         "link": "https://github.com/NexxLuo/tablex\\edit\\master\\examples/sticky.mdx",
         "slug": "examples-sticky",
-        "route": "/tablex/examples-sticky",
+        "route": "/examples-sticky",
         "name": "Sticky",
         "menu": "",
         "headings": [
@@ -78,42 +78,6 @@
             "slug": "usage",
             "depth": 2,
             "value": "Usage"
-          }
-        ]
-      }
-    },
-    {
-      "key": "examples/table.mdx",
-      "value": {
-        "0": "r",
-        "1": "o",
-        "2": "u",
-        "3": "t",
-        "4": "e",
-        "5": ":",
-        "6": "/",
-        "id": "512da6720107153f6d9a49c9e4a0144c",
-        "filepath": "examples/table.mdx",
-        "link": "https://github.com/NexxLuo/tablex\\edit\\master\\examples/table.mdx",
-        "slug": "examples-table",
-        "route": "/tablex/examples-table",
-        "name": "Table",
-        "menu": "",
-        "headings": [
-          {
-            "slug": "table",
-            "depth": 1,
-            "value": "Table"
-          },
-          {
-            "slug": "properties",
-            "depth": 2,
-            "value": "Properties"
-          },
-          {
-            "slug": "basic-usage",
-            "depth": 2,
-            "value": "Basic usage"
           }
         ]
       }
@@ -132,7 +96,7 @@
         "filepath": "examples/treeTable.mdx",
         "link": "https://github.com/NexxLuo/tablex\\edit\\master\\examples/treeTable.mdx",
         "slug": "examples-tree-table",
-        "route": "/tablex/examples-tree-table",
+        "route": "/examples-tree-table",
         "name": "Tree table",
         "menu": "",
         "headings": [
@@ -155,6 +119,42 @@
             "slug": "lazy-load",
             "depth": 2,
             "value": "Lazy load"
+          }
+        ]
+      }
+    },
+    {
+      "key": "examples/table.mdx",
+      "value": {
+        "0": "r",
+        "1": "o",
+        "2": "u",
+        "3": "t",
+        "4": "e",
+        "5": ":",
+        "6": "/",
+        "id": "512da6720107153f6d9a49c9e4a0144c",
+        "filepath": "examples/table.mdx",
+        "link": "https://github.com/NexxLuo/tablex\\edit\\master\\examples/table.mdx",
+        "slug": "examples-table",
+        "route": "/examples-table",
+        "name": "Table",
+        "menu": "",
+        "headings": [
+          {
+            "slug": "table",
+            "depth": 1,
+            "value": "Table"
+          },
+          {
+            "slug": "properties",
+            "depth": 2,
+            "value": "Properties"
+          },
+          {
+            "slug": "basic-usage",
+            "depth": 2,
+            "value": "Basic usage"
           }
         ]
       }
