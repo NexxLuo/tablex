@@ -33,7 +33,7 @@ class LazyLoad extends React.Component {
       {
         title: "Age2",
         dataIndex: "age2",
-        width: 400,
+        width: 100,
         fixed: "right"
       }
     ],
@@ -42,7 +42,7 @@ class LazyLoad extends React.Component {
 
   componentDidMount() {
     let data = [];
-    for (let i = 0; i < 26; i++) {
+    for (let i = 0; i < 200; i++) {
       data.push({
         key: i,
         name: `Edward King ${i}`,

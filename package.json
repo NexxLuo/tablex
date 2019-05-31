@@ -4,11 +4,12 @@
   "description": "table virtualized tree-table ",
   "scripts": {
     "dev": "umi-lib build --watch",
-    "build": "umi-lib build",
+    "build":"umi-lib doc build --base='/tablex/'",
+    "lib": "umi-lib build",
     "test": "umi-test",
-    "doc": "umi-lib doc dev",
-    "docp": "umi-lib doc deploy",
-    "docb": "umi-lib doc build --base='/tablex/'",
+    "doc": "docz dev",
+    "docp": "docz deploy",
+    "docb": "docz build --base='/tablex/'",
     "pub": "umi-lib build&&npm publish"
   },
   "main": "lib/index.js",
@@ -33,7 +34,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "docz": "^1.0.4",
+    "docz": "^1.2.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -41,6 +42,6 @@
     "react-window": "^1.8.1"
   },
   "devDependencies": {
-    "umi-library": "^1.5.0"
+    "umi-library": "^1.6.0"
   }
 }

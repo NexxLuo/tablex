@@ -5,11 +5,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import LoadingIcon from "../components/loadingIcon";
 
 class TableBody extends React.Component {
-
-
-
- gridRef = React.createRef();
-
+  gridRef = React.createRef();
 
   getColumn = index => {
     let { columnLeafs } = this.props;
@@ -113,7 +109,7 @@ class TableBody extends React.Component {
 
     let column = this.getColumn(columnIndex);
 
-    let attr={};
+    let attr = {};
 
     // if (columnIndex===0) {
     //   attr={
@@ -131,23 +127,24 @@ class TableBody extends React.Component {
 
       let cellData = row[c];
 
+      let table_cell = null;
+
       if (typeof column.render === "function") {
-        return (
+        table_cell = (
           <div className="tablex-cell" style={style}>
             {expandableEl} {column.render(cellData, row, rowIndex)}
           </div>
         );
       } else {
-
-
-
-        return (
-          <div className="tablex-cell" style={{...style,...attr}}>
+        table_cell = (
+          <div className="tablex-cell" style={{ ...style, ...attr }}>
             {expandableEl}
             {cellData}
           </div>
         );
       }
+
+      return table_cell;
     }
 
     return (
@@ -155,14 +152,27 @@ class TableBody extends React.Component {
     );
   };
 
+  renderRow = ({ index, style }) => {
+    let columns = this.props.columns || [];
+    return (
+      <div className="tablex-row" style={{ ...style, whiteSpace: "nowrap" }}>
+        {columns.map((column, columnIndex) => {
+          return this.renderCell({
+            columnIndex,
+            rowIndex: index,
+            style: { display: "inline-block", width: column.width }
+          });
+        })}
+      </div>
+    );
+  };
 
-  scrollTo=(pos)=>{
-    this.gridRef.current&&this.gridRef.current.scrollTo(pos);
-  }
+  scrollTo = pos => {
+    this.gridRef.current && this.gridRef.current.scrollTo(pos);
+  };
 
   render() {
-    let { columns, columnLeafs, dataSource, onScroll,style } = this.props;
-
+    let { columns, columnLeafs, dataSource, onScroll, style } = this.props;
     let columnWidth = 0;
     columnLeafs.forEach(d => {
       columnWidth += d.width || 100;
@@ -191,7 +201,7 @@ class TableBody extends React.Component {
                 columnWidth={i => this.columnWidth(i, width)}
                 height={height}
                 rowCount={rowCount}
-                rowHeight={() => 35}
+                rowHeight={index => 35}
                 width={width}
                 onScroll={onScroll}
                 ref={this.gridRef}

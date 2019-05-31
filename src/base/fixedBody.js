@@ -61,6 +61,7 @@ class TableBodyWithFixed extends React.Component {
   onMiddleScroll = ({ scrollLeft, scrollTop }) => {
     this.scrollTop = scrollTop;
 
+
     this.refs.leftTable.scrollTo({ scrollLeft: 0, scrollTop });
     this.refs.rightTable &&
       this.refs.rightTable.scrollTo({ scrollLeft: 0, scrollTop });

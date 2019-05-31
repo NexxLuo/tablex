@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, Router, Routes } from 'docz'
 
-import Theme from '/home/nexx/develop/tablex/node_modules/docz-theme-umi/es/index.js'
+import Theme from 'E:/WebRoot/tablex/node_modules/docz-theme-umi/es/index.js'
 
 import { imports } from './imports'
 import database from './db.json'
