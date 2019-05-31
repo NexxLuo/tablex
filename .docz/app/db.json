@@ -19,6 +19,306 @@
       {}
     ]
   },
+  "props": [
+    {
+      "key": "examples\\fixedColumns.js",
+      "value": [
+        {
+          "description": "",
+          "displayName": "LazyLoad",
+          "methods": [],
+          "actualName": "LazyLoad"
+        }
+      ]
+    },
+    {
+      "key": "src\\base\\fixedBody.js",
+      "value": [
+        {
+          "description": "",
+          "displayName": "TableBodyWithFixed",
+          "methods": [
+            {
+              "name": "getColumns",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "arr",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "onMiddleScroll",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "{ scrollLeft, scrollTop }",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "onSideScroll",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "{ scrollLeft, scrollTop }",
+                  "type": null
+                }
+              ],
+              "returns": null
+            }
+          ],
+          "actualName": "TableBodyWithFixed"
+        }
+      ]
+    },
+    {
+      "key": "src\\base\\body.js",
+      "value": [
+        {
+          "description": "",
+          "displayName": "TableBody",
+          "methods": [
+            {
+              "name": "getColumn",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "index",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "getColumnWidth",
+              "docblock": null,
+              "modifiers": [],
+              "params": [],
+              "returns": null
+            },
+            {
+              "name": "columnWidth",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "index",
+                  "type": null
+                },
+                {
+                  "name": "width",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "isLoadingChildren",
+              "docblock": "行是否正在加载子级",
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "key"
+                }
+              ],
+              "returns": null,
+              "description": "行是否正在加载子级"
+            },
+            {
+              "name": "expandableEl",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "columnIndex",
+                  "type": null
+                },
+                {
+                  "name": "rowIndex",
+                  "type": null
+                },
+                {
+                  "name": "row",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "renderCell",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "{ columnIndex, rowIndex, style }",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "renderRow",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "{ index, style }",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "renderRow2",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "args",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "scrollTo",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "pos",
+                  "type": null
+                }
+              ],
+              "returns": null
+            },
+            {
+              "name": "onScroll",
+              "docblock": null,
+              "modifiers": [],
+              "params": [
+                {
+                  "name": "{ scrollLeft, scrollTop }",
+                  "type": null
+                }
+              ],
+              "returns": null
+            }
+          ],
+          "actualName": "TableBody",
+          "props": {
+            "rowKey": {
+              "type": {
+                "name": "string"
+              },
+              "required": true,
+              "description": "主要用于行展开"
+            },
+            "columns": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "",
+              "defaultValue": {
+                "value": "[]",
+                "computed": false
+              }
+            },
+            "columnLeafs": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "",
+              "defaultValue": {
+                "value": "[]",
+                "computed": false
+              }
+            },
+            "dataSource": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "",
+              "defaultValue": {
+                "value": "[]",
+                "computed": false
+              }
+            },
+            "onScroll": {
+              "type": {
+                "name": "func"
+              },
+              "required": false,
+              "description": ""
+            },
+            "onExpandChange": {
+              "type": {
+                "name": "func"
+              },
+              "required": false,
+              "description": "@isExpand 是否展开\r\n@key 受影响的行数据key"
+            },
+            "rowIndent": {
+              "type": {
+                "name": "number"
+              },
+              "required": false,
+              "description": "",
+              "defaultValue": {
+                "value": "20",
+                "computed": false
+              }
+            },
+            "expandedKeys": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "",
+              "defaultValue": {
+                "value": "[]",
+                "computed": false
+              }
+            },
+            "loadingKeys": {
+              "type": {
+                "name": "array"
+              },
+              "required": false,
+              "description": "",
+              "defaultValue": {
+                "value": "[]",
+                "computed": false
+              }
+            },
+            "scrollbarWidth": {
+              "type": {
+                "name": "number"
+              },
+              "required": false,
+              "description": "",
+              "defaultValue": {
+                "value": "6",
+                "computed": false
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
   "entries": [
     {
       "key": "examples/fixedColumns.mdx",
@@ -83,6 +383,42 @@
       }
     },
     {
+      "key": "examples/table.mdx",
+      "value": {
+        "0": "r",
+        "1": "o",
+        "2": "u",
+        "3": "t",
+        "4": "e",
+        "5": ":",
+        "6": "/",
+        "id": "512da6720107153f6d9a49c9e4a0144c",
+        "filepath": "examples/table.mdx",
+        "link": "https://github.com/NexxLuo/tablex\\edit\\master\\examples/table.mdx",
+        "slug": "examples-table",
+        "route": "/examples-table",
+        "name": "Table",
+        "menu": "",
+        "headings": [
+          {
+            "slug": "table",
+            "depth": 1,
+            "value": "Table"
+          },
+          {
+            "slug": "properties",
+            "depth": 2,
+            "value": "Properties"
+          },
+          {
+            "slug": "basic-usage",
+            "depth": 2,
+            "value": "Basic usage"
+          }
+        ]
+      }
+    },
+    {
       "key": "examples/treeTable.mdx",
       "value": {
         "0": "r",
@@ -122,43 +458,6 @@
           }
         ]
       }
-    },
-    {
-      "key": "examples/table.mdx",
-      "value": {
-        "0": "r",
-        "1": "o",
-        "2": "u",
-        "3": "t",
-        "4": "e",
-        "5": ":",
-        "6": "/",
-        "id": "512da6720107153f6d9a49c9e4a0144c",
-        "filepath": "examples/table.mdx",
-        "link": "https://github.com/NexxLuo/tablex\\edit\\master\\examples/table.mdx",
-        "slug": "examples-table",
-        "route": "/examples-table",
-        "name": "Table",
-        "menu": "",
-        "headings": [
-          {
-            "slug": "table",
-            "depth": 1,
-            "value": "Table"
-          },
-          {
-            "slug": "properties",
-            "depth": 2,
-            "value": "Properties"
-          },
-          {
-            "slug": "basic-usage",
-            "depth": 2,
-            "value": "Basic usage"
-          }
-        ]
-      }
     }
-  ],
-  "props": []
+  ]
 }

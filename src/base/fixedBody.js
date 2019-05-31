@@ -61,7 +61,6 @@ class TableBodyWithFixed extends React.Component {
   onMiddleScroll = ({ scrollLeft, scrollTop }) => {
     this.scrollTop = scrollTop;
 
-
     this.refs.leftTable.scrollTo({ scrollLeft: 0, scrollTop });
     this.refs.rightTable &&
       this.refs.rightTable.scrollTo({ scrollLeft: 0, scrollTop });
@@ -113,14 +112,12 @@ class TableBodyWithFixed extends React.Component {
       scrollbarWidth
     };
 
-    let bodyStyles = {};
+    let bodyStyles = { height: "100%" };
 
     let hasRight = rightColumns.length > 0;
 
     if (hasRight === true) {
-      bodyStyles = {
-
-      };
+      bodyStyles.width = "calc(100% + 6px)";
     }
 
     let totalHeight = dataSource.length * 35;
@@ -137,7 +134,11 @@ class TableBodyWithFixed extends React.Component {
         >
           <div
             className="tablex-body-scroll"
-            style={{ width: leftColumnsWidth, height: "100%",width:"calc(100% + 6px)"  }}
+            style={{
+              width: leftColumnsWidth,
+              height: "100%",
+              width: "calc(100% + 6px)"
+            }}
           >
             <TableBody
               {...attrs}
@@ -150,18 +151,16 @@ class TableBodyWithFixed extends React.Component {
           </div>
         </div>
         <div className="tablex-body-middle" ref="middleRef">
-        <div
-            className="tablex-body-scroll"
-            style={{  height: "100%",width:"calc(100% + 6px)" }}
-          >
-          <TableBody
-            {...attrs}
-            columns={middleColumns}
-            style={bodyStyles}
-            columnLeafs={middleColumnLeafs}
-            onScroll={this.onMiddleScroll}
-            ref="middleTable"
-          /></div>
+          <div className="tablex-body-scroll" style={bodyStyles}>
+            <TableBody
+              {...attrs}
+              columns={middleColumns}
+             
+              columnLeafs={middleColumnLeafs}
+              onScroll={this.onMiddleScroll}
+              ref="middleTable"
+            />
+          </div>
         </div>
 
         {hasRight ? (
@@ -169,7 +168,7 @@ class TableBodyWithFixed extends React.Component {
             className="tablex-body-right"
             style={{ width: rightColumnsWidth, marginBottom: scrollbarWidth }}
           >
-         <TableBody
+            <TableBody
               {...attrs}
               columns={rightColumns}
               columnLeafs={rightColumnLeafs}

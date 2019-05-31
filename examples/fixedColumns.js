@@ -8,7 +8,6 @@ class LazyLoad extends React.Component {
         title: "Name",
         dataIndex: "name",
         width: 200,
-        fixed: "left"
       },
       {
         title: "Age",
@@ -34,7 +33,6 @@ class LazyLoad extends React.Component {
         title: "Age2",
         dataIndex: "age2",
         width: 100,
-        fixed: "right"
       }
     ],
     dataSource: []

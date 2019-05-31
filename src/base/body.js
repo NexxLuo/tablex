@@ -153,9 +153,10 @@ class TableBody extends React.Component {
   };
 
   renderRow = ({ index, style }) => {
+    console.log("renderRow")
     let columns = this.props.columns || [];
     return (
-      <div className="tablex-row" style={{ ...style, whiteSpace: "nowrap" }}>
+      <div className="tablex-row" style={{ ...style }}>
         {columns.map((column, columnIndex) => {
           return this.renderCell({
             columnIndex,
@@ -167,12 +168,27 @@ class TableBody extends React.Component {
     );
   };
 
+
+  
+  renderRow2 = (args) => {
+    console.log("renderRow:",args)
+    let columns = this.props.columns || [];
+    return <div>{args.rowIndex},{args.columnIndex}</div>
+  };
+
   scrollTo = pos => {
     this.gridRef.current && this.gridRef.current.scrollTo(pos);
   };
 
+  onScroll = ({ scrollLeft, scrollTop }) => {
+    console.log("onScroll:");
+    if (typeof this.props.onScroll === "function") {
+      this.props.onScroll({ scrollLeft, scrollTop });
+    }
+  };
+
   render() {
-    let { columns, columnLeafs, dataSource, onScroll, style } = this.props;
+    let { columns, columnLeafs, dataSource, style } = this.props;
     let columnWidth = 0;
     columnLeafs.forEach(d => {
       columnWidth += d.width || 100;
@@ -196,14 +212,14 @@ class TableBody extends React.Component {
           return (
             <>
               <Grid
-                style={style}
+                style={{ ...style }}
                 columnCount={len}
                 columnWidth={i => this.columnWidth(i, width)}
                 height={height}
                 rowCount={rowCount}
-                rowHeight={index => 35}
+                rowHeight={() => 35}
                 width={width}
-                onScroll={onScroll}
+                onScroll={this.onScroll}
                 ref={this.gridRef}
               >
                 {this.renderCell}

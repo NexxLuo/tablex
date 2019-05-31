@@ -82,6 +82,7 @@
   border-bottom: 1px solid #e8e8e8;
   border-right: 1px solid #e8e8e8;
   box-sizing: border-box;
+  height: 35px;
 }
 
 .tablex-row-expand-placeholder {
@@ -193,4 +194,15 @@ overflow: hidden;
 .tablex-head-right{
 overflow: hidden;
 border-left: 1px solid #e8e8e8;
+}
+
+.tablex-row
+{
+  border-bottom: 1px solid #e8e8e8;
+  width: 100%;
+  white-space: nowrap
+}
+
+.tablex-row:hover{
+  background-color: #1890ff;
 }
