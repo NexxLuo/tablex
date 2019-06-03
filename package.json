@@ -4,7 +4,7 @@
   "description": "table virtualized tree-table ",
   "scripts": {
     "dev": "umi-lib build --watch",
-    "build":"umi-lib doc build",
+    "build": "umi-lib doc build",
     "lib": "umi-lib build",
     "test": "umi-test",
     "doc": "umi-lib doc dev",
