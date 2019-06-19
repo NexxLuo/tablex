@@ -2,7 +2,7 @@ import React from "react";
 
 import { Button, Input, Image, Popover } from "antd";
 
-import EditableTable from "../src/Editable";
+import EditableTable from "../src/EditableTable";
 
 class Demo extends React.PureComponent {
   constructor(props) {

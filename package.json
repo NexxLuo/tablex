@@ -9,6 +9,7 @@
   },
   "homepage": "https://nexxluo.github.io/tablex",
   "scripts": {
+    "start": "docz dev",
     "dev": "father build --watch",
     "build": "father build",
     "test": "umi-test",
@@ -32,6 +33,8 @@
   ],
   "license": "ISC",
   "dependencies": {
+    "antd": "^3.19.6",
+    "lodash": "^4.17.11",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-base-table": "^1.3.2",
@@ -41,6 +44,7 @@
     "docz": "^1.2.0",
     "docz-plugin-css": "^0.11.0",
     "docz-theme-default": "^1.2.0",
-    "father": "^2.9.0"
+    "father": "^2.9.0",
+    "styled-components": "^4.3.1"
   }
 }

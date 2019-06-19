@@ -30,5 +30,4 @@ export default {
         })
     ],
     /** 左侧菜单排序 */
-    menu: []
 };

@@ -10,7 +10,7 @@ import {
 } from "./utils";
 import TableHeader from "./GroupHeader";
 import ExpandIcon from "./ExpandIcon";
-import Checkbox from "./Checkbox";
+import Checkbox from "./Ceckbox";
 
 import "./styles.css";
 

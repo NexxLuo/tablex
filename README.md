@@ -1,6 +1,6 @@
 # Tablex
 
-基于<a href="https://github.com/bvaughn/react-window">react-window</a>的表格组件
+基于<a href="https://github.com/Autodesk/react-base-table">react-base-table</a>的表格组件
 
 <a href="https://nexxluo.github.io/tablex">Demo</a>
 
