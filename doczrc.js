@@ -15,11 +15,11 @@ export default {
     port: 8888,
     codeSandbox: false,
     typescript: false,
-    // filterComponents: files => {
-    //     return files.filter(filepath =>
-    //         /[w-]*.(js|jsx|ts|tsx)$/.test(filepath)
-    //     );
-    // },
+    filterComponents: files => {
+        return files.filter(filepath =>
+            /[w-]*.(js|jsx|ts|tsx)$/.test(filepath)
+        );
+    },
     plugins: [
         css({
             preprocessor: "postcss"
