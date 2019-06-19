@@ -1,28 +1,27 @@
 {
   "name": "tablex",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "table virtualized tree-table ",
-  "scripts": {
-    "dev": "umi-lib build --watch",
-    "build": "umi-lib doc build",
-    "lib": "umi-lib build",
-    "test": "umi-test",
-    "doc": "umi-lib doc dev",
-    "docp": "umi-lib doc deploy",
-    "docb": "umi-lib doc build --base='/tablex/'",
-    "pub": "umi-lib build&&npm publish"
-  },
-  "main": "lib/index.js",
-  "module": "lib/index.js",
-  "files": [
-    "lib",
-    "es"
-  ],
+  "author": "nexx",
   "repository": {
     "type": "git",
     "url": "https://github.com/NexxLuo/tablex"
   },
   "homepage": "https://nexxluo.github.io/tablex",
+  "scripts": {
+    "dev": "father build --watch",
+    "build": "father build",
+    "test": "umi-test",
+    "doc": "docz dev",
+    "docb": "docz build --base='/tablex/'",
+    "pub": "father build&&npm publish"
+  },
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "files": [
+    "lib",
+    "es"
+  ],
   "keywords": [
     "table",
     "virtualized",
@@ -31,17 +30,17 @@
     "data-list",
     "list"
   ],
-  "author": "",
   "license": "ISC",
   "dependencies": {
-    "docz": "^1.2.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-virtualized-auto-sizer": "^1.0.2",
-    "react-window": "^1.8.1"
+    "react-base-table": "^1.3.2",
+    "react-dom": "^16.8.6"
   },
   "devDependencies": {
-    "umi-library": "^1.6.0"
+    "docz": "^1.2.0",
+    "docz-plugin-css": "^0.11.0",
+    "docz-theme-default": "^1.2.0",
+    "father": "^2.9.0"
   }
 }

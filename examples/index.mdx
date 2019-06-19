@@ -1,0 +1,32 @@
+---
+name: 示例
+menu: test
+---
+
+import { Playground, Props } from "docz";
+import BasicDemo from "./basic";
+import EditableDemo from "./baseEditableDemo";
+
+import Table from "../src/BaseTable";
+
+# Table
+
+```javascript
+import { Table } from "tablex";
+```
+
+## 基本用法
+
+<Playground style={{ height: 400 }}>
+  <BasicDemo />
+</Playground>
+
+## 编辑
+
+<Playground style={{ height: 400 }}>
+  <EditableDemo />
+</Playground>
+
+## 属性
+
+<Props of={Table} />
