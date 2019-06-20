@@ -1,9 +1,15 @@
 {
-  "vendors.js": "/tablex/static/js/vendors.79bdef75.js",
-  "examples-table~examples-tree-table.css": "/tablex/static/css/examples-table~examples-tree-table.d2e4c2f9f39eb8f9b13f.css",
-  "examples-table~examples-tree-table.js": "/tablex/static/js/examples-table~examples-tree-table.73f91561.js",
-  "app.js": "/tablex/static/js/app.d2e4c2f9f39eb8f9b13f.js",
-  "examples-table.js": "/tablex/static/js/examples-table.b72cce4c.js",
-  "examples-tree-table.js": "/tablex/static/js/examples-tree-table.a798e66a.js",
+  "vendors.css": "/tablex/static/css/vendors.de49eadd273712572c14.css",
+  "vendors.js": "/tablex/static/js/vendors.5e856d04.js",
+  "vendors.js.map": "/tablex/static/js/vendors.de49eadd273712572c14.js.map",
+  "examples-index~examples-props.css": "/tablex/static/css/examples-index~examples-props.de49eadd273712572c14.css",
+  "examples-index~examples-props.js": "/tablex/static/js/examples-index~examples-props.8bb7843e.js",
+  "examples-index~examples-props.js.map": "/tablex/static/js/examples-index~examples-props.de49eadd273712572c14.js.map",
+  "app.js": "/tablex/static/js/app.de49eadd273712572c14.js",
+  "app.js.map": "/tablex/static/js/app.de49eadd273712572c14.js.map",
+  "examples-index.js": "/tablex/static/js/examples-index.39e31770.js",
+  "examples-index.js.map": "/tablex/static/js/examples-index.de49eadd273712572c14.js.map",
+  "examples-props.js": "/tablex/static/js/examples-props.d2c8f224.js",
+  "examples-props.js.map": "/tablex/static/js/examples-props.de49eadd273712572c14.js.map",
   "index.html": "/tablex/index.html"
 }
