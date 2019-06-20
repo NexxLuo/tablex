@@ -1,5 +1,7 @@
 # Tablex
 
+[![NPM version](https://img.shields.io/npm/v/tablex.svg?style=flat)](https://npmjs.org/package/tablex)  
+
 基于<a href="https://github.com/bvaughn/react-window">react-window</a>的表格组件
 
 <a href="https://nexxluo.github.io/tablex">Demo</a>
@@ -30,11 +32,9 @@
  
 1.列排序
 
-2.列分组
+2.列分组 
 
-3.列排序
+3.表格属性设置
 
-4.表格属性设置
-
-5.自动记忆表格配置
+4.自动记忆表格配置
  
