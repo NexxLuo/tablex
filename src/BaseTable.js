@@ -4,13 +4,12 @@ import BaseTable, { AutoResizer, unflatten } from "react-base-table";
 import cloneDeep from "lodash/cloneDeep";
 import {
     treeToList,
-    addCheckedKey,
     removeCheckedKey,
     addCheckedKeyWithDisabled
 } from "./utils";
 import TableHeader from "./GroupHeader";
 import ExpandIcon from "./ExpandIcon";
-import Checkbox from "./Ceckbox";
+import Checkbox from "./Checkbox";
 
 import "./styles.css";
 

@@ -1,8 +1,8 @@
 import React from "react";
 
 import { Button, Input, Image, Popover } from "antd";
-
-import EditableTable from "../src/EditableTable";
+import "antd/dist/antd.css";
+import { EditableTable } from "../src/index";
 
 class Demo extends React.PureComponent {
   constructor(props) {

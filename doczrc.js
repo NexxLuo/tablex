@@ -13,13 +13,8 @@ export default {
         }
     },
     port: 8888,
-    codeSandbox: false,
+    codeSandbox: true,
     typescript: false,
-    filterComponents: files => {
-        return files.filter(filepath =>
-            /[w-]*.(js|jsx|ts|tsx)$/.test(filepath)
-        );
-    },
     plugins: [
         css({
             preprocessor: "postcss"
