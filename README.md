@@ -1,12 +1,12 @@
 # Tablex
 
-基于<a href="https://github.com/Autodesk/react-base-table">react-base-table</a>的表格组件
+基于<a href="https://github.com/bvaughn/react-window">react-window</a>的表格组件
 
 <a href="https://nexxluo.github.io/tablex">Demo</a>
 
 ## 特性
 
-1.大数据量虚拟加载
+1.大数据量加载
 
 2.自适应宽、高
 
@@ -18,23 +18,23 @@
 
 6.兼容 ant table api
 
+7.列冻结
+
+8.列宽拖动
+
+9.表格编辑
 
 
 
 ## Roadmap
+ 
+1.列排序
 
-1.更好的列冻结
-
-2.拖动列宽
+2.列分组
 
 3.列排序
 
-4.列分组
+4.表格属性设置
 
-5.列排序
-
-6.表格属性设置
-
-7.自动记忆表格配置
-
-8.表格编辑
+5.自动记忆表格配置
+ 
