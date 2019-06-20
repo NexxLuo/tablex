@@ -1,3 +1,2 @@
-export { default } from "./BaseTable";
-export { default as Table } from "./BaseTable";
-export { default as EditableTable } from "./EditableTable";
+export { default as Table } from "./base";
+export { default as EditableTable } from "./editable";

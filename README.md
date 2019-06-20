@@ -2,9 +2,9 @@
 
 [![NPM version](https://img.shields.io/npm/v/tablex.svg?style=flat)](https://npmjs.org/package/tablex)  
 
-基于<a href="https://github.com/bvaughn/react-window">react-window</a>的表格组件
+基于 [react-window](https://github.com/bvaughn/react-window) 的表格组件
 
-<a href="https://nexxluo.github.io/tablex">Demo</a>
+Know more at the [website](https://nexxluo.github.io/tablex)
 
 ## 特性
 

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Table from "../src/index";
+import {Table} from "../src/index";
 
 const generateColumns = (count = 10, prefix = "column-", props) =>
   new Array(count).fill(0).map((column, columnIndex) => ({
@@ -46,7 +46,7 @@ fixedColumns = [
     key: "column-1",
     title: "number",
     width: 200,
-    resizable: true
+    fixed: "left"
   },
   {
     title: "appellation",
@@ -54,45 +54,41 @@ fixedColumns = [
     key: "column-11",
     children: [
       {
-        dataIndex: "column-2",
+        dataIndex: "address",
         title: "name",
         key: "column-2",
 
-        width: 150,
-        resizable: true
+        width: 150 
       },
       {
-        dataIndex: "column-3",
+        dataIndex: "id",
         key: "column-3",
         title: "nick name",
-        width: 150,
-        resizable: true,
+        width: 150, 
         children: [
           {
-            dataIndex: "column-21",
+            dataIndex: "id",
             title: "nick-1",
             key: "column-21",
             maxWidth: 300,
-            width: 150,
-            resizable: true
+            width: 150 
           },
           {
             dataIndex: "column-31",
             key: "column-31",
             title: "nick-2",
-            width: 150,
-            resizable: true
+            width: 150 
           }
         ]
       }
     ]
   },
   {
-    dataIndex: "column-4",
+    dataIndex: "age",
     key: "column-4",
     title: "age",
     width: 150,
-    resizable: true
+    fixed: "right"
   }
 ];
 

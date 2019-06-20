@@ -1,11 +1,20 @@
 ---
-name: Table
+name: API
 ---
 
 import { Playground, Props } from "docz";
-import Table from "../src/BaseTable";
+import Table from "../src/base/index.js";
+import EditableTable from "../src/editable/index.js";
+import Column from "../src/column/index.js";
 
-
-## 属性
+## Table
 
 <Props of={Table} />
+
+## EditableTable
+
+<Props of={EditableTable} />
+
+## Column
+
+<Props of={Column} />

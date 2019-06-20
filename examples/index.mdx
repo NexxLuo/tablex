@@ -1,27 +1,32 @@
 ---
-name: 示例
+name: Examples
 ---
 
 import { Playground, Props } from "docz";
 import BasicDemo from "./basic";
 import EditableDemo from "./editable";
-
+import LargeDataDemo from "./largeData";
 
 # Table
 
 ```javascript
-import { Table } from "tablex";
+import { Table, EditableTable } from "tablex";
 ```
 
-## 基本用法
+## Basic
 
 <Playground style={{ height: 400 }}>
   <BasicDemo />
 </Playground>
 
-## 编辑
+## Large Data
+
+<Playground style={{ height: 400 }}>
+  <LargeDataDemo />
+</Playground>
+
+## Editable
 
 <Playground style={{ height: 400 }}>
   <EditableDemo />
 </Playground>
-
