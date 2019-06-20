@@ -1,1 +1,34 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="description" content="table virtualized tree-table "><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="X-UA-Compatible" content="ie=edge"><title>Tablex</title><link rel="icon" type="image/x-icon" href="https://cdn-std.dprcdn.net/files/acc_649651/LUKiMl"><link href="/tablex/static/css/vendors.de49eadd273712572c14.css" rel="stylesheet"></head><body><div id="root"></div><script src="/tablex/static/js/vendors.5e856d04.js"></script><script src="/tablex/static/js/app.de49eadd273712572c14.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="table virtualized tree-table " />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Tablex</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://cdn-std.dprcdn.net/files/acc_649651/LUKiMl"
+    />
+    <link
+      href="/tablex/static/css/vendors.de49eadd273712572c14.css"
+      rel="stylesheet"
+    />
+    <script>
+      // 这段代码要放在其他js的前面
+      (function() {
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect != location.href) {
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="/tablex/static/js/vendors.5e856d04.js"></script>
+    <script src="/tablex/static/js/app.de49eadd273712572c14.js"></script>
+  </body>
+</html>
