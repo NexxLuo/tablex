@@ -377,6 +377,7 @@ class EditableTable extends React.Component {
 
     editorInstance = [];
     setEditorIns = (row, column, ins) => {
+ 
         if (ins === null) {
             return;
         }
@@ -400,6 +401,8 @@ class EditableTable extends React.Component {
             });
         }
 
+        
+
         this.editorInstance = editorInstance;
     };
 
@@ -415,7 +418,6 @@ class EditableTable extends React.Component {
     };
 
     formatColumns = () => {
-        this.editorInstance = [];
         let { columns, editKeys, isEditAll, isEditing } = this.state;
         let rowKey = this.props.rowKey;
 
@@ -767,6 +769,7 @@ class EditableTable extends React.Component {
             if (nextRow) {
                 nextEditor = this.getEditorIns(nextRow[key], columnKey);
             }
+
         }
 
         if (keyCode === 37) {
