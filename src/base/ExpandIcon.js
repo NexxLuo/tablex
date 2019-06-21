@@ -20,7 +20,7 @@ function ExpandLoading() {
 const ExpandIcon = props => {
   let { loading, expandable, expanded, onExpand, isLeaf, depth } = props;
 
-  let cls = "table__expandicon";
+  let cls = "tablex__expandicon";
 
   if (loading === true) {
     return <ExpandLoading />;
@@ -37,7 +37,7 @@ const ExpandIcon = props => {
       cls += " collapsed";
     }
   } else {
-    cls = "table__expandicon--placeholder";
+    cls = "tablex__expandicon--placeholder";
   }
 
   return (

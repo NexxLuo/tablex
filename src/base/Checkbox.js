@@ -6,20 +6,20 @@ const Checkbox = props => {
     let cls = "";
 
     if (indeterminate === true) {
-        cls = "table__checkbox--indeterminate";
+        cls = "tablex__checkbox--indeterminate";
     }
 
     if (checked === true) {
-        cls = "table__checkbox--checked";
+        cls = "tablex__checkbox--checked";
     }
 
     if (disabled === true) {
-        cls = "table__checkbox--disabled";
+        cls = "tablex__checkbox--disabled";
     }
 
     return (
         <span
-            className={"table__checkbox " + cls}
+            className={"tablex__checkbox " + cls}
             onClick={e => {
                 e.stopPropagation();
                 if (typeof onChange === "function" && disabled != true) {
@@ -31,9 +31,9 @@ const Checkbox = props => {
                 type="checkbox"
                 value={value}
                 disabled={disabled}
-                className="table__checkbox__input"
+                className="tablex__checkbox__input"
             />
-            <span className="table__checkbox__inner" />
+            <span className="tablex__checkbox__inner" />
         </span>
     );
 };

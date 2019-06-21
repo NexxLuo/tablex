@@ -18,7 +18,11 @@ Table.defaultProps = {
   disabledSelectKeys: [],
   orderNumber: false,
   checkStrictly: true,
-  resizable: true
+  resizable: true,
+  showHeader: true,
+  striped: true,
+  bordered: true,
+  rowHeight: 40
 };
 
 Table.propTypes = {
@@ -32,6 +36,24 @@ Table.propTypes = {
    * (ins:React.Element) => void
    */
   initRef: PropTypes.func,
+
+  /** 是否显示边框 */
+  bordered: PropTypes.bool,
+
+  /** 奇偶行颜色间隔 */
+  striped: PropTypes.bool,
+  /** 是否显示表头 */
+  showHeader: PropTypes.bool,
+
+  /** 行高 */
+  rowHeight: PropTypes.number,
+
+  /**
+   * 行事件对象
+   *  {onClick:({ rowData, rowIndex, rowKey, event })=>{},...}
+   * */
+  rowEventHandlers: PropTypes.object,
+
   /** 选择模式：多选 单选 不可选择 */
   selectMode: PropTypes.oneOf(["multiple", "single", "none"]),
   /** 选中的行键值 */
@@ -52,14 +74,14 @@ Table.propTypes = {
 
   /** 展开的行键值 */
   expandedRowKeys: PropTypes.array,
-  /** 
-   * 行展开事件 
+  /**
+   * 行展开事件
    * (expandedRowKeys:Array) => void
    * */
   onExpandedRowsChange: PropTypes.func,
 
-  /** 
-   * 展开时加载children的方法 
+  /**
+   * 展开时加载children的方法
    * (row:object) => Promise
    * */
   loadChildrenData: PropTypes.func,

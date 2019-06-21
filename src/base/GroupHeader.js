@@ -4,7 +4,7 @@ import { getTreeLeafs } from "./utils";
 const Column = ({ cell, depth, columnDepth, headerHeight }) => {
   let h = (columnDepth - depth + 1) * headerHeight;
   return (
-    <div className="table-head-group-children" style={{ height: h }}>
+    <div className="tablex-head-group-children" style={{ height: h }}>
       {cell}
     </div>
   );

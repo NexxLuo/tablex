@@ -30,7 +30,10 @@ class Table extends React.Component {
       selectMode: "",
       rowKey: "",
       orderNumber: false,
-      checkStrictly: false
+      checkStrictly: false,
+      striped: true,
+      showHeader: true,
+      bordered: true
     };
 
     if (typeof props.initRef === "function") {
@@ -47,7 +50,11 @@ class Table extends React.Component {
       disabledSelectKeys,
       orderNumber,
       checkStrictly,
-      resizable
+      resizable,
+      striped,
+      showHeader,
+      bordered,
+      rowHeight
     } = nextProps;
 
     let data = nextProps.data || nextProps.dataSource || [];
@@ -150,7 +157,11 @@ class Table extends React.Component {
         disabledSelectKeys,
         rowKey,
         orderNumber,
-        checkStrictly
+        checkStrictly,
+        striped,
+        showHeader,
+        bordered,
+        rowHeight
       };
 
       if ("selectedRowKeys" in nextProps) {
@@ -340,6 +351,8 @@ class Table extends React.Component {
 
   rowEventHandlers = {
     onClick: ({ rowData, rowIndex, rowKey, event }) => {
+      let o = this.props.rowEventHandlers || {};
+
       if (this.isSingleSelect()) {
         this.onSelectChange(rowKey);
       }
@@ -349,6 +362,10 @@ class Table extends React.Component {
         let isSelected = selectedRowKeys.indexOf(rowKey) > -1;
         let isEnabled = !this.isDisabledCheck(rowKey, rowData);
         isEnabled && this.onCheckChange(!isSelected, rowKey);
+      }
+
+      if (typeof o.onClick === "function") {
+        o.onClick({ rowData, rowIndex, rowKey, event });
       }
     }
   };
@@ -567,13 +584,13 @@ class Table extends React.Component {
     let cls = [];
 
     if (rowIndex % 2 === 0) {
-      cls.push("table__row--even");
+      cls.push("tablex__row--even");
     } else {
-      cls.push("table__row--odd");
+      cls.push("tablex__row--odd");
     }
 
     if (isSelected) {
-      cls.push("table__row--selected");
+      cls.push("tablex__row--selected");
     }
 
     let tempCls = "";
@@ -601,7 +618,15 @@ class Table extends React.Component {
       expandColumnKey = this.props.columns[0].dataKey;
     }
 
-    let { columnDepth, columnList, data, rowHeight } = this.state;
+    let {
+      columnDepth,
+      columnList,
+      data,
+      rowHeight,
+      striped,
+      showHeader,
+      bordered
+    } = this.state;
 
     let checkboxColumn = columnList.find(d => d.__type === "__checkbox_column");
     let orderNumberColumn = columnList.find(
@@ -617,28 +642,51 @@ class Table extends React.Component {
       orderNumberColumn.cellRenderer = this.orderNumberCellRender;
     }
 
-    return (
-      <BaseTable
-        {...props}
-        fixed={true}
-        data={data}
-        columns={columnList}
-        expandColumnKey={expandColumnKey}
-        className="table__striped"
-        classPrefix="table"
-        getScrollbarSize={this.getScrollbarSize}
-        expandIconProps={this.expandIconProps}
-        components={this.components}
-        onRowExpand={this.onRowExpand}
-        rowHeight={rowHeight}
-        headerHeight={[(columnDepth + 1) * rowHeight]}
-        headerRenderer={this.headerRenderer}
-        onScroll={this.onScroll}
-        rowEventHandlers={this.rowEventHandlers}
-        rowClassName={this.rowClassName}
-        overscanRowCount={2}
-      />
-    );
+    let cls = [];
+
+    if (striped === true) {
+      cls.push("tablex__striped");
+    }
+
+    if (bordered === true) {
+      cls.push("tablex__bordered");
+    }
+
+    let headerHeight = (columnDepth + 1) * rowHeight;
+
+    let attrs = {
+      fixed: true,
+      data: data,
+      columns: columnList,
+      expandColumnKey: expandColumnKey,
+      className: cls.join(" "),
+      classPrefix: "tablex",
+      getScrollbarSize: this.getScrollbarSize,
+      expandIconProps: this.expandIconProps,
+      components: this.components,
+      onRowExpand: this.onRowExpand,
+      rowHeight: rowHeight,
+      headerHeight: [headerHeight],
+      headerRenderer: this.headerRenderer,
+      onScroll: this.onScroll,
+      rowEventHandlers: this.rowEventHandlers,
+      rowClassName: this.rowClassName,
+      overscanRowCount: 2
+    };
+
+    if (!showHeader) {
+      attrs.headerHeight = [0];
+      attrs.headerRenderer = null;
+    }
+
+    if (columnList.length === 1) {
+      columnList[0].flexShrink = 1;
+      columnList[0].flexGrow = 1;
+
+      attrs.fixed = false;
+    }
+
+    return <BaseTable {...props} {...attrs} />;
   }
 }
 
