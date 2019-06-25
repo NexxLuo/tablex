@@ -1,16 +1,17 @@
 import React from "react";
-import Table from "./EditableTable";
+import FeaturedTable from "./Table";
 import PropTypes from "prop-types";
 import "./styles.css";
 
 /**
- * 可编辑表格
+ * 表格
  * */
-const EditableTable = React.forwardRef((props, ref) => (
-  <Table {...props} ref={ref} />
+const Table = React.forwardRef((props, ref) => (
+  <FeaturedTable {...props} ref={ref} />
 ));
 
-EditableTable.defaultProps = {
+Table.defaultProps = {
+  editable: false,
   editTools: ["edit", "add"],
   editToolsConfig: {
     position: "bottom",
@@ -33,12 +34,13 @@ EditableTable.defaultProps = {
   allowSaveEmpty: false,
   dataControled: false,
   alwaysValidate: false,
-  readOnly: false,
   settable: true,
   pagination: false
 };
 
-EditableTable.propTypes = {
+Table.propTypes = {
+  /** 是否允许编辑 */
+  editable: PropTypes.bool,
   /** 分页 */
   pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   /** 工具栏，工具按钮 ['edit', 'add','delete',{icon:"",text:"",props:{},handler:Function},Function] addSingle:单行新增 */
@@ -93,8 +95,6 @@ EditableTable.propTypes = {
   alwaysValidate: PropTypes.bool,
   /** 数据是否完全受控，如若受控，请在onEditSave、onCancel中自行更新数据源 */
   dataControled: PropTypes.bool,
-  /** 表格是否只读模式，只读时将不显示编辑栏以及复选框 */
-  readOnly: PropTypes.bool,
   /** 是否可进行属性设置 */
   settable: PropTypes.bool,
   /** 表格全局id，通过此id记忆表格配置，由于采用localStorage存储配置，需保证id唯一 */
@@ -130,4 +130,4 @@ EditableTable.propTypes = {
   }
 };
 
-export default EditableTable;
+export default Table;

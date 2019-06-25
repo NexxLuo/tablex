@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { EditableTable as Table } from "../src/index";
+import { Table  } from "../src/index";
 
 const generateColumns = (count = 10, prefix = "column-", props) =>
   new Array(count).fill(0).map((column, columnIndex) => ({

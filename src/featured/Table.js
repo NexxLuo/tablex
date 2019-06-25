@@ -12,13 +12,13 @@ import Menu from "antd/lib/menu";
 import Dropdown from "antd/lib/dropdown";
 import Icon from "antd/lib/icon";
 import Layout from "antd/lib/layout";
-import Pagination from "../pagination";
+import Pagination from "./pagination";
 import "antd/dist/antd.css";
 
 const { Content, Header } = Layout;
 
 /**
- * 可编辑表格
+ * 表格
  */
 class EditableTable extends React.Component {
   constructor(props) {
@@ -1245,7 +1245,7 @@ class EditableTable extends React.Component {
   };
 
   createToolBar = () => {
-    if (this.props.readOnly !== true) {
+    if (this.props.editable === true) {
       let tools = this.editTools();
 
       if (tools !== null) {
@@ -1382,34 +1382,41 @@ class EditableTable extends React.Component {
     getData: () => this.state.data
   };
 
-  render() {
-    let columns = this.formatColumns();
+  renderHeader = () => {
+    let header = null;
 
-    let arr = this.getDataRows(); //this.state.data;
+    let { editToolsConfig = {}, editable } = this.props;
+    let toolBarPosition = editToolsConfig.position;
 
-    let props = this.props;
-    let { readOnly, editToolsConfig = {} } = props;
+    if (toolBarPosition === "top") {
+      header = (
+        <div className="tablex__container__header">{this.createToolBar()}</div>
+      );
+    }
+
+    return header;
+  };
+
+  renderFooter = () => {
+    let footer = null;
+
+    let { editToolsConfig = {}, editable, settable, tableId } = this.props;
+    let toolBarPosition = editToolsConfig.position;
 
     let pageAttr = this.state.pagination;
     const dataTotal = pageAttr.total || this.state.data.length;
+
     let hasPager = this.hasPagination();
 
-    let newProps = {
-      data: arr,
-      columns,
-      hover: true,
-      initRef: this.initRef
-    };
+    let toolBar = null;
+    let settingButton = null;
+    let pager = null;
 
-    let toolBarPosition = editToolsConfig.position;
-
-    if (readOnly === true) {
-      newProps.selectMode = "none";
+    if (toolBarPosition === "bottom") {
+      toolBar = this.createToolBar();
     }
 
-    let settingButton = null;
-
-    if (props.settable === true && props.tableId) {
+    if (settable === true && tableId) {
       settingButton = (
         <div key="_settingButton" style={{ marginRight: "5px" }}>
           <Button icon="setting" />
@@ -1417,25 +1424,49 @@ class EditableTable extends React.Component {
       );
     }
 
+    if (hasPager) {
+      pager = (
+        <Pagination
+          {...pageAttr}
+          total={dataTotal}
+          onPageChange={this.onPageChange}
+        />
+      );
+    }
+
+    if (settingButton !== null || toolBar !== null || pager !== null) {
+      footer = (
+        <div className="tablex__container__footer">
+          {settingButton}
+          {toolBar}
+          {pager}
+        </div>
+      );
+    }
+
+    return footer;
+  };
+
+  render() {
+    let columns = this.formatColumns();
+
+    let arr = this.getDataRows();
+
+    let props = this.props;
+
+    let newProps = {
+      data: arr,
+      columns,
+      initRef: this.initRef
+    };
+
     return (
       <div className="tablex__container">
-        <div className="tablex__container__header">
-          {toolBarPosition === "top" && this.createToolBar()}
-        </div>
+        {this.renderHeader()}
         <div className="tablex__container__body">
           <Table {...props} {...newProps} />
         </div>
-        <div className="tablex__container__footer">
-          {settingButton}
-          {toolBarPosition === "bottom" && this.createToolBar()}
-          {hasPager ? (
-            <Pagination
-              {...pageAttr}
-              total={dataTotal}
-              onPageChange={this.onPageChange}
-            />
-          ) : null}
-        </div>
+        {this.renderFooter()}
       </div>
     );
   }

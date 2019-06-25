@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Button, Input, Image, Popover } from "antd";
-import { EditableTable } from "../src/index";
+import { Table as EditableTable } from "../src/index";
 
 class Demo extends React.PureComponent {
   constructor(props) {
@@ -166,6 +166,7 @@ class Demo extends React.PureComponent {
 
     return (
       <EditableTable
+        editable={true}
         editToolsConfig={{ position: "top" }}
         editTools={["edit", "add", "delete"]}
         columns={this.columns}
