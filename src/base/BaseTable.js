@@ -9,7 +9,7 @@ import {
 import TableHeader from "./GroupHeader";
 import ExpandIcon from "./ExpandIcon";
 import Checkbox from "./Checkbox";
-
+import Pagination from "../pagination";
 import "./styles.css";
 
 class Table extends React.Component {
@@ -57,7 +57,7 @@ class Table extends React.Component {
       rowHeight
     } = nextProps;
 
-    let data = nextProps.data || nextProps.dataSource || [];
+    let data = nextProps.data || [];
 
     let nextState = null;
 
@@ -603,6 +603,10 @@ class Table extends React.Component {
     return cls.join(" ");
   };
 
+  footerRenderer = () => {
+    return <Pagination />;
+  };
+
   tableApi = {
     getSelectedKeys: () => {
       return this.state.selectedRowKeys;
@@ -671,7 +675,8 @@ class Table extends React.Component {
       onScroll: this.onScroll,
       rowEventHandlers: this.rowEventHandlers,
       rowClassName: this.rowClassName,
-      overscanRowCount: 2
+      overscanRowCount: 2,
+      footerRenderer: this.footerRenderer
     };
 
     if (!showHeader) {

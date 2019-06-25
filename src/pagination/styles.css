@@ -1,0 +1,23 @@
+.tablex__pager{
+display: flex;
+flex-direction: row;
+align-items: center;
+flex: auto;
+font-size: 0;
+}
+
+.table__pager__number
+{
+flex: auto;
+}
+
+.table__pager__number .ant-pagination {
+  display: inline-block;
+  width: auto;
+  vertical-align: middle;
+}
+
+.tablex__pager__count
+{
+  font-size: 14px;
+}

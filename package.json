@@ -16,7 +16,7 @@
     "doc": "docz dev",
     "docb": "docz build --base='/tablex/'",
     "pub": "father build&&npm publish",
-    "docd":"gh-pages -d ./.docz/dist"
+    "docd": "gh-pages -d ./.docz/dist"
   },
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -37,6 +37,7 @@
     "antd": "3.16.5",
     "lodash": "^4.17.11",
     "prop-types": "^15.7.2",
+    "rc-pagination": "^1.20.1",
     "react": "^16.8.6",
     "react-base-table": "^1.3.2",
     "react-dom": "^16.8.6",

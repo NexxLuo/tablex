@@ -1,6 +1,7 @@
 import React from "react";
 import Table from "./EditableTable";
 import PropTypes from "prop-types";
+import "./styles.css";
 
 /**
  * 可编辑表格
@@ -32,10 +33,14 @@ EditableTable.defaultProps = {
   allowSaveEmpty: false,
   dataControled: false,
   alwaysValidate: false,
-  readOnly: false
+  readOnly: false,
+  settable: true,
+  pagination: false
 };
 
 EditableTable.propTypes = {
+  /** 分页 */
+  pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   /** 工具栏，工具按钮 ['edit', 'add','delete',{icon:"",text:"",props:{},handler:Function},Function] addSingle:单行新增 */
   editTools: PropTypes.array,
   /** 工具栏，工具按钮属性配置{ position: "bottom", itemStyle: { marginLeft: "5px" }, editText: "", editIcon: "", addText: "", addIcon: "", deleteText: "", deleteIcon: "", okText: "", okIcon: "", cancelText: "", cancelIcon: "" } */
@@ -89,7 +94,40 @@ EditableTable.propTypes = {
   /** 数据是否完全受控，如若受控，请在onEditSave、onCancel中自行更新数据源 */
   dataControled: PropTypes.bool,
   /** 表格是否只读模式，只读时将不显示编辑栏以及复选框 */
-  readOnly: PropTypes.bool
+  readOnly: PropTypes.bool,
+  /** 是否可进行属性设置 */
+  settable: PropTypes.bool,
+  /** 表格全局id，通过此id记忆表格配置，由于采用localStorage存储配置，需保证id唯一 */
+  tableId: function(props, propName, componentName) {
+    let count = 0;
+    let v = props[propName];
+
+    if (typeof v !== "undefined" && v !== "") {
+      let tbs = document.getElementsByClassName("table-extend");
+
+      for (let i = 0, len = tbs.length; i < len; i++) {
+        const tb = tbs[i];
+        if (tb) {
+          const t = tb.getAttribute("data-tableid");
+          if (t === v) {
+            count = count + 1;
+
+            if (count > 1) {
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    if (count > 1) {
+      return new Error(
+        ` Encountered two table with the same tableId, '${v}'.The tableId must be unique in the whole application.
+                  We Recommended set the tableId based on file path.
+                  eg: platform/user/index.js =>  platform-user-xxx `
+      );
+    }
+  }
 };
 
 export default EditableTable;

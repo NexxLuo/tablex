@@ -1,0 +1,32 @@
+.tablex__container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex: auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.tablex__container__body {
+  flex: auto;
+}
+
+.tablex__container__header,
+.tablex__container__footer {
+  width: 100%;
+  flex: 0 0 auto;
+  -webkit-box-flex: 0;
+}
+
+.tablex__container__header {
+  padding: 10px 0px;
+}
+
+.tablex__container__footer {
+  padding: 10px 10px;
+  border: 1px solid #eaeaea;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+}

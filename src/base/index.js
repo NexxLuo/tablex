@@ -14,7 +14,6 @@ Table.defaultProps = {
   columns: [],
   dataSource: [],
   selectMode: "single",
-  selectedRowKeys: [],
   disabledSelectKeys: [],
   orderNumber: false,
   checkStrictly: true,
@@ -84,38 +83,7 @@ Table.propTypes = {
    * 展开时加载children的方法
    * (row:object) => Promise
    * */
-  loadChildrenData: PropTypes.func,
-  /** 表格全局id，通过此id记忆表格配置，由于采用localStorage存储配置，需保证id唯一 */
-  tableId: function(props, propName, componentName) {
-    let count = 0;
-    let v = props[propName];
-
-    if (typeof v !== "undefined" && v !== "") {
-      let tbs = document.getElementsByClassName("table-extend");
-
-      for (let i = 0, len = tbs.length; i < len; i++) {
-        const tb = tbs[i];
-        if (tb) {
-          const t = tb.getAttribute("data-tableid");
-          if (t === v) {
-            count = count + 1;
-
-            if (count > 1) {
-              break;
-            }
-          }
-        }
-      }
-    }
-
-    if (count > 1) {
-      return new Error(
-        ` Encountered two table with the same tableId, '${v}'.The tableId must be unique in the whole application.
-                  We Recommended set the tableId based on file path.
-                  eg: platform/user/index.js =>  platform-user-xxx `
-      );
-    }
-  }
+  loadChildrenData: PropTypes.func
 };
 
 export default Table;
