@@ -12,7 +12,10 @@ import Menu from "antd/lib/menu";
 import Dropdown from "antd/lib/dropdown";
 import Icon from "antd/lib/icon";
 import Layout from "antd/lib/layout";
+import Popover from "antd/lib/popover";
+
 import Pagination from "./pagination";
+import ColumnDropMenu from "./ColumnDropMenu";
 import "antd/dist/antd.css";
 
 const { Content, Header } = Layout;
@@ -29,6 +32,7 @@ class EditableTable extends React.Component {
       propsOriginal: {},
       sourceColumns: [],
       columns: [],
+      columnsConfig: {},
       data: [],
       dataList: [],
       sourceData: [],
@@ -118,6 +122,8 @@ class EditableTable extends React.Component {
     }
     return nextState;
   }
+
+  componentDidMount() {}
 
   updateComponent = () => {
     this.forceUpdate();
@@ -435,8 +441,31 @@ class EditableTable extends React.Component {
     return null;
   };
 
+  columnSettingMenuToggle = (visible, key) => {
+    if (visible === true) {
+      this.columnSettingMenu = (
+        <ColumnDropMenu
+          options={{ pinable: true, filterable: true, groupable: true }}
+          columns={this.state.columns}
+          onChange={(columnKey, config) => {
+            let configs = this.state.columnsConfig;
+            let prevConfig = configs[columnKey] || {};
+            let nextConfig = {
+              [key]: Object.assign({}, prevConfig, config)
+            };
+
+            this.setState({
+              columnsConfig: { ...configs, ...nextConfig }
+            });
+          }}
+        />
+      );
+      this.forceUpdate();
+    }
+  };
+
   formatColumns = () => {
-    let { columns, editKeys, isEditAll, isEditing } = this.state;
+    let { columns, editKeys, isEditAll, isEditing, columnsConfig } = this.state;
     let rowKey = this.props.rowKey;
 
     let arr = columns;
@@ -446,11 +475,41 @@ class EditableTable extends React.Component {
         if (d.editingVisible === true) {
           d.hidden = false;
         }
+
         return d.editingVisible !== false;
       });
     }
 
     let cols = treeToList(arr).leafs;
+
+    cols.forEach(d => {
+      let config =
+        columnsConfig[d["key"]] || columnsConfig[d["dataIndex"]] || {};
+
+      if ("fixed" in config) {
+        d.fixed = config.fixed;
+      }
+
+      d.headerRenderer = ({ column }) => {
+        return (
+          <div className="tablex__column__inner">
+            <span className="tablex__column__inner__title">{column.title}</span>
+
+            <Popover
+              trigger="click"
+              content={this.columnSettingMenu}
+              arrowPointAtCenter={true}
+              placement="bottomRight"
+              onVisibleChange={v => this.columnSettingMenuToggle(v, column.key)}
+            >
+              <span className="tablex__column__inner__dropdown">
+                <Icon type="bars" />
+              </span>
+            </Popover>
+          </div>
+        );
+      };
+    });
 
     if (isEditAll === true) {
       cols.forEach(d => {
@@ -951,15 +1010,15 @@ class EditableTable extends React.Component {
   delete = () => {
     let bl = true;
 
+    let selectedKeys = this.tableRef.tableApi.getSelectedKeys();
+
     if (typeof this.props.onBeforeDelete === "function") {
-      bl = this.props.onBeforeDelete();
+      bl = this.props.onBeforeDelete(selectedKeys);
     }
 
     if (bl === false) {
       return false;
     }
-
-    let selectedKeys = this.tableRef.tableApi.getSelectedKeys();
 
     if (selectedKeys.length <= 0) {
       message.warn("请选择要删除的数据");

@@ -30,3 +30,32 @@
   white-space: nowrap;
   overflow: hidden;
 }
+
+.tablex__column__inner {
+  position: relative;
+  width: 100%;
+}
+
+.tablex__column__inner__dropdown {
+  float: right;
+  cursor: pointer;
+  display: none;
+}
+
+.tablex__header-cell:hover .tablex__column__inner__dropdown {
+  display: inline-block;
+}
+
+.tablex__column__inner__dropdown.ant-popover-open {
+  display: inline-block;
+}
+
+
+.tablex__column__dropMenu
+    .ant-menu-vertical
+    > .ant-menu-submenu
+    > .ant-menu-submenu-title {
+    height: auto;
+    line-height: normal;
+    padding: 0 8px;
+}

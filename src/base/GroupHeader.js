@@ -1,10 +1,15 @@
 import React, { useMemo } from "react";
 import { getTreeLeafs } from "./utils";
 
-const Column = ({ cell, depth, columnDepth, headerHeight }) => {
+const Column = ({ cell, depth, columnDepth, headerHeight, dataIndex }) => {
   let h = (columnDepth - depth + 1) * headerHeight;
+
   return (
-    <div className="tablex-head-group-children" style={{ height: h }}>
+    <div
+      className="tablex-head-group-children"
+      style={{ height: h }}
+      title={dataIndex}
+    >
       {cell}
     </div>
   );
@@ -51,7 +56,7 @@ const renderColumns = ({
     let arr = columnList.filter(d => !d.__placeholder__);
 
     let frozen = "";
-    arr[0] && (frozen = arr[0].frozen);
+    arr[0] && (frozen = arr[0].frozen || "");
 
     let childrens = d.children || [];
 
@@ -88,6 +93,12 @@ const renderColumns = ({
           })}
         </ColumnGroup>
       );
+    }
+
+    if (frozen == "") {
+      if (d.frozen === "right") {
+        return null;
+      }
     }
 
     return (
