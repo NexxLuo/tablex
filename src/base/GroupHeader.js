@@ -5,11 +5,7 @@ const Column = ({ cell, depth, columnDepth, headerHeight, dataIndex }) => {
   let h = (columnDepth - depth + 1) * headerHeight;
 
   return (
-    <div
-      className="tablex-head-group-children"
-      style={{ height: h }}
-      title={dataIndex}
-    >
+    <div className="tablex-head-column" style={{ height: h }} title={dataIndex}>
       {cell}
     </div>
   );
@@ -17,7 +13,7 @@ const Column = ({ cell, depth, columnDepth, headerHeight, dataIndex }) => {
 
 const ColumnGroup = ({ title, children, headerHeight }) => {
   return (
-    <div className="GroupCell" style={{ display: "block" }}>
+    <div className="tablex-head-group" style={{ display: "block" }}>
       <div
         style={{
           height: headerHeight,
@@ -42,6 +38,83 @@ const ColumnGroup = ({ title, children, headerHeight }) => {
   );
 };
 
+const isForzen = (type = "", column) => {
+  let bl = false;
+
+  let leafs = getTreeLeafs([column]);
+
+  bl = leafs.findIndex(d => d.frozen === type) > -1;
+
+  return bl;
+};
+
+const renderChildren = ({
+  parent,
+  headerHeight,
+  columnDepth,
+  cells,
+  columnList,
+  frozen
+}) => {
+  let columns = parent.children || [];
+
+  if (frozen === "right" || frozen === "left") {
+    columns = columns.filter(c => isForzen(frozen, c));
+  } 
+
+  if (columns.length > 0) {
+    return (
+      <ColumnGroup
+        key={parent.key}
+        title={parent.title}
+        depth={parent.__depth}
+        columnDepth={columnDepth}
+        headerHeight={headerHeight}
+      >
+        {columns.map((d, i) => {
+          let childrens = d.children || [];
+
+          if (childrens.length > 0) {
+            return renderChildren({
+              parent: d,
+              headerHeight,
+              columnDepth,
+              cells,
+              columnList,
+              frozen
+            });
+          } else {
+            let cellIndex = columnList.findIndex(c => c.key === d.key);
+            let column = columnList[cellIndex] || {};
+            if (frozen !== "left" && frozen !== "right") {
+              if (d.frozen === "left" || d.frozen === "right") {
+                if (column.__placeholder__ !== true) {
+                }
+
+                if (d.__parents && d.__parents.length > 0) {
+                }
+                return null;
+              }
+            }
+
+            return (
+              <Column
+                key={d.dataIndex || i}
+                {...d}
+                cell={cells[cellIndex]}
+                depth={d.__depth}
+                columnDepth={columnDepth}
+                headerHeight={headerHeight}
+              />
+            );
+          }
+        })}
+      </ColumnGroup>
+    );
+  }
+  return null;
+};
+
 const renderColumns = ({
   columns,
   cells,
@@ -49,68 +122,56 @@ const renderColumns = ({
   columnDepth,
   headerHeight
 }) => {
+  let frozen = "";
+  let arr = columnList.filter(d => !d.__placeholder__);
+  if (arr[0]) {
+    frozen = arr[0].frozen || "middle";
+  }
+
+  if (frozen === "middle") {
+    //console.log("renderColumns:", cells);
+  }
+
   return columns.map((d, i) => {
-    let columnIndex = columnList.findIndex(c => c.key === d.key);
-    let cell = cells[columnIndex];
+    let cellIndex = columnList.findIndex(c => c.key === d.key);
 
-    let arr = columnList.filter(d => !d.__placeholder__);
+    let children = d.children || [];
 
-    let frozen = "";
-    arr[0] && (frozen = arr[0].frozen || "");
-
-    let childrens = d.children || [];
-
-    if (frozen === "left" || frozen === "right") {
-      childrens = childrens.filter(d => !!d.frozen);
+    if (children.length > 0) {
+      return renderChildren({
+        parent: d,
+        headerHeight,
+        columnDepth,
+        cells,
+        columnList,
+        frozen
+      });
     } else {
-      childrens = childrens.filter(d => !d.frozen);
-
-      let leafs = getTreeLeafs(childrens);
-
-      //当非冻结列下的子级别均被冻结，则不渲染分组表头
-      let notFrozenColumns = leafs.filter(d => !d.frozen);
-      if (childrens.length > 0 && notFrozenColumns.length === 0) {
-        return null;
+      if (frozen === "middle") {
       }
-    }
 
-    if (childrens.length > 0) {
+      if (
+        columnList[cellIndex] &&
+        columnList[cellIndex].__placeholder__ === true
+      ) {
+        if (columnList[cellIndex].frozen === "right") {
+          return null;
+        }
+
+        return cells[cellIndex];
+      }
+
       return (
-        <ColumnGroup
+        <Column
           key={d.dataIndex || i}
           {...d}
+          cell={cells[cellIndex]}
           depth={d.__depth}
           columnDepth={columnDepth}
-          cell={cell}
           headerHeight={headerHeight}
-        >
-          {renderColumns({
-            columns: childrens,
-            cells,
-            columnList,
-            columnDepth,
-            headerHeight
-          })}
-        </ColumnGroup>
+        />
       );
     }
-
-    if (frozen == "") {
-      if (d.frozen === "right") {
-        return null;
-      }
-    }
-
-    return (
-      <Column
-        key={d.dataIndex || i}
-        {...d}
-        cell={cells[columnIndex]}
-        depth={d.__depth}
-        columnDepth={columnDepth}
-        headerHeight={headerHeight}
-      />
-    );
   });
 };
 

@@ -89,8 +89,10 @@ class Table extends React.Component {
       let columnsArr = [].concat(extraColumns).concat(columns);
 
       let { leafs: columnList, maxDepth: columnDepth, list } = treeToList(
-        columnsArr
+        columnsArr,
+        "key"
       );
+
 
       let hasFrozenLeft = false;
 
@@ -601,7 +603,7 @@ class Table extends React.Component {
 
     return cls.join(" ");
   };
- 
+
   tableApi = {
     getSelectedKeys: () => {
       return this.state.selectedRowKeys;
@@ -670,7 +672,7 @@ class Table extends React.Component {
       onScroll: this.onScroll,
       rowEventHandlers: this.rowEventHandlers,
       rowClassName: this.rowClassName,
-      overscanRowCount: 2 
+      overscanRowCount: 2
     };
 
     if (!showHeader) {

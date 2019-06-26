@@ -87,8 +87,7 @@ fixedColumns = [
     dataIndex: "age",
     key: "column-4",
     title: "age",
-    width: 150,
-    fixed: "right"
+    width: 150
   }
 ];
 
