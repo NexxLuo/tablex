@@ -23,6 +23,7 @@ const Cell = ({ row, column, columnIndex }) => {
   );
 };
 
+
 const renderRow = ({ index, style, data }) => {
   let { data: rows, columns, rowKey } = data;
   let row = rows[index];
@@ -42,9 +43,14 @@ const renderRow = ({ index, style, data }) => {
 
 class DataList extends React.Component {
   listRef = React.createRef();
+  outterRef = React.createRef();
 
   scrollTo = ({ scrollTop }) => {
     this.listRef.current && this.listRef.current.scrollTo(scrollTop);
+
+    if (this.outterRef.current) {
+      //this.outterRef.current.scrollTop = scrollTop;
+    }
   };
 
   render() {
@@ -67,6 +73,7 @@ class DataList extends React.Component {
         itemCount={data.length}
         itemSize={rowHeight}
         onScroll={onScroll}
+        outerRef={this.outterRef}
         itemKey={(index, itemData) => {
           let { data } = itemData;
           return data[index][rowKey];

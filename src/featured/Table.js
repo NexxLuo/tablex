@@ -11,14 +11,12 @@ import Popconfirm from "antd/lib/popconfirm";
 import Menu from "antd/lib/menu";
 import Dropdown from "antd/lib/dropdown";
 import Icon from "antd/lib/icon";
-import Layout from "antd/lib/layout";
 import Popover from "antd/lib/popover";
-
 import Pagination from "./pagination";
 import ColumnDropMenu from "./ColumnDropMenu";
 import "antd/dist/antd.css";
-
-const { Content, Header } = Layout;
+import Setting, { getConfigs, setConfigs } from "./setting";
+import orderBy from "lodash/orderBy";
 
 /**
  * 表格
@@ -30,7 +28,7 @@ class EditableTable extends React.Component {
     this.state = {
       rowKey: props.rowKey,
       propsOriginal: {},
-      sourceColumns: [],
+      rawColumns: [],
       columns: [],
       columnsConfig: {},
       data: [],
@@ -75,6 +73,7 @@ class EditableTable extends React.Component {
     let columnList = treeToList(columns).list;
     nextState.columns = columns;
     nextState.columnList = columnList;
+    nextState.rawColumns = nextProps.columns || [];
 
     let data = nextProps.data || nextProps.dataSource;
 
@@ -123,7 +122,13 @@ class EditableTable extends React.Component {
     return nextState;
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    getConfigs(this.props.tableId).then(data => {
+      if (data) {
+        this.setState({ columnsConfig: data.configs || {} });
+      }
+    });
+  }
 
   updateComponent = () => {
     this.forceUpdate();
@@ -441,27 +446,76 @@ class EditableTable extends React.Component {
     return null;
   };
 
-  columnSettingMenuToggle = (visible, key) => {
-    if (visible === true) {
-      this.columnSettingMenu = (
-        <ColumnDropMenu
-          options={{ pinable: true, filterable: true, groupable: true }}
-          columns={this.state.columns}
-          onChange={(columnKey, config) => {
-            let configs = this.state.columnsConfig;
-            let prevConfig = configs[columnKey] || {};
-            let nextConfig = {
-              [key]: Object.assign({}, prevConfig, config)
-            };
+  dropdown_button_ref = React.createRef();
+  columnSettingMenuShow = e => {
+    e.target.className = "tablex__column__inner__dropdown opened";
 
-            this.setState({
-              columnsConfig: { ...configs, ...nextConfig }
-            });
-          }}
-        />
-      );
-      this.forceUpdate();
+    if (this.dropdown_button_ref && this.dropdown_button_ref.current) {
+      this.dropdown_button_ref.current.click();
     }
+
+    this.setState({
+      columnMenu: {
+        columnKey: e.target.dataset.columnkey,
+        trigger: e.target,
+        visible: true,
+        offsetX: e.pageX,
+        offsetY: e.pageY
+      }
+    });
+  };
+
+  columnSettingMenuHide = visible => {
+    let columnMenu = this.state.columnMenu || {};
+    if (columnMenu.trigger) {
+      columnMenu.trigger.className = "tablex__column__inner__dropdown";
+    }
+    this.setState({
+      columnMenu: Object.assign(columnMenu, { visible: false, trigger: null })
+    });
+  };
+
+  onColumnResize = ({ column, width }) => {
+    let columnKey = column.key || column.dataIndex;
+    // console.log("onColumnResize:",width)
+    // let { columnsConfig } = this.state;
+    // let configs = columnsConfig || {};
+    // let config = configs[columnKey];
+    // if (config) {
+    //   config.width = width;
+    // }else{
+    //   this.state.columnsConfig
+    // }
+
+    this.onColumnChange(columnKey, { width });
+  };
+
+  onColumnChange = (key, config) => {
+    let columnKey = key;
+
+    let { columnsConfig, columnMenu } = this.state;
+
+    let configs = columnsConfig || {};
+
+    if (!columnKey && columnMenu) {
+      columnKey = columnMenu.columnKey;
+    }
+
+    let prevConfig = configs[columnKey] || {};
+    let nextConfig = {
+      [columnKey]: Object.assign({}, prevConfig, config)
+    };
+
+    let newConfigs = { ...configs, ...nextConfig };
+
+    setConfigs(this.props.tableId, {
+      configs: newConfigs,
+      groupedColumnKey: null
+    });
+
+    this.setState({
+      columnsConfig: newConfigs
+    });
   };
 
   formatColumns = () => {
@@ -470,42 +524,49 @@ class EditableTable extends React.Component {
 
     let arr = columns;
 
-    if (isEditing === true) {
-      arr = treeFilter(columns, d => {
-        if (d.editingVisible === true) {
-          d.hidden = false;
-        }
+    arr = treeFilter(columns, d => {
+      let columnKey = d.key || d.dataIndex;
+      let bl = true;
 
-        return d.editingVisible !== false;
-      });
-    }
+      let config = columnsConfig[columnKey] || {};
+      bl = !config.hidden;
+
+      if (isEditing === true) {
+        bl = d.editingVisible !== false;
+      }
+
+      return bl;
+    });
 
     let cols = treeToList(arr).leafs;
 
-    cols.forEach(d => {
-      let config =
-        columnsConfig[d["key"]] || columnsConfig[d["dataIndex"]] || {};
+    cols.forEach((d, i) => {
+      let columnKey = d.key || d.dataIndex;
+      let config = columnsConfig[columnKey] || columnsConfig[columnKey] || {};
 
       if ("fixed" in config) {
         d.fixed = config.fixed;
+      }
+
+      if ("width" in config) {
+        d.width = config.width;
+      }
+
+      if ("order" in config) {
+        d.order = config.order;
+      } else {
+        d.order = i;
       }
 
       d.headerRenderer = ({ column }) => {
         return (
           <div className="tablex__column__inner">
             <span className="tablex__column__inner__title">{column.title}</span>
-
-            <Popover
-              trigger="click"
-              content={this.columnSettingMenu}
-              arrowPointAtCenter={true}
-              placement="bottomRight"
-              onVisibleChange={v => this.columnSettingMenuToggle(v, column.key)}
-            >
-              <span className="tablex__column__inner__dropdown">
-                <Icon type="bars" />
-              </span>
-            </Popover>
+            <span
+              className="tablex__column__inner__dropdown"
+              data-columnkey={columnKey}
+              onClick={this.columnSettingMenuShow}
+            />
           </div>
         );
       };
@@ -647,21 +708,16 @@ class EditableTable extends React.Component {
       });
     }
 
+    arr = orderBy(arr, ["order"], ["asc"]);
+
     return cloneDeep(arr);
   };
 
-  toggleSettingColumns = bl => {
-    // bl === true ? this.tableRef.enableTableSetting() : this.tableRef.disableTableSetting();
-  };
-
   editAll = () => {
-    this.toggleSettingColumns(false);
     this.setState({ isEditAll: true, isEditing: true, editKeys: [] });
   };
 
   endEdit = callBack => {
-    this.toggleSettingColumns(true);
-
     let arr = [].concat(this.changedRows);
 
     this.changedRows = [];
@@ -766,7 +822,6 @@ class EditableTable extends React.Component {
   };
 
   reset = () => {
-    this.toggleSettingColumns(true);
     let data = cloneDeep(this.state.sourceData);
 
     let nextState = {
@@ -1478,7 +1533,13 @@ class EditableTable extends React.Component {
     if (settable === true && tableId) {
       settingButton = (
         <div key="_settingButton" style={{ marginRight: "5px" }}>
-          <Button icon="setting" />
+          <Setting
+            tableId={tableId}
+            onSave={this.saveConfig}
+            onReset={this.resetConfig}
+            configs={this.state.columnsConfig}
+            columns={this.state.rawColumns}
+          />
         </div>
       );
     }
@@ -1506,6 +1567,21 @@ class EditableTable extends React.Component {
     return footer;
   };
 
+  columnSetting_modal_ref = React.createRef();
+  toggleSettingModal = () => {
+    if (this.columnSetting_modal_ref && this.columnSetting_modal_ref.current) {
+      this.columnSetting_modal_ref.current.toggle();
+    }
+  };
+
+  saveConfig = configs => {
+    this.setState({ columnsConfig: configs });
+  };
+
+  resetConfig = () => {
+    this.setState({ columnsConfig: {} });
+  };
+
   render() {
     let columns = this.formatColumns();
 
@@ -1516,8 +1592,12 @@ class EditableTable extends React.Component {
     let newProps = {
       data: arr,
       columns,
-      initRef: this.initRef
+      initRef: this.initRef,
+      onColumnResize: this.onColumnResize
     };
+
+    let { columnMenu } = this.state;
+    let columnMenuState = columnMenu || {};
 
     return (
       <div className="tablex__container">
@@ -1526,6 +1606,33 @@ class EditableTable extends React.Component {
           <Table {...props} {...newProps} />
         </div>
         {this.renderFooter()}
+
+        <Popover
+          trigger="click"
+          onVisibleChange={this.columnSettingMenuHide}
+          content={
+            <ColumnDropMenu
+              options={{ pinable: true, filterable: true, groupable: true }}
+              columns={this.state.columns}
+              columnsConfig={this.state.columnsConfig}
+              onChange={this.onColumnChange}
+            />
+          }
+          arrowPointAtCenter={true}
+          placement="bottomRight"
+        >
+          <span
+            style={{
+              width: 1,
+              height: 1,
+              position: "fixed",
+              left: columnMenuState.offsetX,
+              top: columnMenuState.offsetY,
+              display: columnMenuState.visible ? "block" : "none"
+            }}
+            ref={this.dropdown_button_ref}
+          />
+        </Popover>
       </div>
     );
   }

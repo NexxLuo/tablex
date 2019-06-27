@@ -37,12 +37,34 @@
 }
 
 .tablex__column__inner__dropdown {
-  float: right;
   cursor: pointer;
   display: none;
+  width: 16px;
+  height: 16px;
+  outline: none;
+  font-size: 0;
+  position: absolute;
+  top: 6px;
+  right: 0px;
+}
+
+.tablex__column__inner__dropdown::after {
+  content: "";
+  display: block;
+  width: 12px;
+  height: 10px;
+  border-top: 2px solid #ccc;
+  border-bottom: 2px solid #ccc;
+  background-color: #ccc;
+  padding:2px 0;
+  background-clip: content-box;
 }
 
 .tablex__header-cell:hover .tablex__column__inner__dropdown {
+  display: inline-block;
+}
+
+.tablex__column__inner__dropdown.opened {
   display: inline-block;
 }
 
@@ -50,12 +72,11 @@
   display: inline-block;
 }
 
-
 .tablex__column__dropMenu
-    .ant-menu-vertical
-    > .ant-menu-submenu
-    > .ant-menu-submenu-title {
-    height: auto;
-    line-height: normal;
-    padding: 0 8px;
+  .ant-menu-vertical
+  > .ant-menu-submenu
+  > .ant-menu-submenu-title {
+  height: auto;
+  line-height: normal;
+  padding: 0 8px;
 }

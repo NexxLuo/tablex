@@ -80,7 +80,7 @@ class Table extends React.Component {
           dataIndex: "__ordernumber_column",
           __type: "__ordernumber_column",
           width: 50,
-          title: "No.",
+          title: "序号",
           align: "center"
         });
       }

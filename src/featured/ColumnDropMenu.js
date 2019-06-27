@@ -19,29 +19,34 @@ class HeadDropMenu extends React.Component {
   };
 
   columnsFilter = () => {
-    let { columns: arr } = this.props;
-
+    let { columns: arr, columnsConfig } = this.props;
+    
     let columns = arr; //.filter(d => !!d.title)
 
     const columnsOptions = [];
     let defaultChecked = [];
 
     columns.forEach((c, i) => {
-      let isHide = !!c.hidden;
+      let columnKey = c.key || c.dataIndex;
 
-      //  isHide = c.dataIndex === column.dataIndex ? !!column.hidden : !!c.hidden;
+      let isHide = false;
+
+      let config = (columnsConfig || {})[columnKey] || {};
+
+
+      isHide = !!config.hidden;
 
       if (isHide === false) {
-        defaultChecked.push(c.dataIndex);
+        defaultChecked.push(columnKey);
       }
 
       columnsOptions.push(
         <div key={i} style={{ display: "block" }}>
           <Checkbox
             checked={!isHide}
-            value={c.dataIndex}
+            value={columnKey}
             onChange={e => {
-              this.onFilterColumnChange(e.target.checked, c.dataIndex);
+              this.onFilterColumnChange(e.target.checked, columnKey);
             }}
           >
             {c.title}
