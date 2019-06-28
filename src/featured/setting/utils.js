@@ -1,5 +1,3 @@
-import orderBy from "lodash/orderBy";
-
 function getTime() {
   let cd = new Date();
 
@@ -18,215 +16,97 @@ function getTime() {
   return y + "/" + m + "/" + d + " " + h + ":" + mi + ":" + s;
 }
 
-//从localStorage中获取所有表格配置
-function getConfigs() {
-  let allConfigs = JSON.parse(
-    window.localStorage.getItem("__tableSettings") || "[]"
-  );
+let storageKey = "__tablex_configs";
+let tableKey = "tableId";
+let serverSaveFunctionName = "__tablex_configs_save";
 
-  return allConfigs;
-}
-
-//设置表格配置到localStorage
-function setConfigs(configs) {
-  window.localStorage.setItem("__tableSettings", JSON.stringify(configs));
-}
-
-//根据tableId从localStorage中获取所有表格配置
-function getStorage(tableId) {
-  let allConfigs = getConfigs();
-
-  if (tableId) {
-    let tableConfig = allConfigs.find(d => d.tableId === tableId);
-
-    let settings = {};
-    if (tableConfig) {
-      if (typeof tableConfig === "string") {
-        settings = JSON.parse(tableConfig);
-      } else {
-        settings = tableConfig;
+let LocalConfig = {
+  get: function(key) {
+    let allConfigs = JSON.parse(
+      window.localStorage.getItem(storageKey) || "[]"
+    );
+    if (key) {
+      let config = allConfigs.find(d => d[tableKey] === key);
+      let settings = {};
+      if (config) {
+        if (typeof config === "string") {
+          settings = JSON.parse(config);
+        } else {
+          settings = config;
+        }
       }
+      return settings;
     }
-
-    return settings;
-  } else {
     return allConfigs;
-  }
-}
+  },
 
-window._getTableSetting = getStorage;
+  set: function(key, configs) {
+    configs = Object.assign(configs, {
+      time: getTime(),
+      [tableKey]: key
+    });
 
-//以tableId表格配置到localStorage
-function setStorage(tableId, configs) {
-  configs = Object.assign(configs, {
-    time: getTime(),
-    tableId: tableId
-  });
+    let allConfigs = LocalConfig.get();
+    let i = allConfigs.findIndex(d => d[tableKey] === key);
 
-  let allConfigs = getConfigs();
-  let tableConfig = allConfigs.find(d => d.tableId === tableId);
-
-  if (tableConfig !== null && tableConfig !== undefined) {
-    tableConfig = Object.assign(tableConfig, configs);
-  } else {
-    allConfigs.push(configs);
-  }
-
-  setConfigs(allConfigs);
-}
-
-//删除localStorage中的配置
-function deleteStorage(tableId) {
-  let allConfigs = getConfigs();
-  let i = allConfigs.findIndex(d => d.tableId === tableId);
-
-  if (i > -1) {
-    allConfigs.splice(i, 1);
-    setConfigs(allConfigs);
-  }
-}
-
-//保存表格配置数据到本地
-export function saveLocalSetting(tableId, settings) {
-  setStorage(tableId, settings);
-}
-
-export function updateLocalSetted(tableId, settings) {
-  setStorage(tableId, settings);
-}
-
-//保存数据至服务器
-export function saveServeSetting(tableId, settings, onSettingSave) {
-  settings = Object.assign(settings, {
-    time: getTime(),
-    tableId: tableId
-  });
-
-  let tableSettingSaveFn = onSettingSave;
-  if (typeof onSettingSave !== "function") {
-    tableSettingSaveFn = window.__tableSetting_save;
-  }
-
-  return new Promise(function(resolve, reject) {
-    if (typeof tableSettingSaveFn === "function") {
-      tableSettingSaveFn(tableId, settings).then(d => {
-        resolve(settings);
-      });
+    if (i > -1) {
+      allConfigs[i] = Object.assign(allConfigs[i], configs);
     } else {
-      resolve(settings);
+      allConfigs.push(configs);
     }
-  });
+    window.localStorage.setItem(storageKey, JSON.stringify(allConfigs));
+    return configs;
+  },
+  remove: function(key) {
+    let allConfigs = LocalConfig.get();
+    let i = allConfigs.findIndex(d => d[tableKey] === key);
+    if (i > -1) {
+      allConfigs.splice(i, 1);
+      window.localStorage.setItem(storageKey, JSON.stringify(allConfigs));
+    }
+  }
+};
+
+export function getConfigs(key) {
+  return LocalConfig.get(key);
+}
+
+export function setConfigs(key, configs) {
+  return LocalConfig.set(key, configs);
 }
 
 //配置窗口 保存
-export function saveSetting(tableId, settings, onSettingSave) {
-  saveLocalSetting(tableId, settings);
+export function saveConfigs(key, configs) {
+  let settedConfigs = LocalConfig.set(key, configs);
 
-  return saveServeSetting(tableId, settings, onSettingSave);
-}
-
-//配置窗口 重置
-export function clearSettings(tableId, onSettingSave) {
-  let tableSettingSaveFn = onSettingSave;
-  if (typeof onSettingSave !== "function") {
-    tableSettingSaveFn = window.__tableSetting_save;
-  }
+  let serverSaveFn = window[serverSaveFunctionName];
 
   return new Promise(function(resolve, reject) {
-    if (typeof tableSettingSaveFn === "function") {
-      tableSettingSaveFn(tableId, "").then(d => {
-        deleteStorage(tableId);
+    if (typeof serverSaveFn === "function") {
+      serverSaveFn(key, settedConfigs).then(d => {
         resolve();
       });
     } else {
-      deleteStorage(tableId);
       resolve();
     }
   });
 }
 
-export function getSetting(tableId) {
+//配置窗口 重置
+export function removeConfigs(key) {
+  let serverSaveFn = window[serverSaveFunctionName];
+
   return new Promise(function(resolve, reject) {
-    let settings = getStorage(tableId);
-
-    resolve(settings);
+    if (typeof serverSaveFn === "function") {
+      serverSaveFn(key, "").then(d => {
+        LocalConfig.remove(key);
+        resolve();
+      });
+    } else {
+      LocalConfig.remove(key);
+      resolve();
+    }
   });
-}
-
-export function getSettedConfig(tableId) {
-  return new Promise(function(resolve, reject) {
-    let settings = getStorage(tableId);
-
-    settings.columns = orderBy(
-      settings.columns || [],
-      ["__sortIndex"],
-      ["asc"]
-    );
-
-    resolve(settings);
-  });
-}
-
-export function getColumnsFromSetted(columns = [], settedColumns = []) {
-  if (settedColumns.length > 0) {
-    columns.forEach(d => {
-      let setted = settedColumns.find(c => c.dataIndex === d.dataIndex);
-      if (setted !== null && setted !== undefined) {
-        if (typeof setted.width === "number") {
-          d.width = setted.width;
-        }
-
-        if (typeof setted.hidden !== "undefined") {
-          d.hidden = !!setted.hidden;
-        }
-
-        if (typeof setted.fixed !== "undefined") {
-          d.fixed = setted.fixed || "none";
-        }
-
-        if (typeof setted.__sortIndex === "number") {
-          d.__sortIndex = setted.__sortIndex;
-        }
-      }
-    });
-
-    // columns.sort((a, b) => {
-    //     if (a.__sortIndex == undefined) {
-    //         return 0
-    //     } else if (b.__sortIndex === undefined) {
-    //         return -1;
-    //     } else {
-    //         return a.__sortIndex - b.__sortIndex;
-    //     }
-    // });
-
-    columns = orderBy(columns, ["__sortIndex"], ["asc"]);
-  }
-
-  return columns;
-}
-
-export function getColumnsFromConfig(columns = [], configedColumns = []) {
-  if (configedColumns.length > 0) {
-    columns.forEach(d => {
-      let configed = configedColumns.find(c => c.dataIndex === d.dataIndex);
-      if (configed !== null && configed !== undefined) {
-        if (typeof configed.hidden !== "undefined") {
-          d.hidden = !!configed.hidden;
-        }
-
-        if (typeof configed.fixed !== "undefined") {
-          d.fixed = configed.fixed || "none";
-        }
-
-        if (typeof configed.width === "number") {
-          d.width = configed.width;
-        }
-      }
-    });
-  }
-
-  return columns;
 }
 
 export function treeToList(arr) {

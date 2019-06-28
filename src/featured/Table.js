@@ -25,12 +25,18 @@ class EditableTable extends React.Component {
   constructor(props) {
     super(props);
 
+    let configs = {};
+
+    if (props.tableId) {
+      configs = getConfigs(props.tableId) || {};
+    }
+
     this.state = {
       rowKey: props.rowKey,
       propsOriginal: {},
       rawColumns: [],
       columns: [],
-      columnsConfig: {},
+      columnsConfig: configs.columnsConfig || null,
       data: [],
       dataList: [],
       sourceData: [],
@@ -122,13 +128,7 @@ class EditableTable extends React.Component {
     return nextState;
   }
 
-  componentDidMount() {
-    getConfigs(this.props.tableId).then(data => {
-      if (data) {
-        this.setState({ columnsConfig: data.configs || {} });
-      }
-    });
-  }
+  componentDidMount() {}
 
   updateComponent = () => {
     this.forceUpdate();
@@ -459,8 +459,8 @@ class EditableTable extends React.Component {
         columnKey: e.target.dataset.columnkey,
         trigger: e.target,
         visible: true,
-        offsetX: e.pageX,
-        offsetY: e.pageY
+        offsetX: e.clientX,
+        offsetY: e.clientY
       }
     });
   };
@@ -509,7 +509,7 @@ class EditableTable extends React.Component {
     let newConfigs = { ...configs, ...nextConfig };
 
     setConfigs(this.props.tableId, {
-      configs: newConfigs,
+      columnsConfig: newConfigs,
       groupedColumnKey: null
     });
 
@@ -520,6 +520,9 @@ class EditableTable extends React.Component {
 
   formatColumns = () => {
     let { columns, editKeys, isEditAll, isEditing, columnsConfig } = this.state;
+
+    let configs = columnsConfig || {};
+
     let rowKey = this.props.rowKey;
 
     let arr = columns;
@@ -528,7 +531,7 @@ class EditableTable extends React.Component {
       let columnKey = d.key || d.dataIndex;
       let bl = true;
 
-      let config = columnsConfig[columnKey] || {};
+      let config = configs[columnKey] || {};
       bl = !config.hidden;
 
       if (isEditing === true) {
@@ -542,7 +545,7 @@ class EditableTable extends React.Component {
 
     cols.forEach((d, i) => {
       let columnKey = d.key || d.dataIndex;
-      let config = columnsConfig[columnKey] || columnsConfig[columnKey] || {};
+      let config = configs[columnKey] || configs[columnKey] || {};
 
       if ("fixed" in config) {
         d.fixed = config.fixed;
@@ -1612,7 +1615,7 @@ class EditableTable extends React.Component {
           onVisibleChange={this.columnSettingMenuHide}
           content={
             <ColumnDropMenu
-              options={{ pinable: true, filterable: true, groupable: true }}
+              options={{ pinable: true, filterable: true, groupable: false }}
               columns={this.state.columns}
               columnsConfig={this.state.columnsConfig}
               onChange={this.onColumnChange}

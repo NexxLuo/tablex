@@ -4,7 +4,7 @@ import Button from "antd/lib/button";
 import InputNumber from "antd/lib/input-number";
 import Radio from "antd/lib/radio";
 import Switch from "antd/lib/switch";
-import { saveSetting, clearSettings, treeToList } from "./utils";
+import { saveConfigs, removeConfigs, treeToList } from "./utils";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import cloneDeep from "lodash/cloneDeep";
 import orderBy from "lodash/orderBy";
@@ -275,6 +275,8 @@ class SettingModal extends React.Component {
           d.order = i;
         }
       });
+
+      leafs = orderBy(leafs, ["order"], ["asc"]);
       nextState.columnsLeafs = leafs;
 
       return nextState;
@@ -290,13 +292,11 @@ class SettingModal extends React.Component {
 
     this.setState({ loading: true });
 
-    let { columns, configs } = this.state;
+    let { configs } = this.state;
 
-    saveSetting(
-      tableId,
-      { configs: configs, groupedColumnKey: groupedColumnKey || null },
-      undefined
-    ).then(d => {
+    saveConfigs(tableId, {
+      columnsConfig: configs
+    }).then(d => {
       if (typeof onSave === "function") {
         onSave(configs);
       }
@@ -313,7 +313,7 @@ class SettingModal extends React.Component {
 
     this.setState({ resetLoading: true });
 
-    clearSettings(tableId, undefined).then(d => {
+    removeConfigs(tableId).then(d => {
       if (typeof onReset === "function") {
         onReset();
       }
@@ -380,9 +380,7 @@ class SettingModal extends React.Component {
       }
     });
 
-    this.setState({ columnsLeafs: items, configs });
-
-    // this.setConfig(column, { order: destIndex });
+    this.setState({ configs });
   };
 
   render() {

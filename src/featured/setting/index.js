@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { createPortal } from "react-dom";
 import Button from "antd/lib/button";
 import Modal from "./modal";
-import { getSetting, saveLocalSetting } from "./utils";
+import { getConfigs, setConfigs } from "./utils";
 
 const Setting = props => {
   const modalRef = useRef();
@@ -21,5 +21,5 @@ const Setting = props => {
 };
 
 export default Setting;
-export { getSetting as getConfigs };
-export { saveLocalSetting as setConfigs };
+export { getConfigs };
+export { setConfigs };

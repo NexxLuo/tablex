@@ -98,7 +98,7 @@ class Pager extends React.Component {
 
     return (
       <div className="tablex__pager">
-        <div className="table__pager__number">
+        <div className="tablex__pager__number">
           <Pagination {...pagerAttr} />
           {refreshButton}
         </div>

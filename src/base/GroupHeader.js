@@ -5,7 +5,7 @@ const Column = ({ cell, depth, columnDepth, headerHeight, dataIndex }) => {
   let h = (columnDepth - depth + 1) * headerHeight;
 
   return (
-    <div className="tablex-head-column" style={{ height: h }} title={dataIndex}>
+    <div className="tablex-head-column" style={{ height: h }} >
       {cell}
     </div>
   );
