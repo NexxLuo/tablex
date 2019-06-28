@@ -142,8 +142,8 @@ class Index extends React.Component {
       console.log("onItemClick：", rowData.key);
 
       //onSelect(rowData);
-      event.stopPropagation();
-      event.nativeEvent.stopImmediatePropagation();
+      // event.stopPropagation();
+      // event.nativeEvent.stopImmediatePropagation();
     };
   };
 
@@ -190,9 +190,7 @@ class Index extends React.Component {
               onSelectChange={keys => {
                 this.setState({ selKey: keys[0] });
               }}
-              rowEventHandlers={{
-                onClick: ({ event }) => {}
-              }}
+              rowSelectClassName=""
             />
           </Content>
         </Layout>

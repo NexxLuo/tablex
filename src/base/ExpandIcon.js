@@ -23,7 +23,7 @@ const ExpandIcon = props => {
   let cls = "tablex__expandicon";
 
   if (loading === true) {
-    return <ExpandLoading />;
+    return <ExpandLoading style={{ marginLeft: depth * 20 }} />;
   }
 
   if (expandable === undefined) {

@@ -21,7 +21,8 @@ Table.defaultProps = {
   showHeader: true,
   striped: true,
   bordered: true,
-  rowHeight: 40
+  rowHeight: 40,
+  rowSelectClassName: "tablex__row--selected"
 };
 
 Table.propTypes = {
@@ -46,6 +47,9 @@ Table.propTypes = {
 
   /** 行高 */
   rowHeight: PropTypes.number,
+
+  /** 行选中时的样式类名 */
+  rowSelectClassName: PropTypes.string,
 
   /**
    * 行事件对象

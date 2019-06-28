@@ -32,7 +32,8 @@ class Table extends React.Component {
       checkStrictly: false,
       striped: true,
       showHeader: true,
-      bordered: true
+      bordered: true,
+      rowSelectClassName: ""
     };
 
     if (typeof props.initRef === "function") {
@@ -53,7 +54,8 @@ class Table extends React.Component {
       striped,
       showHeader,
       bordered,
-      rowHeight
+      rowHeight,
+      rowSelectClassName
     } = nextProps;
 
     let data = nextProps.data || [];
@@ -92,7 +94,6 @@ class Table extends React.Component {
         columnsArr,
         "key"
       );
-
 
       let hasFrozenLeft = false;
 
@@ -162,7 +163,8 @@ class Table extends React.Component {
         striped,
         showHeader,
         bordered,
-        rowHeight
+        rowHeight,
+        rowSelectClassName
       };
 
       if ("selectedRowKeys" in nextProps) {
@@ -574,7 +576,7 @@ class Table extends React.Component {
   };
 
   rowClassName = ({ rowData, rowIndex }) => {
-    let { rowKey, selectedRowKeys } = this.state;
+    let { rowKey, selectedRowKeys, rowSelectClassName } = this.state;
     let key = rowData[rowKey];
     let isSelected = false;
 
@@ -591,7 +593,7 @@ class Table extends React.Component {
     }
 
     if (isSelected) {
-      cls.push("tablex__row--selected");
+      cls.push(rowSelectClassName);
     }
 
     let tempCls = "";
