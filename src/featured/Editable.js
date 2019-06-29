@@ -2,7 +2,7 @@ import React from "react";
 import ReactDom from "react-dom";
 import cloneDeep from "lodash/cloneDeep";
 import merge from "lodash/merge";
-import Table from "../base/index";
+import Table from "./Table";
 import { treeToFlatten as treeToList, treeFilter } from "../base/utils";
 import Tooltip from "antd/lib/tooltip";
 import Button from "antd/lib/button";
@@ -25,22 +25,14 @@ class EditableTable extends React.Component {
   constructor(props) {
     super(props);
 
-    let configs = {};
-
-    if (props.tableId) {
-      configs = getConfigs(props.tableId) || {};
-    }
-
     this.state = {
       rowKey: props.rowKey,
       propsOriginal: {},
       rawColumns: [],
       columns: [],
-      columnsConfig: configs.columnsConfig || null,
       data: [],
       dataList: [],
       sourceData: [],
-      pagination: {},
       changedRows: [],
       isEditAll: false,
       isAdding: false,
@@ -50,9 +42,7 @@ class EditableTable extends React.Component {
       editKeys: [],
       editSaveLoading: false,
       deleteLoading: false,
-      dataControled: false,
-      //编辑前的原始数据，数据受控时，必须传入此值，当编辑被取消时，此值会覆盖值表格数据
-      rawData: []
+      dataControled: false
     };
   }
 
@@ -83,37 +73,17 @@ class EditableTable extends React.Component {
 
     let data = nextProps.data || nextProps.dataSource;
 
-    if ("pagination" in nextProps) {
-      nextState.pagination = nextProps.pagination;
-
-      const newPagination = {
-        ...prevState.pagination,
-        ...nextProps.pagination
-      };
-      newPagination.current = newPagination.current || 1;
-      newPagination.pageSize = newPagination.pageSize || 10;
-
-      if (nextProps.pagination !== false) {
-        nextState.pagination = newPagination;
-      } else {
-        nextState.pagination = {};
-      }
-    }
-
     if (prevState.propsOriginal !== nextProps) {
       nextState.propsOriginal = nextProps;
 
-      // newState.isEditAll = false;
-      // newState.editKeys = [];
       nextState.changedRows = [];
 
       if (prevState.dataControled === true) {
-        let newData = data || []; //data || [];//
+        let newData = data || [];
         let dataList = treeToList(newData).list;
         nextState.dataList = dataList;
         nextState.data = newData;
         nextState.sourceData = cloneDeep(newData);
-        nextState.rawData = cloneDeep(nextProps.rawData || []);
       } else {
         if (prevState.sourceData !== data) {
           let newData = data || [];
@@ -121,7 +91,6 @@ class EditableTable extends React.Component {
           nextState.dataList = dataList;
           nextState.data = newData;
           nextState.sourceData = cloneDeep(newData);
-          nextState.rawData = cloneDeep(nextProps.rawData || []);
         }
       }
     }
@@ -131,7 +100,13 @@ class EditableTable extends React.Component {
   componentDidMount() {}
 
   updateComponent = () => {
-    this.forceUpdate();
+    let { data, dataList, addedData } = this.state;
+
+    this.setState({
+      data: cloneDeep(data),
+      dataList: cloneDeep(dataList),
+      addedData: cloneDeep(addedData)
+    });
   };
 
   delayTimer = null;
@@ -178,13 +153,7 @@ class EditableTable extends React.Component {
     if (validateTrigger === "onChange") {
       this.validateRow(newRow);
       this.updateComponent();
-      // this.delayUpdate(() => {
-      //    // this.validateRow(newRow);
-      // });
     }
-
-    //需要调用更新，否则editor onchange改变了其它字段值后，最新的值无法传递给editor回调中，因为未调用editor
-    //this.updateComponent();
   };
 
   editChange = (newValues = {}, row, index) => {
@@ -356,13 +325,13 @@ class EditableTable extends React.Component {
           });
 
           this.validatorAsync = [];
-          this.forceUpdate();
+          this.updateComponent();
 
           resolve(bl);
         });
       } else {
         if (arr.length > 0) {
-          this.forceUpdate();
+          this.updateComponent();
         }
 
         resolve(bl);
@@ -446,93 +415,15 @@ class EditableTable extends React.Component {
     return null;
   };
 
-  dropdown_button_ref = React.createRef();
-  columnSettingMenuShow = e => {
-    e.target.className = "tablex__column__inner__dropdown opened";
-
-    if (this.dropdown_button_ref && this.dropdown_button_ref.current) {
-      this.dropdown_button_ref.current.click();
-    }
-
-    this.setState({
-      columnMenu: {
-        columnKey: e.target.dataset.columnkey,
-        trigger: e.target,
-        visible: true,
-        offsetX: e.clientX,
-        offsetY: e.clientY
-      }
-    });
-  };
-
-  columnSettingMenuHide = visible => {
-    let columnMenu = this.state.columnMenu || {};
-    if (columnMenu.trigger) {
-      columnMenu.trigger.className = "tablex__column__inner__dropdown";
-    }
-    this.setState({
-      columnMenu: Object.assign(columnMenu, { visible: false, trigger: null })
-    });
-  };
-
-  onColumnResize = ({ column, width }) => {
-    let columnKey = column.key || column.dataIndex;
-    // console.log("onColumnResize:",width)
-    // let { columnsConfig } = this.state;
-    // let configs = columnsConfig || {};
-    // let config = configs[columnKey];
-    // if (config) {
-    //   config.width = width;
-    // }else{
-    //   this.state.columnsConfig
-    // }
-
-    this.onColumnChange(columnKey, { width });
-  };
-
-  onColumnChange = (key, config) => {
-    let columnKey = key;
-
-    let { columnsConfig, columnMenu } = this.state;
-
-    let configs = columnsConfig || {};
-
-    if (!columnKey && columnMenu) {
-      columnKey = columnMenu.columnKey;
-    }
-
-    let prevConfig = configs[columnKey] || {};
-    let nextConfig = {
-      [columnKey]: Object.assign({}, prevConfig, config)
-    };
-
-    let newConfigs = { ...configs, ...nextConfig };
-
-    setConfigs(this.props.tableId, {
-      columnsConfig: newConfigs,
-      groupedColumnKey: null
-    });
-
-    this.setState({
-      columnsConfig: newConfigs
-    });
-  };
-
   formatColumns = () => {
-    let { columns, editKeys, isEditAll, isEditing, columnsConfig } = this.state;
-
-    let configs = columnsConfig || {};
+    let { columns, editKeys, isEditAll, isEditing } = this.state;
 
     let rowKey = this.props.rowKey;
 
     let arr = columns;
 
     arr = treeFilter(columns, d => {
-      let columnKey = d.key || d.dataIndex;
       let bl = true;
-
-      let config = configs[columnKey] || {};
-      bl = !config.hidden;
 
       if (isEditing === true) {
         bl = d.editingVisible !== false;
@@ -542,38 +433,6 @@ class EditableTable extends React.Component {
     });
 
     let cols = treeToList(arr).leafs;
-
-    cols.forEach((d, i) => {
-      let columnKey = d.key || d.dataIndex;
-      let config = configs[columnKey] || configs[columnKey] || {};
-
-      if ("fixed" in config) {
-        d.fixed = config.fixed;
-      }
-
-      if ("width" in config) {
-        d.width = config.width;
-      }
-
-      if ("order" in config) {
-        d.order = config.order;
-      } else {
-        d.order = i;
-      }
-
-      d.headerRenderer = ({ column }) => {
-        return (
-          <div className="tablex__column__inner">
-            <span className="tablex__column__inner__title">{column.title}</span>
-            <span
-              className="tablex__column__inner__dropdown"
-              data-columnkey={columnKey}
-              onClick={this.columnSettingMenuShow}
-            />
-          </div>
-        );
-      };
-    });
 
     if (isEditAll === true) {
       cols.forEach(d => {
@@ -967,8 +826,8 @@ class EditableTable extends React.Component {
     let changedRows = this.getChangedRows();
 
     let editType = this.editType;
-    let { data, sourceData, deletedRows, rawData, addedData } = this.state;
-    let { allowSaveEmpty, alwaysValidate, isAppend } = this.props;
+    let { data, addedData } = this.state;
+    let { allowSaveEmpty, alwaysValidate } = this.props;
 
     let newRows = [].concat(data);
     if (editType === "add") {
@@ -995,6 +854,8 @@ class EditableTable extends React.Component {
     } else {
       bl = await this.validate();
     }
+
+    console.log("alwaysValidate:", alwaysValidate);
 
     if (bl === false) {
       message.error("信息录入不正确，请检查");
@@ -1356,11 +1217,6 @@ class EditableTable extends React.Component {
     return newProps;
   };
 
-  bottomExtra = () => {
-    if (typeof this.props.bottomExtra === "function") {
-    }
-  };
-
   createToolBar = () => {
     if (this.props.editable === true) {
       let tools = this.editTools();
@@ -1383,18 +1239,10 @@ class EditableTable extends React.Component {
     return null;
   };
 
-  hasPagination() {
-    return this.props.pagination !== false;
-  }
-
   getDataRows = () => {
     let { data, addedData, isAdding, isAddingRange, dataList } = this.state;
 
     let arr = data;
-
-    if (this.hasPagination()) {
-      arr = this.getCurrentPageData(data);
-    }
 
     let { isAppend, rowKey } = this.props;
 
@@ -1435,59 +1283,6 @@ class EditableTable extends React.Component {
     }
   };
 
-  onPageChange = (pageIndex, pageSize) => {
-    let { pagination } = this.state;
-    let fn = this.state.pagination.onPageChange;
-
-    if (typeof fn === "function") {
-      fn(pageIndex, pageSize);
-    } else {
-      this.setState({
-        pagination: {
-          ...pagination,
-          current: pageIndex,
-          pageSize
-        }
-      });
-    }
-  };
-
-  getMaxCurrent(total) {
-    const {
-      pagination: { current, pageSize }
-    } = this.state;
-    if ((current - 1) * pageSize >= total) {
-      return Math.floor((total - 1) / pageSize) + 1;
-    }
-    return current;
-  }
-
-  getCurrentPageData(data) {
-    let current;
-    let pageSize;
-    const state = this.state;
-    // 如果没有分页的话，默认全部展示
-    if (!this.hasPagination()) {
-      pageSize = data.length;
-      current = 1;
-    } else {
-      pageSize = state.pagination.pageSize;
-      current = this.getMaxCurrent(state.pagination.total || data.length);
-    }
-
-    // 分页
-    // ---
-    // 当数据量少于等于每页数量时，直接设置数据
-    // 否则进行读取分页数据
-    if (data.length > pageSize) {
-      data = data.filter((_, i) => {
-        return i >= (current - 1) * pageSize && i < current * pageSize;
-      });
-    }
-
-    return data;
-  }
-
   api = {
     editAll: this.editAll,
     addRange: this.addRange,
@@ -1499,90 +1294,30 @@ class EditableTable extends React.Component {
     getData: () => this.state.data
   };
 
-  renderHeader = () => {
+  headerExtra = () => {
     let header = null;
 
-    let { editToolsConfig = {}, editable } = this.props;
+    let { editToolsConfig = {} } = this.props;
     let toolBarPosition = editToolsConfig.position;
 
     if (toolBarPosition === "top") {
-      header = (
-        <div className="tablex__container__header">{this.createToolBar()}</div>
-      );
+      header = this.createToolBar();
     }
 
     return header;
   };
 
-  renderFooter = () => {
-    let footer = null;
-
-    let { editToolsConfig = {}, editable, settable, tableId } = this.props;
+  footerExtra = () => {
+    let { editToolsConfig = {} } = this.props;
     let toolBarPosition = editToolsConfig.position;
 
-    let pageAttr = this.state.pagination;
-    const dataTotal = pageAttr.total || this.state.data.length;
-
-    let hasPager = this.hasPagination();
-
     let toolBar = null;
-    let settingButton = null;
-    let pager = null;
 
     if (toolBarPosition === "bottom") {
       toolBar = this.createToolBar();
     }
 
-    if (settable === true && tableId) {
-      settingButton = (
-        <div key="_settingButton" style={{ marginRight: "5px" }}>
-          <Setting
-            tableId={tableId}
-            onSave={this.saveConfig}
-            onReset={this.resetConfig}
-            configs={this.state.columnsConfig}
-            columns={this.state.rawColumns}
-          />
-        </div>
-      );
-    }
-
-    if (hasPager) {
-      pager = (
-        <Pagination
-          {...pageAttr}
-          total={dataTotal}
-          onPageChange={this.onPageChange}
-        />
-      );
-    }
-
-    if (settingButton !== null || toolBar !== null || pager !== null) {
-      footer = (
-        <div className="tablex__container__footer">
-          {settingButton}
-          {toolBar}
-          {pager}
-        </div>
-      );
-    }
-
-    return footer;
-  };
-
-  columnSetting_modal_ref = React.createRef();
-  toggleSettingModal = () => {
-    if (this.columnSetting_modal_ref && this.columnSetting_modal_ref.current) {
-      this.columnSetting_modal_ref.current.toggle();
-    }
-  };
-
-  saveConfig = configs => {
-    this.setState({ columnsConfig: configs });
-  };
-
-  resetConfig = () => {
-    this.setState({ columnsConfig: {} });
+    return toolBar;
   };
 
   render() {
@@ -1593,51 +1328,15 @@ class EditableTable extends React.Component {
     let props = this.props;
 
     let newProps = {
+      editable: true,
       data: arr,
       columns,
       initRef: this.initRef,
-      onColumnResize: this.onColumnResize
+      headerExtra: this.headerExtra,
+      footerExtra: this.footerExtra
     };
 
-    let { columnMenu } = this.state;
-    let columnMenuState = columnMenu || {};
-
-    return (
-      <div className="tablex__container">
-        {this.renderHeader()}
-        <div className="tablex__container__body">
-          <Table {...props} {...newProps} />
-        </div>
-        {this.renderFooter()}
-
-        <Popover
-          trigger="click"
-          onVisibleChange={this.columnSettingMenuHide}
-          content={
-            <ColumnDropMenu
-              options={{ pinable: true, filterable: true, groupable: false }}
-              columns={this.state.columns}
-              columnsConfig={this.state.columnsConfig}
-              onChange={this.onColumnChange}
-            />
-          }
-          arrowPointAtCenter={true}
-          placement="bottomRight"
-        >
-          <span
-            style={{
-              width: 1,
-              height: 1,
-              position: "fixed",
-              left: columnMenuState.offsetX,
-              top: columnMenuState.offsetY,
-              display: columnMenuState.visible ? "block" : "none"
-            }}
-            ref={this.dropdown_button_ref}
-          />
-        </Popover>
-      </div>
-    );
+    return <Table {...props} {...newProps} />;
   }
 }
 

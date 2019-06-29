@@ -1,5 +1,5 @@
 import React from "react";
-import FeaturedTable from "./Table";
+import FeaturedTable from "./Editable";
 import PropTypes from "prop-types";
 import "./styles.css";
 

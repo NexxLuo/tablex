@@ -25,6 +25,7 @@ class EditableTable extends React.Component {
 
     this.state = {
       pagination: false,
+      data: [],
       columns: [],
       columnsConfig: configs.columnsConfig || null,
       columnMenu: null
@@ -34,9 +35,11 @@ class EditableTable extends React.Component {
   static getDerivedStateFromProps(nextProps, prevState) {
     let nextState = {};
 
-    let columns = nextProps.columns || [];
+    let columns = cloneDeep(nextProps.columns || []);
 
     nextState.columns = columns;
+    nextState.data = nextProps.data || [];
+    nextState.rawColumns = nextProps.columns || [];
 
     if ("pagination" in nextProps) {
       nextState.pagination = nextProps.pagination;
@@ -235,18 +238,28 @@ class EditableTable extends React.Component {
 
     arr = orderBy(arr, ["order"], ["asc"]);
 
-
     return cloneDeep(arr);
+  };
+
+  saveConfig = configs => {
+    this.setState({ columnsConfig: configs });
+  };
+
+  resetConfig = () => {
+    this.setState({ columnsConfig: {} });
   };
 
   renderHeader = () => {
     let header = null;
 
-    let { editToolsConfig = {}, editable } = this.props;
-    let toolBarPosition = editToolsConfig.position;
+    let headerExtra = null;
 
-    if (toolBarPosition === "top") {
-      header = <div className="tablex__container__header" />;
+    if (typeof this.props.headerExtra === "function") {
+      headerExtra = this.props.headerExtra();
+    }
+
+    if (headerExtra) {
+      header = <div className="tablex__container__header">{headerExtra}</div>;
     }
 
     return header;
@@ -255,12 +268,36 @@ class EditableTable extends React.Component {
   renderFooter = () => {
     let footer = null;
 
-    let pageAttr = this.state.pagination;
-    const dataTotal = pageAttr.total || this.state.data.length;
+    let { pagination: pageAttr, data } = this.state;
+
+    let { settable, tableId } = this.props;
+
+    let footerExtra = null;
+
+    if (typeof this.props.footerExtra === "function") {
+      footerExtra = this.props.footerExtra();
+    }
+
+    const dataTotal = pageAttr.total || data.length;
 
     let hasPager = this.hasPagination();
 
     let pager = null;
+    let settingButton = null;
+
+    if (settable === true && tableId) {
+      settingButton = (
+        <div key="_settingButton" style={{ marginRight: "5px" }}>
+          <Setting
+            tableId={tableId}
+            onSave={this.saveConfig}
+            onReset={this.resetConfig}
+            configs={this.state.columnsConfig}
+            columns={this.state.rawColumns}
+          />
+        </div>
+      );
+    }
 
     if (hasPager) {
       pager = (
@@ -272,8 +309,14 @@ class EditableTable extends React.Component {
       );
     }
 
-    if (pager !== null) {
-      footer = <div className="tablex__container__footer">{pager}</div>;
+    if (pager !== null || settingButton !== null || footerExtra !== null) {
+      footer = (
+        <div className="tablex__container__footer">
+          {settingButton}
+          {footerExtra}
+          {pager}
+        </div>
+      );
     }
 
     return footer;

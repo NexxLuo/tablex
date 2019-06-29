@@ -119,9 +119,7 @@ class Demo extends React.PureComponent {
         key: "tel",
         title: "电话号码",
         width: 150,
-        render: () => {
-          return <div>test</div>;
-        },
+       
         validator: (value, row) => {
           if (!value) {
             return { valid: false, message: "" };
@@ -152,6 +150,8 @@ class Demo extends React.PureComponent {
   }
 
   onEditSave(changedRows, newData, type) {
+
+    console.log("onEditSave:",newData)
     this.setState({
       data: newData
     });
@@ -174,7 +174,7 @@ class Demo extends React.PureComponent {
         defaultAddCount={1}
         onEditSave={this.onEditSave.bind(this)}
         isAppend={true}
-        alwaysValidate={true}
+        alwaysValidate={false}
         validateTrigger="onChange"
         rowKey="id"
       />
