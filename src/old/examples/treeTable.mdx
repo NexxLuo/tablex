@@ -1,0 +1,155 @@
+---
+route:/
+---
+
+import { Playground, Props } from "docz";
+import Table from "../src/index";
+import LazyLoad from "./lazyLoad";
+
+# Table
+
+## Properties
+
+<Props of={Table} />
+
+## Usage
+
+<Playground style={{ height: 600 }}>
+  <Table
+    rowKey="key"
+    columns={[
+      {
+        title: "Key",
+        dataIndex: "key",
+        width: 200
+      },
+      {
+        title: "Name",
+        dataIndex: "__depth",
+        width: 200
+      },
+      {
+        title: "Age",
+        dataIndex: "age",
+        width: 200
+      },
+      {
+        title: "Address",
+        children: [
+          {
+            title: "公司地址",
+            dataIndex: "address1",
+            width: 200
+          },
+          {
+            title: "家庭地址",
+            dataIndex: "address2",
+            width: 200,
+            children: [
+              {
+                title: "家庭地址1",
+                dataIndex: "address3",
+                width: 200
+              },
+              {
+                title: "家庭地址2",
+                dataIndex: "address4",
+                width: 200
+              }
+            ]
+          }
+        ]
+      }
+    ]}
+    dataSource={(() => {
+      let data = [];
+      for (let i = 0; i < 4; i++) {
+        data.push({
+          key: i,
+          name: `Edward King ${i}`,
+          age: 32,
+          address1: `London, Park Lane no. ${i}`,
+          address2: `London, Park Lane no. ${i}`,
+          address3: `London, Park Lane no. ${i}`,
+          address4: `London, Park Lane no. ${i}`,
+          children: [
+            {
+              key: i + "-" + 1,
+              name: `Edward King ${i}`,
+              age: 32,
+              address1: `London, Park Lane no. ${i}`,
+              address2: `London, Park Lane no. ${i}`,
+              address3: `London, Park Lane no. ${i}`,
+              address4: `London, Park Lane no. ${i}`
+            },
+            {
+              key: i + "-" + 2,
+              name: `Edward King ${i}`,
+              age: 32,
+              address1: `London, Park Lane no. ${i}`,
+              address2: `London, Park Lane no. ${i}`,
+              address3: `London, Park Lane no. ${i}`,
+              address4: `London, Park Lane no. ${i}`,
+              children: [
+                {
+                  key: i + "-2-" + 1,
+                  name: `Edward King ${i}`,
+                  age: 32,
+                  address1: `London, Park Lane no. ${i}`,
+                  address2: `London, Park Lane no. ${i}`,
+                  address3: `London, Park Lane no. ${i}`,
+                  address4: `London, Park Lane no. ${i}`,
+                  children: [
+                    {
+                      key: i + "-2-1-" + 1,
+                      name: `Edward King ${i}`,
+                      age: 32,
+                      address1: `London, Park Lane no. ${i}`,
+                      address2: `London, Park Lane no. ${i}`,
+                      address3: `London, Park Lane no. ${i}`,
+                      address4: `London, Park Lane no. ${i}`
+                    },
+                    {
+                      key: i + "-2-1-" + 2,
+                      name: `Edward King ${i}`,
+                      age: 32,
+                      address1: `London, Park Lane no. ${i}`,
+                      address2: `London, Park Lane no. ${i}`,
+                      address3: `London, Park Lane no. ${i}`,
+                      address4: `London, Park Lane no. ${i}`
+                    }
+                  ]
+                },
+                {
+                  key: i + "-2-" + 2,
+                  name: `Edward King ${i}`,
+                  age: 32,
+                  address1: `London, Park Lane no. ${i}`,
+                  address2: `London, Park Lane no. ${i}`,
+                  address3: `London, Park Lane no. ${i}`,
+                  address4: `London, Park Lane no. ${i}`
+                }
+              ]
+            },
+            {
+              key: i + "-" + 3,
+              name: `Edward King ${i}`,
+              age: 32,
+              address1: `London, Park Lane no. ${i}`,
+              address2: `London, Park Lane no. ${i}`,
+              address3: `London, Park Lane no. ${i}`,
+              address4: `London, Park Lane no. ${i}`
+            }
+          ]
+        });
+      }
+      return data;
+    })()}
+  />
+</Playground>
+
+## Lazy load
+
+<Playground style={{ height: 600 }}>
+  <LazyLoad />
+</Playground>
