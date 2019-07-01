@@ -327,7 +327,7 @@ class Table extends React.Component {
     return ["__checkbox_column", "__ordernumber_column"].indexOf(type) > -1;
   };
 
-  onSelectChange = rowKey => {
+  onSelectChange = (rowKey, rowData, rowIndex) => {
     let { selectedRowKeys } = this.state;
     let i = selectedRowKeys.indexOf(rowKey);
     let nextKeys = [].concat(selectedRowKeys);
@@ -339,8 +339,16 @@ class Table extends React.Component {
     if (this.isSingleSelect()) {
       if (i > -1) {
         nextKeys = [];
+
+        if (typeof this.props.onUnSelect === "function") {
+          this.props.onUnSelect(rowData, rowIndex, rowKey);
+        }
       } else {
         nextKeys = [rowKey];
+
+        if (typeof this.props.onSelect === "function") {
+          this.props.onSelect(rowData, rowIndex, rowKey);
+        }
       }
     } else if (this.isMultipleSelect()) {
       if (i > -1) {
@@ -364,7 +372,7 @@ class Table extends React.Component {
       let o = this.props.rowEventHandlers || {};
 
       if (this.isSingleSelect()) {
-        this.onSelectChange(rowKey);
+        this.onSelectChange(rowKey, rowData, rowIndex);
       }
 
       if (this.isMultipleSelect()) {
@@ -454,8 +462,16 @@ class Table extends React.Component {
   onCheckAllChange = bl => {
     if (bl === true) {
       this.addAllChecked();
+
+      if (typeof this.props.onSelectAll === "function") {
+        this.props.onSelectAll();
+      }
     } else {
       this.removeAllChecked();
+
+      if (typeof this.props.onUnSelectAll === "function") {
+        this.props.onUnSelectAll();
+      }
     }
   };
 

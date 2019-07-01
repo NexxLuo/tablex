@@ -70,6 +70,16 @@ Table.propTypes = {
    *  (selectedKeys,selectedRows,triggerKey) => void
    * */
   onSelectChange: PropTypes.func,
+
+  /** 行单选事件 */
+  onSelect: PropTypes.func,
+  /** 行单选取消事件 */
+  onUnSelect: PropTypes.func,
+  /** 全选事件 */
+  onSelectAll: PropTypes.func,
+  /** 取消全选事件 */
+  onUnSelectAll: PropTypes.func,
+
   /** 是否显示序号列 */
   orderNumber: PropTypes.bool,
   /** 列是否可设置宽度，优先级小于column.resizable */
