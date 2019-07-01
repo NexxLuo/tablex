@@ -16,6 +16,7 @@
     "doc": "docz dev",
     "docb": "docz build",
     "pub": "father build&&npm publish",
+    "docdb": "set DOCZ_BASE=/tablex&& docz build ",
     "docd": "gh-pages -d ./.docz/dist"
   },
   "main": "lib/index.js",

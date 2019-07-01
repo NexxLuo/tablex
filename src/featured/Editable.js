@@ -855,8 +855,6 @@ class EditableTable extends React.Component {
       bl = await this.validate();
     }
 
-    console.log("alwaysValidate:", alwaysValidate);
-
     if (bl === false) {
       message.error("信息录入不正确，请检查");
       return;

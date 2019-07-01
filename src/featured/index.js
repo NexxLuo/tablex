@@ -3,9 +3,6 @@ import FeaturedTable from "./Editable";
 import PropTypes from "prop-types";
 import "./styles.css";
 
-/**
- * 表格
- * */
 const Table = React.forwardRef((props, ref) => (
   <FeaturedTable {...props} ref={ref} />
 ));

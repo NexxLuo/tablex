@@ -28,19 +28,7 @@ const generateData = (columns, count = 20, prefix = "row-") =>
 const columns = generateColumns(10);
 const data = generateData(columns, 100);
 
-let fixedColumns = columns.map((column, columnIndex) => {
-  let fixed;
-  if (columnIndex < 2) fixed = "left";
-  if (columnIndex > 8) fixed = "right";
-
-  return {
-    ...column,
-    resizable: true,
-    editor: () => {
-      return <input />;
-    }
-  };
-});
+ 
 
 class Demo extends Component {
   state = {
@@ -75,7 +63,7 @@ class Demo extends Component {
     return (
       <Table
         rowKey="id"
-        columns={fixedColumns}
+        columns={columns}
         editToolsConfig={{
           position: "bottom"
         }}

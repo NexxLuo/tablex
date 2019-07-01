@@ -33,7 +33,8 @@ class Table extends React.Component {
       striped: true,
       showHeader: true,
       bordered: true,
-      rowSelectClassName: ""
+      rowSelectClassName: "",
+      expandColumnKey: ""
     };
 
     if (typeof props.initRef === "function") {
@@ -55,7 +56,8 @@ class Table extends React.Component {
       showHeader,
       bordered,
       rowHeight,
-      rowSelectClassName
+      rowSelectClassName,
+      expandColumnKey
     } = nextProps;
 
     let data = nextProps.data || [];
@@ -164,7 +166,8 @@ class Table extends React.Component {
         showHeader,
         bordered,
         rowHeight,
-        rowSelectClassName
+        rowSelectClassName,
+        expandColumnKey
       };
 
       if ("selectedRowKeys" in nextProps) {

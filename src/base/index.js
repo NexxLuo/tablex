@@ -22,7 +22,8 @@ Table.defaultProps = {
   striped: true,
   bordered: true,
   rowHeight: 40,
-  rowSelectClassName: "tablex__row--selected"
+  rowSelectClassName: "tablex__row--selected",
+  expandColumnKey: ""
 };
 
 Table.propTypes = {
@@ -74,6 +75,9 @@ Table.propTypes = {
   resizable: PropTypes.bool,
   /** 多选模式是否级联控制checkbox选中状态 */
   checkStrictly: PropTypes.bool,
+
+  /** 展开按钮所在的列 */
+  expandColumnKey: PropTypes.string,
 
   /** 展开的行键值 */
   expandedRowKeys: PropTypes.array,

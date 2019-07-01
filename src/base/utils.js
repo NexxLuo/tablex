@@ -117,6 +117,51 @@ export function treeToFlatten(arr) {
   return { list, leafs, roots };
 }
 
+
+export function listToTree(arr = [], idField, pidField) {
+
+  let tree = [];
+
+  function getChildren(item) {
+
+      let id = item[idField];
+
+      let childrens = arr.filter(y => y[pidField] === id);
+
+      for (let i = 0; i < childrens.length; i++) {
+
+          let d = childrens[i];
+          const nextId = d[idField];
+
+          const nextChildrens = arr.filter(y => y[pidField] === nextId);
+
+          if (nextChildrens.length > 0) {
+              d.children = getChildren(d);
+          }
+
+      }
+
+      return childrens;
+
+  }
+
+  let roots = arr.filter(d => !d[pidField]);
+
+
+  for (let i = 0, len = roots.length; i < len; i++) {
+
+      let d = Object.assign({}, roots[i]);
+
+      d.children = getChildren(d);
+
+      tree.push(d)
+  }
+
+  return tree;
+}
+
+
+
 export function getTreeLeafs(arr) {
   let treeList = arr || [];
   //末级节点
