@@ -14,7 +14,8 @@ yarn add tablex
 
 ```javascript
 import React, { Component } from "react";
-import { Table, EditableTable } from "tablex";
+import Table, { flatten, unflatten } from "tablex";
+
 
 class Demo extends Component {
   state = {

@@ -33,6 +33,7 @@ Table.propTypes = {
   columns: PropTypes.array.isRequired,
   /** 行数据源 */
   dataSource: PropTypes.array,
+
   /** table实例回调
    * (ins:React.Element) => void
    */

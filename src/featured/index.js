@@ -30,16 +30,12 @@ Table.defaultProps = {
   validateDelay: 300,
   allowSaveEmpty: false,
   dataControled: false,
-  alwaysValidate: false,
-  settable: true,
-  pagination: false
+  alwaysValidate: false
 };
 
 Table.propTypes = {
   /** 是否允许编辑 */
   editable: PropTypes.bool,
-  /** 分页 */
-  pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   /** 工具栏，工具按钮 ['edit', 'add','delete',{icon:"",text:"",props:{},handler:Function},Function] addSingle:单行新增 */
   editTools: PropTypes.array,
   /** 工具栏，工具按钮属性配置{ position: "bottom", itemStyle: { marginLeft: "5px" }, editText: "", editIcon: "", addText: "", addIcon: "", deleteText: "", deleteIcon: "", okText: "", okIcon: "", cancelText: "", cancelIcon: "" } */
@@ -91,40 +87,7 @@ Table.propTypes = {
   /** 无论是否存在输入变化，是否始终验证 */
   alwaysValidate: PropTypes.bool,
   /** 数据是否完全受控，如若受控，请在onEditSave、onCancel中自行更新数据源 */
-  dataControled: PropTypes.bool,
-  /** 是否可进行属性设置 */
-  settable: PropTypes.bool,
-  /** 表格全局id，通过此id记忆表格配置，由于采用localStorage存储配置，需保证id唯一 */
-  tableId: function(props, propName, componentName) {
-    let count = 0;
-    let v = props[propName];
-
-    if (typeof v !== "undefined" && v !== "") {
-      let tbs = document.getElementsByClassName("table-extend");
-
-      for (let i = 0, len = tbs.length; i < len; i++) {
-        const tb = tbs[i];
-        if (tb) {
-          const t = tb.getAttribute("data-tableid");
-          if (t === v) {
-            count = count + 1;
-
-            if (count > 1) {
-              break;
-            }
-          }
-        }
-      }
-    }
-
-    if (count > 1) {
-      return new Error(
-        ` Encountered two table with the same tableId, '${v}'.The tableId must be unique in the whole application.
-                  We Recommended set the tableId based on file path.
-                  eg: platform/user/index.js =>  platform-user-xxx `
-      );
-    }
-  }
+  dataControled: PropTypes.bool
 };
 
 export default Table;

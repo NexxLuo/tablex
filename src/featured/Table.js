@@ -1,6 +1,8 @@
 import React from "react";
+import PropTypes from "prop-types";
 import Table from "../base/index";
 import Pagination from "./pagination";
+import Spin from "antd/lib/spin";
 import ColumnDropMenu from "./ColumnDropMenu";
 import { treeToFlatten as treeToList, treeFilter } from "../base/utils";
 import Setting, { getConfigs, setConfigs } from "./setting";
@@ -11,7 +13,7 @@ import cloneDeep from "lodash/cloneDeep";
 /**
  * 表格
  */
-class EditableTable extends React.Component {
+class FeaturedTable extends React.Component {
   dropdown_button_ref = React.createRef();
 
   constructor(props) {
@@ -322,6 +324,28 @@ class EditableTable extends React.Component {
     return footer;
   };
 
+  overlayRenderer = () => {
+    return (
+      <Spin
+        spinning={true}
+        tip="数据加载中，请稍候..."
+        style={{
+          position: "absolute",
+          margin: "auto",
+          left: 0,
+          right: 0,
+          width: 300,
+          height: 50,
+          top: 0,
+          bottom: 0
+        }}
+      />
+    );
+  };
+  emptyRenderer = () => {
+    return <div className="tablex__emptydata">暂无数据</div>;
+  };
+
   render() {
     let props = this.props;
 
@@ -337,8 +361,13 @@ class EditableTable extends React.Component {
     let newProps = {
       data: arr,
       columns,
-      onColumnResize: this.onColumnResize
+      onColumnResize: this.onColumnResize,
+      emptyRenderer: this.emptyRenderer
     };
+
+    if (this.props.loading === true) {
+      newProps.overlayRenderer = this.overlayRenderer;
+    }
 
     let columnMenuState = columnMenu || {};
 
@@ -381,4 +410,58 @@ class EditableTable extends React.Component {
   }
 }
 
-export default EditableTable;
+
+
+FeaturedTable.defaultProps = {
+  settable: true,
+  pagination: false,
+  loading: false
+};
+
+FeaturedTable.propTypes = {
+ 
+  /** 数据是否加载中 */
+  loading: PropTypes.bool,
+
+  /** 分页 */
+  pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+ 
+  /** 是否可进行属性设置 */
+  settable: PropTypes.bool,
+
+  /** 表格全局id，通过此id记忆表格配置，由于采用localStorage存储配置，需保证id唯一 */
+  tableId: function(props, propName, componentName) {
+    let count = 0;
+    let v = props[propName];
+
+    if (typeof v !== "undefined" && v !== "") {
+      let tbs = document.getElementsByClassName("table-extend");
+
+      for (let i = 0, len = tbs.length; i < len; i++) {
+        const tb = tbs[i];
+        if (tb) {
+          const t = tb.getAttribute("data-tableid");
+          if (t === v) {
+            count = count + 1;
+
+            if (count > 1) {
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    if (count > 1) {
+      return new Error(
+        ` Encountered two table with the same tableId, '${v}'.The tableId must be unique in the whole application.
+                  We Recommended set the tableId based on file path.
+                  eg: platform/user/index.js =>  platform-user-xxx `
+      );
+    }
+  }
+};
+
+
+
+export default FeaturedTable;

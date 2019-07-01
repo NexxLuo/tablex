@@ -3,10 +3,14 @@ name: Playground
 ---
 
 import { Playground, Props } from "docz";
-import { Table,flatten  } from "../src/index";
+import Table,{ flatten } from "../src/index";
 import {Input} from "antd";
 
 ## Change the source code to preview
+
+```javascript
+import Table, { flatten, unflatten } from "tablex";
+```
 
 <Playground style={{ height: 600 }}>
  {
@@ -128,6 +132,7 @@ import {Input} from "antd";
       <Table
         rowKey="id"
         editable={true}
+        loading={false}
         columns={columns}
         editToolsConfig={{
           position: "bottom"

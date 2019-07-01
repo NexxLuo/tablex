@@ -1,4 +1,10 @@
-export { default as Table } from "./featured";
+import Table from "./featured";
 
-export { treeToFlatten as flatten,listToTree as unflatten } from "./base/utils";
+export default Table;
 
+export { Table };
+
+export {
+  treeToFlatten as flatten,
+  listToTree as unflatten
+} from "./base/utils";

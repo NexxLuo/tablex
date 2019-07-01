@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Button, Input, Image, Popover } from "antd";
-import Table from "../src/index";
+import { Table } from "../src/index";
 
 class Demo extends React.PureComponent {
   constructor(props) {
@@ -119,7 +119,7 @@ class Demo extends React.PureComponent {
         key: "tel",
         title: "电话号码",
         width: 150,
-       
+
         validator: (value, row) => {
           if (!value) {
             return { valid: false, message: "" };
@@ -150,8 +150,7 @@ class Demo extends React.PureComponent {
   }
 
   onEditSave(changedRows, newData, type) {
-
-    console.log("onEditSave:",newData)
+    console.log("onEditSave:", newData);
     this.setState({
       data: newData
     });
@@ -165,7 +164,7 @@ class Demo extends React.PureComponent {
     let { data, count } = this.state;
 
     return (
-      <EditableTable
+      <Table
         editable={true}
         editToolsConfig={{ position: "top" }}
         editTools={["edit", "add", "delete"]}
