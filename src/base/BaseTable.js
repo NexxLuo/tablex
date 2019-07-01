@@ -109,6 +109,10 @@ class Table extends React.Component {
           hasFrozenLeft = true;
         }
 
+        if (isNaN(d.width)) {
+          d.width = 100;
+        }
+
         if (!d.hasOwnProperty("resizable")) {
           d.resizable = resizable;
         }

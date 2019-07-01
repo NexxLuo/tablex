@@ -5,6 +5,7 @@
   flex: auto;
   flex-direction: column;
   min-height: 0;
+  padding: 1px;
 }
 
 .tablex__container__body {
@@ -24,7 +25,7 @@
 
 .tablex__container__footer {
   padding: 10px 10px;
-  border: 1px solid #eaeaea;
+  outline: 1px solid #eaeaea;
   display: flex;
   align-items: center;
   white-space: nowrap;
