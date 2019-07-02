@@ -39,8 +39,12 @@ class Pager extends React.Component {
   }
 
   onShowSizeChange = (pageIndex, pageSize) => {
-    if (typeof this.props.onPageChange === "function") {
-      this.props.onPageChange(pageIndex, pageSize);
+    if (typeof this.props.onShowSizeChange === "function") {
+      this.props.onShowSizeChange(pageIndex, pageSize);
+    } else {
+      if (typeof this.props.onPageChange === "function") {
+        this.props.onPageChange(pageIndex, pageSize);
+      }
     }
   };
 
@@ -49,12 +53,20 @@ class Pager extends React.Component {
 
     if (typeof this.props.onRefresh === "function") {
       this.props.onRefresh(current, pageSize);
+    } else {
+      if (typeof this.props.onPageChange === "function") {
+        this.props.onPageChange(current, pageSize);
+      }
     }
   };
 
   onPageIndexChange = (pageIndex, pageSize) => {
-    if (typeof this.props.onPageChange === "function") {
-      this.props.onPageChange(pageIndex, pageSize);
+    if (typeof this.props.onChange === "function") {
+      this.props.onChange(pageIndex, pageSize);
+    } else {
+      if (typeof this.props.onPageChange === "function") {
+        this.props.onPageChange(pageIndex, pageSize);
+      }
     }
   };
 

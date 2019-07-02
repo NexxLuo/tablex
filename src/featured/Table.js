@@ -26,6 +26,7 @@ class FeaturedTable extends React.Component {
     }
 
     this.state = {
+      prevProps: null,
       pagination: false,
       data: [],
       columns: [],
@@ -37,11 +38,13 @@ class FeaturedTable extends React.Component {
   static getDerivedStateFromProps(nextProps, prevState) {
     let nextState = {};
 
-    let columns = cloneDeep(nextProps.columns || []);
-
-    nextState.columns = columns;
-    nextState.data = nextProps.data || [];
-    nextState.rawColumns = nextProps.columns || [];
+    if (prevState.prevProps !== nextProps) {
+      let columns = cloneDeep(nextProps.columns || []);
+      nextState.columns = columns;
+      nextState.data = nextProps.data || [];
+      nextState.rawColumns = nextProps.columns || [];
+      nextState.prevProps = nextProps;
+    }
 
     if ("pagination" in nextProps) {
       nextState.pagination = nextProps.pagination;
@@ -410,8 +413,6 @@ class FeaturedTable extends React.Component {
   }
 }
 
-
-
 FeaturedTable.defaultProps = {
   settable: true,
   pagination: false,
@@ -419,13 +420,12 @@ FeaturedTable.defaultProps = {
 };
 
 FeaturedTable.propTypes = {
- 
   /** 数据是否加载中 */
   loading: PropTypes.bool,
 
   /** 分页 */
   pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
- 
+
   /** 是否可进行属性设置 */
   settable: PropTypes.bool,
 
@@ -461,7 +461,5 @@ FeaturedTable.propTypes = {
     }
   }
 };
-
-
 
 export default FeaturedTable;
