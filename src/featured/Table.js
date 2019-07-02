@@ -9,6 +9,36 @@ import Setting, { getConfigs, setConfigs } from "./setting";
 import orderBy from "lodash/orderBy";
 import Popover from "antd/lib/popover";
 import cloneDeep from "lodash/cloneDeep";
+import { SortableContainer, SortableElement } from "react-sortable-hoc";
+import styled from "styled-components";
+
+const RowItem = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+`;
+
+const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
+
+const SortableItem = SortableElement(({ cells }) => <RowItem>{cells}</RowItem>);
+
+function DraggableTableRow(a) {
+  let { rowData, rowIndex, cells,depth } = a;
+
+  return <SortableItem cells={cells} index={rowIndex} data-key={rowData.id} />;
+}
+
+const DraggableTable = SortableContainer(props => {
+  return <Table {...props} rowRenderer={DraggableTableRow} />;
+});
 
 /**
  * 表格
@@ -349,16 +379,42 @@ class FeaturedTable extends React.Component {
     return <div className="tablex__emptydata">暂无数据</div>;
   };
 
+  onDragEnd = result => {
+    if (!result.destination) {
+      return;
+    }
+
+    if (result.destination.index === result.source.index) {
+      return;
+    }
+
+    let data = this.state.data;
+
+    const arr = reorder(data, result.source.index, result.destination.index);
+
+    this.setState({ data: arr });
+  };
+
+  onSortEnd = (a) => {
+    let { oldIndex, newIndex }=a;
+    let data = cloneDeep(this.state.data);
+    const arr = reorder(data, oldIndex, newIndex);
+
+    console.log("onSortEnd:", a);
+
+    this.setState({ data: arr });
+  };
+
   render() {
     let props = this.props;
 
-    let { columnMenu } = this.state;
+    let { columnMenu, data } = this.state;
 
     let columns = this.formatColumns();
 
-    let arr = props.data;
+    let arr = data;
     if (this.hasPagination()) {
-      arr = this.getCurrentPageData(props.data);
+      arr = this.getCurrentPageData(data);
     }
 
     let newProps = {
@@ -378,7 +434,17 @@ class FeaturedTable extends React.Component {
       <div className="tablex__container">
         {this.renderHeader()}
         <div className="tablex__container__body">
-          <Table {...props} {...newProps} />
+          {this.props.draggable === true ? (
+            <DraggableTable
+              {...props}
+              {...newProps}
+              onSortEnd={this.onSortEnd}
+              distance={10}
+              helperClass="tablex__row__dragging"
+            />
+          ) : (
+            <Table {...props} {...newProps} />
+          )}
         </div>
         {this.renderFooter()}
 

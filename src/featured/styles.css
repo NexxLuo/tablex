@@ -97,3 +97,9 @@
   font-size: 16px;
   z-index: 889;
 }
+
+.tablex__row__dragging
+{
+  border: 1px solid #eeeeee;
+  background-color: #ffffff;
+}
