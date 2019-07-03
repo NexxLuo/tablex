@@ -11,11 +11,7 @@ import Popconfirm from "antd/lib/popconfirm";
 import Menu from "antd/lib/menu";
 import Dropdown from "antd/lib/dropdown";
 import Icon from "antd/lib/icon";
-import Popover from "antd/lib/popover";
-import Pagination from "./pagination";
-import ColumnDropMenu from "./ColumnDropMenu";
 import "antd/dist/antd.css";
-import Setting, { getConfigs, setConfigs } from "./setting";
 import orderBy from "lodash/orderBy";
 
 /**
