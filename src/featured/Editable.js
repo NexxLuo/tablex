@@ -1213,7 +1213,7 @@ class EditableTable extends React.Component {
   };
 
   createToolBar = () => {
-    let { editable, readOnly } = this.props;
+    let { editable, readOnly,toolBarStyle } = this.props;
 
     if (editable === true && readOnly !== true) {
       let tools = this.editTools();
@@ -1223,7 +1223,9 @@ class EditableTable extends React.Component {
           <div
             style={{
               backgroundColor: "#ffffff",
-              marginRight: 5
+              marginRight: 5,
+              padding:"10px 0",
+              ...toolBarStyle
             }}
           >
             {tools}

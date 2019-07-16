@@ -11,6 +11,7 @@ Table.defaultProps = {
   editable: false,
   readOnly: false,
   editTools: ["edit", "add"],
+  toolBarStyle: {},
   editToolsConfig: {
     position: "bottom",
     itemStyle: { marginLeft: "5px" },
@@ -36,9 +37,11 @@ Table.defaultProps = {
 
 Table.propTypes = {
   /** 是否只读模式，只读模式下，将无法编辑，且无法触发选择事件 */
-  readOnly: false,
+  readOnly: PropTypes.bool,
   /** 是否允许编辑 */
   editable: PropTypes.bool,
+  /** 工具栏样式 */
+  toolBarStyle: PropTypes.object,
   /** 工具栏，工具按钮 ['edit', 'add','delete',{icon:"",text:"",props:{},handler:Function},Function] addSingle:单行新增 */
   editTools: PropTypes.array,
   /** 工具栏，工具按钮属性配置{ position: "bottom", itemStyle: { marginRight: "5px" }, editText: "", editIcon: "", addText: "", addIcon: "", deleteText: "", deleteIcon: "", okText: "", okIcon: "", cancelText: "", cancelIcon: "" } */

@@ -166,6 +166,7 @@ class Demo extends React.PureComponent {
     return (
       <Table
         editable={true}
+        toolBarStyle={{ padding: "5px 0" }}
         editToolsConfig={{ position: "top" }}
         editTools={["edit", "add", "delete"]}
         columns={this.columns}
