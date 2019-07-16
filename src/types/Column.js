@@ -10,7 +10,7 @@ Column.defaultProps = {
   width: undefined,
   key: "",
   dataIndex: "",
-  resizable: false
+  resizable: true
 };
 
 Column.propTypes = {
@@ -18,7 +18,7 @@ Column.propTypes = {
   title: PropTypes.string,
   /** 列宽 */
   width: PropTypes.number.isRequired,
-  /** 列唯一key */
+  /** 列唯一key，如若不设置，将会以dataIndex作为唯一key */
   key: PropTypes.string,
   /** 列数据字段 */
   dataIndex: PropTypes.string,

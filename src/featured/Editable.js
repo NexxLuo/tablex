@@ -922,7 +922,7 @@ class EditableTable extends React.Component {
   delete = () => {
     let bl = true;
 
-    let selectedKeys = this.tableRef.tableApi.getSelectedKeys();
+    let selectedKeys = this.selectedRowKeys;
 
     if (typeof this.props.onBeforeDelete === "function") {
       bl = this.props.onBeforeDelete(selectedKeys);
@@ -1219,7 +1219,7 @@ class EditableTable extends React.Component {
           <div
             style={{
               backgroundColor: "#ffffff",
-              marginRight:5
+              marginRight: 5
             }}
           >
             {tools}
@@ -1314,6 +1314,11 @@ class EditableTable extends React.Component {
     return toolBar;
   };
 
+  selectedRowKeys = [];
+  onSelectChange = selectedKeys => {
+    this.selectedRowKeys = selectedKeys;
+  };
+
   render() {
     let columns = this.formatColumns();
 
@@ -1325,9 +1330,10 @@ class EditableTable extends React.Component {
       editable: true,
       data: arr,
       columns,
+      onSelectChange: this.onSelectChange,
       initRef: this.initRef,
-      headerExtra: this.headerExtra,
-      footerExtra: this.footerExtra
+      header: this.headerExtra,
+      footer: this.footerExtra
     };
 
     return <Table {...props} {...newProps} />;

@@ -32,7 +32,6 @@ class Index extends React.Component {
       dataIndex: "title",
       title: "物资",
       render: (value, row, index) => {
-        console.log("render");
         let icon;
         if (row.IsLowest) {
           icon = <Icon type="file" theme="twoTone" />;
@@ -137,8 +136,7 @@ class Index extends React.Component {
     return event => {
       const { onSelect } = this.props;
       this.setState({ selKey: rowData.key });
-
-      console.log("onItemClick：", rowData.key);
+ 
 
       //onSelect(rowData);
       // event.stopPropagation();
@@ -148,7 +146,7 @@ class Index extends React.Component {
 
   render() {
     const { treeData } = this.state;
-    console.log(treeData);
+  
     return (
       <>
         <Layout style={{ height: "100%" }}>

@@ -2,17 +2,35 @@
 name: API
 ---
 
-import { Playground, Props } from "docz"; 
-import EditableTable from "../src/types/Table.js";
+import { Playground, Props } from "docz";
+
 import Column from "../src/types/Column.js";
 
-## Table
+import Table from "../src/types/Table.js";
+import Selection from "../src/types/Selection.js";
+import Expandable from "../src/types/Expandable.js";
+import Editable from "../src/types/Editable.js";
+import Other from "../src/types/Other.js";
 
-<Props of={EditableTable} /> 
+
+## Basic
+
+<Props of={Table} />
+
+<Props of={Other} />
+
+
+## Selection
+
+<Props of={Selection} />
+
+## Expandable
+
+<Props of={Expandable} />
 
 ## Editable
 
-<Props of={EditableTable} />
+<Props of={Editable} />
 
 ## Column
 

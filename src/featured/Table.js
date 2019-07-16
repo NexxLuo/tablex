@@ -46,7 +46,7 @@ class FeaturedTable extends React.Component {
     if (prevState.prevProps !== nextProps) {
       let columns = cloneDeep(nextProps.columns || []);
       nextState.columns = columns;
-      nextState.data = nextProps.data || [];
+      nextState.data = nextProps.data || nextProps.dataSource || [];
       nextState.rawColumns = nextProps.columns || [];
       nextState.prevProps = nextProps;
     }

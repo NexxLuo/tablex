@@ -196,27 +196,19 @@ class Demo extends Component {
     if (ins) {
       ins.id = "tableScroll";
     }
-    console.log("ins:", ins);
   };
 
   getContainer = a => {
-    console.log("getContainer:", document.getElementById("tableScroll"));
-
     return document.getElementById("tableScroll");
   };
 
   shouldCancelStart = (a, b, c) => {
-    console.log("shouldCancelStart:", a, b, c);
     return true;
   };
 
-  onSortEnd = a => {
-    console.log("onSortEnd:", a);
-  };
+  onSortEnd = a => {};
 
-  onSortOver = (a, e) => {
-    console.log("onSortOver:", e);
-  };
+  onSortOver = (a, e) => {};
 
   render() {
     return (
