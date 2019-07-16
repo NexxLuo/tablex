@@ -38,7 +38,7 @@ const generateData = (columns, count = 20, prefix = "row-") =>
         rowData[column.dataIndex] = `Row ${rowIndex} - Col ${columnIndex}`;
 
         if (rowIndex % 2 === 0) {
-         // rowData.children = [{ id: "0-children-0" }];
+          // rowData.children = [{ id: "0-children-0" }];
         }
 
         return rowData;
@@ -106,6 +106,7 @@ class Demo extends Component {
         <div style={{ height: 460 }}>
           <Table
             editable={true}
+            readOnly={false}
             rowKey="id"
             expandColumnKey="column-1"
             columns={fixedColumns}

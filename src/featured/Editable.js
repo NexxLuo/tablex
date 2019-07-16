@@ -38,7 +38,8 @@ class EditableTable extends React.Component {
       editKeys: [],
       editSaveLoading: false,
       deleteLoading: false,
-      dataControled: false
+      dataControled: false,
+      readOnly: false
     };
   }
 
@@ -66,6 +67,7 @@ class EditableTable extends React.Component {
     nextState.columns = columns;
     nextState.columnList = columnList;
     nextState.rawColumns = nextProps.columns || [];
+    nextState.readOnly = nextProps.readOnly;
 
     let data = nextProps.data || nextProps.dataSource;
 
@@ -1211,7 +1213,9 @@ class EditableTable extends React.Component {
   };
 
   createToolBar = () => {
-    if (this.props.editable === true) {
+    let { editable, readOnly } = this.props;
+
+    if (editable === true && readOnly !== true) {
       let tools = this.editTools();
 
       if (tools !== null) {
@@ -1327,7 +1331,6 @@ class EditableTable extends React.Component {
     let props = this.props;
 
     let newProps = {
-      editable: true,
       data: arr,
       columns,
       onSelectChange: this.onSelectChange,
@@ -1335,6 +1338,10 @@ class EditableTable extends React.Component {
       header: this.headerExtra,
       footer: this.footerExtra
     };
+
+    if (props.readOnly === true) {
+      newProps.selectMode = "none";
+    }
 
     return <Table {...props} {...newProps} />;
   }

@@ -39,7 +39,7 @@
     "lodash": "^4.17.11",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
-    "react-base-datagrid": "^1.0.2",
+    "react-base-datagrid": "^1.0.3",
     "react-dom": "^16.8.6",
     "react-sortable-hoc": "^1.9.1"
   },

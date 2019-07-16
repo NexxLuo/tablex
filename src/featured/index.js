@@ -9,6 +9,7 @@ const Table = React.forwardRef((props, ref) => (
 
 Table.defaultProps = {
   editable: false,
+  readOnly: false,
   editTools: ["edit", "add"],
   editToolsConfig: {
     position: "bottom",
@@ -34,6 +35,8 @@ Table.defaultProps = {
 };
 
 Table.propTypes = {
+  /** 是否只读模式，只读模式下，将无法编辑，且无法触发选择事件 */
+  readOnly: false,
   /** 是否允许编辑 */
   editable: PropTypes.bool,
   /** 工具栏，工具按钮 ['edit', 'add','delete',{icon:"",text:"",props:{},handler:Function},Function] addSingle:单行新增 */
