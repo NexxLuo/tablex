@@ -30,6 +30,7 @@ const DraggableTable = SortableContainer(props => {
   return <Table {...props} components={{ row: DraggableTableRow }} />;
 });
 
+
 const generateColumns = (count = 10, prefix = "column-", props) =>
   new Array(count).fill(0).map((column, columnIndex) => ({
     ...props,
@@ -199,7 +200,7 @@ class Demo extends Component {
   };
 
   getContainer = a => {
-    return document.getElementById("tableScroll");
+    return document.getElementById("tableScroll")||document.body;
   };
 
   shouldCancelStart = (a, b, c) => {
