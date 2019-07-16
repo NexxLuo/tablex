@@ -1,10 +1,7 @@
+import React from "react";
 import Table from "./featured";
 
-export default Table;
+export { flatten, unflatten } from "./utils";
 
 export { Table };
-
-export {
-  treeToFlatten as flatten,
-  listToTree as unflatten
-} from "./base/utils";
+export default Table;

@@ -31,7 +31,6 @@ class Index extends React.Component {
     {
       dataIndex: "title",
       title: "物资",
-      width: 500,
       render: (value, row, index) => {
         console.log("render");
         let icon;
@@ -182,7 +181,10 @@ class Index extends React.Component {
               showHeader={false}
               bordered={false}
               striped={false}
+              hoverable={false}
               rowHeight={30}
+              orderNumber={false}
+              expandColumnKey="title"
               rowKey="key"
               data={treeData}
               columns={this.columns}

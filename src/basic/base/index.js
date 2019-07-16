@@ -1,0 +1,434 @@
+import React, { forwardRef } from "react";
+import PropTypes from "prop-types";
+import Table from "./Table";
+import "./styles.css";
+import {
+  getScrollbarWidth,
+  formatColumns,
+  addClass,
+  removeClass,
+  delegate
+} from "./utils";
+import ReactResizeDetector from "react-resize-detector";
+
+const SCROLLBARSIZE = getScrollbarWidth();
+
+class FixedTable extends React.Component {
+  headRef = React.createRef();
+  leftRef = React.createRef();
+  rightRef = React.createRef();
+  middleRef = React.createRef();
+  containerRef = React.createRef();
+  headInstance = null;
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      prevProps: null,
+      data: [],
+      columns: [],
+      rowHeight: 40,
+      rowKey: "",
+      hoverable: true
+    };
+
+    if (typeof props.innerRef === "function") {
+      props.innerRef(this);
+    }
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (prevState.prevProps !== nextProps) {
+      let {
+        data,
+        columns,
+        prependColumns,
+        rowKey,
+        rowHeight,
+        hoverable
+      } = nextProps;
+
+      let nextState = {
+        rowKey,
+        data,
+        prependColumns,
+        columns,
+        rowHeight,
+        hoverable,
+        prevProps: nextProps
+      };
+      return nextState;
+    }
+  }
+
+  onLeftScroll = ({ scrollOffset, scrollUpdateWasRequested }) => {
+    if (scrollUpdateWasRequested === false) {
+      this.middleRef.current && this.middleRef.current.scrollTo(scrollOffset);
+      this.rightRef.current && this.rightRef.current.scrollTo(scrollOffset);
+    }
+  };
+
+  onRightScroll = ({ scrollOffset, scrollUpdateWasRequested }) => {
+    if (scrollUpdateWasRequested === false) {
+      this.middleRef.current && this.middleRef.current.scrollTo(scrollOffset);
+      this.leftRef.current && this.leftRef.current.scrollTo(scrollOffset);
+    }
+  };
+
+  onMiddleScroll = ({ scrollOffset, scrollUpdateWasRequested }) => {
+    //true: api called  false: user interaction
+    if (scrollUpdateWasRequested === false) {
+      this.rightRef.current && this.rightRef.current.scrollTo(scrollOffset);
+      this.leftRef.current && this.leftRef.current.scrollTo(scrollOffset);
+    }
+  };
+
+  headerScrollTo = e => {
+    this.headRef.current &&
+      (this.headRef.current.scrollLeft = e.target.scrollLeft);
+  };
+
+  outterInit = ins => {
+    if (this.headInstance === null) {
+      this.headInstance = ins;
+      if (this.props.showHeader !== false) {
+        ins.addEventListener("scroll", this.headerScrollTo);
+      }
+    }
+
+    if (typeof this.props.scrollRef === "function") {
+      this.props.scrollRef(ins);
+    }
+  };
+
+  changeRowHoverClass = (e, target) => {
+    let hoverCls = "tablex-table-row--hovered";
+
+    let containerEl = this.containerRef.current;
+
+    let rowIndex = -1;
+
+    if (target) {
+      rowIndex = target.dataset.rowindex;
+    }
+
+    let rows = [];
+
+    rows = containerEl.getElementsByClassName("tablex-table-row-" + rowIndex);
+
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
+      if (e.type === "mouseout") {
+        removeClass(r, hoverCls);
+      } else if (e.type === "mouseover") {
+        addClass(r, hoverCls);
+      }
+    }
+  };
+
+  bindHoverClass = () => {
+    let containerEl = this.containerRef.current;
+
+    if (containerEl) {
+      delegate(
+        containerEl,
+        ".tablex-table-row",
+        "mouseenter",
+        this.changeRowHoverClass
+      );
+
+      delegate(
+        containerEl,
+        ".tablex-table-row",
+        "mouseleave",
+        this.changeRowHoverClass
+      );
+    }
+  };
+
+  componentDidMount() {
+    if (this.state.hoverable) {
+      this.bindHoverClass();
+    }
+  }
+
+  resetAfterIndex(index, shouldForceUpdate) {
+    this.middleRef.current &&
+      this.middleRef.current.resetAfterIndex(index, shouldForceUpdate);
+    this.leftRef.current &&
+      this.leftRef.current.resetAfterIndex(index, shouldForceUpdate);
+    this.rightRef.current &&
+      this.rightRef.current.resetAfterIndex(index, shouldForceUpdate);
+  }
+
+  rowRender = params => {
+    let fn = this.props.rowRender;
+
+    if (typeof fn === "function") {
+      return fn(params);
+    }
+  };
+
+  render() {
+    let {
+      width,
+      height,
+      onRow,
+      rowClassName,
+      className,
+      onColumnResizeStop,
+      overlayRenderer,
+      emptyRenderer,
+      components,
+      showHeader,
+      bordered
+    } = this.props;
+
+    let { prependColumns, columns, data, rowHeight, rowKey } = this.state;
+
+    let {
+      middle,
+      middleWidth,
+      left,
+      leftWidth,
+      right,
+      rightWidth,
+      maxDepth
+    } = formatColumns(columns, prependColumns);
+
+    let headerHeight = (maxDepth + 1) * 40;
+    if (showHeader === false) {
+      headerHeight = 0;
+    }
+
+    let rowsHeight = height - headerHeight - 3;
+
+    let scrollbar_x_size = SCROLLBARSIZE;
+    let scrollbar_y_size = SCROLLBARSIZE;
+
+    if (leftWidth + rightWidth + middleWidth <= width) {
+      scrollbar_x_size = 0;
+    }
+
+    if (data.length * rowHeight <= rowsHeight - scrollbar_x_size) {
+      scrollbar_y_size = 0;
+    }
+
+    let headStyle = {
+      marginRight: scrollbar_y_size
+    };
+
+    let bodyStyles = { height: "100%" };
+
+    let frozens = {};
+
+    let hasLeft = left.length > 0;
+    let hasRight = right.length > 0;
+
+    if (hasRight === true) {
+      bodyStyles.width = `calc(100% + ${scrollbar_y_size}px)`;
+    }
+
+    if (hasLeft) {
+      frozens.left = leftWidth;
+    }
+    if (hasRight) {
+      frozens.right = rightWidth;
+    }
+
+    let attrs = {
+      rowHeight,
+      rowKey,
+      columnsDepth: maxDepth,
+      data,
+      onRow,
+      rowClassName,
+      onColumnResizeStop,
+      components,
+      showHeader
+    };
+
+    let overlay = null;
+    if (typeof overlayRenderer === "function") {
+      overlay = overlayRenderer();
+    }
+
+    let emptyOverlay = null;
+    if (data.length === 0 && typeof emptyRenderer === "function") {
+      emptyOverlay = emptyRenderer();
+    }
+
+    let cls = ["tablex-container"];
+    if (className) {
+      cls.push(className);
+    }
+
+    if (bordered === true) {
+      cls.push("tablex-bordered");
+    }
+
+    cls = cls.join(" ");
+
+    return (
+      <div className={cls} style={{ width, height }} ref={this.containerRef}>
+        {overlay}
+        {emptyOverlay}
+        {hasLeft ? (
+          <div
+            className="tablex-forzen-left"
+            style={{
+              width: leftWidth,
+              overflow: "hidden"
+            }}
+          >
+            <div
+              className="tablex-body-scroll"
+              style={{
+                width: leftWidth,
+                height: "100%",
+                width: `calc(100% + ${scrollbar_y_size}px)`
+              }}
+            >
+              <Table
+                {...attrs}
+                height={rowsHeight - scrollbar_x_size}
+                columns={left}
+                style={{ overflowX: "hidden" }}
+                ref={this.leftRef}
+                onScroll={this.onLeftScroll}
+                headStyle={headStyle}
+                rowRender={params =>
+                  this.rowRender({
+                    ...params,
+                    frozen: "left",
+                    frozens: frozens
+                  })
+                }
+              />
+            </div>
+          </div>
+        ) : null}
+        <div
+          className="tablex-main"
+          ref="middleRef"
+          style={{ overflow: "hidden" }}
+        >
+          <div className="tablex-main-scroll" style={bodyStyles}>
+            <Table
+              {...attrs}
+              height={rowsHeight}
+              columns={middle}
+              ref={this.middleRef}
+              onScroll={this.onMiddleScroll}
+              outerRef={this.outterInit}
+              headRef={this.headRef}
+              headStyle={headStyle}
+              rowRender={params =>
+                this.rowRender({
+                  ...params,
+                  frozen: "none",
+                  frozens: frozens
+                })
+              }
+            />
+          </div>
+        </div>
+
+        {hasRight ? (
+          <div
+            className="tablex-forzen-right"
+            style={{
+              width: rightWidth,
+              overflow: "hidden"
+            }}
+          >
+            <Table
+              {...attrs}
+              height={rowsHeight - scrollbar_x_size}
+              columns={right}
+              style={{ overflowX: "hidden" }}
+              onScroll={this.onRightScroll}
+              ref={this.rightRef}
+              rowRender={params =>
+                this.rowRender({
+                  ...params,
+                  frozen: "right",
+                  frozens: frozens
+                })
+              }
+            />
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+}
+
+const AutoSizerTable = forwardRef((props, ref) => {
+  return (
+    <ReactResizeDetector handleWidth handleHeight>
+      {({ width = 100, height = 100 }) => {
+        return (
+          <FixedTable {...props} height={height} width={width} ref={ref} />
+        );
+      }}
+    </ReactResizeDetector>
+  );
+});
+
+FixedTable.defaultProps = {
+  columns: [],
+  prependColumns: [],
+  data: [],
+  rowHeight: 40,
+  rowKey: "key",
+  showHeader: true,
+  hoverable: true,
+  bordered: true
+};
+
+FixedTable.propTypes = {
+  /** 是否显示表头 */
+  showHeader: PropTypes.bool,
+
+  /** 是否显示边框 */
+  bordered: PropTypes.bool,
+
+  /** 鼠标hover样式 */
+  hoverable: PropTypes.bool,
+
+  /** 行高 */
+  rowHeight: PropTypes.number,
+  /**
+   * 表格列
+   *
+   */
+  columns: PropTypes.array.isRequired,
+
+  /** 额外前置添加的列 */
+  prependColumns: PropTypes.array,
+
+  /**
+   * 表格数据
+   */
+  data: PropTypes.array.isRequired,
+  /** 数据行主键字段
+   */
+  rowKey: PropTypes.string.isRequired,
+
+  /**
+   * 覆盖table元素，如：components:{row:func}
+   */
+  components: PropTypes.object,
+
+  /** 获取数据滚动区域ref */
+  scrollRef: PropTypes.func,
+
+  /** 自定义行内渲染 */
+  rowRender: PropTypes.func,
+
+  /** 自定义行属性，可处理行事件 */
+  onRow: PropTypes.func
+};
+
+export default AutoSizerTable;

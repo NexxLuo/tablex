@@ -3,7 +3,7 @@ import ReactDom from "react-dom";
 import cloneDeep from "lodash/cloneDeep";
 import merge from "lodash/merge";
 import Table from "./Table";
-import { treeToFlatten as treeToList, treeFilter } from "../base/utils";
+import { treeToFlatten as treeToList, treeFilter } from "./utils";
 import Tooltip from "antd/lib/tooltip";
 import Button from "antd/lib/button";
 import message from "antd/lib/message";
@@ -92,8 +92,6 @@ class EditableTable extends React.Component {
     }
     return nextState;
   }
-
-  componentDidMount() {}
 
   updateComponent = () => {
     let { data, dataList, addedData } = this.state;
@@ -487,7 +485,7 @@ class EditableTable extends React.Component {
               newRenderProps.props = renderProps.props;
             }
 
-            return newRenderProps;
+            return c;
           };
         }
       });
@@ -554,7 +552,7 @@ class EditableTable extends React.Component {
                 newRenderProps.props = renderProps.props;
               }
 
-              return newRenderProps;
+              return c;
             } else {
               if (typeof renderFn === "function") {
                 return renderFn(value, row, index);
@@ -816,6 +814,7 @@ class EditableTable extends React.Component {
 
   onClick = (e, row, column) => {
     this.isMouseFocus = true;
+    e.stopPropagation();
   };
 
   completeEdit = async callBack => {
@@ -1219,7 +1218,8 @@ class EditableTable extends React.Component {
         return (
           <div
             style={{
-              backgroundColor: "#ffffff"
+              backgroundColor: "#ffffff",
+              marginRight:5
             }}
           >
             {tools}

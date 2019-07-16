@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {Table} from "../src/index";
+import { Table } from "../src/index";
 
 const generateColumns = (count = 10, prefix = "column-", props) =>
   new Array(count).fill(0).map((column, columnIndex) => ({
@@ -17,7 +17,7 @@ const generateData = (columns, count = 20, prefix = "row-") =>
         rowData[column.dataIndex] = `Row ${rowIndex} - Col ${columnIndex}`;
 
         if (rowIndex === 0) {
-          rowData.children = [];
+          //rowData.children = [];
         }
 
         return rowData;
@@ -45,8 +45,7 @@ fixedColumns = [
     dataIndex: "column-1",
     key: "column-1",
     title: "number",
-    width: 200,
-    fixed: "left"
+    width: 200
   },
   {
     title: "appellation",
@@ -58,26 +57,26 @@ fixedColumns = [
         title: "name",
         key: "column-2",
 
-        width: 150 
+        width: 150
       },
       {
         dataIndex: "id",
         key: "column-3",
         title: "nick name",
-        width: 150, 
+        width: 150,
         children: [
           {
             dataIndex: "id",
             title: "nick-1",
             key: "column-21",
             maxWidth: 300,
-            width: 150 
+            width: 150
           },
           {
             dataIndex: "column-31",
             key: "column-31",
             title: "nick-2",
-            width: 150 
+            width: 150
           }
         ]
       }
@@ -134,7 +133,8 @@ function createTreeData() {
 
 class Demo extends Component {
   state = {
-    data: []
+    data: [],
+    expandedRowKeys: []
   };
 
   componentDidMount() {
@@ -143,23 +143,16 @@ class Demo extends Component {
     });
   }
 
-  loadChildrenData = record => {
-    return new Promise((resolve, reject) => {
-      let rows = this.state.data;
+  expandedRowRender = (record, index, extra) => {
+  
+    if (extra.frozen === "none") {
+      return <div>expandedRowRender{new Date().getTime()}</div>;
+    }
+    return null;
+  };
 
-      setTimeout(() => {
-        let childrens = [{ id: "123123123", "column-0": "children async" }];
-        // record.isLoading=false;
-        record.children = childrens;
-        //rows[0] = Object.assign({}, record, { children: childrens });
-
-        this.setState({
-          data: rows
-        });
-
-        resolve();
-      }, 1300);
-    });
+  onExpandedRowsChange = arr => {
+    this.setState({ expandedRowKeys: arr });
   };
 
   render() {
@@ -168,13 +161,14 @@ class Demo extends Component {
         rowKey="id"
         expandColumnKey="column-1"
         columns={fixedColumns}
+        expandedRowRender={this.expandedRowRender}
         selectMode="multiple"
+        defaultSelectedRowKeys={["0"]}
+        defaultExpandedRowKeys={["0"]}
         data={this.state.data}
+        onExpandedRowsChange={this.onExpandedRowsChange}
         orderNumber={true}
-        disabledSelectKeys={[]}
-        onSelectChange={(keys, rows) => {
-          console.log("onSelectChange:", rows);
-        }}
+        expandRowHeight={200}
       />
     );
   }

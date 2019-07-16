@@ -1,44 +1,19 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Table from "../base/index";
+import Table from "react-base-datagrid";
+
 import Pagination from "./pagination";
 import Spin from "antd/lib/spin";
 import ColumnDropMenu from "./ColumnDropMenu";
-import { treeToFlatten as treeToList, treeFilter } from "../base/utils";
+import {
+  treeToFlatten as treeToList,
+  treeFilter,
+  getParentElement
+} from "./utils";
 import Setting, { getConfigs, setConfigs } from "./setting";
 import orderBy from "lodash/orderBy";
 import Popover from "antd/lib/popover";
 import cloneDeep from "lodash/cloneDeep";
-import { SortableContainer, SortableElement } from "react-sortable-hoc";
-import styled from "styled-components";
-
-const RowItem = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  box-sizing: border-box;
-`;
-
-const reorder = (list, startIndex, endIndex) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-
-  return result;
-};
-
-const SortableItem = SortableElement(({ cells }) => <RowItem>{cells}</RowItem>);
-
-function DraggableTableRow(a) {
-  let { rowData, rowIndex, cells,depth } = a;
-
-  return <SortableItem cells={cells} index={rowIndex} data-key={rowData.id} />;
-}
-
-const DraggableTable = SortableContainer(props => {
-  return <Table {...props} rowRenderer={DraggableTableRow} />;
-});
 
 /**
  * 表格
@@ -162,6 +137,22 @@ class FeaturedTable extends React.Component {
   columnSettingMenuShow = e => {
     e.target.className = "tablex__column__inner__dropdown opened";
 
+    let el = e.target;
+
+    let container = getParentElement(el, ".tablex-table-head");
+    let p = getParentElement(e.target, ".tablex-table-head-cell");
+    let sl = 0;
+    if (container) {
+      sl = container.scrollLeft;
+    }
+
+    let left = 0;
+    let top = 0;
+    if (p) {
+      left = p.offsetLeft + p.offsetWidth - sl - el.offsetWidth;
+      top = p.offsetTop + p.offsetHeight - p.offsetHeight / 2 + 6;
+    }
+
     if (this.dropdown_button_ref && this.dropdown_button_ref.current) {
       this.dropdown_button_ref.current.click();
     }
@@ -171,8 +162,8 @@ class FeaturedTable extends React.Component {
         columnKey: e.target.dataset.columnkey,
         trigger: e.target,
         visible: true,
-        offsetX: e.clientX,
-        offsetY: e.clientY
+        offsetX: left,
+        offsetY: top
       }
     });
   };
@@ -187,8 +178,7 @@ class FeaturedTable extends React.Component {
     });
   };
 
-  onColumnResize = ({ column, width }) => {
-    let columnKey = column.key || column.dataIndex;
+  onColumnResize = (width, columnKey) => {
     this.onColumnChange(columnKey, { width });
   };
 
@@ -231,6 +221,7 @@ class FeaturedTable extends React.Component {
       let columnKey = d.key || d.dataIndex;
       let bl = true;
 
+      d.key = columnKey;
       let config = configs[columnKey] || {};
       bl = !config.hidden;
 
@@ -257,7 +248,7 @@ class FeaturedTable extends React.Component {
         d.order = i;
       }
 
-      d.headerRenderer = ({ column }) => {
+      d.headRender = ({ column }) => {
         return (
           <div className="tablex__column__inner">
             <span className="tablex__column__inner__title">{column.title}</span>
@@ -289,8 +280,8 @@ class FeaturedTable extends React.Component {
 
     let headerExtra = null;
 
-    if (typeof this.props.headerExtra === "function") {
-      headerExtra = this.props.headerExtra();
+    if (typeof this.props.header === "function") {
+      headerExtra = this.props.header();
     }
 
     if (headerExtra) {
@@ -309,8 +300,8 @@ class FeaturedTable extends React.Component {
 
     let footerExtra = null;
 
-    if (typeof this.props.footerExtra === "function") {
-      footerExtra = this.props.footerExtra();
+    if (typeof this.props.footer === "function") {
+      footerExtra = this.props.footer();
     }
 
     const dataTotal = pageAttr.total || data.length;
@@ -370,7 +361,8 @@ class FeaturedTable extends React.Component {
           width: 300,
           height: 50,
           top: 0,
-          bottom: 0
+          bottom: 0,
+          zIndex: 2
         }}
       />
     );
@@ -379,30 +371,15 @@ class FeaturedTable extends React.Component {
     return <div className="tablex__emptydata">暂无数据</div>;
   };
 
-  onDragEnd = result => {
-    if (!result.destination) {
-      return;
+  rowClassName = (rowData, rowIndex) => {
+    let cls = "";
+    if (rowIndex % 2 === 0) {
+      cls = "tablex__row--even";
+    } else {
+      cls = "tablex__row--odd";
     }
 
-    if (result.destination.index === result.source.index) {
-      return;
-    }
-
-    let data = this.state.data;
-
-    const arr = reorder(data, result.source.index, result.destination.index);
-
-    this.setState({ data: arr });
-  };
-
-  onSortEnd = (a) => {
-    let { oldIndex, newIndex }=a;
-    let data = cloneDeep(this.state.data);
-    const arr = reorder(data, oldIndex, newIndex);
-
-    console.log("onSortEnd:", a);
-
-    this.setState({ data: arr });
+    return cls;
   };
 
   render() {
@@ -420,9 +397,14 @@ class FeaturedTable extends React.Component {
     let newProps = {
       data: arr,
       columns,
-      onColumnResize: this.onColumnResize,
+      onColumnResizeStop: this.onColumnResize,
       emptyRenderer: this.emptyRenderer
     };
+
+    if (props.striped === true) {
+      newProps.rowClassName = this.rowClassName;
+      newProps.className = "tablex__striped";
+    }
 
     if (this.props.loading === true) {
       newProps.overlayRenderer = this.overlayRenderer;
@@ -434,17 +416,7 @@ class FeaturedTable extends React.Component {
       <div className="tablex__container">
         {this.renderHeader()}
         <div className="tablex__container__body">
-          {this.props.draggable === true ? (
-            <DraggableTable
-              {...props}
-              {...newProps}
-              onSortEnd={this.onSortEnd}
-              distance={10}
-              helperClass="tablex__row__dragging"
-            />
-          ) : (
-            <Table {...props} {...newProps} />
-          )}
+          <Table {...props} {...newProps} />
         </div>
         {this.renderFooter()}
 
@@ -466,7 +438,7 @@ class FeaturedTable extends React.Component {
             style={{
               width: 1,
               height: 1,
-              position: "fixed",
+              position: "absolute",
               left: columnMenuState.offsetX,
               top: columnMenuState.offsetY,
               display: columnMenuState.visible ? "block" : "none"
@@ -480,20 +452,28 @@ class FeaturedTable extends React.Component {
 }
 
 FeaturedTable.defaultProps = {
+  orderNumber: true,
   settable: true,
   pagination: false,
-  loading: false
+  loading: false,
+  striped: true
 };
 
 FeaturedTable.propTypes = {
   /** 数据是否加载中 */
   loading: PropTypes.bool,
 
+  /** 是否显示序号 */
+  orderNumber: PropTypes.bool,
+
   /** 分页 */
   pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 
   /** 是否可进行属性设置 */
   settable: PropTypes.bool,
+
+  /** 奇偶行颜色间隔 */
+  striped: PropTypes.bool,
 
   /** 表格全局id，通过此id记忆表格配置，由于采用localStorage存储配置，需保证id唯一 */
   tableId: function(props, propName, componentName) {

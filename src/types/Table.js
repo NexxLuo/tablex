@@ -1,12 +1,11 @@
 import React from "react";
-import BaseTable from "./BaseTable";
 import PropTypes from "prop-types";
 
 /**
  * 表格组件
  */
 const Table = props => {
-  return <BaseTable {...props} />;
+  return <div {...props} />;
 };
 
 Table.defaultProps = {

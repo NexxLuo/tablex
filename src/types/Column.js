@@ -1,9 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import BaseColumn from "./Column";
 
 const Column = () => {
-  return <BaseColumn />;
+  return <div />;
 };
 
 Column.defaultProps = {

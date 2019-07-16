@@ -1,5 +1,34 @@
 import React, { Component } from "react";
-import {Table} from "../src/index";
+import { Table } from "../src/index";
+
+import { SortableContainer, SortableElement } from "react-sortable-hoc";
+
+const DraggableRow = SortableElement(props => {
+  return <div {...props} />;
+});
+
+class DraggableTableRow2 extends Component {
+  render() {
+    let props = this.props;
+    let { rowData, rowIndex, children, rowProps } = props;
+
+    return (
+      <DraggableRow {...props} index={rowIndex} data-key={rowData.id}>
+        {children}
+      </DraggableRow>
+    );
+  }
+}
+
+function DraggableTableRow(props) {
+  let { rowData, rowIndex, rowProps } = props;
+
+  return <DraggableRow {...rowProps} index={rowIndex} data-key={rowData.id} />;
+}
+
+const DraggableTable = SortableContainer(props => {
+  return <Table {...props} components={{ row: DraggableTableRow }} />;
+});
 
 const generateColumns = (count = 10, prefix = "column-", props) =>
   new Array(count).fill(0).map((column, columnIndex) => ({
@@ -57,26 +86,26 @@ fixedColumns = [
         title: "name",
         key: "column-2",
 
-        width: 150 
+        width: 150
       },
       {
         dataIndex: "id",
         key: "column-3",
         title: "nick name",
-        width: 150, 
+        width: 150,
         children: [
           {
             dataIndex: "id",
             title: "nick-1",
             key: "column-21",
             maxWidth: 300,
-            width: 150 
+            width: 150
           },
           {
             dataIndex: "column-31",
             key: "column-31",
             title: "nick-2",
-            width: 150 
+            width: 150
           }
         ]
       }
@@ -161,13 +190,46 @@ class Demo extends Component {
     });
   };
 
+  scrollRef = null;
+  tableScrollRef = ins => {
+    this.scrollRef = ins;
+    if (ins) {
+      ins.id = "tableScroll";
+    }
+    console.log("ins:", ins);
+  };
+
+  getContainer = a => {
+    console.log("getContainer:", document.getElementById("tableScroll"));
+
+    return document.getElementById("tableScroll");
+  };
+
+  shouldCancelStart = (a, b, c) => {
+    console.log("shouldCancelStart:", a, b, c);
+    return true;
+  };
+
+  onSortEnd = a => {
+    console.log("onSortEnd:", a);
+  };
+
+  onSortOver = (a, e) => {
+    console.log("onSortOver:", e);
+  };
+
   render() {
     return (
-      <Table
+      <DraggableTable
+        distance={10}
+        onSortEnd={this.onSortEnd}
+        helperClass="tablex-row-dragging"
+        getContainer={this.getContainer}
+        onSortOver={this.onSortOver}
+        scrollRef={this.tableScrollRef}
         rowKey="id"
         draggable={true}
         expandColumnKey="column-1"
-        loadChildrenData={this.loadChildrenData}
         columns={fixedColumns}
         selectMode="none"
         data={this.state.data}

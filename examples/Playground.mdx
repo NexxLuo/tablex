@@ -86,7 +86,9 @@ import Table, { flatten, unflatten } from "tablex";
     title: "age",
     width: 150,
     align:"right",
-
+render:()=>{
+  return new Date().getTime()
+}
   }
 ];
 
@@ -144,6 +146,7 @@ import Table, { flatten, unflatten } from "tablex";
         }}
         data={data}
         tableId="table"
+        selectMode="multiple"
         alwaysValidate={true}
         validateTrigger="onChange"
         dataControled={true}

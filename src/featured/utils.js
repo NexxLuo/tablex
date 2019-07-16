@@ -1,5 +1,60 @@
-export function treeToList(arr, idField = "id") {
+export function getParentElement(element, selector) {
+  function isMatched(el, str = "") {
+    str = str.toLowerCase();
 
+    let matched = false;
+
+    let firstChar = str.split("")[0];
+
+    if (firstChar === ".") {
+      let selectorClass = str.split(".")[1] || "";
+      let elCls = el.className || "";
+      if (typeof elCls === "string") {
+        let cls = elCls.toLowerCase().split(" ");
+        matched = cls.indexOf(selectorClass) > -1;
+      } else {
+        // 某些元素的className并不是string类型，比如：svg
+        // console.log("className:", el.classList);
+      }
+    } else if (firstChar === "#") {
+      let selectorID = str.split("#")[1] || "";
+      let elID = el.id || "";
+      if (typeof elID === "string") {
+        matched = elID.toLowerCase() === selectorID;
+      }
+    } else {
+      matched = el.tagName.toLowerCase() === str;
+    }
+
+    return matched;
+  }
+
+  function getParent(el, tagName) {
+    if (!el) {
+      return null;
+    }
+
+    if (isMatched(el, tagName)) {
+      return el;
+    }
+
+    let p = el.parentElement;
+
+    if (p !== null) {
+      if (isMatched(p, tagName)) {
+        return p;
+      } else {
+        return getParent(el.parentElement, tagName);
+      }
+    } else {
+      return null;
+    }
+  }
+
+  return getParent(element, selector);
+}
+
+export function treeToList(arr, idField = "id") {
   let treeList = arr || [];
 
   //末级节点
@@ -118,50 +173,40 @@ export function treeToFlatten(arr) {
   return { list, leafs, roots };
 }
 
-
 export function listToTree(arr = [], idField, pidField) {
-
   let tree = [];
 
   function getChildren(item) {
+    let id = item[idField];
 
-      let id = item[idField];
+    let childrens = arr.filter(y => y[pidField] === id);
 
-      let childrens = arr.filter(y => y[pidField] === id);
+    for (let i = 0; i < childrens.length; i++) {
+      let d = childrens[i];
+      const nextId = d[idField];
 
-      for (let i = 0; i < childrens.length; i++) {
+      const nextChildrens = arr.filter(y => y[pidField] === nextId);
 
-          let d = childrens[i];
-          const nextId = d[idField];
-
-          const nextChildrens = arr.filter(y => y[pidField] === nextId);
-
-          if (nextChildrens.length > 0) {
-              d.children = getChildren(d);
-          }
-
+      if (nextChildrens.length > 0) {
+        d.children = getChildren(d);
       }
+    }
 
-      return childrens;
-
+    return childrens;
   }
 
   let roots = arr.filter(d => !d[pidField]);
 
-
   for (let i = 0, len = roots.length; i < len; i++) {
+    let d = Object.assign({}, roots[i]);
 
-      let d = Object.assign({}, roots[i]);
+    d.children = getChildren(d);
 
-      d.children = getChildren(d);
-
-      tree.push(d)
+    tree.push(d);
   }
 
   return tree;
 }
-
-
 
 export function getTreeLeafs(arr) {
   let treeList = arr || [];
