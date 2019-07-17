@@ -5,12 +5,20 @@ import InputNumber from "antd/lib/input-number";
 import Radio from "antd/lib/radio";
 import Switch from "antd/lib/switch";
 import { saveConfigs, removeConfigs, treeToList } from "./utils";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { SortableContainer, SortableElement } from "react-sortable-hoc";
 import cloneDeep from "lodash/cloneDeep";
 import orderBy from "lodash/orderBy";
 
+const DraggableItem = SortableElement(({ children }) => {
+  return <div>{children}</div>;
+});
+
+const DraggableContainer = SortableContainer(({ children }) => {
+  return <div>{children}</div>;
+});
+
 const RadioGroup = Radio.Group;
-const RadioButton = Radio.Button;
+const RadioButton = Radio.Button; 
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -19,19 +27,6 @@ const reorder = (list, startIndex, endIndex) => {
 
   return result;
 };
-
-const getItemStyle = (isDragging, draggableStyle) => ({
-  userSelect: "none",
-  padding: 5,
-
-  background: isDragging ? "#fce2c9" : "none",
-  width: "100%",
-  ...draggableStyle
-});
-
-const getListStyle = () => ({
-  width: "100%"
-});
 
 class SortableItem extends Component {
   onChangeWidth = e => {
@@ -120,67 +115,46 @@ class SortableList extends Component {
     this.state = {
       items: []
     };
-    this.onDragEnd = this.onDragEnd.bind(this);
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     return { items: nextProps.items };
   }
 
-  onDragEnd(result) {
-    if (!result.destination) {
-      return;
-    }
-
-    const items = reorder(
-      this.state.items,
-      result.source.index,
-      result.destination.index
-    );
+  onSortEnd = ({ collection, newIndex, oldIndex }) => {
+    const items = reorder(this.state.items, oldIndex, newIndex);
 
     this.props.onSort(items);
-  }
+  };
+
+  getHelperContainer = () => {
+    return this.refs["draggableContainer"];
+  };
 
   render() {
     return (
-      <DragDropContext onDragEnd={this.onDragEnd}>
-        <Droppable droppableId="droppable">
-          {(provided, snapshot) => (
-            <div
-              ref={provided.innerRef}
-              style={getListStyle(snapshot.isDraggingOver)}
+      <div ref="draggableContainer">
+        <DraggableContainer
+          onSortEnd={this.onSortEnd}
+          distance={10}
+          helperContainer={this.getHelperContainer}
+        >
+          {this.state.items.map((item, index) => (
+            <DraggableItem
+              key={item.key || item.dataIndex}
+              draggableId={item.key || item.dataIndex}
+              index={index}
             >
-              {this.state.items.map((item, index) => (
-                <Draggable
-                  key={item.key || item.dataIndex}
-                  draggableId={item.key || item.dataIndex}
-                  index={index}
-                >
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      style={getItemStyle(
-                        snapshot.isDragging,
-                        provided.draggableProps.style
-                      )}
-                    >
-                      <SortableItem
-                        data={item}
-                        onChangeWidth={this.props.onChangeWidth}
-                        onChangeFixed={this.props.onChangeFixed}
-                        onToggleVisible={this.props.onToggleVisible}
-                      />
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+              <SortableItem
+                data={item}
+                onChangeWidth={this.props.onChangeWidth}
+                onChangeFixed={this.props.onChangeFixed}
+                onToggleVisible={this.props.onToggleVisible}
+              />
+            </DraggableItem>
+          ))}
+        </DraggableContainer>
+      </div>
     );
   }
 }

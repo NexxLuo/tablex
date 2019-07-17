@@ -9,6 +9,7 @@
   },
   "homepage": "https://nexxluo.github.io/tablex",
   "scripts": {
+    "dev": "cd ./packages/react-base-datagrid && npm run dev",
     "build": "cd ./packages/react-base-datagrid && npm run build",
     "start": "cd ./packages/tablex && npm start",
     "i": "lerna bootstrap",
