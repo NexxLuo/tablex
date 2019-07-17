@@ -52,9 +52,10 @@ class Demo extends Component {
 ## Roadmap
 
 1. 列排序
-2. 数据分组
-3. 行、列合并
-4. 无限加载
+2. typescript支持
+3. 数据分组
+4. 行、列合并
+5. 无限加载
 
 
 ## FAQ
