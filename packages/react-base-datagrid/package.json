@@ -1,6 +1,6 @@
 {
   "name": "react-base-datagrid",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "table virtualized tree-table ",
   "author": "nexx",
   "repository": {
@@ -41,7 +41,6 @@
     "lodash": "^4.17.11",
     "memoize-one": "^5.0.4",
     "prop-types": "^15.7.2",
-   
     "react-resize-detector": "^4.2.0",
     "react-window": "^1.8.4",
     "styled-components": "^4.3.1"
