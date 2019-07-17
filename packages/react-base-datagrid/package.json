@@ -1,0 +1,56 @@
+{
+  "name": "react-base-datagrid",
+  "version": "1.0.3",
+  "description": "table virtualized tree-table ",
+  "author": "nexx",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NexxLuo/tablex"
+  },
+  "homepage": "https://nexxluo.github.io/tablex",
+  "scripts": {
+    "start": "docz dev",
+    "dev": "father build --watch",
+    "build": "father build",
+    "test": "umi-test",
+    "doc": "docz dev",
+    "docb": "docz build",
+    "pub": "father build&&npm publish",
+    "docd": "gh-pages -d ./.docz/dist"
+  },
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "files": [
+    "lib",
+    "es"
+  ],
+  "keywords": [
+    "table",
+    "virtualized",
+    "tree-table",
+    "data-table",
+    "data-list",
+    "list"
+  ],
+  "license": "ISC",
+  "peerDependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  },
+  "dependencies": {
+    "lodash": "^4.17.11",
+    "memoize-one": "^5.0.4",
+    "prop-types": "^15.7.2",
+   
+    "react-resize-detector": "^4.2.0",
+    "react-window": "^1.8.4",
+    "styled-components": "^4.3.1"
+  },
+  "devDependencies": {
+    "docz": "^1.2.0",
+    "docz-plugin-css": "^0.11.0",
+    "docz-theme-default": "^1.2.0",
+    "father": "^2.13.6",
+    "gh-pages": "^2.0.1"
+  }
+}

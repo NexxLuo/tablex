@@ -8,7 +8,7 @@ Learn more at the [website](https://nexxluo.github.io/tablex)
 
 Tablex的目标是成为一个可高度扩展、能适用于各种复杂场景的、功能完备的数据表格组件
  
-react-base-datagrid 是为 Tablex 服务而生的 ，如果想要更基础的表格组件可查看 [react-base-datagrid](https://github.com/nexxluo/react-base-datagrid)
+react-base-datagrid 是为 Tablex 服务而生的 ，如果想要更基础的表格组件可查看 packages/react-base-datagrid
  
 
 ## Install
@@ -60,4 +60,5 @@ class Demo extends Component {
 ## FAQ
 
 存在固定列时，联动滚动可能会存在少许延迟。这是由于底层react-window的处理导致。此问题只会出现在开发环境，生产模式下不会存在此问题。
+表格高度，虚拟加载的表格依赖外层高度，外层需要高度(固定高度或者百分比高度)，或者给table设置minHeight
  

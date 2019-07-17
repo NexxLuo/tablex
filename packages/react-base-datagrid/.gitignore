@@ -1,0 +1,7 @@
+node_modules
+.docz
+.docz/**/*
+yarn-error.log
+yarn.lock
+lib
+es
