@@ -47,6 +47,10 @@ class Table extends React.Component {
     this.listRef.current && this.listRef.current.scrollTo(scrollOffset);
   };
 
+  scrollToItem = (index, align) => {
+    this.listRef.current && this.listRef.current.scrollToItem(index, align);
+  };
+
   resetAfterIndex(index, shouldForceUpdate) {
     this.listRef.current.resetAfterIndex(index, shouldForceUpdate);
   }

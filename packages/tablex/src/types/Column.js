@@ -15,7 +15,7 @@ Column.defaultProps = {
 
 Column.propTypes = {
   /** 列标题 */
-  title: PropTypes.string,
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   /** 列宽 */
   width: PropTypes.number.isRequired,
   /** 列唯一key，如若不设置，将会以dataIndex作为唯一key */
@@ -26,8 +26,6 @@ Column.propTypes = {
   fixed: PropTypes.oneOf(["left", "right"]),
   /** 是否可拖动宽度 */
   resizable: PropTypes.bool,
-  /** 列头自定义render */
-  headRender: PropTypes.func,
   /** 列自定义渲染 */
   render: PropTypes.func,
   /** 编辑列验证  (value,row,rowIndex) => React.Element ;

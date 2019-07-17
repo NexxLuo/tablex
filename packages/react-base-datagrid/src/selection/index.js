@@ -469,7 +469,7 @@ class SelectionGrid extends Component {
 
     if (checkboxColumn) {
       checkboxColumn.render = this.checkboxCellRender;
-      checkboxColumn.headRender = this.checkboxHeadRender;
+      checkboxColumn.title = this.checkboxHeadRender;
     }
 
     let orderNumberColumn = prependColumns.find(
@@ -478,7 +478,7 @@ class SelectionGrid extends Component {
 
     if (orderNumberColumn) {
       orderNumberColumn.render = this.orderNumberCellRender;
-      orderNumberColumn.headRender = this.orderNumberHeadRender;
+      orderNumberColumn.title = this.orderNumberHeadRender;
     }
 
     let newProps = {

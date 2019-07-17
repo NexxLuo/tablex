@@ -153,10 +153,6 @@ class DataList extends Component {
     );
   };
 
-  outerElementType = a => {
-    console.log("a:", a);
-  };
-
   getItemSize = index => {
     let { data, rowHeight } = this.props;
     let row = data[index];

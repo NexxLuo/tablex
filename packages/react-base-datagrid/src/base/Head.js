@@ -2,7 +2,7 @@ import React from "react";
 import Resizer from "./ColumnResizer";
 
 const Column = ({
-  title,
+  children,
   width,
   height,
   style,
@@ -22,7 +22,7 @@ const Column = ({
   return (
     <div className="tablex-table-head-cell" style={styles}>
       <div className="tablex-table-head-cell-inner" style={style}>
-        {title}
+        {children}
       </div>
       {resizable === false ? null : (
         <Resizer
@@ -52,9 +52,18 @@ const renderColumns = (columns, columnDepth, onColumnResizeStop) => {
   return columns.map((d, i) => {
     let columnKey = d.key || d.dataIndex || i;
 
+    let TitleComponent = d.title;
+    let titleElement = null;
+
+    if (typeof TitleComponent === "function") {
+      titleElement = <TitleComponent column={d} />;
+    } else {
+      titleElement = d.title;
+    }
+
     if (d.children instanceof Array && d.children.length > 0) {
       return (
-        <ColumnGroup key={columnKey} title={d.title} height={headerHeight}>
+        <ColumnGroup key={columnKey} title={titleElement} height={headerHeight}>
           {renderColumns(d.children, columnDepth, onColumnResizeStop)}
         </ColumnGroup>
       );
@@ -63,12 +72,6 @@ const renderColumns = (columns, columnDepth, onColumnResizeStop) => {
     let depth = d.__depth;
 
     let h = (columnDepth - depth + 1) * headerHeight;
-
-    let value = d.title;
-    let fn = d.headRender;
-    if (typeof fn === "function") {
-      value = fn({ column: d });
-    }
 
     let styles = {};
     d.align && (styles.textAlign = d.align);
@@ -79,11 +82,12 @@ const renderColumns = (columns, columnDepth, onColumnResizeStop) => {
         columnKey={columnKey}
         width={d.width}
         height={h}
-        title={value}
         style={styles}
         resizable={d.resizable}
         onColumnResizeStop={onColumnResizeStop}
-      />
+      >
+        {titleElement}
+      </Column>
     );
   });
 };

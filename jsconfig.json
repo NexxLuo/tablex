@@ -8,7 +8,7 @@
         "public"
     ],
     "include": [
-        "src",
-        "examples"
+        "packages/**/src",
+        "packages/**/examples"
     ]
 }

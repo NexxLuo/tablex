@@ -124,14 +124,20 @@ function createData(level, parentKey, maxLevel, index) {
 function createTreeData() {
   let data = [];
   for (let i = 0; i < 10; i++) {
-    data.push({
+    let childrens = createData(0, i, 2);
+    let d = {
       id: "" + i,
       level: 0,
       "column-1": "Edward King " + i,
       age: 32,
-      address: "London, Park Lane no. " + i,
-      children: createData(0, i, 2)
-    });
+      address: "London, Park Lane no. " + i
+    };
+
+    if (i % 3 === 0) {
+      d.children = childrens;
+    }
+
+    data.push(d);
   }
 
   return data;
@@ -160,21 +166,37 @@ class Demo extends Component {
     this.setState({ expandedRowKeys: arr });
   };
 
+  tableInner = null;
+  innerRef = ins => {
+    this.tableInner = ins;
+  };
+
+  scrollToItem = () => {
+    if (this.tableInner) {
+      this.tableInner.scrollToItem(13);
+    }
+  };
+
   render() {
     return (
-      <Table
-        rowKey="id"
-        expandColumnKey="column-1"
-        columns={fixedColumns}
-        expandedRowRender={this.expandedRowRender}
-        selectMode="multiple"
-        defaultSelectedRowKeys={["0"]}
-        defaultExpandedRowKeys={["0"]}
-        data={this.state.data}
-        onExpandedRowsChange={this.onExpandedRowsChange}
-        orderNumber={true}
-        expandRowHeight={200}
-      />
+      <>
+        <div onClick={this.scrollToItem} style={{ cursor: "pointer" }}>
+          scroll to item
+        </div>
+        <Table
+          rowKey="id"
+          innerRef={this.innerRef}
+          expandColumnKey="column-1"
+          columns={fixedColumns}
+          selectMode="multiple"
+          defaultSelectedRowKeys={["0"]}
+          defaultExpandedRowKeys={["0"]}
+          data={this.state.data}
+          onExpandedRowsChange={this.onExpandedRowsChange}
+          orderNumber={true}
+          expandRowHeight={200}
+        />
+      </>
     );
   }
 }

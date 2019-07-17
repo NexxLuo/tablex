@@ -40,6 +40,9 @@ Table.propTypes = {
   /** 行高 */
   rowHeight: PropTypes.number,
 
+  /** table最小高度，虚拟加载的表格依赖外部区域的高度，如果未探测到外部高度，将使用此高度 */
+  minHeight: PropTypes.number,
+
   /** 自定义行样式 */
   rowClassName: PropTypes.func,
 
@@ -59,6 +62,9 @@ Table.propTypes = {
 
   /** 获取数据滚动区域ref */
   scrollRef: PropTypes.func,
+
+  /** 获取内部表格ref */
+  innerRef: PropTypes.func,
 
   /** 自定义行内渲染 */
   rowRender: PropTypes.func,

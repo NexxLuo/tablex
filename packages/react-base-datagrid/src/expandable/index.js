@@ -320,6 +320,9 @@ class TreeGrid extends Component {
   dataGridRef = null;
   innerRef = ins => {
     this.dataGridRef = ins;
+    if (typeof this.props.innerRef === "function") {
+      this.props.innerRef(ins);
+    }
   };
 
   resetAfterIndex(index, shouldForceUpdate) {

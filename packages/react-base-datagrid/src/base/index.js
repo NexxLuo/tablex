@@ -178,6 +178,10 @@ class FixedTable extends React.Component {
       this.rightRef.current.resetAfterIndex(index, shouldForceUpdate);
   }
 
+  scrollToItem(index, align) {
+    this.middleRef.current && this.middleRef.current.scrollToItem(index, align);
+  }
+
   rowRender = params => {
     let fn = this.props.rowRender;
 
@@ -457,7 +461,10 @@ AutoSizerTable.propTypes = {
   onColumnResizeStop: PropTypes.func,
 
   /** 获取table ref */
-  innerRef: PropTypes.func
+  innerRef: PropTypes.func,
+
+  /** 获取 list ref */
+  listRef: PropTypes.func
 };
 
 export default AutoSizerTable;

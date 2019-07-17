@@ -44,13 +44,6 @@ class EditableTable extends React.Component {
   }
 
   rowsAttributes = [];
-  tableRef = null;
-  initRef = inst => {
-    if (typeof this.props.initRef === "function") {
-      this.props.initRef(inst);
-    }
-    this.tableRef = inst;
-  };
 
   isEditing = () => {
     return this.state.isEditing;
@@ -1213,7 +1206,7 @@ class EditableTable extends React.Component {
   };
 
   createToolBar = () => {
-    let { editable, readOnly,toolBarStyle } = this.props;
+    let { editable, readOnly, toolBarStyle } = this.props;
 
     if (editable === true && readOnly !== true) {
       let tools = this.editTools();
@@ -1224,7 +1217,7 @@ class EditableTable extends React.Component {
             style={{
               backgroundColor: "#ffffff",
               marginRight: 5,
-              padding:"10px 0",
+              padding: "10px 0",
               ...toolBarStyle
             }}
           >
@@ -1336,7 +1329,6 @@ class EditableTable extends React.Component {
       data: arr,
       columns,
       onSelectChange: this.onSelectChange,
-      initRef: this.initRef,
       header: this.headerExtra,
       footer: this.footerExtra
     };
