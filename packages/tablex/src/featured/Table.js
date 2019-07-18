@@ -135,7 +135,7 @@ class FeaturedTable extends React.Component {
   }
 
   columnSettingMenuShow = e => {
-    e.target.className = "tablex__column__inner__dropdown opened";
+    e.target.className = "tablex__head__cell__title__dropdown opened";
 
     let el = e.target;
 
@@ -171,7 +171,7 @@ class FeaturedTable extends React.Component {
   columnSettingMenuHide = () => {
     let columnMenu = this.state.columnMenu || {};
     if (columnMenu.trigger) {
-      columnMenu.trigger.className = "tablex__column__inner__dropdown";
+      columnMenu.trigger.className = "tablex__head__cell__title__dropdown";
     }
     this.setState({
       columnMenu: Object.assign(columnMenu, { visible: false, trigger: null })
@@ -248,12 +248,12 @@ class FeaturedTable extends React.Component {
         d.order = i;
       }
 
-      d.headRender = ({ column }) => {
+      d.headCellRender = ({ title }) => {
         return (
-          <div className="tablex__column__inner">
-            <span className="tablex__column__inner__title">{column.title}</span>
+          <div className="tablex__head__cell__title">
+            {title}
             <span
-              className="tablex__column__inner__dropdown"
+              className="tablex__head__cell__title__dropdown"
               data-columnkey={columnKey}
               onClick={this.columnSettingMenuShow}
             />

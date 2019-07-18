@@ -1,6 +1,7 @@
 import * as React from "react";
 
-export type Align = number | string;
+export type ValidateResult = { valid: boolean; message: string };
+
 
 export interface ColumnProps<T> {
   title?: React.ReactNode | (() => React.ReactNode);
@@ -10,6 +11,15 @@ export interface ColumnProps<T> {
   align?: "left" | "right" | "center";
   width?: string | number;
   fixed?: "left" | "right" | "none";
+  validator?: (text: any, record: T, index: number) => ValidateResult;
+  editor?: (
+    value: any,
+    row: object,
+    rowIndex: number,
+    onchange: (e: any) => void,
+    ref: (ins: any) => void,
+    validate: () => void
+  ) => React.ReactNode;
 }
 
 export interface TableComponents {
@@ -49,31 +59,60 @@ export interface PaginationProps {
 }
 
 export interface TableProps<T> {
-  prefixCls?: string;
-  dropdownPrefixCls?: string;
-  pagination?: PaginationProps | false;
-  data?: T[];
-  components?: TableComponents;
+  rowKey: string;
   columns?: ColumnProps<T>[];
-  rowKey?: string;
+  data?: T[];
+  rowHeight?: number;
+  minHeight?: number;
   rowClassName?: (record: T, index: number) => string;
+  showHeader?: boolean;
+  bordered?: boolean;
+  hoverable?: boolean;
+  components?: TableComponents;
+  scrollRef?: (ref: React.ElementType) => void;
+  innerRef?: (ref: React.ElementType) => void;
+  rowRender?: ({
+    rowData: object,
+    rowIndex: number,
+    children: any
+  }) => React.ReactNode;
+  onRow?: (record: T, index: number) => object;
+
+  pagination?: PaginationProps | false;
+  loading?: boolean;
+  settable?: boolean;
+  striped?: boolean;
+  tableId?: string;
+
+  selectMode?: "multiple" | "single" | "none";
+  checkStrictly?: boolean;
+  rowSelectClassName?: string;
+  defaultSelectedRowKeys?: string[];
+  selectedRowKeys?: string[];
+  disabledSelectKeys?: string[];
+  onSelectChange?: (
+    selectedKeys: string[],
+    selectedRows: any[],
+    triggerKey: string
+  ) => void;
+  onSelect?: (record: object, index: number, rowKey: string) => void;
+  onUnSelect?: (record: object, index: number, rowKey: string) => void;
+  onSelectAll?: () => void;
+  onUnSelectAll?: () => void;
+
+  expandColumnKey?: string;
   expandedRowRender?: (
     record: T,
     index: number,
     indent: number,
     expanded: boolean
   ) => React.ReactNode;
+  expandRowHeight?: number | ((record: object, index: number) => number);
   defaultExpandedRowKeys?: string[] | number[];
   expandedRowKeys?: string[] | number[];
   onExpandedRowsChange?: (expandedRowKeys: string[] | number[]) => void;
   onExpand?: (expanded: boolean, record: T) => void;
-  loading?: boolean;
-  onRow?: (record: T, index: number) => object;
-  bordered?: boolean;
-  showHeader?: boolean;
-  footer?: () => React.ReactNode;
-  className?: string;
-  style?: React.CSSProperties;
+  loadChildrenData?: (record: object) => Promise<T> | void;
 }
 
 export default class Table<T> extends React.Component<TableProps<T>, any> {}

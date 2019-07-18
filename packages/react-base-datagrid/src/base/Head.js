@@ -73,6 +73,12 @@ const renderColumns = (columns, columnDepth, onColumnResizeStop) => {
 
     let h = (columnDepth - depth + 1) * headerHeight;
 
+    let renderFn = d.headCellRender;
+
+    if (typeof renderFn === "function") {
+      titleElement = renderFn({ column: d, title: titleElement });
+    }
+
     let styles = {};
     d.align && (styles.textAlign = d.align);
 

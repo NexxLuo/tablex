@@ -31,12 +31,12 @@
   overflow: hidden;
 }
 
-.tablex__column__inner {
+.tablex__head__cell__title {
   position: relative;
   width: 100%;
 }
 
-.tablex__column__inner__dropdown {
+.tablex__head__cell__title__dropdown {
   cursor: pointer;
   display: none;
   width: 16px;
@@ -48,7 +48,7 @@
   right: 0px;
 }
 
-.tablex__column__inner__dropdown::after {
+.tablex__head__cell__title__dropdown::after {
   content: "";
   display: block;
   width: 12px;
@@ -60,15 +60,15 @@
   background-clip: content-box;
 }
 
-.tablex-table-head-cell:hover .tablex__column__inner__dropdown {
+.tablex-table-head-cell:hover .tablex__head__cell__title__dropdown {
   display: inline-block;
 }
 
-.tablex__column__inner__dropdown.opened {
+.tablex__head__cell__title__dropdown.opened {
   display: inline-block;
 }
 
-.tablex__column__inner__dropdown.ant-popover-open {
+.tablex__head__cell__title__dropdown.ant-popover-open {
   display: inline-block;
 }
 
