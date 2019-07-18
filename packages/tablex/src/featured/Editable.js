@@ -411,15 +411,14 @@ class EditableTable extends React.Component {
 
     let arr = columns;
 
-    arr = treeFilter(columns, d => {
-      let bl = true;
-
-      if (isEditing === true) {
-        bl = d.editingVisible !== false;
-      }
-
-      return bl;
-    });
+    if (isEditing === true) {
+      arr = treeFilter(columns, d => {
+        if (d.editingVisible === true) {
+          d.hidden = false;
+        }
+        return d.editingVisible !== false;
+      });
+    }
 
     let cols = treeToList(arr).leafs;
 

@@ -37,7 +37,13 @@ Column.propTypes = {
   validator: PropTypes.func,
   /** 编辑列控件 (value:any,row:object,rowIndex:number,onchange:func,ref:func,validate:func) => React.Element ;
    */
-  editor: PropTypes.func
+  editor: PropTypes.func,
+
+  /** 列是否隐藏 */
+  hidden:PropTypes.bool,
+
+  /** 编辑时列是否可见 */
+  editingVisible:PropTypes.bool
 };
 
 export default Column;

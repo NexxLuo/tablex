@@ -31,7 +31,8 @@ class Demo extends React.PureComponent {
         dataIndex: "id",
         title: "编号",
         key: "id",
-
+        hidden:true,
+        editingVisible: true,
         width: 200
       },
       {

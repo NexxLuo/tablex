@@ -33,8 +33,14 @@ class HeadDropMenu extends React.Component {
 
       let config = (columnsConfig || {})[columnKey] || {};
 
-
       isHide = !!config.hidden;
+      
+      if ("hidden" in config) {
+        isHide = !!config.hidden;
+      } else {
+        isHide = !!c.hidden;
+      }
+
 
       if (isHide === false) {
         defaultChecked.push(columnKey);

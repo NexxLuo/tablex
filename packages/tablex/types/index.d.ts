@@ -31,6 +31,8 @@ export interface ColumnProps<T> {
   align?: "left" | "right" | "center";
   width?: string | number;
   fixed?: "left" | "right" | "none";
+  hidden?: boolean;
+  editingVisible?: boolean;
   validator?: (text: any, record: T, index: number) => ValidateResult;
   editor?: (
     value: any,

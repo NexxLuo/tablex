@@ -139,18 +139,29 @@ class FeaturedTable extends React.Component {
 
     let el = e.target;
 
-    let container = getParentElement(el, ".tablex-table-head");
+    let head = getParentElement(el, ".tablex-table-head");
+
+    let container = getParentElement(el, ".tablex__container__body");
+
     let p = getParentElement(e.target, ".tablex-table-head-cell");
-    let sl = 0;
+
+    let containerTop = 0;
+
     if (container) {
-      sl = container.scrollLeft;
+      containerTop = container.offsetTop;
+    }
+
+    let sl = 0;
+    if (head) {
+      sl = head.scrollLeft;
     }
 
     let left = 0;
     let top = 0;
     if (p) {
       left = p.offsetLeft + p.offsetWidth - sl - el.offsetWidth;
-      top = p.offsetTop + p.offsetHeight - p.offsetHeight / 2 + 6;
+      top =
+        containerTop + p.offsetTop + p.offsetHeight - p.offsetHeight / 2 + 6;
     }
 
     if (this.dropdown_button_ref && this.dropdown_button_ref.current) {
@@ -223,7 +234,12 @@ class FeaturedTable extends React.Component {
 
       d.key = columnKey;
       let config = configs[columnKey] || {};
-      bl = !config.hidden;
+
+      if ("hidden" in config) {
+        bl = !config.hidden;
+      } else {
+        bl = !d.hidden;
+      }
 
       return bl;
     });
