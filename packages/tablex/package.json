@@ -21,6 +21,7 @@
   },
   "main": "lib/index.js",
   "module": "es/index.js",
+  "types": "types/index.d.ts",
   "files": [
     "lib",
     "es"
