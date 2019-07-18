@@ -2,6 +2,26 @@ import * as React from "react";
 
 export type ValidateResult = { valid: boolean; message: string };
 
+export type EditTools = [
+  "edit" | "add" | "delete",
+  { icon: string; text: string; props: {}; handler: (e: any) => void },
+  (e: any) => React.ReactNode
+];
+
+export type EditToolsConfig = {
+  position: "top" | "bottom";
+  itemStyle: object;
+  editText: string;
+  editIcon: string;
+  addText: string;
+  addIcon: string;
+  deleteText: string;
+  deleteIcon: string;
+  okText: string;
+  okIcon: string;
+  cancelText: string;
+  cancelIcon: string;
+};
 
 export interface ColumnProps<T> {
   title?: React.ReactNode | (() => React.ReactNode);
@@ -113,6 +133,30 @@ export interface TableProps<T> {
   onExpandedRowsChange?: (expandedRowKeys: string[] | number[]) => void;
   onExpand?: (expanded: boolean, record: T) => void;
   loadChildrenData?: (record: object) => Promise<T> | void;
+
+  editable?: boolean;
+  readOnly?: boolean;
+  editTools?: EditTools;
+  editToolsConfig?: EditToolsConfig;
+  isAppend?: boolean;
+  defaultAddCount?: number;
+  onEditSave?: (
+    changedRows: object[],
+    newRows: object[],
+    editType: "add" | "edit" | "delete"
+  ) => Promise<T> | void;
+  allowSaveEmpty?: boolean;
+  validateTrigger: ["onChange" | "onBlur" | "onSave"];
+  onBeforeAdd?: () => boolean;
+  onAdd?: (addedData: object[], newData: object[], string: "add") => void;
+  rowTemplate?: (index: number) => object;
+  onCancel?: () => void;
+  onBeforeEdit?: () => boolean;
+  onEdit?: () => void;
+  onBeforeDelete?: (selectedKeys: string[]) => boolean;
+  onDelete?: () => void;
+  alwaysValidate?: boolean;
+  dataControled?: boolean;
 }
 
 export default class Table<T> extends React.Component<TableProps<T>, any> {}
