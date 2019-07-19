@@ -20,7 +20,7 @@ class HeadDropMenu extends React.Component {
 
   columnsFilter = () => {
     let { columns: arr, columnsConfig } = this.props;
-    
+
     let columns = arr; //.filter(d => !!d.title)
 
     const columnsOptions = [];
@@ -34,16 +34,24 @@ class HeadDropMenu extends React.Component {
       let config = (columnsConfig || {})[columnKey] || {};
 
       isHide = !!config.hidden;
-      
+
       if ("hidden" in config) {
         isHide = !!config.hidden;
       } else {
         isHide = !!c.hidden;
       }
 
-
       if (isHide === false) {
         defaultChecked.push(columnKey);
+      }
+
+      let TitleComponent = c.title;
+      let titleElement = null;
+
+      if (typeof TitleComponent === "function") {
+        titleElement = <TitleComponent column={c} />;
+      } else {
+        titleElement = c.title;
       }
 
       columnsOptions.push(
@@ -55,7 +63,7 @@ class HeadDropMenu extends React.Component {
               this.onFilterColumnChange(e.target.checked, columnKey);
             }}
           >
-            {c.title}
+            {titleElement}
           </Checkbox>
         </div>
       );

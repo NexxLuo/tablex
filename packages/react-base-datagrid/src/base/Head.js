@@ -35,10 +35,10 @@ const Column = ({
   );
 };
 
-const ColumnGroup = ({ title, children, height }) => {
+const ColumnGroup = ({ title, children, style }) => {
   return (
     <div className="tablex-table-head-group">
-      <div className="tablex-table-head-group-cell" style={{ height: height }}>
+      <div className="tablex-table-head-group-cell" style={style}>
         <div className="tablex-table-head-group-inner">{title}</div>
       </div>
       <div className="tablex-table-head-group-children">{children}</div>
@@ -52,7 +52,21 @@ const renderColumns = (columns, columnDepth, onColumnResizeStop) => {
   return columns.map((d, i) => {
     let columnKey = d.key || d.dataIndex || i;
 
+    let alignStyles = {};
+
+    if (d.halign) {
+      alignStyles.textAlign = d.halign;
+    } else if (d.align) {
+      alignStyles.textAlign = d.align;
+    }
+
     let TitleComponent = d.title;
+    let titleRenderFn = d.titleRender;
+
+    if (typeof titleRenderFn === "function") {
+      TitleComponent = titleRenderFn;
+    }
+
     let titleElement = null;
 
     if (typeof TitleComponent === "function") {
@@ -62,8 +76,9 @@ const renderColumns = (columns, columnDepth, onColumnResizeStop) => {
     }
 
     if (d.children instanceof Array && d.children.length > 0) {
+      let style = Object.assign({ height: headerHeight }, alignStyles);
       return (
-        <ColumnGroup key={columnKey} title={titleElement} height={headerHeight}>
+        <ColumnGroup key={columnKey} title={titleElement} style={style}>
           {renderColumns(d.children, columnDepth, onColumnResizeStop)}
         </ColumnGroup>
       );
@@ -79,16 +94,13 @@ const renderColumns = (columns, columnDepth, onColumnResizeStop) => {
       titleElement = renderFn({ column: d, title: titleElement });
     }
 
-    let styles = {};
-    d.align && (styles.textAlign = d.align);
-
     return (
       <Column
         key={columnKey}
         columnKey={columnKey}
         width={d.width}
         height={h}
-        style={styles}
+        style={alignStyles}
         resizable={d.resizable}
         onColumnResizeStop={onColumnResizeStop}
       >

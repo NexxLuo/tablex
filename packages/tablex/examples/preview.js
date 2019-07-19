@@ -45,19 +45,21 @@ fixedColumns = [
     dataIndex: "column-1",
     key: "column-1",
     title: () => {
-      return "number2";
+      return "fn title";
     },
-    headRender: () => {
-      console.log("headRender");
-      return <div>a</div>;
+    titleRender: () => {
+      return <div>titleRender</div>;
     },
     width: 100,
+    align:"left",
+    halign:"center",
     fixed: "left"
   },
   {
     title: "appellation",
     width: 150,
     key: "column-11",
+    halign:"left",
     children: [
       {
         dataIndex: "address",
@@ -154,7 +156,7 @@ class Demo extends Component {
 
   componentDidMount() {
     this.setState({
-      data:createTreeData()
+      data: createTreeData()
     });
   }
 
@@ -194,7 +196,10 @@ class Demo extends Component {
           <span onClick={this.scrollToItem} style={{ cursor: "pointer" }}>
             scroll to item
           </span>
-          <span onClick={this.getData} style={{ cursor: "pointer",marginLeft:10 }}>
+          <span
+            onClick={this.getData}
+            style={{ cursor: "pointer", marginLeft: 10 }}
+          >
             get data
           </span>
         </div>

@@ -25,10 +25,12 @@ export type EditToolsConfig = {
 
 export interface ColumnProps<T> {
   title?: React.ReactNode | (() => React.ReactNode);
+  titleRender?: ({ colunm: T }) => React.ReactNode;
   key?: React.Key;
   dataIndex?: string;
   render?: (text: any, record: T, index: number) => React.ReactNode;
   align?: "left" | "right" | "center";
+  halign?: "left" | "right" | "center";
   width?: string | number;
   fixed?: "left" | "right" | "none";
   hidden?: boolean;

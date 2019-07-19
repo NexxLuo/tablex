@@ -20,7 +20,6 @@
   background-color: #ffffff;
 }
 
-
 .tablex__container__footer {
   padding: 10px 10px;
   border: 1px solid #eaeaea;
@@ -46,6 +45,7 @@
   position: absolute;
   top: 6px;
   right: 0px;
+  background-color: #ffffff;
 }
 
 .tablex__head__cell__title__dropdown::after {

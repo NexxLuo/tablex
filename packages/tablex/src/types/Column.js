@@ -16,6 +16,12 @@ Column.defaultProps = {
 Column.propTypes = {
   /** 列标题 */
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+  /** 列标题自定义渲染，优先级高于title，但是不会覆盖column dropmenu下的title */
+  titleRender: PropTypes.func,
+  /** 列对齐方式 */
+  align: PropTypes.oneOf(["left", "right", "center"]),
+   /** 列标题对齐方式 */
+  halign: PropTypes.oneOf(["left", "right", "center"]),
   /** 列宽 */
   width: PropTypes.number.isRequired,
   /** 列唯一key，如若不设置，将会以dataIndex作为唯一key */
@@ -40,10 +46,10 @@ Column.propTypes = {
   editor: PropTypes.func,
 
   /** 列是否隐藏 */
-  hidden:PropTypes.bool,
+  hidden: PropTypes.bool,
 
   /** 编辑时列是否可见 */
-  editingVisible:PropTypes.bool
+  editingVisible: PropTypes.bool
 };
 
 export default Column;
