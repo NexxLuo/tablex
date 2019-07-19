@@ -186,14 +186,9 @@ class TreeGrid extends Component {
       nextExpandedKeys.push(key);
     }
 
-    this.setState(
-      {
-        expandedRowKeys: nextExpandedKeys
-      },
-      () => {
-        this.resetScrollbarSize();
-      }
-    );
+    this.setState({
+      expandedRowKeys: nextExpandedKeys
+    });
 
     if (typeof this.props.onExpandedRowsChange === "function") {
       this.props.onExpandedRowsChange(nextExpandedKeys);
@@ -218,14 +213,9 @@ class TreeGrid extends Component {
       nextExpandedKeys.splice(i, 1);
     }
 
-    this.setState(
-      {
-        expandedRowKeys: nextExpandedKeys
-      },
-      () => {
-        this.resetScrollbarSize();
-      }
-    );
+    this.setState({
+      expandedRowKeys: nextExpandedKeys
+    });
 
     if (typeof this.props.onExpandedRowsChange === "function") {
       this.props.onExpandedRowsChange(nextExpandedKeys);
@@ -338,10 +328,6 @@ class TreeGrid extends Component {
   resetAfterIndex(index, shouldForceUpdate) {
     this.dataGridRef &&
       this.dataGridRef.resetAfterIndex(index, shouldForceUpdate);
-  }
-
-  resetScrollbarSize() {
-    this.dataGridRef && this.dataGridRef.resetScrollbarSize();
   }
 
   rowRender = params => {

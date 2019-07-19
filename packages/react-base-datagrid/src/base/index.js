@@ -24,7 +24,8 @@ class FixedTable extends React.Component {
       rowKey: "",
       hoverable: true,
       scrollbarX: 0,
-      scrollbarY: 0
+      scrollbarY: 0,
+      needResetScrollbar: false
     };
 
     if (typeof props.innerRef === "function") {
@@ -53,6 +54,10 @@ class FixedTable extends React.Component {
         hoverable,
         prevProps: nextProps
       };
+
+      if (data.length !== prevState.data.length) {
+        nextState.needResetScrollbar = true;
+      }
       return nextState;
     }
     return null;
@@ -94,7 +99,11 @@ class FixedTable extends React.Component {
       let Y = ins.offsetWidth - ins.clientWidth;
 
       if (scrollbarX !== X || scrollbarY !== Y) {
-        this.setState({ scrollbarX: X, scrollbarY: Y });
+        this.setState({
+          scrollbarX: X,
+          scrollbarY: Y,
+          needResetScrollbar: false
+        });
       }
     }
   };
@@ -166,7 +175,9 @@ class FixedTable extends React.Component {
   }
 
   componentDidUpdate() {
-    // this.resetScrollbarSize();
+    if (this.state.needResetScrollbar === true) {
+      this.resetScrollbarSize();
+    }
   }
 
   resetAfterIndex(index, shouldForceUpdate) {

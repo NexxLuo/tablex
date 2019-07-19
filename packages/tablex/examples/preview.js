@@ -52,7 +52,7 @@ fixedColumns = [
       return <div>a</div>;
     },
     width: 100,
-    fixed:"left"
+    fixed: "left"
   },
   {
     title: "appellation",
@@ -94,7 +94,7 @@ fixedColumns = [
     key: "column-4",
     title: "age",
     width: 50,
-    fixed:"right"
+    fixed: "right"
   }
 ];
 
@@ -148,12 +148,13 @@ function createTreeData() {
 class Demo extends Component {
   state = {
     data: [],
+    loading: false,
     expandedRowKeys: []
   };
 
   componentDidMount() {
     this.setState({
-      data: createTreeData()
+      data:createTreeData()
     });
   }
 
@@ -179,18 +180,33 @@ class Demo extends Component {
     }
   };
 
+  getData = () => {
+    this.setState({ loading: true });
+    setTimeout(() => {
+      this.setState({ loading: false, data: createTreeData() });
+    }, 1000);
+  };
+
   render() {
     return (
       <>
-        <div onClick={this.scrollToItem} style={{ cursor: "pointer" }}>
-          scroll to item
+        <div>
+          <span onClick={this.scrollToItem} style={{ cursor: "pointer" }}>
+            scroll to item
+          </span>
+          <span onClick={this.getData} style={{ cursor: "pointer",marginLeft:10 }}>
+            get data
+          </span>
         </div>
+
         <Table
+          loading={this.state.loading}
           rowKey="id"
           innerRef={this.innerRef}
           expandColumnKey="column-1"
           columns={fixedColumns}
           selectMode="multiple"
+          defaultExpandedRowKeys={["0"]}
           defaultSelectedRowKeys={["0"]}
           data={this.state.data}
           onExpandedRowsChange={this.onExpandedRowsChange}

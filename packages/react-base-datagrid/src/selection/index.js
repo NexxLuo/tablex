@@ -87,16 +87,14 @@ class SelectionGrid extends Component {
         checkStrictly
       };
 
-      
-    if ("selectedRowKeys" in nextProps) {
-      nextState.selectedRowKeys = selectedRowKeys;
-    }
+      if ("selectedRowKeys" in nextProps) {
+        nextState.selectedRowKeys = selectedRowKeys;
+      }
 
-    if ("disabledSelectKeys" in nextProps) {
-      nextState.disabledSelectKeys = disabledSelectKeys;
+      if ("disabledSelectKeys" in nextProps) {
+        nextState.disabledSelectKeys = disabledSelectKeys;
+      }
     }
-    }
-
 
     return nextState;
   }
@@ -360,30 +358,32 @@ class SelectionGrid extends Component {
 
     let isCheckedAll = true;
 
-    if (selectedRowKeys.length === 0) {
-      isCheckedAll = false;
-    }
-
-    for (let i = 0; i < flatData.length; i++) {
-      const key = flatData[i][rowKey];
-
-      if (this.isDisabledCheck(key, flatData[i])) {
-        continue;
-      }
-
-      if (selectedRowKeys.indexOf(key) === -1) {
-        isCheckedAll = false;
-        break;
-      }
-    }
-
     let attr = {};
 
-    if (isCheckedAll === true) {
-      attr.checked = true;
-    } else {
-      if (selectedRowKeys.length > 0 || halfCheckedKeys.length > 0) {
-        attr.indeterminate = true;
+    if (flatData.length > 0) {
+      if (selectedRowKeys.length === 0) {
+        isCheckedAll = false;
+      }
+
+      for (let i = 0; i < flatData.length; i++) {
+        const key = flatData[i][rowKey];
+
+        if (this.isDisabledCheck(key, flatData[i])) {
+          continue;
+        }
+
+        if (selectedRowKeys.indexOf(key) === -1) {
+          isCheckedAll = false;
+          break;
+        }
+      }
+
+      if (isCheckedAll === true) {
+        attr.checked = true;
+      } else {
+        if (selectedRowKeys.length > 0 || halfCheckedKeys.length > 0) {
+          attr.indeterminate = true;
+        }
       }
     }
 
