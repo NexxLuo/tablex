@@ -225,6 +225,10 @@ class FixedTable extends React.Component {
       formattedColumns
     } = this.state;
 
+    if (scrollbarY) {
+      scrollbarY = scrollbarY + 1;
+    }
+
     let {
       middle,
       left,
