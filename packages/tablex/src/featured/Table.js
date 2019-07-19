@@ -216,9 +216,14 @@ class FeaturedTable extends React.Component {
       groupedColumnKey: null
     });
 
-    this.setState({
-      columnsConfig: newConfigs
-    });
+    this.setState(
+      {
+        columnsConfig: newConfigs
+      },
+      () => {
+        this.resetScrollbarSize();
+      }
+    );
   };
 
   formatColumns = () => {
@@ -398,6 +403,18 @@ class FeaturedTable extends React.Component {
     return cls;
   };
 
+  innerTableRef = null;
+  innerRef = ins => {
+    this.innerTableRef = ins;
+    if (typeof this.props.innerRef === "function") {
+      this.props.innerRef(ins);
+    }
+  };
+
+  resetScrollbarSize() {
+    this.innerTableRef && this.innerTableRef.resetScrollbarSize();
+  }
+
   render() {
     let props = this.props;
 
@@ -414,7 +431,8 @@ class FeaturedTable extends React.Component {
       data: arr,
       columns,
       onColumnResizeStop: this.onColumnResize,
-      emptyRenderer: this.emptyRenderer
+      emptyRenderer: this.emptyRenderer,
+      innerRef: this.innerRef
     };
 
     if (props.striped === true) {

@@ -85,7 +85,7 @@ class FixedTable extends React.Component {
       (this.headRef.current.scrollLeft = e.target.scrollLeft);
   };
 
-  setScrollBarSize = () => {
+  resetScrollbarSize = () => {
     let ins = this.scrollerIns;
 
     if (ins) {
@@ -101,7 +101,7 @@ class FixedTable extends React.Component {
 
   outterInit = ins => {
     this.scrollerIns = ins;
-    this.setScrollBarSize();
+    this.resetScrollbarSize();
     if (this.headInstance === null) {
       this.headInstance = ins;
       if (this.props.showHeader !== false) {
@@ -166,7 +166,7 @@ class FixedTable extends React.Component {
   }
 
   componentDidUpdate() {
-    this.setScrollBarSize();
+    // this.resetScrollbarSize();
   }
 
   resetAfterIndex(index, shouldForceUpdate) {

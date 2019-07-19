@@ -51,7 +51,8 @@ fixedColumns = [
       console.log("headRender");
       return <div>a</div>;
     },
-    width: 200
+    width: 100,
+    fixed:"left"
   },
   {
     title: "appellation",
@@ -92,7 +93,8 @@ fixedColumns = [
     dataIndex: "age",
     key: "column-4",
     title: "age",
-    width: 150
+    width: 50,
+    fixed:"right"
   }
 ];
 
@@ -190,7 +192,6 @@ class Demo extends Component {
           columns={fixedColumns}
           selectMode="multiple"
           defaultSelectedRowKeys={["0"]}
-          defaultExpandedRowKeys={["0"]}
           data={this.state.data}
           onExpandedRowsChange={this.onExpandedRowsChange}
           orderNumber={true}
