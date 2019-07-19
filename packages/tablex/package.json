@@ -1,6 +1,6 @@
 {
   "name": "tablex",
-  "version": "1.2.12",
+  "version": "1.2.13",
   "description": "table virtualized tree-table ",
   "author": "nexx",
   "repository": {
@@ -41,7 +41,7 @@
     "lodash": "^4.17.11",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
-    "react-base-datagrid": "^1.0.6",
+    "react-base-datagrid": "^1.0.7",
     "react-dom": "^16.8.6",
     "react-sortable-hoc": "^1.9.1"
   },
