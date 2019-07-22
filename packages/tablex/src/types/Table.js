@@ -23,12 +23,7 @@ Table.propTypes = {
   /** 数据行主键字段
    */
   rowKey: PropTypes.string.isRequired,
-
-  /**
-   * 表格列
-   */
-  columns: PropTypes.array.isRequired,
-
+ 
   /**
    * 表格数据
    */

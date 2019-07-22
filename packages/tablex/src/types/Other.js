@@ -8,7 +8,8 @@ const Other = () => {
 Other.defaultProps = {
   pagination: false,
   loading: false,
-  striped: true
+  striped: true,
+  columnDropMenu: true
 };
 
 Other.propTypes = {
@@ -17,6 +18,9 @@ Other.propTypes = {
 
   /** 分页 */
   pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+
+  /** 是否启用列标题配置项菜单 */
+  columnDropMenu: PropTypes.bool,
 
   /** 是否可进行属性配置 */
   settable: PropTypes.bool,

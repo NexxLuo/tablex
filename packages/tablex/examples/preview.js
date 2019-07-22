@@ -53,6 +53,7 @@ fixedColumns = [
     width: 100,
     align:"left",
     halign:"center",
+    fixedable:false,
     fixed: "left"
   },
   {
@@ -133,7 +134,7 @@ function createTreeData() {
       id: "" + i,
       level: 0,
       "column-1": "Edward King " + i,
-      age: 32,
+      age: i,
       address: "London, Park Lane no. " + i
     };
 
@@ -189,6 +190,11 @@ class Demo extends Component {
     }, 1000);
   };
 
+  orderNumber={
+    title:"排序",
+    width:50
+  }
+
   render() {
     return (
       <>
@@ -215,7 +221,7 @@ class Demo extends Component {
           defaultSelectedRowKeys={["0"]}
           data={this.state.data}
           onExpandedRowsChange={this.onExpandedRowsChange}
-          orderNumber={true}
+          orderNumber={this.orderNumber}
           expandRowHeight={200}
         />
       </>

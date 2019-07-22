@@ -4,7 +4,7 @@ import Table from "react-base-datagrid";
 
 import Pagination from "./pagination";
 import Spin from "antd/lib/spin";
-import ColumnDropMenu from "./ColumnDropMenu";
+import ColumnDropMenu, { ColumnDropMenuButton } from "./ColumnDropMenu";
 import {
   treeToFlatten as treeToList,
   treeFilter,
@@ -14,6 +14,15 @@ import Setting, { getConfigs, setConfigs } from "./setting";
 import orderBy from "lodash/orderBy";
 import Popover from "antd/lib/popover";
 import cloneDeep from "lodash/cloneDeep";
+import SortIcon from "./SortIndicator";
+
+function orderNumberCellRender(value, rowData, index) {
+  return index + 1;
+}
+
+function orderNumberHeadRender() {
+  return "序号";
+}
 
 /**
  * 表格
@@ -34,8 +43,11 @@ class FeaturedTable extends React.Component {
       prevProps: null,
       pagination: false,
       data: [],
+      rawData: [],
       columns: [],
+      columnDropMenu: false,
       columnsConfig: configs.columnsConfig || null,
+      sortedColumns: null,
       columnMenu: null
     };
   }
@@ -44,11 +56,42 @@ class FeaturedTable extends React.Component {
     let nextState = {};
 
     if (prevState.prevProps !== nextProps) {
-      let columns = cloneDeep(nextProps.columns || []);
-      nextState.columns = columns;
-      nextState.data = nextProps.data || nextProps.dataSource || [];
-      nextState.rawColumns = nextProps.columns || [];
-      nextState.prevProps = nextProps;
+      let { columns, prependColumns = [], columnDropMenu } = nextProps;
+
+      let data = nextProps.data || nextProps.dataSource || [];
+
+      nextState = {
+        columns: cloneDeep(columns),
+        data: data,
+        rawData: data,
+        rawColumns: columns,
+        columnDropMenu,
+        prevProps: nextProps
+      };
+
+      let extraColumns = [];
+
+      if ("orderNumber" in nextProps) {
+        let orderColumn = nextProps.orderNumber;
+
+        let orderNumberColumn = {
+          key: "__ordernumber_column",
+          dataKey: "__ordernumber_column",
+          __type: "__ordernumber_column",
+          resizable: false,
+          width: 50,
+          align: "center",
+          render: orderNumberCellRender,
+          title: orderNumberHeadRender
+        };
+        if (orderColumn instanceof Object) {
+          orderNumberColumn = Object.assign({}, orderNumberColumn, orderColumn);
+        }
+
+        extraColumns.unshift(orderNumberColumn);
+      }
+
+      nextState.prependColumns = extraColumns.concat(prependColumns);
     }
 
     if ("pagination" in nextProps) {
@@ -134,7 +177,69 @@ class FeaturedTable extends React.Component {
     return data;
   }
 
+  getData = () => {
+    let { data, sortedColumns } = this.state;
+    let arr = data;
+
+    let orderColumns = [];
+    let orderTypes = [];
+
+    if (sortedColumns) {
+      Object.keys(sortedColumns).forEach(k => {
+        let v = sortedColumns[k];
+        if (v !== "none") {
+          orderColumns.push(k);
+          orderTypes.push(v);
+        }
+      });
+    }
+
+    console.log("getData:", orderColumns, orderTypes);
+
+    if (orderColumns.length > 0) {
+      arr = orderBy(data, orderColumns, orderTypes);
+    }
+
+    if (this.hasPagination()) {
+      arr = this.getCurrentPageData(arr);
+    }
+
+    return arr;
+  };
+
+  onSort = dataIndex => {
+    let sorted = this.state.sortedColumns || {};
+
+    let newSorted = { ...sorted };
+
+    let col = sorted[dataIndex];
+
+    let currSort = col || "none";
+
+    let targetSort = {
+      none: "asc",
+      asc: "desc",
+      desc: "none"
+    }[currSort];
+
+    col = targetSort;
+
+    if (targetSort === "none") {
+      delete newSorted[dataIndex];
+    } else {
+      newSorted[dataIndex] = targetSort;
+    }
+
+    this.setState({ sortedColumns: newSorted });
+  };
+
+  onTitleClick = ({ dataIndex }) => {
+    this.onSort(dataIndex);
+  };
+
   columnSettingMenuShow = e => {
+    e.stopPropagation();
+
     e.target.className = "tablex__head__cell__title__dropdown opened";
 
     let el = e.target;
@@ -227,7 +332,7 @@ class FeaturedTable extends React.Component {
   };
 
   formatColumns = () => {
-    let { columns, columnsConfig } = this.state;
+    let { columns, columnsConfig, columnDropMenu, sortedColumns } = this.state;
 
     let configs = columnsConfig || {};
 
@@ -255,6 +360,8 @@ class FeaturedTable extends React.Component {
       let columnKey = d.key || d.dataIndex;
       let config = configs[columnKey] || configs[columnKey] || {};
 
+      let sort = (sortedColumns || {})[d.dataIndex];
+
       if ("fixed" in config) {
         d.fixed = config.fixed;
       }
@@ -271,13 +378,19 @@ class FeaturedTable extends React.Component {
 
       d.headCellRender = ({ title }) => {
         return (
-          <div className="tablex__head__cell__title">
+          <div
+            className="tablex__head__cell__title"
+            onClick={() => this.onTitleClick(d)}
+          >
             {title}
-            <span
-              className="tablex__head__cell__title__dropdown"
-              data-columnkey={columnKey}
-              onClick={this.columnSettingMenuShow}
-            />
+            <SortIcon order={sort} />
+            {columnDropMenu === true ? (
+              <span
+                className="tablex__head__cell__title__dropdown"
+                data-columnkey={columnKey}
+                onClick={this.columnSettingMenuShow}
+              />
+            ) : null}
           </div>
         );
       };
@@ -418,18 +531,16 @@ class FeaturedTable extends React.Component {
   render() {
     let props = this.props;
 
-    let { columnMenu, data } = this.state;
+    let { columnMenu, prependColumns, columnDropMenu } = this.state;
 
     let columns = this.formatColumns();
 
-    let arr = data;
-    if (this.hasPagination()) {
-      arr = this.getCurrentPageData(data);
-    }
+    let arr = this.getData();
 
     let newProps = {
       data: arr,
       columns,
+      prependColumns,
       onColumnResizeStop: this.onColumnResize,
       emptyRenderer: this.emptyRenderer,
       innerRef: this.innerRef
@@ -454,32 +565,34 @@ class FeaturedTable extends React.Component {
         </div>
         {this.renderFooter()}
 
-        <Popover
-          trigger="click"
-          onVisibleChange={this.columnSettingMenuHide}
-          content={
-            <ColumnDropMenu
-              options={{ pinable: true, filterable: true, groupable: false }}
-              columns={this.state.columns}
-              columnsConfig={this.state.columnsConfig}
-              onChange={this.onColumnChange}
+        {columnDropMenu === true ? (
+          <Popover
+            trigger="click"
+            onVisibleChange={this.columnSettingMenuHide}
+            content={
+              <ColumnDropMenu
+                options={{ pinable: true, filterable: true, groupable: false }}
+                columns={this.state.columns}
+                columnsConfig={this.state.columnsConfig}
+                onChange={this.onColumnChange}
+              />
+            }
+            arrowPointAtCenter={true}
+            placement="bottomRight"
+          >
+            <span
+              style={{
+                width: 1,
+                height: 1,
+                position: "absolute",
+                left: columnMenuState.offsetX,
+                top: columnMenuState.offsetY,
+                display: columnMenuState.visible ? "block" : "none"
+              }}
+              ref={this.dropdown_button_ref}
             />
-          }
-          arrowPointAtCenter={true}
-          placement="bottomRight"
-        >
-          <span
-            style={{
-              width: 1,
-              height: 1,
-              position: "absolute",
-              left: columnMenuState.offsetX,
-              top: columnMenuState.offsetY,
-              display: columnMenuState.visible ? "block" : "none"
-            }}
-            ref={this.dropdown_button_ref}
-          />
-        </Popover>
+          </Popover>
+        ) : null}
       </div>
     );
   }
@@ -488,6 +601,7 @@ class FeaturedTable extends React.Component {
 FeaturedTable.defaultProps = {
   orderNumber: true,
   settable: true,
+  columnDropMenu: true,
   pagination: false,
   loading: false,
   striped: true
@@ -498,12 +612,15 @@ FeaturedTable.propTypes = {
   loading: PropTypes.bool,
 
   /** 是否显示序号 */
-  orderNumber: PropTypes.bool,
+  orderNumber: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 
   /** 分页 */
   pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 
-  /** 是否可进行属性设置 */
+  /** 是否启用列标题配置项菜单 */
+  columnDropMenu: PropTypes.bool,
+
+  /** 是否可进行属性配置 */
   settable: PropTypes.bool,
 
   /** 奇偶行颜色间隔 */

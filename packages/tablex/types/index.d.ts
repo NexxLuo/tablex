@@ -28,7 +28,12 @@ export interface ColumnProps<T> {
   titleRender?: ({ colunm: T }) => React.ReactNode;
   key?: React.Key;
   dataIndex?: string;
-  render?: (text: any, record: T, index: number) => React.ReactNode;
+  render?: (
+    text: any,
+    record: T,
+    index: number,
+    extra: { depth: number; parents: string[] }
+  ) => React.ReactNode;
   align?: "left" | "right" | "center";
   halign?: "left" | "right" | "center";
   width?: string | number;
@@ -85,6 +90,7 @@ export interface PaginationProps {
 export interface TableProps<T> {
   rowKey: string;
   columns?: ColumnProps<T>[];
+  columnDropMenu?: boolean;
   data?: T[];
   rowHeight?: number;
   minHeight?: number;

@@ -1216,7 +1216,7 @@ class EditableTable extends React.Component {
             style={{
               backgroundColor: "#ffffff",
               marginRight: 5,
-              padding: "10px 0",
+              padding: "0px 0",
               ...toolBarStyle
             }}
           >

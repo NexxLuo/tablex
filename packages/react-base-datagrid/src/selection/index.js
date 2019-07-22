@@ -44,7 +44,8 @@ class SelectionGrid extends Component {
       checkStrictly,
       flatData,
       selectedRowKeys,
-      disabledSelectKeys
+      disabledSelectKeys,
+      prependColumns=[]
     } = nextProps;
 
     let nextState = {};
@@ -63,23 +64,13 @@ class SelectionGrid extends Component {
         });
       }
 
-      if (nextProps.orderNumber === true) {
-        extraColumns.unshift({
-          key: "__ordernumber_column",
-          dataKey: "__ordernumber_column",
-          __type: "__ordernumber_column",
-          resizable: false,
-          width: 50,
-          align: "center"
-        });
-      }
 
       nextState = {
         rowKey,
         data: data,
         flatData: flatData,
         columns: columns,
-        prependColumns: extraColumns,
+        prependColumns: extraColumns.concat(prependColumns),
         rowHeight,
         prevProps: nextProps,
         selectMode,
@@ -390,13 +381,6 @@ class SelectionGrid extends Component {
     return <Checkbox {...attr} onChange={this.onCheckAllChange} />;
   };
 
-  orderNumberCellRender = (value, rowData, index) => {
-    return index + 1;
-  };
-
-  orderNumberHeadRender = () => {
-    return "序号";
-  };
 
   rowClassName = ({ rowData, rowIndex }) => {
     let { rowKey, selectedRowKeys, rowSelectClassName } = this.state;
@@ -471,16 +455,7 @@ class SelectionGrid extends Component {
       checkboxColumn.render = this.checkboxCellRender;
       checkboxColumn.title = this.checkboxHeadRender;
     }
-
-    let orderNumberColumn = prependColumns.find(
-      d => d.__type === "__ordernumber_column"
-    );
-
-    if (orderNumberColumn) {
-      orderNumberColumn.render = this.orderNumberCellRender;
-      orderNumberColumn.title = this.orderNumberHeadRender;
-    }
-
+ 
     let newProps = {
       columns,
       prependColumns,

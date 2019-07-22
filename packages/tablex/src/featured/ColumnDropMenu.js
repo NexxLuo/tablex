@@ -4,6 +4,48 @@ import Checkbox from "antd/lib/checkbox";
 
 const SubMenu = Menu.SubMenu;
 
+const MenuBar = () => {
+  return (
+    <svg
+      viewBox="0 0 1024 1024"
+      focusable="false"
+      class=""
+      data-icon="bars"
+      width="1em"
+      height="1em"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M912 192H328c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 284H328c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 284H328c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM104 228a56 56 0 1 0 112 0 56 56 0 1 0-112 0zm0 284a56 56 0 1 0 112 0 56 56 0 1 0-112 0zm0 284a56 56 0 1 0 112 0 56 56 0 1 0-112 0z" />
+    </svg>
+  );
+};
+
+const MenuIcon = () => {
+  return (
+    <svg
+      viewBox="64 64 896 896"
+      focusable="false"
+      class=""
+      data-icon="menu"
+      width="1em"
+      height="1em"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M904 160H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8zm0 624H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8zm0-312H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8z" />
+    </svg>
+  );
+};
+
+export const ColumnDropMenuButton = (props) => {
+  return (
+    <span {...props}>
+      <MenuIcon />
+    </span>
+  );
+};
+
 class HeadDropMenu extends React.Component {
   onChange = (columnKey, config) => {
     if (typeof this.props.onChange === "function") {

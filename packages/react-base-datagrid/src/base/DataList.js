@@ -27,7 +27,11 @@ const TableCell = props => {
 
   let renderFn = render;
   if (typeof renderFn === "function") {
-    value = renderFn(value, row, rowIndex);
+    let extra = {
+      depth: row.__depth,
+      parents: row.__parents
+    };
+    value = renderFn(value, row, rowIndex, extra);
   }
 
   let styles = {};
