@@ -16,7 +16,7 @@
     "start": "cd ./packages/tablex && npm start",
     "i": "lerna bootstrap",
     "link": "lerna link",
-    "pub": "lerna publish"
+    "pub": "lerna publish from-package"
   },
   "keywords": [
     "table",
