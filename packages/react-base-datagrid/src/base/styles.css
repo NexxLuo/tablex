@@ -107,7 +107,7 @@
   display: inline-flex;
   box-sizing: border-box;
   border-right: 1px solid #e8e8e8;
-
+  font-size: 14px;
   height: 100%;
   vertical-align: top;
   position: relative;

@@ -5,7 +5,6 @@ const Asc = () => {
     <svg
       viewBox="64 64 896 896"
       focusable="false"
-      class=""
       data-icon="arrow-up"
       width="1em"
       height="1em"
@@ -22,7 +21,6 @@ const Desc = () => {
     <svg
       viewBox="64 64 896 896"
       focusable="false"
-      class=""
       data-icon="arrow-down"
       width="1em"
       height="1em"
@@ -45,7 +43,7 @@ const SortIcon = ({ order = "" }) => {
   return (
     <span
       className="tablex-column-sort-indicator"
-      style={{ color: "#ccc", fontSize: 12, verticalAlign: "middle" }}
+      style={{ color: "#ccc", fontSize: 12, verticalAlign: "middle",marginLeft:5 }}
     >
       {indicator}
     </span>

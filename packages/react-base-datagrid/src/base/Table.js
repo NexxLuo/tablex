@@ -118,7 +118,7 @@ class Table extends React.Component {
       rowRender
     } = this.props;
 
-    let height = containerHeight - headerHeight - 3;
+    let height = containerHeight - headerHeight - 2;
 
     let { columnsLeafs, data, rowHeight, rowKey } = this.state;
 

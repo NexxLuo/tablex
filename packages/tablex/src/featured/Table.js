@@ -194,8 +194,6 @@ class FeaturedTable extends React.Component {
       });
     }
 
-    console.log("getData:", orderColumns, orderTypes);
-
     if (orderColumns.length > 0) {
       arr = orderBy(data, orderColumns, orderTypes);
     }
