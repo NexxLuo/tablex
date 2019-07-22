@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import ReactDom from "react-dom";
 import cloneDeep from "lodash/cloneDeep";
 import merge from "lodash/merge";
@@ -1194,7 +1194,7 @@ class EditableTable extends React.Component {
       return null;
     }
 
-    return <div>{buttons}</div>;
+    return <Fragment>{buttons}</Fragment>;
   };
 
   getProps = () => {
@@ -1204,8 +1204,14 @@ class EditableTable extends React.Component {
     return newProps;
   };
 
-  createToolBar = () => {
+  createToolBar = pos => {
     let { editable, readOnly, toolBarStyle } = this.props;
+    let styles = {};
+    if (pos === "top") {
+      styles.margin = "0 0 5px 0";
+    }
+
+    styles = Object.assign(styles, toolBarStyle);
 
     if (editable === true && readOnly !== true) {
       let tools = this.editTools();
@@ -1216,8 +1222,7 @@ class EditableTable extends React.Component {
             style={{
               backgroundColor: "#ffffff",
               marginRight: 5,
-              padding: "0px 0",
-              ...toolBarStyle
+              ...styles
             }}
           >
             {tools}
@@ -1293,7 +1298,7 @@ class EditableTable extends React.Component {
     let toolBarPosition = editToolsConfig.position;
 
     if (toolBarPosition === "top") {
-      header = this.createToolBar();
+      header = this.createToolBar("top");
     }
 
     return header;
@@ -1313,9 +1318,9 @@ class EditableTable extends React.Component {
   };
 
   selectedRowKeys = [];
-  onSelectChange = (selectedKeys,selectedRows, triggerKey) => {
+  onSelectChange = (selectedKeys, selectedRows, triggerKey) => {
     this.selectedRowKeys = selectedKeys;
-    if (typeof this.props.onSelectChange==="function") {
+    if (typeof this.props.onSelectChange === "function") {
       this.props.onSelectChange(selectedKeys, selectedRows, triggerKey);
     }
   };

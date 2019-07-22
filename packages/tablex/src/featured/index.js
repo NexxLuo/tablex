@@ -14,7 +14,7 @@ Table.defaultProps = {
   toolBarStyle: {},
   editToolsConfig: {
     position: "bottom",
-    itemStyle: { marginLeft: "5px" },
+    itemStyle: { marginRight: "5px" },
     editText: "",
     editIcon: "",
     addText: "",

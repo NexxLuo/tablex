@@ -22,6 +22,7 @@
 
 .tablex__container__footer {
   padding: 10px 10px;
+  height: 50px;
   border: 1px solid #eaeaea;
   border-top: none;
   display: flex;

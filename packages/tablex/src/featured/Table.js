@@ -555,13 +555,19 @@ class FeaturedTable extends React.Component {
 
     let columnMenuState = columnMenu || {};
 
+    let footer = this.renderFooter();
+    let bodyStyles = {};
+    if (footer) {
+      bodyStyles.height = "calc(100% - 50px)";
+    }
+
     return (
       <div className="tablex__container">
         {this.renderHeader()}
-        <div className="tablex__container__body">
+        <div className="tablex__container__body" style={bodyStyles}>
           <Table {...props} {...newProps} />
         </div>
-        {this.renderFooter()}
+        {footer}
 
         {columnDropMenu === true ? (
           <Popover
