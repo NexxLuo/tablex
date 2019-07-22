@@ -1,6 +1,6 @@
 {
   "name": "tablex",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "table virtualized tree-table ",
   "author": "nexx",
   "repository": {
@@ -15,7 +15,7 @@
     "test": "umi-test",
     "doc": "docz dev",
     "docb": "docz build",
-    "pub": "father build&&npm publish",
+    "pub": "father build&&npm version patch&&npm publish",
     "docdb": "set DOCZ_BASE=/tablex&& docz build ",
     "docd": "gh-pages -d ./.docz/dist"
   },
@@ -41,7 +41,7 @@
     "lodash": "^4.17.11",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
-    "react-base-datagrid": "^1.1.0",
+    "react-base-datagrid": "^1.1.1",
     "react-dom": "^16.8.6",
     "react-sortable-hoc": "^1.9.1"
   },

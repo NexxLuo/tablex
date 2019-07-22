@@ -1,6 +1,6 @@
 {
   "name": "react-base-datagrid",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "table virtualized tree-table ",
   "author": "nexx",
   "repository": {
@@ -15,7 +15,7 @@
     "test": "umi-test",
     "doc": "docz dev",
     "docb": "docz build",
-    "pub": "father build&&npm publish",
+    "pub": "father build&&npm version patch&&npm publish",
     "docd": "gh-pages -d ./.docz/dist"
   },
   "main": "lib/index.js",
