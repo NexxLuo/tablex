@@ -51,16 +51,16 @@ fixedColumns = [
       return <div>titleRender</div>;
     },
     width: 100,
-    align:"left",
-    halign:"center",
-    fixedable:false,
+    align: "left",
+    halign: "center",
+    fixedable: false,
     fixed: "left"
   },
   {
     title: "appellation",
     width: 150,
     key: "column-11",
-    halign:"left",
+    halign: "left",
     children: [
       {
         dataIndex: "address",
@@ -190,10 +190,14 @@ class Demo extends Component {
     }, 1000);
   };
 
-  orderNumber={
-    title:"排序",
-    width:50
-  }
+  onSelectChange = (a, b, c) => {
+    console.log("onSelectChange:", a, b, c);
+  };
+
+  orderNumber = {
+    title: "排序",
+    width: 50
+  };
 
   render() {
     return (
@@ -216,11 +220,19 @@ class Demo extends Component {
           innerRef={this.innerRef}
           expandColumnKey="column-1"
           columns={fixedColumns}
+          checkStrictly={true}
           selectMode="multiple"
+          onSelect={(a, b, c) => {
+            console.log("onSelect:", a, b, c);
+          }}
+          onUnSelect={(a, b, c) => {
+            console.log("onUnSelect:", a, b, c);
+          }}
           defaultExpandedRowKeys={["0"]}
           defaultSelectedRowKeys={["0"]}
           data={this.state.data}
           onExpandedRowsChange={this.onExpandedRowsChange}
+          onSelectChange={this.onSelectChange}
           orderNumber={this.orderNumber}
           expandRowHeight={200}
         />

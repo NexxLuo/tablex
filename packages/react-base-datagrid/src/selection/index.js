@@ -45,7 +45,7 @@ class SelectionGrid extends Component {
       flatData,
       selectedRowKeys,
       disabledSelectKeys,
-      prependColumns=[]
+      prependColumns = []
     } = nextProps;
 
     let nextState = {};
@@ -63,7 +63,6 @@ class SelectionGrid extends Component {
           align: "center"
         });
       }
-
 
       nextState = {
         rowKey,
@@ -121,6 +120,7 @@ class SelectionGrid extends Component {
     return bl;
   };
 
+  /** single change */
   onSelectChange = (rowKey, rowData, rowIndex) => {
     let { selectedRowKeys } = this.state;
     let i = selectedRowKeys.indexOf(rowKey);
@@ -146,8 +146,16 @@ class SelectionGrid extends Component {
     } else if (this.isMultipleSelect()) {
       if (i > -1) {
         nextKeys.splice(i, 1);
+
+        if (typeof this.props.onUnSelect === "function") {
+          this.props.onUnSelect(nextKeys, this.getRowsByKeys(nextKeys), rowKey);
+        }
       } else {
         nextKeys.push(rowKey);
+
+        if (typeof this.props.onSelect === "function") {
+          this.props.onSelect(nextKeys, this.getRowsByKeys(nextKeys), rowKey);
+        }
       }
     } else {
       return;
@@ -225,8 +233,12 @@ class SelectionGrid extends Component {
       disabledSelectKeys
     });
 
+    if (typeof this.props.onSelect === "function") {
+      this.props.onSelect(nextKeys, this.getRowsByKeys(nextKeys), key);
+    }
+
     if (typeof this.props.onSelectChange === "function") {
-      this.props.onSelectChange(nextKeys, this.getRowsByKeys(nextKeys), rowKey);
+      this.props.onSelectChange(nextKeys, this.getRowsByKeys(nextKeys), key);
     }
 
     this.setState({
@@ -251,8 +263,12 @@ class SelectionGrid extends Component {
       halfCheckedKeys
     });
 
+    if (typeof this.props.onUnSelect === "function") {
+      this.props.onUnSelect(nextKeys, this.getRowsByKeys(nextKeys), key);
+    }
+
     if (typeof this.props.onSelectChange === "function") {
-      this.props.onSelectChange(nextKeys, this.getRowsByKeys(nextKeys), rowKey);
+      this.props.onSelectChange(nextKeys, this.getRowsByKeys(nextKeys), key);
     }
 
     this.setState({
@@ -381,7 +397,6 @@ class SelectionGrid extends Component {
     return <Checkbox {...attr} onChange={this.onCheckAllChange} />;
   };
 
-
   rowClassName = ({ rowData, rowIndex }) => {
     let { rowKey, selectedRowKeys, rowSelectClassName } = this.state;
     let key = rowData[rowKey];
@@ -455,7 +470,7 @@ class SelectionGrid extends Component {
       checkboxColumn.render = this.checkboxCellRender;
       checkboxColumn.title = this.checkboxHeadRender;
     }
- 
+
     let newProps = {
       columns,
       prependColumns,
