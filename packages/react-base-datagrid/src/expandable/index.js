@@ -98,6 +98,7 @@ class TreeGrid extends Component {
     if (prevState.prevProps !== nextProps) {
       nextState = {
         rowKey,
+        data: nextData,
         rawData: data,
         flatData: treeToList(nextData, rowKey).list,
         columns: columns,
@@ -106,36 +107,27 @@ class TreeGrid extends Component {
         expandColumnKey,
         disabledSelectKeys: disabledSelectKeys || []
       };
-    }
 
-    let { expandedRowKeys: prevExpandedKeys } = prevState;
+      if ("expandedRowKeys" in nextProps) {
+        nextState.expandedRowKeys = expandedRowKeys;
+        if (expandedRowKeys.length > 0) {
+          let data = getDataListWithExpanded(nextData, expandedRowKeys, rowKey);
+          nextState.data = data;
+        }
+      }
+    } else {
+      let { expandedRowKeys: prevExpandedKeys } = prevState;
+      if (prevExpandedKeys.length > 0) {
+        let data = getDataListWithExpanded(nextData, prevExpandedKeys, rowKey);
+        nextState.data = data;
+      } else {
+        nextState.data = nextData;
+      }
+    }
 
     if (keys.length > 0) {
       nextState.disabledSelectKeys = (disabledSelectKeys || []).concat(keys);
     }
-
-    let expandableData = nextData;
-
-    if ("expandedRowKeys" in nextProps) {
-      nextState.expandedRowKeys = expandedRowKeys;
-      if (expandedRowKeys.length > 0) {
-        expandableData = getDataListWithExpanded(
-          nextData,
-          expandedRowKeys,
-          rowKey
-        );
-      }
-    } else {
-      if (prevExpandedKeys.length > 0) {
-        expandableData = getDataListWithExpanded(
-          nextData,
-          prevExpandedKeys,
-          rowKey
-        );
-      }
-    }
-
-    nextState.data = expandableData;
 
     return nextState;
   }

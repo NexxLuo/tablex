@@ -187,17 +187,7 @@ class SelectionGrid extends Component {
     return bl;
   };
 
-  onCheckChange = (bl, value) => {
-    if (this.state.checkStrictly === false) {
-      this.onSelectChange(value);
-    } else {
-      if (bl === true) {
-        this.addChecked(value);
-      } else {
-        this.removeChecked(value);
-      }
-    }
-  };
+ 
 
   onCheckChange = (bl, value) => {
     if (this.state.checkStrictly === false) {
@@ -281,16 +271,8 @@ class SelectionGrid extends Component {
   onCheckAllChange = bl => {
     if (bl === true) {
       this.addAllChecked();
-
-      if (typeof this.props.onSelectAll === "function") {
-        this.props.onSelectAll();
-      }
     } else {
       this.removeAllChecked();
-
-      if (typeof this.props.onUnSelectAll === "function") {
-        this.props.onUnSelectAll();
-      }
     }
   };
 
@@ -314,6 +296,10 @@ class SelectionGrid extends Component {
       this.props.onSelectChange(nextSelected, arr, "");
     }
 
+    if (typeof this.props.onSelectAll === "function") {
+      this.props.onSelectAll(nextSelected, arr, "");
+    }
+
     this.setState({
       selectedRowKeys: nextSelected,
       halfCheckedKeys: [],
@@ -324,6 +310,10 @@ class SelectionGrid extends Component {
   removeAllChecked = () => {
     if (typeof this.props.onSelectChange === "function") {
       this.props.onSelectChange([], [], "");
+    }
+
+    if (typeof this.props.onUnSelectAll === "function") {
+      this.props.onUnSelectAll([], [], "");
     }
 
     this.setState({
