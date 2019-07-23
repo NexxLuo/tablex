@@ -114,6 +114,18 @@ class TreeGrid extends Component {
           let data = getDataListWithExpanded(nextData, expandedRowKeys, rowKey);
           nextState.data = data;
         }
+      } else {
+        let { expandedRowKeys: prevExpandedKeys } = prevState;
+        if (prevExpandedKeys.length > 0) {
+          let data = getDataListWithExpanded(
+            nextData,
+            prevExpandedKeys,
+            rowKey
+          );
+          nextState.data = data;
+        } else {
+          nextState.data = nextData;
+        }
       }
     } else {
       let { expandedRowKeys: prevExpandedKeys } = prevState;

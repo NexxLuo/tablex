@@ -229,7 +229,6 @@ class Demo extends Component {
             console.log("onUnSelect:", a, b, c);
           }}
           defaultExpandedRowKeys={["0"]}
-          defaultSelectedRowKeys={["0"]}
           data={this.state.data}
           onExpandedRowsChange={this.onExpandedRowsChange}
           onSelectChange={this.onSelectChange}
