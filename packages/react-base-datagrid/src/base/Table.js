@@ -1,7 +1,7 @@
 import React from "react";
 import TableHead from "./Head";
 import "./styles.css";
-import { treeToList } from "./utils";
+import { getFlattenColumns } from "./utils";
 import cloneDeep from "lodash/cloneDeep";
 import DataList from "./DataList";
 
@@ -26,9 +26,10 @@ class Table extends React.Component {
     if (prevState.prevProps !== nextProps) {
       let { data, columns, rowKey, rowHeight, showHeader } = nextProps;
 
-      let { roots: columnsRoots, leafs: columnsLeafs } = treeToList(
+      let { roots: columnsRoots, leafs: columnsLeafs } = getFlattenColumns(
         cloneDeep(columns)
       );
+
 
       let nextState = {
         rowKey,
@@ -64,6 +65,7 @@ class Table extends React.Component {
       headStyle = {},
       headerHeight
     } = this.props;
+
 
     let styles = Object.assign(headStyle, {
       height: headerHeight
@@ -115,7 +117,8 @@ class Table extends React.Component {
       rowClassName,
       onRow,
       components,
-      rowRender
+      rowRender,
+      cellRenderExtra
     } = this.props;
 
     let height = containerHeight - headerHeight - 2;
@@ -141,6 +144,7 @@ class Table extends React.Component {
         rowClassName={rowClassName}
         onRow={onRow}
         rowRender={rowRender}
+        cellRenderExtra={cellRenderExtra}
       />
     );
 

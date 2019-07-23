@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import cloneDeep from "lodash/cloneDeep";
 import Table from "../base";
 import "./styles.css";
 import Checkbox from "./Checkbox";
@@ -20,6 +19,7 @@ class SelectionGrid extends Component {
       prevProps: null,
       data: [],
       flatData: [],
+      treeProps: {},
       columns: [],
       prependColumns: [],
       rowHeight: 40,
@@ -43,6 +43,7 @@ class SelectionGrid extends Component {
       rowSelectClassName,
       checkStrictly,
       flatData,
+      treeProps,
       selectedRowKeys,
       disabledSelectKeys,
       prependColumns = []
@@ -68,6 +69,7 @@ class SelectionGrid extends Component {
         rowKey,
         data: data,
         flatData: flatData,
+        treeProps,
         columns: columns,
         prependColumns: extraColumns.concat(prependColumns),
         rowHeight,
@@ -88,6 +90,14 @@ class SelectionGrid extends Component {
 
     return nextState;
   }
+
+  getParents = key => {
+    let { treeProps } = this.state;
+    let p = (treeProps || {})[key] || {};
+    let parents = p.parents || [];
+
+    return parents;
+  };
 
   /** 通过rowKey获取数据行 */
   getRowsByKeys = (keys = []) => {
@@ -174,7 +184,7 @@ class SelectionGrid extends Component {
     let bl = arr.indexOf(key) > -1;
 
     if (bl === false) {
-      let parentKeys = rowData.__parents || [];
+      let parentKeys = this.getParents(key);
 
       for (let i = 0; i < parentKeys.length; i++) {
         const p = parentKeys[i];
@@ -186,8 +196,6 @@ class SelectionGrid extends Component {
     }
     return bl;
   };
-
- 
 
   onCheckChange = (bl, value) => {
     if (this.state.checkStrictly === false) {
@@ -208,7 +216,8 @@ class SelectionGrid extends Component {
       rowKey,
       flatData,
       halfCheckedKeys,
-      disabledSelectKeys
+      disabledSelectKeys,
+      treeProps
     } = this.state;
 
     let {
@@ -216,6 +225,7 @@ class SelectionGrid extends Component {
       halfCheckedKeys: nextHalflCheckedKeys
     } = addCheckedKeyWithDisabled({
       key,
+      treeProps,
       selectedRowKeys,
       rowKey,
       flatData,
@@ -233,20 +243,25 @@ class SelectionGrid extends Component {
 
     this.setState({
       selectedRowKeys: nextKeys,
-      halfCheckedKeys: nextHalflCheckedKeys,
-      data: cloneDeep(this.state.data)
+      halfCheckedKeys: nextHalflCheckedKeys
     });
   }
 
   /** 移除复选行 */
   removeChecked(key) {
-    let { selectedRowKeys, rowKey, flatData, halfCheckedKeys } = this.state;
-
+    let {
+      selectedRowKeys,
+      rowKey,
+      flatData,
+      halfCheckedKeys,
+      treeProps
+    } = this.state;
     let {
       selectedRowKeys: nextKeys,
       halfCheckedKeys: nextHalflCheckedKeys
     } = removeCheckedKey({
       key,
+      treeProps,
       selectedRowKeys,
       rowKey,
       flatData,
@@ -263,8 +278,7 @@ class SelectionGrid extends Component {
 
     this.setState({
       selectedRowKeys: nextKeys,
-      halfCheckedKeys: nextHalflCheckedKeys,
-      data: cloneDeep(this.state.data)
+      halfCheckedKeys: nextHalflCheckedKeys
     });
   }
 
@@ -302,8 +316,7 @@ class SelectionGrid extends Component {
 
     this.setState({
       selectedRowKeys: nextSelected,
-      halfCheckedKeys: [],
-      data: cloneDeep(this.state.data)
+      halfCheckedKeys: []
     });
   };
 
@@ -318,8 +331,7 @@ class SelectionGrid extends Component {
 
     this.setState({
       selectedRowKeys: [],
-      halfCheckedKeys: [],
-      data: cloneDeep(this.state.data)
+      halfCheckedKeys: []
     });
   };
 

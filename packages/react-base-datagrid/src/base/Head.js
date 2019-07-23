@@ -84,9 +84,10 @@ const renderColumns = (columns, columnDepth, onColumnResizeStop) => {
       );
     }
 
-    let depth = d.__depth;
+    let depth = d.__depth || 0;
 
     let h = (columnDepth - depth + 1) * headerHeight;
+  
 
     let renderFn = d.headCellRender;
 

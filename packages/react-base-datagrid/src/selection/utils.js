@@ -1,5 +1,21 @@
+function getParents(key, treeProps) {
+  let p = (treeProps || {})[key] || {};
+  let parents = p.parents || [];
+  return parents;
+}
+
+/**
+ * 添加选中行
+ * @key {Array} 行key
+ * @treeProps {Object} 对应的树形数据属性
+ * @selectedRowKeys {Array} 当前选中的行key
+ * @rowKey {string} 数据行主键key字段名
+ * @flatData {Array} 展平的表格数据
+ * @halfCheckedKeys {Array} 当前半选状态的行key
+ */
 export function removeCheckedKey({
   key,
+  treeProps,
   selectedRowKeys,
   rowKey,
   flatData,
@@ -8,9 +24,7 @@ export function removeCheckedKey({
   let nextKeys = [].concat(selectedRowKeys);
   let nextHalfCheckedKeys = [].concat(halfCheckedKeys);
 
-  let row = flatData.find(d => d[rowKey] === key);
-
-  let parentKeys = [].concat(row.__parents || []);
+  let parentKeys = getParents(key, treeProps);
 
   //父级半选的key
   let parentHalfCheckedKeys = [];
@@ -19,7 +33,7 @@ export function removeCheckedKey({
   let childrenKeys = [];
 
   flatData.filter(d => {
-    let pArr = d.__parents || [];
+    let pArr = getParents(d[rowKey], treeProps);
     let bl = pArr.indexOf(key) > -1;
     if (bl) {
       childrenKeys.push(d[rowKey]);
@@ -61,7 +75,8 @@ export function removeCheckedKey({
   for (let i = parentKeys.length - 1; i >= 0; i--) {
     let p = parentKeys[i];
     let childrens = flatData.filter(d => {
-      return (d.__parents || []).indexOf(p) > -1;
+      let pArr = getParents(d[rowKey], treeProps);
+      return (pArr || []).indexOf(p) > -1;
     });
 
     //子级是否全未选中
@@ -113,6 +128,7 @@ export function removeCheckedKey({
 /**
  * 添加选中行
  * @key {Array} 行key
+ * @treeProps {Object} 对应的树形数据属性
  * @selectedRowKeys {Array} 当前选中的行key
  * @rowKey {string} 数据行主键key字段名
  * @flatData {Array} 展平的表格数据
@@ -121,6 +137,7 @@ export function removeCheckedKey({
  */
 export function addCheckedKeyWithDisabled({
   key,
+  treeProps,
   selectedRowKeys,
   rowKey,
   flatData,
@@ -129,8 +146,8 @@ export function addCheckedKeyWithDisabled({
 }) {
   let nextKeys = [].concat(selectedRowKeys);
   let nextHalfCheckedKeys = [].concat(halfCheckedKeys);
-  let row = flatData.find(d => d[rowKey] === key);
-  let parentKeys = [].concat(row.__parents || []);
+
+  let parentKeys = getParents(key, treeProps);
 
   /** 是否允许被选择 */
   function isEnabled(itemKey) {
@@ -178,9 +195,9 @@ export function addCheckedKeyWithDisabled({
   let childrenSelectedKeys = [];
 
   flatData.filter(d => {
-    let pArr = d.__parents || [];
-    let bl = pArr.indexOf(key) > -1;
     let ck = d[rowKey];
+    let pArr = getParents(ck, treeProps);
+    let bl = pArr.indexOf(key) > -1;
     if (bl) {
       if (selectedRowKeys.indexOf(ck) === -1) {
         //子级是否允许被选择

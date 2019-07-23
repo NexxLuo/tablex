@@ -2,7 +2,6 @@
   "version": "independent",
   "npmClient": "yarn",
   "packages": [
-    "packages/react-base-datagrid",
-    "packages/tablex"
+    "packages/*"
   ]
 } 

@@ -54,7 +54,10 @@ fixedColumns = [
     align: "left",
     halign: "center",
     fixedable: false,
-    fixed: "left"
+    fixed: "left",
+    render: function(a, b, c, d) {
+      return a;
+    }
   },
   {
     title: "appellation",
@@ -191,7 +194,7 @@ class Demo extends Component {
   };
 
   onSelectChange = (a, b, c) => {
-    console.log("onSelectChange:", a, b, c);
+    console.log("onSelectChange:", b);
   };
 
   orderNumber = {
@@ -222,14 +225,11 @@ class Demo extends Component {
           columns={fixedColumns}
           checkStrictly={true}
           selectMode="multiple"
-          onSelect={(a, b, c) => {
-            console.log("onSelect:", a, b, c);
-          }}
-          onUnSelect={(a, b, c) => {
-            console.log("onUnSelect:", a, b, c);
-          }}
           defaultExpandedRowKeys={["0"]}
           data={this.state.data}
+          onExpand={(b, r) => {
+            console.log("onExpand:", r);
+          }}
           onExpandedRowsChange={this.onExpandedRowsChange}
           onSelectChange={this.onSelectChange}
           orderNumber={this.orderNumber}

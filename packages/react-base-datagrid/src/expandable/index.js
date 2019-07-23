@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Table from "../selection";
-import { getDataListWithExpanded, treeToList } from "./utils";
+import { getDataListWithExpanded, getTreeProps } from "./utils";
 import ExpandIcon from "./ExpandIcon";
 import "./styles.css";
 
@@ -60,11 +60,11 @@ class TreeGrid extends Component {
       prevProps: null,
       data: [],
       rawData: [],
-      flatData: [],
       columns: [],
       rowHeight: 40,
       rowKey: "",
 
+      treeProps: {},
       expandColumnKey: "",
       expandedRowKeys: expandedKeys,
       loadingKeys: [],
@@ -85,8 +85,6 @@ class TreeGrid extends Component {
       disabledSelectKeys
     } = nextProps;
 
-    let nextState = {};
-
     //如果存在自定义展开行渲染，需要进行数据源处理
     let { data: nextData, keys } = formatExpandRenderData(
       data,
@@ -96,11 +94,12 @@ class TreeGrid extends Component {
     );
 
     if (prevState.prevProps !== nextProps) {
-      nextState = {
+      let treeProps = getTreeProps(nextData, rowKey);
+      let nextState = {
         rowKey,
         data: nextData,
         rawData: data,
-        flatData: treeToList(nextData, rowKey).list,
+        treeProps: treeProps,
         columns: columns,
         rowHeight,
         prevProps: nextProps,
@@ -111,37 +110,37 @@ class TreeGrid extends Component {
       if ("expandedRowKeys" in nextProps) {
         nextState.expandedRowKeys = expandedRowKeys;
         if (expandedRowKeys.length > 0) {
-          let data = getDataListWithExpanded(nextData, expandedRowKeys, rowKey);
+          let { data, treeProps } = getDataListWithExpanded(
+            nextData,
+            expandedRowKeys,
+            rowKey
+          );
           nextState.data = data;
+          nextState.treeProps = treeProps;
         }
       } else {
         let { expandedRowKeys: prevExpandedKeys } = prevState;
         if (prevExpandedKeys.length > 0) {
-          let data = getDataListWithExpanded(
+          let { data, treeProps } = getDataListWithExpanded(
             nextData,
             prevExpandedKeys,
             rowKey
           );
           nextState.data = data;
+          nextState.treeProps = treeProps;
         } else {
           nextState.data = nextData;
         }
       }
-    } else {
-      let { expandedRowKeys: prevExpandedKeys } = prevState;
-      if (prevExpandedKeys.length > 0) {
-        let data = getDataListWithExpanded(nextData, prevExpandedKeys, rowKey);
-        nextState.data = data;
-      } else {
-        nextState.data = nextData;
+
+      if (keys.length > 0) {
+        nextState.disabledSelectKeys = (disabledSelectKeys || []).concat(keys);
       }
+
+      return nextState;
     }
 
-    if (keys.length > 0) {
-      nextState.disabledSelectKeys = (disabledSelectKeys || []).concat(keys);
-    }
-
-    return nextState;
+    return null;
   }
 
   isLoadingChildren = key => {
@@ -166,8 +165,8 @@ class TreeGrid extends Component {
 
   onExpand = (expanded, key, index) => {
     if (typeof this.props.onExpand === "function") {
-      let { flatData, rowKey } = this.state;
-      let r = flatData.find(d => d[rowKey] === key);
+      let { data, rowKey } = this.state;
+      let r = data.find(d => d[rowKey] === key);
       this.props.onExpand(expanded, r);
     }
 
@@ -180,7 +179,7 @@ class TreeGrid extends Component {
    * 展开
    */
   expand = key => {
-    let { expandedRowKeys: expandedKeys } = this.state;
+    let { expandedRowKeys: expandedKeys, rowKey, rawData } = this.state;
 
     let nextExpandedKeys = [...expandedKeys];
 
@@ -190,8 +189,15 @@ class TreeGrid extends Component {
       nextExpandedKeys.push(key);
     }
 
+    let { data: expandedData } = getDataListWithExpanded(
+      rawData,
+      nextExpandedKeys,
+      rowKey
+    );
+
     this.setState({
-      expandedRowKeys: nextExpandedKeys
+      expandedRowKeys: nextExpandedKeys,
+      data: expandedData
     });
 
     if (typeof this.props.onExpandedRowsChange === "function") {
@@ -207,7 +213,7 @@ class TreeGrid extends Component {
    * 折叠
    */
   collapse = key => {
-    let { expandedRowKeys: expandedKeys } = this.state;
+    let { expandedRowKeys: expandedKeys, rawData, rowKey } = this.state;
 
     let nextExpandedKeys = [...expandedKeys];
 
@@ -216,6 +222,17 @@ class TreeGrid extends Component {
     if (i > -1) {
       nextExpandedKeys.splice(i, 1);
     }
+
+    let { data: expandedData } = getDataListWithExpanded(
+      rawData,
+      nextExpandedKeys,
+      rowKey
+    );
+
+    this.setState({
+      expandedRowKeys: nextExpandedKeys,
+      data: expandedData
+    });
 
     this.setState({
       expandedRowKeys: nextExpandedKeys
@@ -276,6 +293,18 @@ class TreeGrid extends Component {
     }
   };
 
+  getTreeNode = key => {
+    let { treeProps, data, rowKey } = this.state;
+    let p = (treeProps || {})[key] || {};
+    let depth = p.depth || 0;
+    let parents = p.parents || [];
+    let rootKey = parents[0];
+    let rootIndex = data.findIndex(d => d[rowKey] === rootKey);
+    let root = data[rootIndex];
+
+    return { depth, root, rootIndex, parents };
+  };
+
   formatColumns = () => {
     let { columns, rowKey, expandColumnKey } = this.state;
     let isTree = this.isTree();
@@ -293,8 +322,9 @@ class TreeGrid extends Component {
 
     if (expandColumn) {
       expandColumn.prependRender = (value, row, index) => {
-        let depth = row.__depth || 0;
         let k = row[rowKey];
+        let { depth } = this.getTreeNode(k);
+
         let isLoading = this.isLoadingChildren(k);
         let isExpanded = this.isExpanded(k);
         let hasChildren = this.hasChildren(row);
@@ -343,8 +373,8 @@ class TreeGrid extends Component {
 
     if (typeof fn === "function") {
       if (rowData.type === "__expandedRowRender") {
-        let index = rawData.findIndex(d => d[rowKey] === rowData.__parents[0]);
-        return fn(rawData[index], index, params);
+        let { root, rootIndex } = this.getTreeNode(rowData[rowKey]);
+        return fn(root, rootIndex, params);
       }
     }
 
@@ -353,16 +383,23 @@ class TreeGrid extends Component {
     }
   };
 
+  cellRenderExtra = ({ rowKey }) => {
+    let { depth, parents } = this.getTreeNode(rowKey);
+    return { depth, parents };
+  };
+
   render() {
-    let { data, flatData, disabledSelectKeys } = this.state;
+    let { data, disabledSelectKeys, treeProps } = this.state;
     let props = this.props;
     let columns = this.formatColumns();
 
     let newProps = {
       columns,
       data,
-      flatData,
+      flatData: data,
+      treeProps,
       rowRender: this.rowRender,
+      cellRenderExtra: this.cellRenderExtra,
       innerRef: this.innerRef,
       disabledSelectKeys
     };

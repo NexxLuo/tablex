@@ -5,7 +5,7 @@ import "./styles.css";
 import { formatColumns, addClass, removeClass, delegate } from "./utils";
 import ReactResizeDetector from "react-resize-detector";
 
-class FixedTable extends React.Component {
+class BaseDataGrid extends React.Component {
   headRef = React.createRef();
   leftRef = React.createRef();
   rightRef = React.createRef();
@@ -213,7 +213,8 @@ class FixedTable extends React.Component {
       emptyRenderer,
       components,
       showHeader,
-      bordered
+      bordered,
+      cellRenderExtra
     } = this.props;
 
     let {
@@ -274,7 +275,8 @@ class FixedTable extends React.Component {
       rowClassName,
       onColumnResizeStop,
       components,
-      showHeader
+      showHeader,
+      cellRenderExtra
     };
 
     let overlay = null;
@@ -404,7 +406,7 @@ const AutoSizerTable = forwardRef((props, ref) => {
         }
 
         return (
-          <FixedTable {...props} height={height} width={width} ref={ref} />
+          <BaseDataGrid {...props} height={height} width={width} ref={ref} />
         );
       }}
     </ReactResizeDetector>

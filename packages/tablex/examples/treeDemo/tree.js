@@ -113,8 +113,9 @@ class Index extends React.Component {
         const childrens = data.map(this.dataMap);
         record.children = childrens;
 
+  
         //重新生成数据源，以便Table组件识别并更新
-        this.setTreeData([...this.state.treeData]);
+       this.setTreeData([...this.state.treeData]);
         resolve();
       });
     });

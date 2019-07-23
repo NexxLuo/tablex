@@ -3,19 +3,41 @@ import memoize from "memoize-one";
 import { VariableSizeList as List, areEqual } from "react-window";
 
 const createItemData = memoize(
-  (data, columns, rowKey, onRow, rowClassName, rowComponent, rowRender) => ({
+  (
     data,
     columns,
     rowKey,
     onRow,
     rowClassName,
     rowComponent,
-    rowRender
+    rowRender,
+    cellRenderExtra
+  ) => ({
+    data,
+    columns,
+    rowKey,
+    onRow,
+    rowClassName,
+    rowComponent,
+    rowRender,
+    cellRenderExtra
   })
 );
 
 const TableCell = props => {
-  let { row, rowIndex, dataIndex, width, align, prependRender, render } = props;
+  let {
+    row,
+    rowKey,
+    rowIndex,
+    dataIndex,
+    columnKey,
+    width,
+    align,
+    prependRender,
+    render,
+    onCell,
+    cellRenderExtra
+  } = props;
 
   let value = row[dataIndex];
 
@@ -25,13 +47,24 @@ const TableCell = props => {
     prepend = prependFn(value, row, rowIndex);
   }
 
-  let renderFn = render;
-  if (typeof renderFn === "function") {
-    let extra = {
-      depth: row.__depth,
-      parents: row.__parents
-    };
-    value = renderFn(value, row, rowIndex, extra);
+  let extraAttr = {};
+  if (typeof onCell === "function") {
+    extraAttr = onCell(row, index);
+  }
+
+  let cellExtra = {};
+  if (typeof cellRenderExtra === "function") {
+    cellExtra = cellRenderExtra({
+      rowData: row,
+      rowKey: rowKey,
+      rowIndex: rowIndex,
+      columnKey: columnKey
+    });
+  }
+
+  let cellRender = render;
+  if (typeof cellRender === "function") {
+    value = cellRender(value, row, rowIndex, cellExtra);
   }
 
   let styles = {};
@@ -47,7 +80,7 @@ const TableCell = props => {
   }
 
   return (
-    <div className="tablex-table-row-cell" style={style}>
+    <div className="tablex-table-row-cell" style={style} {...extraAttr}>
       <div className="tablex-table-row-cell-inner" style={styles}>
         {prepend}
         {value}
@@ -64,7 +97,8 @@ const TableRow = memo(({ data, index, style }) => {
     onRow,
     rowClassName,
     rowComponent,
-    rowRender
+    rowRender,
+    cellRenderExtra
   } = data;
   let row = rows[index];
   let k = row[rowKey];
@@ -81,9 +115,12 @@ const TableRow = memo(({ data, index, style }) => {
     return (
       <TableCell
         key={columnKey}
+        rowKey={k}
+        columnKey={columnKey}
         row={row}
         rowIndex={index}
         columnIndex={i}
+        cellRenderExtra={cellRenderExtra}
         {...d}
       />
     );
@@ -183,7 +220,8 @@ class DataList extends Component {
       style,
       onScroll,
       listRef,
-      rowRender
+      rowRender,
+      cellRenderExtra
     } = this.props;
 
     let itemData = createItemData(
@@ -193,7 +231,8 @@ class DataList extends Component {
       onRow,
       rowClassName,
       rowComponent,
-      rowRender
+      rowRender,
+      cellRenderExtra
     );
 
     let itemCount = data.length;

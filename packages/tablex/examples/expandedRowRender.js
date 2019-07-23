@@ -150,6 +150,7 @@ class Demo extends Component {
   }
 
   expandedRowRender = (record, index, extra) => {
+    console.log("expandedRowRender:",record,index,extra)
     if (extra.frozen === "none") {
       return <div>expandedRowRender{new Date().getTime()}</div>;
     }
