@@ -73,22 +73,33 @@ class FeaturedTable extends React.Component {
 
       if ("orderNumber" in nextProps) {
         let orderColumn = nextProps.orderNumber;
+        let hasOrderNumber = false;
 
-        let orderNumberColumn = {
-          key: "__ordernumber_column",
-          dataKey: "__ordernumber_column",
-          __type: "__ordernumber_column",
-          resizable: false,
-          width: 50,
-          align: "center",
-          render: orderNumberCellRender,
-          title: orderNumberHeadRender
-        };
-        if (orderColumn instanceof Object) {
-          orderNumberColumn = Object.assign({}, orderNumberColumn, orderColumn);
+        if (orderColumn === true || orderColumn instanceof Object) {
+          hasOrderNumber = true;
         }
 
-        extraColumns.unshift(orderNumberColumn);
+        if (hasOrderNumber === true) {
+          let orderNumberColumn = {
+            key: "__ordernumber_column",
+            dataKey: "__ordernumber_column",
+            __type: "__ordernumber_column",
+            resizable: false,
+            width: 50,
+            align: "center",
+            render: orderNumberCellRender,
+            title: orderNumberHeadRender
+          };
+          if (orderColumn instanceof Object) {
+            orderNumberColumn = Object.assign(
+              {},
+              orderNumberColumn,
+              orderColumn
+            );
+          }
+
+          extraColumns.unshift(orderNumberColumn);
+        }
       }
 
       nextState.prependColumns = extraColumns.concat(prependColumns);
