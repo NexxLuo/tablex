@@ -865,7 +865,7 @@ class EditableTable extends React.Component {
 
       if (fn) {
         //如果返回的是一个promise对象，则只有当调用resolve时，才触发编辑完成事件
-        if (typeof fn.then === "function" && typeof fn.catch === "function") {
+        if (fn.constructor.name === "Promise") {
           fn.then(() => {
             this.endEdit(callBack);
           });
