@@ -89,7 +89,7 @@ fixedColumns = [
             dataIndex: "column-31",
             key: "column-31",
             title: "nick-2",
-            width: 150
+            minWidth:50
           }
         ]
       }
@@ -99,7 +99,6 @@ fixedColumns = [
     dataIndex: "age",
     key: "column-4",
     title: "age",
-    width: 50,
     fixed: "right"
   }
 ];

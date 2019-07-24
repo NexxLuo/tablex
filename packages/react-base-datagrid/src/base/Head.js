@@ -1,27 +1,24 @@
 import React from "react";
 import Resizer from "./ColumnResizer";
+import { getColumnWidthStyle, hasFlexibleColumn } from "./utils";
 
 const Column = ({
   children,
+  alignStyles,
   width,
+  minWidth,
   height,
-  style,
   onColumnResizeStop,
   columnKey,
   resizable
 }) => {
-  let styles = { height };
+  let widthStyles = getColumnWidthStyle({ width, minWidth });
 
-  styles.width = width || 100;
-
-  if (typeof width === "undefined") {
-    styles.flexGrow = 1;
-    style.flexShrink = 1;
-  }
+  let styles = { ...widthStyles, height };
 
   return (
     <div className="tablex-table-head-cell" style={styles}>
-      <div className="tablex-table-head-cell-inner" style={style}>
+      <div className="tablex-table-head-cell-inner" style={alignStyles}>
         {children}
       </div>
       {resizable === false ? null : (
@@ -35,18 +32,31 @@ const Column = ({
   );
 };
 
-const ColumnGroup = ({ title, children, style }) => {
+const ColumnGroup = ({ title, children, flexible, alignStyles }) => {
+  let styles = {};
+  if (flexible) {
+    styles.flexGrow = 1;
+    styles.flexShrink = 1;
+  }
+
   return (
-    <div className="tablex-table-head-group">
-      <div className="tablex-table-head-group-cell" style={style}>
+    <div className="tablex-table-head-group" style={styles}>
+      <div className="tablex-table-head-group-cell" style={alignStyles}>
         <div className="tablex-table-head-group-inner">{title}</div>
       </div>
-      <div className="tablex-table-head-group-children">{children}</div>
+      <div className="tablex-table-head-group-children" style={styles}>
+        {children}
+      </div>
     </div>
   );
 };
 
-const renderColumns = (columns, columnDepth, onColumnResizeStop) => {
+const renderColumns = ({
+  columns,
+  columnDepth,
+  onColumnResizeStop,
+  columnsLeafs
+}) => {
   let headerHeight = 40;
 
   return columns.map((d, i) => {
@@ -76,10 +86,23 @@ const renderColumns = (columns, columnDepth, onColumnResizeStop) => {
     }
 
     if (d.children instanceof Array && d.children.length > 0) {
-      let style = Object.assign({ height: headerHeight }, alignStyles);
+      let style = Object.assign({ height: headerHeight }, {});
+      let flexible = hasFlexibleColumn(d.children);
+
       return (
-        <ColumnGroup key={columnKey} title={titleElement} style={style}>
-          {renderColumns(d.children, columnDepth, onColumnResizeStop)}
+        <ColumnGroup
+          key={columnKey}
+          title={titleElement}
+          style={style}
+          flexible={flexible}
+          alignStyles={alignStyles}
+        >
+          {renderColumns({
+            columns: d.children,
+            columnDepth,
+            onColumnResizeStop,
+            columnsLeafs
+          })}
         </ColumnGroup>
       );
     }
@@ -87,7 +110,6 @@ const renderColumns = (columns, columnDepth, onColumnResizeStop) => {
     let depth = d.__depth || 0;
 
     let h = (columnDepth - depth + 1) * headerHeight;
-  
 
     let renderFn = d.headCellRender;
 
@@ -100,9 +122,10 @@ const renderColumns = (columns, columnDepth, onColumnResizeStop) => {
         key={columnKey}
         columnKey={columnKey}
         width={d.width}
+        minWidth={d.minWidth}
         height={h}
-        style={alignStyles}
         resizable={d.resizable}
+        alignStyles={alignStyles}
         onColumnResizeStop={onColumnResizeStop}
       >
         {titleElement}
@@ -117,9 +140,13 @@ class TableHead extends React.Component {
   };
 
   render() {
-    let { columns, maxDepth, onColumnResizeStop } = this.props;
+    let { columns, maxDepth, onColumnResizeStop, columnsLeafs } = this.props;
 
-    return <>{renderColumns(columns, maxDepth, onColumnResizeStop)} </>;
+    return (
+      <>
+        {renderColumns({ columns, maxDepth, onColumnResizeStop, columnsLeafs })}
+      </>
+    );
   }
 }
 

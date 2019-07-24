@@ -96,6 +96,12 @@
   flex-direction: column;
 }
 
+.tablex-table .tablex-table-head-group,
+.tablex-table .tablex-table-head-group .tablex-table-head-group-cell,
+.tablex-table .tablex-table-head-group .tablex-table-head-group-children {
+  display: flex;
+}
+
 .tablex-table .tablex-table-head-group-inner {
   overflow: hidden;
   text-overflow: ellipsis;

@@ -63,7 +63,6 @@ export function getFlattenColumns(arr, idField = "key") {
     const tempArr = item.children || [];
 
     for (let i = 0; i < tempArr.length; i++) {
-    
       const d = tempArr[i];
       const childrens = d.children || [];
 
@@ -417,4 +416,72 @@ export function toggleClass(element, cls) {
   element.className = newCls.join(" ");
 
   return element;
+}
+
+function hasColumnWidth(o) {
+  let bl = true;
+
+  let w = parseInt(o.width);
+
+  if (isNaN(w)) {
+    bl = false;
+
+    let mw = parseInt(o.minWidth);
+
+    if (!isNaN(mw)) {
+      bl = true;
+    }
+  }
+
+  return bl;
+}
+
+export function getColumnWidthStyle({ width, minWidth }) {
+  let styles = {};
+  const DEFAULT_COLUMN_WIDTH = 100;
+
+  if (!hasColumnWidth({ width, minWidth })) {
+    styles.flexGrow = 1;
+    styles.flexShrink = 1;
+    styles.width = DEFAULT_COLUMN_WIDTH;
+  } else {
+    styles.width = width || minWidth;
+  }
+
+  return styles;
+}
+
+export function hasFlexibleColumn(arr) {
+  let bl = false;
+
+  let roots = arr || [];
+
+  for (let i = 0; i < roots.length; i++) {
+    const d = roots[i];
+    if (!hasColumnWidth(d)) {
+      bl = true;
+      break;
+    }
+    const childrens = d.children || [];
+    if (childrens.length > 0) {
+      getChildren(d);
+    }
+  }
+
+  function getChildren(item) {
+    const tempArr = item.children || [];
+    for (let i = 0; i < tempArr.length; i++) {
+      const d = tempArr[i];
+      const childrens = d.children || [];
+      if (!hasColumnWidth(d)) {
+        bl = true;
+        break;
+      }
+      if (childrens.length > 0) {
+        getChildren(d);
+      }
+    }
+  }
+
+  return bl;
 }

@@ -1,6 +1,7 @@
 import React, { Component, memo } from "react";
 import memoize from "memoize-one";
 import { VariableSizeList as List, areEqual } from "react-window";
+import { getColumnWidthStyle } from "./utils";
 
 const createItemData = memoize(
   (
@@ -32,6 +33,7 @@ const TableCell = props => {
     dataIndex,
     columnKey,
     width,
+    minWidth,
     align,
     prependRender,
     render,
@@ -67,21 +69,14 @@ const TableCell = props => {
     value = cellRender(value, row, rowIndex, cellExtra);
   }
 
-  let styles = {};
+  let style = getColumnWidthStyle({ width, minWidth });
 
-  align && (styles.textAlign = align);
-
-  let style = {};
-  style.width = width || 100;
-
-  if (typeof width === "undefined") {
-    style.flexGrow = 1;
-    style.flexShrink = 1;
-  }
+  let alignStyles = {};
+  align && (alignStyles.textAlign = align);
 
   return (
     <div className="tablex-table-row-cell" style={style} {...extraAttr}>
-      <div className="tablex-table-row-cell-inner" style={styles}>
+      <div className="tablex-table-row-cell-inner" style={alignStyles}>
         {prepend}
         {value}
       </div>
@@ -180,7 +175,8 @@ class DataList extends Component {
     let columns = this.props.columns || [];
     let w = 0;
     columns.forEach(d => {
-      w = w + (d.width || 100);
+      let cw = getColumnWidthStyle(d).width;
+      w = w + cw;
     });
 
     if (style.height === 0) {

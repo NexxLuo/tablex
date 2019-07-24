@@ -20,8 +20,10 @@ Column.propTypes = {
   titleRender: PropTypes.func,
   /** 列对齐方式 */
   align: PropTypes.oneOf(["left", "right", "center"]),
-   /** 列标题对齐方式 */
+  /** 列标题对齐方式 */
   halign: PropTypes.oneOf(["left", "right", "center"]),
+  /** 最小列宽 */
+  minWidth: PropTypes.number,
   /** 列宽 */
   width: PropTypes.number.isRequired,
   /** 列唯一key，如若不设置，将会以dataIndex作为唯一key */

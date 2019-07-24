@@ -36,6 +36,7 @@ export interface ColumnProps<T> {
   ) => React.ReactNode;
   align?: "left" | "right" | "center";
   halign?: "left" | "right" | "center";
+  minWidth?: number;
   width?: string | number;
   fixed?: "left" | "right" | "none";
   hidden?: boolean;

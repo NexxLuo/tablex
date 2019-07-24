@@ -30,7 +30,6 @@ class Table extends React.Component {
         cloneDeep(columns)
       );
 
-
       let nextState = {
         rowKey,
         data,
@@ -66,12 +65,11 @@ class Table extends React.Component {
       headerHeight
     } = this.props;
 
-
     let styles = Object.assign(headStyle, {
       height: headerHeight
     });
 
-    let { columns, showHeader } = this.state;
+    let { columns, showHeader, columnsLeafs } = this.state;
 
     let TableComponents = components || {};
 
@@ -84,6 +82,7 @@ class Table extends React.Component {
     let innerElement = (
       <TableHead
         columns={columns}
+        columnsLeafs={columnsLeafs}
         maxDepth={columnsDepth}
         onColumnResizeStop={onColumnResizeStop}
       />
