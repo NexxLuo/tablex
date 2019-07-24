@@ -111,7 +111,9 @@ export function formatColumns(columns = [], prepend = [], keyField = "key") {
     }
   }
 
-  let maxDepth = 0;
+  let leftDepth = 0,
+    rightDepth = 0,
+    middleDepth = 0;
 
   let left = [],
     middle = [],
@@ -126,7 +128,15 @@ export function formatColumns(columns = [], prepend = [], keyField = "key") {
 
     let arr = item.children || [];
 
-    maxDepth = maxDepth + 1;
+    if (type === "middle") {
+      middleDepth = middleDepth + 1;
+    }
+    if (type === "left") {
+      leftDepth = leftDepth + 1;
+    }
+    if (type === "right") {
+      rightDepth = rightDepth + 1;
+    }
 
     for (let i = 0; i < arr.length; i++) {
       const d = arr[i];
@@ -174,9 +184,12 @@ export function formatColumns(columns = [], prepend = [], keyField = "key") {
     const children = d.children || [];
 
     if (children.length > 0) {
+      leftDepth = 0;
       let leftChildrens = getChildren(d, "left");
-      let rightChildrens = getChildren(d, "right");
+      middleDepth = 0;
       let middleChildrens = getChildren(d, "middle");
+      rightDepth = 0;
+      let rightChildrens = getChildren(d, "right");
 
       let temp = {};
 
@@ -194,18 +207,18 @@ export function formatColumns(columns = [], prepend = [], keyField = "key") {
         );
       }
 
-      if (rightChildrens.length > 0) {
-        arrayPush(
-          right,
-          Object.assign({}, temp, { children: rightChildrens }),
-          keyField
-        );
-      }
-
       if (middleChildrens.length > 0) {
         arrayPush(
           middle,
           Object.assign({}, temp, { children: middleChildrens }),
+          keyField
+        );
+      }
+
+      if (rightChildrens.length > 0) {
+        arrayPush(
+          right,
+          Object.assign({}, temp, { children: rightChildrens }),
           keyField
         );
       }
@@ -223,7 +236,7 @@ export function formatColumns(columns = [], prepend = [], keyField = "key") {
     }
   }
 
-  maxDepth = maxDepth / 3;
+  let maxDepth = Math.max.apply(null, [leftDepth, rightDepth, middleDepth]);
 
   let prependWidth = 0;
 

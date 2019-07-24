@@ -29,7 +29,7 @@ class Resizer extends React.Component {
     let el = this.indicatorRef.current;
 
     if (el) {
-      let a = getParentElement(el, ".tablex-table-head");
+      let a = getParentElement(el, ".tablex-table-head-container");
 
       this.container = a;
     }

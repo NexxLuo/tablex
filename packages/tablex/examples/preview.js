@@ -149,6 +149,118 @@ function createTreeData() {
   return data;
 }
 
+let tableColumns=[
+  {
+      title: "单据编号",
+      dataIndex: "PowerOfAttorneyCode",
+      width: 180
+  },
+  {
+      title: "申请单位信息",
+      dataIndex: "aaa",
+      children: [
+          {
+              title: "申请单位",
+              dataIndex: "DeptName",
+              width: 180
+          },
+          {
+              title: "经办人",
+              dataIndex: "OperatorName",
+              width: 80
+          },
+          {
+              title: "联系方式",
+              dataIndex: "OperatorPhone",
+              width: 120
+          }
+      ]
+  },
+  {
+      title: "代理人信息",
+      dataIndex: "bbb",
+      children: [
+          {
+              title: "名称/姓名",
+              dataIndex: "AgentName",
+              width: 80
+          },
+          {
+              title: "身份证号",
+              dataIndex: "AgentIDNumber",
+              width: 140
+          },
+          {
+              title: "所在单位及职务",
+              dataIndex: "eee",
+    
+              width: 220
+          },
+          {
+              title: "单位住址",
+              dataIndex: "AgentCompanyAddress",
+        
+              width: 300
+          }
+      ]
+  },
+  {
+      title: "授权单位",
+      dataIndex: "AuthorizationUnit",
+      width: 180
+  },
+  {
+      dataIndex: "IsWithin",
+    
+      title: "是否境内",
+      width: 80
+  },
+  {
+      title: "授权类别",
+      dataIndex: "AuthorizationTypeName",
+      width: 180
+  },
+  {
+      title: "授权审批类型",
+      dataIndex: "AuthorizationAuditTypeName",
+      width: 100
+  },
+  {
+      title: "申请授权事项及范围",
+      dataIndex: "AuthorizationScope",
+      width: 300
+  },
+
+  {
+      title: "授权期限",
+      dataIndex: "ccc",
+      children: [
+          {
+              align: "center",
+              title: "授权日期",
+              dataIndex: "AuthorizationStartDate",
+              width: 100
+          },
+          {
+              title: "期限",
+              dataIndex: "AuthorizationPeriodTypeName",
+              width: 100
+          }
+      ]
+  },
+  {
+      title: "备注",
+      dataIndex: "Remark",
+      width: 200
+  },
+  {
+      align: "left",
+      dataIndex: "",
+      title: "操作",
+      width: 250
+  }
+]
+
 class Demo extends Component {
   state = {
     data: [],
@@ -220,7 +332,7 @@ class Demo extends Component {
             rowKey="id"
             innerRef={this.innerRef}
             expandColumnKey="column-1"
-            columns={fixedColumns}
+            columns={tableColumns}
             checkStrictly={true}
             selectMode="multiple"
             defaultExpandedRowKeys={["0"]}

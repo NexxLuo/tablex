@@ -145,7 +145,7 @@
   border-right: 1px solid #e8e8e8;
 }
 
-.tablex-table .tablex-table-head .resize-handle {
+.tablex-table .tablex-table-head-container .resize-handle {
   width: 6px;
   height: 100%;
   position: absolute;
@@ -156,11 +156,11 @@
   border-right: 2px solid transparent;
 }
 
-.tablex-table .tablex-table-head .resize-handle:hover {
+.tablex-table .tablex-table-head-container .resize-handle:hover {
   border-color: #188ae2;
 }
 
-.tablex-table .tablex-table-head .resizeMarkLine {
+.tablex-table .tablex-table-head-container .resizeMarkLine {
   position: absolute;
   top: 0;
   bottom: 0;

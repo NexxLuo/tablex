@@ -253,7 +253,7 @@ class FeaturedTable extends React.Component {
 
     let el = e.target;
 
-    let head = getParentElement(el, ".tablex-table-head");
+    let head = getParentElement(el, ".tablex-table-head-container");
 
     let container = getParentElement(el, ".tablex__container__body");
 
