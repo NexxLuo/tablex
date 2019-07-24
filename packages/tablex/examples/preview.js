@@ -88,8 +88,7 @@ fixedColumns = [
           {
             dataIndex: "column-31",
             key: "column-31",
-            title: "nick-2",
-            minWidth:50
+            title: "nick-2" 
           }
         ]
       }
@@ -215,25 +214,27 @@ class Demo extends Component {
             get data
           </span>
         </div>
-
-        <Table
-          loading={this.state.loading}
-          rowKey="id"
-          innerRef={this.innerRef}
-          expandColumnKey="column-1"
-          columns={fixedColumns}
-          checkStrictly={true}
-          selectMode="multiple"
-          defaultExpandedRowKeys={["0"]}
-          data={this.state.data}
-          onExpand={(b, r) => {
-            console.log("onExpand:", r);
-          }}
-          onExpandedRowsChange={this.onExpandedRowsChange}
-          onSelectChange={this.onSelectChange}
-          orderNumber={this.orderNumber}
-          expandRowHeight={200}
-        />
+        <div>
+          <Table
+            loading={this.state.loading}
+            rowKey="id"
+            innerRef={this.innerRef}
+            expandColumnKey="column-1"
+            columns={fixedColumns}
+            checkStrictly={true}
+            selectMode="multiple"
+            defaultExpandedRowKeys={["0"]}
+            data={this.state.data}
+            onExpand={(b, r) => {
+              console.log("onExpand:", r);
+            }}
+            onExpandedRowsChange={this.onExpandedRowsChange}
+            onSelectChange={this.onSelectChange}
+            orderNumber={this.orderNumber}
+            expandRowHeight={200}
+            minHeight={400}
+          />
+        </div>
       </>
     );
   }

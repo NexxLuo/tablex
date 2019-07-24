@@ -78,15 +78,20 @@
   width: 100%;
 }
 
-.tablex-table .tablex-table-head {
+.tablex-table .tablex-table-head-container {
   border-bottom: 1px solid #e8e8e8;
   white-space: nowrap;
   font-size: 0;
   overflow: hidden;
   box-sizing: border-box;
+  flex: 0 0 auto;
+}
+
+.tablex-table .tablex-table-head {
+  overflow: hidden;
+  box-sizing: border-box;
   display: flex;
   flex-direction: row;
-  flex: 0 0 auto;
 }
 
 .tablex-table .tablex-table-head-group {
@@ -97,9 +102,13 @@
 }
 
 .tablex-table .tablex-table-head-group,
-.tablex-table .tablex-table-head-group .tablex-table-head-group-cell,
 .tablex-table .tablex-table-head-group .tablex-table-head-group-children {
   display: flex;
+}
+
+.tablex-table .tablex-table-head-group .tablex-table-head-group-cell {
+  display: flex;
+  align-items: center;
 }
 
 .tablex-table .tablex-table-head-group-inner {
@@ -124,7 +133,7 @@
 .tablex-table .tablex-table-head-cell-inner {
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 10px 5px;
+  padding: 0px 5px;
   font-size: 14px;
   width: 100%;
 }
@@ -132,7 +141,6 @@
 .tablex-table .tablex-table-head-group-cell {
   border-bottom: 1px solid #e8e8e8;
   font-size: 14px;
-  padding: 10px 5px;
   text-align: center;
   border-right: 1px solid #e8e8e8;
 }
@@ -197,6 +205,7 @@
   > .tablex-table-row-cell:last-child,
 .tablex-container
   .tablex-forzen-right
+  .tablex-table-head
   .tablex-table-head
   > .tablex-table-head-cell:last-child {
   border-right: none;

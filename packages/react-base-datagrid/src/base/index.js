@@ -397,11 +397,8 @@ const AutoSizerTable = forwardRef((props, ref) => {
   return (
     <ReactResizeDetector handleWidth handleHeight>
       {({ width, height }) => {
-        let { minWidth, minHeight } = props;
-        let w = width || minWidth,
-          h = height || minHeight;
 
-        if (!h) {
+        if (!height) {
           return <div />;
         }
 

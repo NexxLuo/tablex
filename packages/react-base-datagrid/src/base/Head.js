@@ -2,6 +2,8 @@ import React from "react";
 import Resizer from "./ColumnResizer";
 import { getColumnWidthStyle, hasFlexibleColumn } from "./utils";
 
+const HEADER_HEIGHT = 40;
+
 const Column = ({
   children,
   alignStyles,
@@ -41,7 +43,10 @@ const ColumnGroup = ({ title, children, flexible, alignStyles }) => {
 
   return (
     <div className="tablex-table-head-group" style={styles}>
-      <div className="tablex-table-head-group-cell" style={alignStyles}>
+      <div
+        className="tablex-table-head-group-cell"
+        style={{ ...alignStyles, height: HEADER_HEIGHT }}
+      >
         <div className="tablex-table-head-group-inner">{title}</div>
       </div>
       <div className="tablex-table-head-group-children" style={styles}>
@@ -57,8 +62,6 @@ const renderColumns = ({
   onColumnResizeStop,
   columnsLeafs
 }) => {
-  let headerHeight = 40;
-
   return columns.map((d, i) => {
     let columnKey = d.key || d.dataIndex || i;
 
@@ -86,14 +89,12 @@ const renderColumns = ({
     }
 
     if (d.children instanceof Array && d.children.length > 0) {
-      let style = Object.assign({ height: headerHeight }, {});
       let flexible = hasFlexibleColumn(d.children);
 
       return (
         <ColumnGroup
           key={columnKey}
           title={titleElement}
-          style={style}
           flexible={flexible}
           alignStyles={alignStyles}
         >
@@ -109,7 +110,7 @@ const renderColumns = ({
 
     let depth = d.__depth || 0;
 
-    let h = (columnDepth - depth + 1) * headerHeight;
+    let h = (columnDepth - depth + 1) * HEADER_HEIGHT;
 
     let renderFn = d.headCellRender;
 
@@ -142,10 +143,21 @@ class TableHead extends React.Component {
   render() {
     let { columns, maxDepth, onColumnResizeStop, columnsLeafs } = this.props;
 
+    let w = 0;
+    columnsLeafs.forEach(d => {
+      let cw = getColumnWidthStyle(d).width;
+      w = w + cw;
+    });
+
     return (
-      <>
-        {renderColumns({ columns, maxDepth, onColumnResizeStop, columnsLeafs })}
-      </>
+      <div className="tablex-table-head" style={{ minWidth: w }}>
+        {renderColumns({
+          columns,
+          columnDepth: maxDepth,
+          onColumnResizeStop,
+          columnsLeafs
+        })}
+      </div>
     );
   }
 }

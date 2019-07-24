@@ -1288,7 +1288,17 @@ class EditableTable extends React.Component {
     completeEdit: this.completeEdit,
     cancelEdit: this.cancelEdit,
     isEditing: this.isEditing,
-    getData: () => this.state.data
+    validateChanged: this.validate,
+    validateAll: this.validateAll,
+    getData: () => this.state.data,
+    getAllData: () => {
+      return {
+        data: this.state.data, //当前表格的源数据
+        changedData: this.getChangedRows(), //改变的行数据
+        addedData: this.state.addedData, //添加的行数据
+        currData: this.getDataRows() //当前表格状态显示的数据
+      };
+    }
   };
 
   headerExtra = () => {

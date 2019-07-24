@@ -65,11 +65,11 @@ class Table extends React.Component {
       headerHeight
     } = this.props;
 
+    let { columns, showHeader, columnsLeafs } = this.state;
+
     let styles = Object.assign(headStyle, {
       height: headerHeight
     });
-
-    let { columns, showHeader, columnsLeafs } = this.state;
 
     let TableComponents = components || {};
 
@@ -90,7 +90,7 @@ class Table extends React.Component {
 
     if (typeof OutterComponent === "function") {
       let componentProps = {
-        className: "tablex-table-head",
+        className: "tablex-table-head-container",
         children: innerElement,
         style: styles,
         ref: headRef
@@ -100,7 +100,11 @@ class Table extends React.Component {
     }
 
     return (
-      <div className="tablex-table-head" ref={headRef} style={headStyle}>
+      <div
+        className="tablex-table-head-container"
+        style={headStyle}
+        ref={headRef}
+      >
         {innerElement}
       </div>
     );

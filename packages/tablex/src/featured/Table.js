@@ -572,8 +572,14 @@ class FeaturedTable extends React.Component {
       bodyStyles.height = "calc(100% - 50px)";
     }
 
+    let wrapperStyles = props.style || {};
+
+    if (props.minHeight) {
+      wrapperStyles.minHeight = props.minHeight;
+    }
+
     return (
-      <div className="tablex__container">
+      <div className="tablex__container" style={wrapperStyles}>
         {this.renderHeader()}
         <div className="tablex__container__body" style={bodyStyles}>
           <Table {...props} {...newProps} />
@@ -619,10 +625,14 @@ FeaturedTable.defaultProps = {
   columnDropMenu: true,
   pagination: false,
   loading: false,
-  striped: true
+  striped: true,
+  minHeight: 200
 };
 
 FeaturedTable.propTypes = {
+  /** 表格区域最小高度 */
+  minHeight: PropTypes.number,
+
   /** 数据是否加载中 */
   loading: PropTypes.bool,
 
