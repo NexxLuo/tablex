@@ -364,6 +364,7 @@ class FeaturedTable extends React.Component {
     });
 
     let cols = treeToList(arr).leafs;
+    let needSortColumn = false;
 
     cols.forEach((d, i) => {
       let columnKey = d.key || d.dataIndex;
@@ -380,9 +381,8 @@ class FeaturedTable extends React.Component {
       }
 
       if ("order" in config) {
-        d.order = config.order;
-      } else {
-        d.order = i;
+        d.__order = config.order;
+        needSortColumn = true;
       }
 
       d.headCellRender = ({ title }) => {
@@ -405,7 +405,9 @@ class FeaturedTable extends React.Component {
       };
     });
 
-    arr = orderBy(arr, ["order"], ["asc"]);
+    if (needSortColumn) {
+      arr = orderBy(arr, ["__order"], ["asc"]);
+    }
 
     return cloneDeep(arr);
   };
@@ -577,6 +579,8 @@ class FeaturedTable extends React.Component {
     if (props.minHeight) {
       wrapperStyles.minHeight = props.minHeight;
     }
+
+    console.log("columns:", columns);
 
     return (
       <div className="tablex__container" style={wrapperStyles}>
