@@ -517,14 +517,22 @@ class FeaturedTable extends React.Component {
   };
 
   rowClassName = (rowData, rowIndex) => {
-    let cls = "";
+    let clsArr = [];
     if (rowIndex % 2 === 0) {
-      cls = "tablex__row--even";
+      clsArr = ["tablex__row--even"];
     } else {
-      cls = "tablex__row--odd";
+      clsArr = ["tablex__row--odd"];
     }
 
-    return cls;
+    let fn = this.props.rowClassName;
+    if (typeof fn === "function") {
+      let cls = fn(rowData, rowIndex);
+      if (cls) {
+        clsArr.push("cls");
+      }
+    }
+
+    return clsArr.join(" ");
   };
 
   innerTableRef = null;

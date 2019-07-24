@@ -231,6 +231,7 @@ class Demo extends Component {
             }}
             onExpandedRowsChange={this.onExpandedRowsChange}
             onSelectChange={this.onSelectChange}
+            rowClassName={()=>{console.log("rowClassName")}}
             orderNumber={this.orderNumber}
             expandRowHeight={200}
             minHeight={400}
