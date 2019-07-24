@@ -206,7 +206,6 @@
 .tablex-container
   .tablex-forzen-right
   .tablex-table-head
-  .tablex-table-head
   > .tablex-table-head-cell:last-child {
   border-right: none;
 }
