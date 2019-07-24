@@ -239,6 +239,9 @@ class BaseDataGrid extends React.Component {
       maxDepth
     } = formattedColumns;
 
+    let hasLeft = left.length > 0;
+    let hasRight = right.length > 0;
+
     let headerHeight = (maxDepth + 1) * 40;
     if (showHeader === false) {
       headerHeight = 0;
@@ -248,12 +251,13 @@ class BaseDataGrid extends React.Component {
       marginRight: scrollbarY
     };
 
+    if (scrollbarY > 0 && !hasRight) {
+      headStyle.marginRight = scrollbarY - 1;
+    }
+
     let bodyStyles = { height: "100%" };
 
     let frozens = {};
-
-    let hasLeft = left.length > 0;
-    let hasRight = right.length > 0;
 
     if (hasRight === true) {
       bodyStyles.width = `calc(100% + ${scrollbarY}px)`;
@@ -397,7 +401,6 @@ const AutoSizerTable = forwardRef((props, ref) => {
   return (
     <ReactResizeDetector handleWidth handleHeight>
       {({ width, height }) => {
-
         if (!height) {
           return <div />;
         }

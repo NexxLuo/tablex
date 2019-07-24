@@ -234,7 +234,7 @@ class Demo extends Component {
             rowClassName={()=>{console.log("rowClassName")}}
             orderNumber={this.orderNumber}
             expandRowHeight={200}
-            minHeight={400}
+            minHeight={600}
           />
         </div>
       </>
