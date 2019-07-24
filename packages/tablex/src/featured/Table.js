@@ -580,8 +580,6 @@ class FeaturedTable extends React.Component {
       wrapperStyles.minHeight = props.minHeight;
     }
 
-    console.log("columns:", columns);
-
     return (
       <div className="tablex__container" style={wrapperStyles}>
         {this.renderHeader()}

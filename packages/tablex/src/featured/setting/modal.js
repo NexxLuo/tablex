@@ -52,6 +52,17 @@ class SortableItem extends Component {
 
     let d = this.props.data;
 
+    
+    let TitleComponent = d.title;
+    let titleElement = null;
+
+    if (typeof TitleComponent === "function") {
+      titleElement = <TitleComponent column={d} />;
+    } else {
+      titleElement = d.title;
+    }
+
+
     return (
       <div
         style={{
@@ -69,7 +80,7 @@ class SortableItem extends Component {
             padding: "5px 0 0px 0px"
           }}
         >
-          {d.title}
+          {titleElement}
         </div>
         <div
           style={{ display: "inline-block", width: "70%", textAlign: "right" }}
