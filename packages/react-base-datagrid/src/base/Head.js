@@ -45,9 +45,11 @@ const ColumnGroup = ({ title, children, flexible, alignStyles }) => {
     <div className="tablex-table-head-group" style={styles}>
       <div
         className="tablex-table-head-group-cell"
-        style={{ ...alignStyles, height: HEADER_HEIGHT }}
+        style={{ height: HEADER_HEIGHT }}
       >
-        <div className="tablex-table-head-group-inner">{title}</div>
+        <div className="tablex-table-head-group-inner" style={alignStyles}>
+          {title}
+        </div>
       </div>
       <div className="tablex-table-head-group-children" style={styles}>
         {children}
@@ -69,8 +71,6 @@ const renderColumns = ({
 
     if (d.halign) {
       alignStyles.textAlign = d.halign;
-    } else if (d.align) {
-      alignStyles.textAlign = d.align;
     }
 
     let TitleComponent = d.title;

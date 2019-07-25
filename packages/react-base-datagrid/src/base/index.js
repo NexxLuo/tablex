@@ -449,7 +449,7 @@ BaseDataGrid.propTypes = {
    */
   columns: PropTypes.arrayOf(
     PropTypes.shape({
-      title: PropTypes.string,
+      title: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
       width: PropTypes.number,
       key: PropTypes.string,
       dataIndex: PropTypes.string,

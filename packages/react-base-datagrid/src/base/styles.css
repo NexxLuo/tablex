@@ -111,18 +111,10 @@
   align-items: center;
 }
 
-.tablex-table .tablex-table-head-group-inner {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding: 0 5px;
-}
-
 .tablex-table .tablex-table-head-cell {
   display: inline-flex;
   box-sizing: border-box;
   border-right: 1px solid #e8e8e8;
-  font-size: 14px;
   height: 100%;
   vertical-align: top;
   position: relative;
@@ -130,12 +122,14 @@
   flex: 0 0 auto;
 }
 
+.tablex-table .tablex-table-head-group-inner,
 .tablex-table .tablex-table-head-cell-inner {
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0px 5px;
   font-size: 14px;
   width: 100%;
+  text-align: center;
 }
 
 .tablex-table .tablex-table-head-group-cell {

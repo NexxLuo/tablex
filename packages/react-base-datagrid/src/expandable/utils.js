@@ -10,30 +10,34 @@ export function getDataListWithExpanded(list, expandedKeys = [], rowKey) {
   for (let i = 0; i < list.length; i++) {
     let d = list[i];
     let k = d[rowKey];
+    let index = i + 1;
 
-    setTree(k, { depth: 0 });
+    setTree(k, { depth: 0, orders: [index] });
 
     arr.push(d);
 
     if (expandedKeys.indexOf(d[rowKey]) > -1) {
       if (d.children) {
-        setChildren(d, 0, []);
+        setChildren(d, 0, [], [index]);
       }
     }
   }
 
-  function setChildren(c, depth, parents) {
+  function setChildren(c, depth, parents, orders) {
     let cArr = c.children;
     const pk = c[rowKey];
 
     for (let i = 0; i < cArr.length; i++) {
       let d = cArr[i];
       let k = d[rowKey];
+      let index = i + 1;
 
       let __depth = depth + 1;
       let __parents = [].concat(parents).concat([pk]);
+      let __orders = [].concat(orders).concat([index]);
 
       setTree(k, {
+        orders: __orders,
         depth: __depth,
         parents: __parents
       });
@@ -42,7 +46,7 @@ export function getDataListWithExpanded(list, expandedKeys = [], rowKey) {
 
       if (expandedKeys.indexOf(d[rowKey]) > -1) {
         if (d.children) {
-          setChildren(d, __depth, __parents);
+          setChildren(d, __depth, __parents, __orders);
         }
       }
     }
@@ -147,6 +151,7 @@ export function getTreeProps(arr, idField = "id") {
   for (let i = 0; i < treeList.length; i++) {
     const d = treeList[i];
     let k = d[idField];
+    let index = i + 1;
 
     if (!d) {
       continue;
@@ -154,33 +159,36 @@ export function getTreeProps(arr, idField = "id") {
 
     const childrens = d.children || [];
 
-    setTree(k, { depth: 0 });
+    setTree(k, { depth: 0, orders: [index] });
 
     if (childrens.length > 0) {
-      getChildren(d, 0, []);
+      getChildren(d, 0, [], [index]);
     }
   }
 
-  function getChildren(item, depth, parents) {
+  function getChildren(item, depth, parents, orders) {
     const tempArr = item.children || [];
     const pk = item[idField];
 
     for (let i = 0; i < tempArr.length; i++) {
       const d = tempArr[i];
       const k = d[idField];
+      let index = i + 1;
 
       const childrens = d.children || [];
 
       let __depth = depth + 1;
       let __parents = [].concat(parents).concat([pk]);
+      let __orders = [].concat(orders).concat([index]);
 
       setTree(k, {
+        orders: __orders,
         depth: __depth,
         parents: __parents
       });
 
       if (childrens.length > 0) {
-        getChildren(d, __depth, __parents);
+        getChildren(d, __depth, __parents, __orders);
       }
     }
   }

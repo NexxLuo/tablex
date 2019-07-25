@@ -302,7 +302,7 @@ class TreeGrid extends Component {
     let rootIndex = data.findIndex(d => d[rowKey] === rootKey);
     let root = data[rootIndex];
 
-    return { depth, root, rootIndex, parents };
+    return { depth, root, rootIndex, parents, orders: p.orders };
   };
 
   formatColumns = () => {
@@ -384,8 +384,8 @@ class TreeGrid extends Component {
   };
 
   cellRenderExtra = ({ rowKey }) => {
-    let { depth, parents } = this.getTreeNode(rowKey);
-    return { depth, parents };
+    let p = this.getTreeNode(rowKey);
+    return p;
   };
 
   render() {
