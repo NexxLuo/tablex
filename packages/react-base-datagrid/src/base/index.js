@@ -85,9 +85,54 @@ class BaseDataGrid extends React.Component {
     }
   };
 
-  headerScrollTo = e => {
-    this.headRef.current &&
-      (this.headRef.current.scrollLeft = e.target.scrollLeft);
+  setFrozenStyle = () => {
+    let headEl = this.headRef.current;
+
+    if (!headEl) {
+      return;
+    }
+
+    let scrollLeft = headEl.scrollLeft;
+
+    let headScrollWidth = headEl.scrollWidth;
+    let headOffsetWidth = headEl.offsetWidth;
+
+    let containerEl = this.containerRef.current;
+
+    if (containerEl) {
+      let cls = "tablex-forzen-scrolled";
+      let leftEl = containerEl.getElementsByClassName("tablex-forzen-left")[0];
+      let rightEl = containerEl.getElementsByClassName(
+        "tablex-forzen-right"
+      )[0];
+      if (leftEl) {
+        if (scrollLeft > 0) {
+          leftEl.classList.add(cls);
+        } else {
+          leftEl.classList.remove(cls);
+        }
+      }
+
+      if (rightEl) {
+        if (scrollLeft + headOffsetWidth + 1 < headScrollWidth) {
+          rightEl.classList.add(cls);
+        } else {
+          rightEl.classList.remove(cls);
+        }
+      }
+    }
+  };
+
+  onDataListScroll = e => {
+    let headEl = this.headRef.current;
+
+    if (!headEl) {
+      return;
+    }
+    let scrollLeft = e.target.scrollLeft;
+    this.headRef.current.scrollLeft = scrollLeft;
+
+    this.setFrozenStyle();
   };
 
   resetScrollbarSize = () => {
@@ -114,7 +159,7 @@ class BaseDataGrid extends React.Component {
     if (this.headInstance === null) {
       this.headInstance = ins;
       if (this.props.showHeader !== false) {
-        ins.addEventListener("scroll", this.headerScrollTo);
+        ins.addEventListener("scroll", this.onDataListScroll);
       }
     }
 
@@ -172,6 +217,8 @@ class BaseDataGrid extends React.Component {
     if (this.state.hoverable) {
       this.bindHoverClass();
     }
+    this.setFrozenStyle();
+
   }
 
   componentDidUpdate() {
