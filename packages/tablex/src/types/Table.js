@@ -23,11 +23,14 @@ Table.propTypes = {
   /** 数据行主键字段
    */
   rowKey: PropTypes.string.isRequired,
- 
+
   /**
    * 表格数据
    */
   data: PropTypes.array.isRequired,
+
+  /** 表格列 */
+  columns: PropTypes.array,
 
   /** 额外前置添加的列 */
   prependColumns: PropTypes.array,

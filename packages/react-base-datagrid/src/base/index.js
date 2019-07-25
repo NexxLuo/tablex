@@ -413,7 +413,7 @@ const AutoSizerTable = forwardRef((props, ref) => {
   );
 });
 
-AutoSizerTable.defaultProps = {
+BaseDataGrid.defaultProps = {
   columns: [],
   prependColumns: [],
   data: [],
@@ -424,7 +424,7 @@ AutoSizerTable.defaultProps = {
   bordered: true
 };
 
-AutoSizerTable.propTypes = {
+BaseDataGrid.propTypes = {
   /** 是否显示表头 */
   showHeader: PropTypes.bool,
 
@@ -447,7 +447,22 @@ AutoSizerTable.propTypes = {
    * 表格列
    *
    */
-  columns: PropTypes.array.isRequired,
+  columns: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string,
+      width: PropTypes.number,
+      key: PropTypes.string,
+      dataIndex: PropTypes.string,
+      align: PropTypes.oneOf(["left", "right", "center"]),
+      halign: PropTypes.oneOf(["left", "right", "center"]),
+      minWidth: PropTypes.number,
+      fixed: PropTypes.oneOf([false, "left", "right"]),
+      resizable: PropTypes.bool,
+      render: PropTypes.func,
+      validator: PropTypes.func,
+      editor: PropTypes.func
+    })
+  ),
 
   /** 额外前置添加的列 */
   prependColumns: PropTypes.array,
