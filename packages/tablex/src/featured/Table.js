@@ -340,8 +340,29 @@ class FeaturedTable extends React.Component {
     );
   };
 
-  formatColumns = () => {
-    let { columns, columnsConfig, columnDropMenu, sortedColumns } = this.state;
+  formatPrependColumns = (columns) => {
+    let { columnsConfig } = this.state;
+
+    let configs = columnsConfig || {};
+
+    let arr = columns;
+
+    let cols = treeToList(arr).leafs;
+
+    cols.forEach((d, i) => {
+      let columnKey = d.key || d.dataIndex;
+      let config = configs[columnKey] || configs[columnKey] || {};
+
+      if ("width" in config) {
+        d.width = config.width;
+      }
+    });
+
+    return columns;
+  };
+
+  formatColumns = columns => {
+    let { columnsConfig, columnDropMenu, sortedColumns } = this.state;
 
     let configs = columnsConfig || {};
 
@@ -409,7 +430,7 @@ class FeaturedTable extends React.Component {
       arr = orderBy(arr, ["__order"], ["asc"]);
     }
 
-    return cloneDeep(arr);
+    return columns;
   };
 
   saveConfig = configs => {
@@ -550,9 +571,15 @@ class FeaturedTable extends React.Component {
   render() {
     let props = this.props;
 
-    let { columnMenu, prependColumns, columnDropMenu } = this.state;
+    let {
+      columnMenu,
+      columns: tableColumns,
+      prependColumns: tablePrependColumns,
+      columnDropMenu
+    } = this.state;
 
-    let columns = this.formatColumns();
+    let columns = this.formatColumns(tableColumns);
+    let prependColumns = this.formatPrependColumns(tablePrependColumns);
 
     let arr = this.getData();
 

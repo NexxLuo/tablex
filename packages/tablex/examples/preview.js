@@ -197,7 +197,13 @@ class Demo extends Component {
 
   orderNumber = {
     title: "排序",
-    width: 50
+    width: 50,
+    align: "left",
+    resizable: true,
+    render: (value, row, index, extra) => {
+      let { orders } = extra;
+      return orders.join("-");
+    }
   };
 
   render() {
@@ -231,7 +237,9 @@ class Demo extends Component {
             }}
             onExpandedRowsChange={this.onExpandedRowsChange}
             onSelectChange={this.onSelectChange}
-            rowClassName={()=>{console.log("rowClassName")}}
+            rowClassName={() => {
+              console.log("rowClassName");
+            }}
             orderNumber={this.orderNumber}
             expandRowHeight={200}
             minHeight={600}
