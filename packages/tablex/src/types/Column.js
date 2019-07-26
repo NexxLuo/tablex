@@ -27,7 +27,7 @@ Column.propTypes = {
   /** 列宽 */
   width: PropTypes.number.isRequired,
   /** 列唯一key，如若不设置，将会以dataIndex作为唯一key */
-  key: PropTypes.string,
+  key: PropTypes.string.isRequired,
   /** 列数据字段 */
   dataIndex: PropTypes.string,
   /** 冻结列 */

@@ -482,7 +482,7 @@ BaseDataGrid.propTypes = {
     PropTypes.shape({
       title: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
       width: PropTypes.number,
-      key: PropTypes.string,
+      key: PropTypes.string.isRequired,
       dataIndex: PropTypes.string,
       align: PropTypes.oneOf(["left", "right", "center"]),
       halign: PropTypes.oneOf(["left", "right", "center"]),
