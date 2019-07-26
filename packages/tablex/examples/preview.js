@@ -200,11 +200,16 @@ class Demo extends Component {
     width: 50,
     align: "left",
     resizable: true,
+    fixed:"left",
     render: (value, row, index, extra) => {
       let { orders } = extra;
       return orders.join("-");
     }
   };
+
+  selectionColumn={
+    fixed:"left"
+  }
 
   render() {
     return (
@@ -237,9 +242,10 @@ class Demo extends Component {
             onExpandedRowsChange={this.onExpandedRowsChange}
             onSelectChange={this.onSelectChange}
             rowClassName={() => {
-              //  console.log("rowClassName");
+                console.log("rowClassName");
             }}
             orderNumber={this.orderNumber}
+            selectionColumn={this.selectionColumn}
             rowHeight={(d, i) => {
               if (i % 2 === 0) {
                 return 50;

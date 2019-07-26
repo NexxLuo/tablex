@@ -236,21 +236,39 @@ export function formatColumns(columns = [], prepend = [], keyField = "key") {
     }
   }
 
-  let maxDepth = Math.max.apply(null, [leftDepth, rightDepth, middleDepth]);
+  let prepend_depth = 0;
+  if (prepend.length > 0) {
+    let {
+      middle: p_m,
+      middleWidth: p_mw,
+      left: p_l,
+      leftWidth: p_lw,
+      right: p_r,
+      rightWidth: p_rw,
+      maxDepth: p_d
+    } = formatColumns(prepend, [], keyField);
 
-  let prependWidth = 0;
+    prepend_depth = p_d;
+    right = p_r.concat(right);
+    rightWidth = rightWidth + p_rw;
 
-  prepend.forEach(d => {
-    prependWidth += d.width || DEFAULT_COLUMN_WIDTH;
-  });
-
-  if (left.length > 0) {
-    left = prepend.concat(left);
-    leftWidth += prependWidth;
-  } else {
-    middle = prepend.concat(middle);
-    middleWidth += prependWidth;
+    if (left.length > 0) {
+      left = p_l.concat(p_m).concat(left);
+      leftWidth = leftWidth + p_mw + p_lw;
+    } else {
+      left = p_l.concat(left);
+      leftWidth = leftWidth + p_lw;
+      middle = p_m.concat(middle);
+      middleWidth = middleWidth + p_mw;
+    }
   }
+
+  let maxDepth = Math.max.apply(null, [
+    leftDepth,
+    rightDepth,
+    middleDepth,
+    prepend_depth
+  ]);
 
   return {
     middle,

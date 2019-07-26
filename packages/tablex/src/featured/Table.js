@@ -75,7 +75,7 @@ class FeaturedTable extends React.Component {
         let orderColumn = nextProps.orderNumber;
         let hasOrderNumber = false;
 
-        if (orderColumn === true || orderColumn instanceof Object) {
+        if (orderColumn !== false && orderColumn !== null) {
           hasOrderNumber = true;
         }
 
@@ -115,7 +115,7 @@ class FeaturedTable extends React.Component {
       newPagination.current = newPagination.current || 1;
       newPagination.pageSize = newPagination.pageSize || 10;
 
-      if (nextProps.pagination !== false) {
+      if (nextProps.pagination !== false && nextProps.pagination !== null) {
         nextState.pagination = newPagination;
       } else {
         nextState.pagination = {};
@@ -340,7 +340,7 @@ class FeaturedTable extends React.Component {
     );
   };
 
-  formatPrependColumns = (columns) => {
+  formatPrependColumns = columns => {
     let { columnsConfig } = this.state;
 
     let configs = columnsConfig || {};

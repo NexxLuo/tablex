@@ -24,6 +24,12 @@ Table.propTypes = {
    */
   rowKey: PropTypes.string.isRequired,
 
+  /** 排序列配置 */
+  orderNumber: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+
+  /** 复选列配置 */
+  selectionColumn: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+
   /**
    * 表格数据
    */

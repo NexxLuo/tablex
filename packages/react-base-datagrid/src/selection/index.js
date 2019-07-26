@@ -53,14 +53,22 @@ class SelectionGrid extends Component {
       let extraColumns = [];
 
       if (selectMode === "multiple") {
-        extraColumns.unshift({
+        let selectionColumn = {
           key: "__checkbox_column",
           dataKey: "__checkbox_column",
           __type: "__checkbox_column",
           resizable: false,
           width: 50,
           align: "center"
-        });
+        };
+
+        let c = nextProps.selectionColumn;
+        if (c !== false && c !== null) {
+          if (c instanceof Object) {
+            selectionColumn = Object.assign({}, selectionColumn, c);
+          }
+          extraColumns.unshift(selectionColumn);
+        }
       }
 
       nextState = {
@@ -488,7 +496,8 @@ SelectionGrid.defaultProps = {
   data: [],
   selectMode: "single",
   checkStrictly: true,
-  rowSelectClassName: "tablex__row--selected"
+  rowSelectClassName: "tablex__row--selected",
+  selectionColumn: true
 };
 
 SelectionGrid.propTypes = {
@@ -496,6 +505,9 @@ SelectionGrid.propTypes = {
   rowSelectClassName: PropTypes.string,
   /** 选择模式：多选 单选 不可选择 */
   selectMode: PropTypes.oneOf(["multiple", "single", "none"]),
+
+  /** 复选列配置 */
+  selectionColumn: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 
   /** 默认选中的行键值 */
   defaultSelectedRowKeys: PropTypes.array,

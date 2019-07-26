@@ -96,6 +96,8 @@ export interface TableProps<T> {
   rowHeight?: number | ((record: object, index: number) => number);
   minHeight?: number;
   rowClassName?: (record: T, index: number) => string;
+  orderNumber?: false | null | ColumnProps;
+  selectionColumn?: false | null | ColumnProps;
   showHeader?: boolean;
   bordered?: boolean;
   hoverable?: boolean;
@@ -109,7 +111,7 @@ export interface TableProps<T> {
   }) => React.ReactNode;
   onRow?: (record: T, index: number) => object;
 
-  pagination?: PaginationProps | false;
+  pagination?: PaginationProps | false | null;
   loading?: boolean;
   settable?: boolean;
   striped?: boolean;
