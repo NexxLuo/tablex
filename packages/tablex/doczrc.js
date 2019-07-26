@@ -2,7 +2,6 @@ import { css } from "docz-plugin-css";
 import { css as scss } from "styled-components";
 export default {
   title: "Tablex",
-  indexHtml: "./public/index.html",
   themeConfig: {
     styles: {
       playground: scss`
