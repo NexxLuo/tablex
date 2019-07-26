@@ -93,7 +93,7 @@ export interface TableProps<T> {
   columns?: ColumnProps<T>[];
   columnDropMenu?: boolean;
   data?: T[];
-  rowHeight?: number;
+  rowHeight?: number | ((record: object, index: number) => number);
   minHeight?: number;
   rowClassName?: (record: T, index: number) => string;
   showHeader?: boolean;

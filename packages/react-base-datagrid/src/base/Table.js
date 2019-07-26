@@ -16,7 +16,6 @@ class Table extends React.Component {
       rawColumns: [],
       columns: [],
       columnsLeafs: [],
-      rowHeight: 40,
       rowKey: "",
       showHeader: true
     };
@@ -24,7 +23,7 @@ class Table extends React.Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (prevState.prevProps !== nextProps) {
-      let { data, columns, rowKey, rowHeight, showHeader } = nextProps;
+      let { data, columns, rowKey, showHeader } = nextProps;
 
       let { roots: columnsRoots, leafs: columnsLeafs } = getFlattenColumns(
         cloneDeep(columns)
@@ -36,7 +35,6 @@ class Table extends React.Component {
         rawColumns: columns,
         columns: columnsRoots,
         columnsLeafs: columnsLeafs,
-        rowHeight,
         showHeader
       };
       return nextState;
@@ -121,12 +119,13 @@ class Table extends React.Component {
       onRow,
       components,
       rowRender,
-      cellRenderExtra
+      cellRenderExtra,
+      rowHeight
     } = this.props;
 
     let height = containerHeight - headerHeight - 2;
 
-    let { columnsLeafs, data, rowHeight, rowKey } = this.state;
+    let { columnsLeafs, data, rowKey } = this.state;
 
     let TableComponents = components || {};
 

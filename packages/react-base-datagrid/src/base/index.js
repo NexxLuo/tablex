@@ -20,7 +20,6 @@ class BaseDataGrid extends React.Component {
       prevProps: null,
       data: [],
       formattedColumns: {},
-      rowHeight: 40,
       rowKey: "",
       hoverable: true,
       scrollbarX: 0,
@@ -35,14 +34,7 @@ class BaseDataGrid extends React.Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (prevState.prevProps !== nextProps) {
-      let {
-        data,
-        columns,
-        prependColumns,
-        rowKey,
-        rowHeight,
-        hoverable
-      } = nextProps;
+      let { data, columns, prependColumns, rowKey, hoverable } = nextProps;
 
       let formattedColumns = formatColumns(columns, prependColumns);
 
@@ -50,7 +42,6 @@ class BaseDataGrid extends React.Component {
         rowKey,
         data,
         formattedColumns,
-        rowHeight,
         hoverable,
         prevProps: nextProps
       };
@@ -218,7 +209,6 @@ class BaseDataGrid extends React.Component {
       this.bindHoverClass();
     }
     this.setFrozenStyle();
-
   }
 
   componentDidUpdate() {
@@ -261,17 +251,11 @@ class BaseDataGrid extends React.Component {
       components,
       showHeader,
       bordered,
-      cellRenderExtra
+      cellRenderExtra,
+      rowHeight
     } = this.props;
 
-    let {
-      data,
-      rowHeight,
-      rowKey,
-      scrollbarX,
-      scrollbarY,
-      formattedColumns
-    } = this.state;
+    let { data, rowKey, scrollbarX, scrollbarY, formattedColumns } = this.state;
 
     if (scrollbarY) {
       scrollbarY = scrollbarY + 1;
@@ -482,7 +466,7 @@ BaseDataGrid.propTypes = {
   hoverable: PropTypes.bool,
 
   /** 行高 */
-  rowHeight: PropTypes.number,
+  rowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
 
   /** table最小高度，虚拟加载的表格依赖外部区域的高度，如果未探测到外部高度，将使用此高度 */
   minHeight: PropTypes.number,

@@ -5,34 +5,21 @@ import { getDataListWithExpanded, getTreeProps } from "./utils";
 import ExpandIcon from "./ExpandIcon";
 import "./styles.css";
 
-function formatExpandRenderData(data, rowKey, render, getHeight) {
+function formatExpandRenderData(data, rowKey, render) {
   let nextData = data;
 
   let keys = [];
 
   if (typeof render === "function") {
-    let h = 100;
-    if (typeof getHeight === "number") {
-      h = getHeight;
-    }
-
     let arr = [];
     data.forEach((d, i) => {
-      if (typeof getHeight === "function") {
-        h = getHeight(d, i);
-        if (typeof h !== "number") {
-          h = 100;
-        }
-      }
-
       let key = "__expandedRowRender_" + d[rowKey];
       keys.push(key);
       arr.push(
         Object.assign({}, d, {
           children: [
             {
-              type: "__expandedRowRender",
-              height: h,
+              __type: "__expandedRowRender",
               [rowKey]: key
             }
           ]
@@ -61,7 +48,6 @@ class TreeGrid extends Component {
       data: [],
       rawData: [],
       columns: [],
-      rowHeight: 40,
       rowKey: "",
 
       treeProps: {},
@@ -77,10 +63,8 @@ class TreeGrid extends Component {
       data,
       columns,
       rowKey,
-      rowHeight,
       expandColumnKey,
       expandedRowRender,
-      expandRowHeight,
       expandedRowKeys,
       disabledSelectKeys
     } = nextProps;
@@ -89,8 +73,7 @@ class TreeGrid extends Component {
     let { data: nextData, keys } = formatExpandRenderData(
       data,
       rowKey,
-      expandedRowRender,
-      expandRowHeight
+      expandedRowRender
     );
 
     if (prevState.prevProps !== nextProps) {
@@ -101,7 +84,6 @@ class TreeGrid extends Component {
         rawData: data,
         treeProps: treeProps,
         columns: columns,
-        rowHeight,
         prevProps: nextProps,
         expandColumnKey,
         disabledSelectKeys: disabledSelectKeys || []
@@ -372,7 +354,7 @@ class TreeGrid extends Component {
     let fnRow = this.props.rowRender;
 
     if (typeof fn === "function") {
-      if (rowData.type === "__expandedRowRender") {
+      if (rowData.__type === "__expandedRowRender") {
         let { root, rootIndex } = this.getTreeNode(rowData[rowKey]);
         return fn(root, rootIndex, params);
       }
@@ -386,6 +368,28 @@ class TreeGrid extends Component {
   cellRenderExtra = ({ rowKey }) => {
     let p = this.getTreeNode(rowKey);
     return p;
+  };
+
+  rowHeightWithExpandRender = (rowData, rowIndex) => {
+    let { expandRowHeight, rowHeight } = this.props;
+
+    let h = 40;
+
+    if (rowData.__type === "__expandedRowRender") {
+      if (typeof expandRowHeight === "function") {
+        h = expandRowHeight(rowData, rowIndex);
+      } else {
+        h = expandRowHeight;
+      }
+    } else {
+      if (typeof rowHeight === "function") {
+        h = rowHeight(rowData, rowIndex);
+      } else {
+        h = rowHeight || 40;
+      }
+    }
+
+    return h;
   };
 
   render() {
@@ -404,6 +408,10 @@ class TreeGrid extends Component {
       disabledSelectKeys
     };
 
+    if (typeof props.expandedRowRender === "function") {
+      newProps.rowHeight = this.rowHeightWithExpandRender;
+    }
+
     return <Table {...props} {...newProps} />;
   }
 }
@@ -411,7 +419,6 @@ class TreeGrid extends Component {
 TreeGrid.defaultProps = {
   columns: [],
   data: [],
-  rowHeight: 40,
   rowKey: "key",
   expandColumnKey: "",
   expandRowHeight: 100,
@@ -419,7 +426,6 @@ TreeGrid.defaultProps = {
 };
 
 TreeGrid.propTypes = {
-  rowHeight: PropTypes.number,
   /**
    * 表格列
    *

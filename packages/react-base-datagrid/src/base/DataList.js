@@ -193,7 +193,15 @@ class DataList extends Component {
   getItemSize = index => {
     let { data, rowHeight } = this.props;
     let row = data[index];
-    return row.height || rowHeight;
+    let h = 40;
+
+    if (typeof rowHeight === "function") {
+      h = rowHeight(row, index);
+    } else {
+      h = rowHeight;
+    }
+
+    return h;
   };
 
   getItemKey = (index, itemData) => {

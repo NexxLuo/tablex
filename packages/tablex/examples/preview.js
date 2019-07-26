@@ -238,9 +238,16 @@ class Demo extends Component {
             onExpandedRowsChange={this.onExpandedRowsChange}
             onSelectChange={this.onSelectChange}
             rowClassName={() => {
-              console.log("rowClassName");
+              //  console.log("rowClassName");
             }}
             orderNumber={this.orderNumber}
+            rowHeight={(d, i) => {
+              if (i % 2 === 0) {
+                return 50;
+              } else {
+                return 30;
+              }
+            }}
             expandRowHeight={200}
             minHeight={600}
           />
