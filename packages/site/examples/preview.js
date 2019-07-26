@@ -233,7 +233,7 @@ class Demo extends Component {
             innerRef={this.innerRef}
             columns={fixedColumns}
             checkStrictly={true}
-            selectMode="multiple"
+            selectMode="single"
             defaultExpandedRowKeys={["0"]}
             data={this.state.data}
             onExpand={(b, r) => {

@@ -19,6 +19,9 @@ Selection.propTypes = {
   /** 选择模式：多选 单选 不可选择 */
   selectMode: PropTypes.oneOf(["multiple", "single", "none"]),
 
+  /** 复选列配置 */
+  selectionColumn: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+
   /** 默认选中的行键值 */
   defaultSelectedRowKeys: PropTypes.array,
 

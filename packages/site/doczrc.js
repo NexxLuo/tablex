@@ -29,8 +29,11 @@ export default {
       filepath => /[w-]*.(js|jsx|ts|tsx)$/.test(filepath) //default is /\/[A-Z]\w*\.(js|jsx|ts|tsx)
     );
   },
-  onCreateWebpackChain:(a)=>{
-    //console.log("onCreateWebpackChain:",a)
+  onCreateWebpackChain: config => {
+    config
+      .entry("polyfill")
+      .add("babel-polyfill")
+      .end();
   },
   menu: ["Intro"]
 };

@@ -1,6 +1,6 @@
 # Tablex
 
-[![NPM version](https://img.shields.io/npm/v/tablex.svg?style=flat)](https://npmjs.org/package/tablex)
+[![NPM version](https://img.shields.io/npm/v/tablex.svg?style=flat)](https://npmjs.org/package/tablex) [![NPM downloads](http://img.shields.io/npm/dm/tablex.svg?style=flat)](http://npmjs.com/package/tablex)
 
 基于 [react-window](https://github.com/bvaughn/react-window) 的表格组件
 

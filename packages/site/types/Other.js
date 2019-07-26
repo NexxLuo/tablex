@@ -16,6 +16,9 @@ Other.propTypes = {
   /** 数据是否加载中 */
   loading: PropTypes.bool,
 
+  /** 排序列配置 */
+  orderNumber: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+
   /** 分页 */
   pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 
