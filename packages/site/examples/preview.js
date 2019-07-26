@@ -197,8 +197,19 @@ class Demo extends Component {
 
   orderNumber = {
     title: "排序",
-    width: 50
+    width: 50,
+    align: "left",
+    resizable: true,
+    fixed:"left",
+    render: (value, row, index, extra) => {
+      let { orders } = extra;
+      return orders.join("-");
+    }
   };
+
+  selectionColumn={
+    fixed:"left"
+  }
 
   render() {
     return (
@@ -220,7 +231,6 @@ class Demo extends Component {
             tableId="preview_table"
             rowKey="id"
             innerRef={this.innerRef}
-            expandColumnKey="column-1"
             columns={fixedColumns}
             checkStrictly={true}
             selectMode="multiple"
@@ -231,8 +241,18 @@ class Demo extends Component {
             }}
             onExpandedRowsChange={this.onExpandedRowsChange}
             onSelectChange={this.onSelectChange}
-            rowClassName={()=>{console.log("rowClassName")}}
+            rowClassName={() => {
+                console.log("rowClassName");
+            }}
             orderNumber={this.orderNumber}
+            selectionColumn={this.selectionColumn}
+            rowHeight={(d, i) => {
+              if (i % 2 === 0) {
+                return 50;
+              } else {
+                return 30;
+              }
+            }}
             expandRowHeight={200}
             minHeight={600}
           />

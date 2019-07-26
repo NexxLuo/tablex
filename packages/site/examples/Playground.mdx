@@ -3,8 +3,8 @@ name: Playground
 ---
 
 import { Playground, Props } from "docz";
-import Table,{ flatten } from "tablex";
-import {Input} from "antd";
+import Table, { flatten } from "tablex";
+import { Input } from "antd";
 
 ## Change the source code to preview
 
@@ -32,45 +32,47 @@ import Table, { flatten, unflatten } from "tablex";
   });
 }
 
-  constructor(props) {
-    super(props);
+constructor(props) {
+super(props);
 
     const columns =  [
-  {
-    dataIndex: "column-1",
-    key: "column-1",
-    title: "number",
-    width: 200,
-    fixed: "left",
-   validator: (value, row) => {
-          if (!value) {
-            return { valid: false, message: "请输入column-1" };
-          }
+
+{
+dataIndex: "column-1",
+key: "column-1",
+title: "number",
+width: 200,
+fixed: "left",
+validator: (value, row) => {
+if (!value) {
+return { valid: false, message: "请输入 column-1" };
+}
 
           return { valid: true, message: "" };
         },
-   editor: (value, row, index, onchange, ref) => {
-          return (
-            <Input
-              defaultValue={value}
-              ref={ref}
-              onChange={e => {
-                let newValue = e.target.value;
-                onchange({
-                  "column-1": newValue
-                });
-              }}
-            />
-          );
-        }
-  },
-       {
-            dataIndex: "id",
-            title: "nick-1",
-            key: "column-21",
-            maxWidth: 300,
-            width: 150 ,
-    align:"center"
+
+editor: (value, row, index, onchange, ref) => {
+return (
+<Input
+defaultValue={value}
+ref={ref}
+onChange={e => {
+let newValue = e.target.value;
+onchange({
+"column-1": newValue
+});
+}}
+/>
+);
+}
+},
+{
+dataIndex: "id",
+title: "nick-1",
+key: "column-21",
+maxWidth: 300,
+width: 150 ,
+align:"center"
 
           },
           {
@@ -80,16 +82,17 @@ import Table, { flatten, unflatten } from "tablex";
             width: 150 ,
     align:"center"
           },
-  {
-    dataIndex: "age",
-    key: "column-4",
-    title: "age",
-    width: 150,
-    align:"right",
+
+{
+dataIndex: "age",
+key: "column-4",
+title: "age",
+width: 150,
+align:"right",
 render:()=>{
-  return new Date().getTime()
+return new Date().getTime()
 }
-  }
+}
 ];
 
     const columnLeafs = flatten(columns).leafs;
@@ -103,37 +106,37 @@ render:()=>{
       pageSize: 40,
       total: data.length
     };
-  }
 
+}
 
-  componentDidMount() {
- 
-  }
+componentDidMount() {
 
-  onPageChange(pageIndex, pageSize) {
-    this.setState({
-      current: pageIndex,
-      pageSize
-    });
-  }
+}
 
-  onRefresh(pageIndex, pageSize) {
-    this.setState({
-      current: pageIndex,
-      pageSize
-    });
-  }
+onPageChange(pageIndex, pageSize) {
+this.setState({
+current: pageIndex,
+pageSize
+});
+}
 
-  render() {
-    let { current, pageSize, total, columns, data } = this.state;
-    let pageAttr={
-        current,
-          pageSize,
-          total,
-          onPageChange: this.onPageChange.bind(this),
-          onRefresh: this.onRefresh.bind(this)
-    };
-    //pageAttr = false;
+onRefresh(pageIndex, pageSize) {
+this.setState({
+current: pageIndex,
+pageSize
+});
+}
+
+render() {
+let { current, pageSize, total, columns, data } = this.state;
+let pageAttr={
+current,
+pageSize,
+total,
+onPageChange: this.onPageChange.bind(this),
+onRefresh: this.onRefresh.bind(this)
+};
+//pageAttr = false;
 
     return (
       <Table
@@ -155,8 +158,10 @@ render:()=>{
         pagination={pageAttr}
       />
     );
-  }
+
+}
 }
 
- }
+}
+
 </Playground>

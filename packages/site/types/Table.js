@@ -24,6 +24,12 @@ Table.propTypes = {
    */
   rowKey: PropTypes.string.isRequired,
 
+  /** 排序列配置 */
+  orderNumber: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+
+  /** 复选列配置 */
+  selectionColumn: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+
   /**
    * 表格数据
    */
@@ -36,7 +42,7 @@ Table.propTypes = {
   prependColumns: PropTypes.array,
 
   /** 行高 */
-  rowHeight: PropTypes.number,
+  rowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
 
   /** table最小高度，虚拟加载的表格依赖外部区域的高度，如果未探测到外部高度，将使用此高度 */
   minHeight: PropTypes.number,
