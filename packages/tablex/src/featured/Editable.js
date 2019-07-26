@@ -1346,8 +1346,8 @@ class EditableTable extends React.Component {
       data: arr,
       columns,
       onSelectChange: this.onSelectChange,
-      header: this.headerExtra,
-      footer: this.footerExtra
+      headerExtra: this.headerExtra,
+      footerExtra: this.footerExtra
     };
 
     if (props.readOnly === true) {

@@ -445,13 +445,23 @@ class FeaturedTable extends React.Component {
     let header = null;
 
     let headerExtra = null;
+    let headerEl = null;
 
     if (typeof this.props.header === "function") {
-      headerExtra = this.props.header();
+      headerEl = this.props.header();
     }
 
-    if (headerExtra) {
-      header = <div className="tablex__container__header">{headerExtra}</div>;
+    if (typeof this.props.headerExtra === "function") {
+      headerExtra = this.props.headerExtra();
+    }
+
+    if (headerEl !== null || headerExtra != null) {
+      header = (
+        <div className="tablex__container__header">
+          {headerEl}
+          {headerExtra}
+        </div>
+      );
     }
 
     return header;
@@ -465,9 +475,14 @@ class FeaturedTable extends React.Component {
     let { settable, tableId } = this.props;
 
     let footerExtra = null;
+    let footerEl = null;
 
     if (typeof this.props.footer === "function") {
-      footerExtra = this.props.footer();
+      footerEl = this.props.footer();
+    }
+
+    if (typeof this.props.footerExtra === "function") {
+      footerExtra = this.props.footerExtra();
     }
 
     const dataTotal = pageAttr.total || data.length;
@@ -501,10 +516,16 @@ class FeaturedTable extends React.Component {
       );
     }
 
-    if (pager !== null || settingButton !== null || footerExtra !== null) {
+    if (
+      pager !== null ||
+      settingButton !== null ||
+      footerEl !== null ||
+      footerExtra !== null
+    ) {
       footer = (
         <div className="tablex__container__footer">
           {settingButton}
+          {footerEl}
           {footerExtra}
           {pager}
         </div>
