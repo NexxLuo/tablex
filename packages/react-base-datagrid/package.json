@@ -12,11 +12,9 @@
     "start": "docz dev",
     "dev": "father build --watch",
     "build": "father build",
-    "test": "umi-test",
     "doc": "docz dev",
     "docb": "docz build",
-    "pub": "father build&&npm version patch&&npm publish",
-    "docd": "gh-pages -d ./.docz/dist"
+    "pub": "father build&&npm version patch&&npm publish"
   },
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -49,7 +47,6 @@
     "docz": "^1.2.0",
     "docz-plugin-css": "^0.11.0",
     "docz-theme-default": "^1.2.0",
-    "father": "^2.13.6",
-    "gh-pages": "^2.0.1"
+    "father": "^2.13.6"
   }
 }
