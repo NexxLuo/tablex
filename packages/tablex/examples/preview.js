@@ -226,7 +226,6 @@ class Demo extends Component {
             tableId="preview_table"
             rowKey="id"
             innerRef={this.innerRef}
-            expandColumnKey="column-1"
             columns={fixedColumns}
             checkStrictly={true}
             selectMode="multiple"

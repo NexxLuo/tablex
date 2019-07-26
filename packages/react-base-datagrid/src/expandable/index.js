@@ -294,7 +294,12 @@ class TreeGrid extends Component {
     let expandColumn = null;
 
     if (!expandColumnKey) {
-      expandColumn = columns[0];
+      let firstLeft = columns.find(d => d.fixed === "left");
+      if (firstLeft) {
+        expandColumn = firstLeft;
+      } else {
+        expandColumn = columns[0];
+      }
     } else {
       expandColumn = columns.find(d => {
         let columnKey = d.key || d.dataIndex;
