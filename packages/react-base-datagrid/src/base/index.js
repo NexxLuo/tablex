@@ -257,9 +257,7 @@ class BaseDataGrid extends React.Component {
 
     let { data, rowKey, scrollbarX, scrollbarY, formattedColumns } = this.state;
 
-    if (scrollbarY) {
-      scrollbarY = scrollbarY + 1;
-    }
+    scrollbarY = scrollbarY + 1;
 
     let {
       middle,
@@ -287,12 +285,8 @@ class BaseDataGrid extends React.Component {
     }
 
     let bodyStyles = { height: "100%" };
-
     let frozens = {};
-
-    if (hasRight === true) {
-      bodyStyles.width = `calc(100% + ${scrollbarY}px)`;
-    }
+    bodyStyles.width = `calc(100% + ${scrollbarY}px)`;
 
     if (hasLeft) {
       frozens.left = leftWidth;
