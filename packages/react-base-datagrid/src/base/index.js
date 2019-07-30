@@ -11,8 +11,9 @@ class BaseDataGrid extends React.Component {
   rightRef = React.createRef();
   middleRef = React.createRef();
   containerRef = React.createRef();
+  rightWrapperRef = React.createRef();
   headInstance = null;
-  scrollerIns = null;
+  mainScrollerIns = null;
 
   constructor(props) {
     super(props);
@@ -127,12 +128,15 @@ class BaseDataGrid extends React.Component {
   };
 
   resetScrollbarSize = () => {
-    let ins = this.scrollerIns;
+    let ms = this.mainScrollerIns;
 
-    if (ins) {
+    if (ms) {
       let { scrollbarX, scrollbarY } = this.state;
-      let X = ins.offsetHeight - ins.clientHeight;
-      let Y = ins.offsetWidth - ins.clientWidth;
+
+      //  let { width, height } = ms.getBoundingClientRect();
+
+      let X = ms.offsetHeight - ms.clientHeight;
+      let Y = ms.offsetWidth - ms.clientWidth;
 
       if (scrollbarX !== X || scrollbarY !== Y) {
         this.setState({
@@ -145,7 +149,7 @@ class BaseDataGrid extends React.Component {
   };
 
   outterInit = ins => {
-    this.scrollerIns = ins;
+    this.mainScrollerIns = ins;
     this.resetScrollbarSize();
     if (this.headInstance === null) {
       this.headInstance = ins;
@@ -257,8 +261,6 @@ class BaseDataGrid extends React.Component {
 
     let { data, rowKey, scrollbarX, scrollbarY, formattedColumns } = this.state;
 
-    scrollbarY = scrollbarY + 1;
-
     let {
       middle,
       left,
@@ -276,18 +278,25 @@ class BaseDataGrid extends React.Component {
       headerHeight = 0;
     }
 
-    let headStyle = {
-      marginRight: scrollbarY
-    };
+    scrollbarY = scrollbarY + 1;
+    let headStyle = {};
 
-    if (scrollbarY > 0 && !hasRight) {
+    if (hasRight) {
+      headStyle.marginRight = scrollbarY;
+    } else {
       headStyle.marginRight = scrollbarY - 1;
     }
 
-    let bodyStyles = { height: "100%" };
-    let frozens = {};
-    bodyStyles.width = `calc(100% + ${scrollbarY}px)`;
+    let rightStyles = {
+      width: rightWidth,
+      overflow: "hidden"
+    };
 
+    if (scrollbarY > 0) {
+      rightStyles.marginLeft = -scrollbarY;
+    }
+
+    let frozens = {};
     if (hasLeft) {
       frozens.left = leftWidth;
     }
@@ -342,11 +351,10 @@ class BaseDataGrid extends React.Component {
             }}
           >
             <div
-              className="tablex-body-scroll"
+              className="tablex-forzen-left-scroll"
               style={{
-                width: leftWidth,
-                height: "100%",
-                width: `calc(100% + ${scrollbarY}px)`
+                width: leftWidth + 20,
+                height: "100%"
               }}
             >
               <Table
@@ -369,35 +377,31 @@ class BaseDataGrid extends React.Component {
           </div>
         ) : null}
         <div className="tablex-main" style={{ overflow: "hidden" }}>
-          <div className="tablex-main-scroll" style={bodyStyles}>
-            <Table
-              {...attrs}
-              headerHeight={headerHeight}
-              containerHeight={height}
-              columns={middle}
-              ref={this.middleRef}
-              onScroll={this.onMiddleScroll}
-              outerRef={this.outterInit}
-              headRef={this.headRef}
-              headStyle={headStyle}
-              rowRender={params =>
-                this.rowRender({
-                  ...params,
-                  frozen: "none",
-                  frozens: frozens
-                })
-              }
-            />
-          </div>
+          <Table
+            {...attrs}
+            headerHeight={headerHeight}
+            containerHeight={height}
+            columns={middle}
+            ref={this.middleRef}
+            onScroll={this.onMiddleScroll}
+            outerRef={this.outterInit}
+            headRef={this.headRef}
+            headStyle={headStyle}
+            rowRender={params =>
+              this.rowRender({
+                ...params,
+                frozen: "none",
+                frozens: frozens
+              })
+            }
+          />
         </div>
 
         {hasRight ? (
           <div
             className="tablex-forzen-right"
-            style={{
-              width: rightWidth,
-              overflow: "hidden"
-            }}
+            ref={this.rightWrapperRef}
+            style={rightStyles}
           >
             <Table
               {...attrs}
