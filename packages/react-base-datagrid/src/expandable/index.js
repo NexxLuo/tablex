@@ -216,10 +216,6 @@ class TreeGrid extends Component {
       data: expandedData
     });
 
-    this.setState({
-      expandedRowKeys: nextExpandedKeys
-    });
-
     if (typeof this.props.onExpandedRowsChange === "function") {
       this.props.onExpandedRowsChange(nextExpandedKeys);
     }
@@ -260,7 +256,7 @@ class TreeGrid extends Component {
 
     if (res && res.constructor.name === "Promise") {
       this.setLoadingChildren(key, true);
-
+      this.forceUpdate();
       res.then(childrens => {
         if (childrens) {
           row.children = childrens;
