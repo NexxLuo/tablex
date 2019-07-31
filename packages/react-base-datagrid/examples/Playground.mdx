@@ -41,7 +41,6 @@ import Table, { flatten, unflatten } from "tablex";
     key: "column-1",
     title: "number",
     width: 200,
-    fixed: "left",
    validator: (value, row) => {
           if (!value) {
             return { valid: false, message: "请输入column-1" };
@@ -78,7 +77,19 @@ import Table, { flatten, unflatten } from "tablex";
             key: "column-31",
             title: "nick-2",
             width: 150 ,
-    align:"center"
+    align:"center",
+    children:[
+      {
+         dataIndex: "column-31-1",
+            title: "nick-2-1",
+            width: 150 
+      },
+       {
+         dataIndex: "column-31-2",
+            title: "nick-2-2",
+            width: 150 
+      }
+    ]
           },
   {
     dataIndex: "age",

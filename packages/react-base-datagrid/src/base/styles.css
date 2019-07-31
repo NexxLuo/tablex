@@ -79,12 +79,14 @@
 }
 
 .tablex-table .tablex-table-head-container {
-  border-bottom: 1px solid #e8e8e8;
   white-space: nowrap;
   font-size: 0;
   overflow: hidden;
   box-sizing: border-box;
   flex: 0 0 auto;
+}
+.tablex-bordered .tablex-table .tablex-table-head-container {
+  border-bottom: 1px solid #e8e8e8;
 }
 
 .tablex-table .tablex-table-head {
@@ -114,12 +116,15 @@
 .tablex-table .tablex-table-head-cell {
   display: inline-flex;
   box-sizing: border-box;
-  border-right: 1px solid #e8e8e8;
   height: 100%;
   vertical-align: top;
   position: relative;
   align-items: center;
   flex: 0 0 auto;
+}
+
+.tablex-bordered .tablex-table .tablex-table-head-cell {
+  border-right: 1px solid #e8e8e8;
 }
 
 .tablex-table .tablex-table-head-group-inner,
@@ -133,9 +138,12 @@
 }
 
 .tablex-table .tablex-table-head-group-cell {
-  border-bottom: 1px solid #e8e8e8;
   font-size: 14px;
   text-align: center;
+}
+
+.tablex-bordered .tablex-table .tablex-table-head-group-cell {
+  border-bottom: 1px solid #e8e8e8;
   border-right: 1px solid #e8e8e8;
 }
 
