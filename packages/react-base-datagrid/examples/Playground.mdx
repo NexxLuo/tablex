@@ -41,6 +41,7 @@ import Table, { flatten, unflatten } from "tablex";
     key: "column-1",
     title: "number",
     width: 200,
+    fixed: "left",
    validator: (value, row) => {
           if (!value) {
             return { valid: false, message: "请输入column-1" };
