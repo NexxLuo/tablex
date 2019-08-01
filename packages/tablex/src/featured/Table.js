@@ -384,13 +384,16 @@ class FeaturedTable extends React.Component {
       return bl;
     });
 
-
     let cols = treeToList(arr).leafs;
     let needSortColumn = false;
 
     cols.forEach((d, i) => {
       let columnKey = d.key || d.dataIndex;
       let config = configs[columnKey] || configs[columnKey] || {};
+      let dropMenu = columnDropMenu;
+      if (d.dropMenu === false) {
+        dropMenu = false;
+      }
 
       let sort = (sortedColumns || {})[d.dataIndex];
 
@@ -415,7 +418,7 @@ class FeaturedTable extends React.Component {
           >
             {title}
             <SortIcon order={sort} />
-            {columnDropMenu === true ? (
+            {dropMenu === true ? (
               <span
                 className="tablex__head__cell__title__dropdown"
                 data-columnkey={columnKey}
@@ -430,7 +433,6 @@ class FeaturedTable extends React.Component {
     if (needSortColumn) {
       arr = orderBy(arr, ["__order"], ["asc"]);
     }
-
 
     return arr;
   };
@@ -603,6 +605,7 @@ class FeaturedTable extends React.Component {
 
     let columns = this.formatColumns(tableColumns);
     let prependColumns = this.formatPrependColumns(tablePrependColumns);
+    let settableColumns = tableColumns.filter(d => d.settable !== false);
 
     let arr = this.getData();
 
@@ -653,7 +656,7 @@ class FeaturedTable extends React.Component {
             content={
               <ColumnDropMenu
                 options={{ pinable: true, filterable: true, groupable: false }}
-                columns={this.state.columns}
+                columns={settableColumns}
                 columnsConfig={this.state.columnsConfig}
                 onChange={this.onColumnChange}
               />

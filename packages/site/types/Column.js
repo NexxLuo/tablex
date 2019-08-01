@@ -51,7 +51,14 @@ Column.propTypes = {
   hidden: PropTypes.bool,
 
   /** 编辑时列是否可见 */
-  editingVisible: PropTypes.bool
+  editingVisible: PropTypes.bool,
+
+  /** 列是否可配置属性 */
+  settable: PropTypes.bool,
+
+  /** 列是否显示列属性下拉菜单 */
+  dropMenu: PropTypes.bool
+
 };
 
 export default Column;

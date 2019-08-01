@@ -41,6 +41,8 @@ export interface ColumnProps<T> {
   fixed?: "left" | "right" | "none";
   hidden?: boolean;
   editingVisible?: boolean;
+  settable?: boolean;
+  dropMenu?: boolean;
   validator?: (text: any, record: T, index: number) => ValidateResult;
   editor?: (
     value: any,
