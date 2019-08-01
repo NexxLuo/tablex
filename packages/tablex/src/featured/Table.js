@@ -384,6 +384,7 @@ class FeaturedTable extends React.Component {
       return bl;
     });
 
+
     let cols = treeToList(arr).leafs;
     let needSortColumn = false;
 
@@ -430,7 +431,8 @@ class FeaturedTable extends React.Component {
       arr = orderBy(arr, ["__order"], ["asc"]);
     }
 
-    return columns;
+
+    return arr;
   };
 
   saveConfig = configs => {
