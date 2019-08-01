@@ -43,7 +43,7 @@ class EditableTable extends React.Component {
     };
   }
 
-  rowsAttributes = [];
+  rowsValidation = [];
 
   isEditing = () => {
     return this.state.isEditing;
@@ -187,7 +187,7 @@ class EditableTable extends React.Component {
     let rowKey = this.props.rowKey;
     let key = row[rowKey];
 
-    let attrs = this.rowsAttributes || [];
+    let attrs = this.rowsValidation || [];
 
     let i = attrs.findIndex(d => d[rowKey] === key);
 
@@ -205,14 +205,14 @@ class EditableTable extends React.Component {
       attrs.push(newAttr);
     }
 
-    this.rowsAttributes = attrs;
+    this.rowsValidation = attrs;
   };
 
   getRowAttr = row => {
     let rowKey = this.props.rowKey;
     let key = row[rowKey];
 
-    let attrs = this.rowsAttributes || [];
+    let attrs = this.rowsValidation || [];
     let attr = {};
 
     let i = attrs.findIndex(d => d[rowKey] === key);
@@ -332,10 +332,6 @@ class EditableTable extends React.Component {
   validate = async () => {
     let bl = true;
     let arr = this.changedRows;
-
-    // let { data, addedData } = this.state;
-
-    // let arr = data.concat(addedData);
 
     bl = await this.validateAsync(arr);
 
@@ -571,6 +567,7 @@ class EditableTable extends React.Component {
     let arr = [].concat(this.changedRows);
 
     this.changedRows = [];
+    this.rowsValidation = [];
 
     let nextState = {
       editSaveLoading: false,
@@ -598,7 +595,6 @@ class EditableTable extends React.Component {
     if (typeof this.props.onCancel === "function") {
       this.props.onCancel();
     }
-
     this.reset();
   };
 
@@ -686,6 +682,7 @@ class EditableTable extends React.Component {
     };
 
     this.changedRows = [];
+    this.rowsValidation = [];
     this.setState(nextState);
   };
 
