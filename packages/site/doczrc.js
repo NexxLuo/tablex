@@ -3,6 +3,7 @@ import { css as scss } from "styled-components";
 export default {
   title: "Tablex",
   indexHtml: "./public/index.html",
+  public: './public',
   themeConfig: {
     styles: {
       playground: scss`
