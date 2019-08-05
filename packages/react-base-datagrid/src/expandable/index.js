@@ -96,24 +96,22 @@ class TreeGrid extends Component {
       if ("expandedRowKeys" in nextProps) {
         nextState.expandedRowKeys = expandedRowKeys;
         if (expandedRowKeys.length > 0) {
-          let { data, treeProps } = getDataListWithExpanded(
+          let { data } = getDataListWithExpanded(
             nextData,
             expandedRowKeys,
             rowKey
           );
           nextState.data = data;
-          nextState.treeProps = treeProps;
         }
       } else {
         let { expandedRowKeys: prevExpandedKeys } = prevState;
         if (prevExpandedKeys.length > 0) {
-          let { data, treeProps } = getDataListWithExpanded(
+          let { data } = getDataListWithExpanded(
             nextData,
             prevExpandedKeys,
             rowKey
           );
           nextState.data = data;
-          nextState.treeProps = treeProps;
         } else {
           nextState.data = nextData;
         }

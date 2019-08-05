@@ -1,18 +1,9 @@
 export function getDataListWithExpanded(list, expandedKeys = [], rowKey) {
-  let treeProps = {};
-  function setTree(key, prop) {
-    let p = treeProps[key] || {};
-    treeProps[key] = Object.assign(p, prop);
-  }
-
   let arr = [];
 
   for (let i = 0, len = list.length; i < len; i++) {
     let d = list[i];
-    let k = d[rowKey];
     let index = i + 1;
-
-    setTree(k, { depth: 0, orders: [index] });
 
     arr.push(d);
 
@@ -23,39 +14,21 @@ export function getDataListWithExpanded(list, expandedKeys = [], rowKey) {
     }
   }
 
-  function setChildren(c, depth, parents, orders) {
-    let cArr = c.children;
-    const pk = c[rowKey];
+  function setChildren(c) {
+    let c_childrens = c.children;
 
-    for (let i = 0; i < cArr.length; i++) {
-      let d = cArr[i];
-      let k = d[rowKey];
-      let index = i + 1;
-
-      parents.push(pk);
-      orders.push(index);
-
-      let __depth = depth + 1;
-      let __parents = parents;
-      let __orders = orders;
-
-      setTree(k, {
-        orders: __orders,
-        depth: __depth,
-        parents: __parents
-      });
-
+    for (let i = 0, len = c_childrens.length; i < len; i++) {
+      let d = c_childrens[i];
       arr.push(d);
-
       if (expandedKeys.indexOf(d[rowKey]) > -1) {
         if (d.children) {
-          setChildren(d, __depth, __parents, __orders);
+          setChildren(d);
         }
       }
     }
   }
 
-  return { data: arr, treeProps };
+  return { data: arr };
 }
 
 export function getTreeProps(arr, idField = "id") {
@@ -89,19 +62,18 @@ export function getTreeProps(arr, idField = "id") {
     const childrens = item.children;
     const pk = item[idField];
 
+    let __depth = depth + 1;
+
+    let __parents = [].concat(parents).concat([pk]);
+
     for (let i = 0, len = childrens.length; i < len; i++) {
       const d = childrens[i];
       const k = d[idField];
-      let index = i + 1;
 
       const c_childrens = d.children || [];
       list.push(d);
-      parents.push(pk);
-      orders.push(index);
 
-      let __depth = depth + 1;
-      let __parents = parents;
-      let __orders = orders;
+      let __orders = [].concat(orders).concat([i + 1]);
 
       setTree(k, {
         orders: __orders,
@@ -115,5 +87,5 @@ export function getTreeProps(arr, idField = "id") {
     }
   }
 
-  return { list, treeProps };
+  return { list, treeProps: JSON.parse(JSON.stringify(treeProps)) };
 }
