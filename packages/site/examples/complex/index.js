@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Table, flatten } from "tablex";
-import { Button } from "antd";
+import { Button, Input } from "antd";
 import _ from "lodash";
 
 function requestGet(url, options) {
@@ -66,8 +66,6 @@ function getTreeFromFlatData({
   return childrenToParents[rootKey].map(child => trav(child));
 }
 
-
-
 function createData(level, parentKey, maxLevel, index) {
   if (level > maxLevel) {
     return;
@@ -75,16 +73,16 @@ function createData(level, parentKey, maxLevel, index) {
 
   let l = level;
   let data = [];
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 5; i++) {
     let k = parentKey + "-" + level + "-" + i;
     let d = {
       id: k,
-      "name": "Edward King " + k,
+      name: "Edward King " + k,
       age: 32,
       address: "London, Park Lane no. " + i
     };
 
-    if (i % 2===0) {
+    if (i % 2 === 0) {
       d.children = createData(l + 1, k, maxLevel, i);
     }
 
@@ -99,7 +97,7 @@ function createTreeData() {
     data.push({
       id: "" + i,
       level: 0,
-      "name": "Edward King " + i,
+      name: "Edward King " + i,
       age: 32,
       address: "London, Park Lane no. " + i,
       children: createData(0, i, 4)
@@ -121,7 +119,10 @@ class Demo extends Component {
       title: "名称",
       width: 150,
       key: "name",
-      dataIndex: "name"
+      dataIndex: "name",
+      editor: (value, record, index) => {
+        return <Input defaultValue={value} />;
+      }
     },
     {
       dataIndex: "description",
@@ -167,10 +168,7 @@ class Demo extends Component {
   };
 
   getData = () => {
-    this.setState({ loading: false,data: createTreeData() });
-
-
-   
+    this.setState({ loading: false, data: createTreeData() });
 
     return;
 

@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Table from "../selection";
 import { getDataListWithExpanded, getTreeProps } from "./utils";
-import { getFlatDataFromTree } from "./tree-utils";
 
 import ExpandIcon from "./ExpandIcon";
 import "./styles.css";
@@ -48,6 +47,7 @@ class TreeGrid extends Component {
     this.state = {
       prevProps: null,
       data: [],
+      flatData: [],
       rawData: [],
       columns: [],
       rowKey: "",
@@ -79,11 +79,13 @@ class TreeGrid extends Component {
     );
 
     if (prevState.prevProps !== nextProps) {
-      let treeProps = getTreeProps(nextData, rowKey);
+      let { treeProps, list } = getTreeProps(nextData, rowKey);
+
       let nextState = {
         rowKey,
         data: nextData,
         rawData: data,
+        flatData: list,
         treeProps: treeProps,
         columns: columns,
         prevProps: nextProps,
@@ -173,14 +175,11 @@ class TreeGrid extends Component {
       nextExpandedKeys.push(key);
     }
 
-    let bd1 = new Date();
-
     let { data: expandedData } = getDataListWithExpanded(
       rawData,
       nextExpandedKeys,
       rowKey
     );
-
 
     this.setState({
       expandedRowKeys: nextExpandedKeys,
@@ -399,14 +398,14 @@ class TreeGrid extends Component {
   };
 
   render() {
-    let { data, disabledSelectKeys, treeProps } = this.state;
+    let { data, flatData, disabledSelectKeys, treeProps } = this.state;
     let props = this.props;
     let columns = this.formatColumns();
 
     let newProps = {
       columns,
       data,
-      flatData: data,
+      flatData: flatData,
       treeProps,
       rowRender: this.rowRender,
       cellRenderExtra: this.cellRenderExtra,
