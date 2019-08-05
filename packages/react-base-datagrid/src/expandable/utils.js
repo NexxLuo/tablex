@@ -64,7 +64,8 @@ export function getTreeProps(arr, idField = "id") {
 
     let __depth = depth + 1;
 
-    let __parents = [].concat(parents).concat([pk]);
+    let __parents = parents.slice();
+    __parents.push(pk);
 
     for (let i = 0, len = childrens.length; i < len; i++) {
       const d = childrens[i];
@@ -73,7 +74,8 @@ export function getTreeProps(arr, idField = "id") {
       const c_childrens = d.children || [];
       list.push(d);
 
-      let __orders = [].concat(orders).concat([i + 1]);
+      let __orders = orders.slice();
+      __orders.push(i + 1);
 
       setTree(k, {
         orders: __orders,
@@ -87,5 +89,5 @@ export function getTreeProps(arr, idField = "id") {
     }
   }
 
-  return { list, treeProps: JSON.parse(JSON.stringify(treeProps)) };
+  return { list, treeProps: treeProps };
 }
