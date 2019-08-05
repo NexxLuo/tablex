@@ -14,6 +14,15 @@ import Icon from "antd/lib/icon";
 import "antd/dist/antd.css";
 import orderBy from "lodash/orderBy";
 
+function cloneData(source) {
+  try {
+    return JSON.parse(JSON.stringify(source));
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
+}
+
 /**
  * 表格
  */
@@ -74,14 +83,14 @@ class EditableTable extends React.Component {
         let dataList = treeToList(newData).list;
         nextState.dataList = dataList;
         nextState.data = newData;
-        nextState.sourceData = cloneDeep(newData);
+        nextState.sourceData = cloneData(newData);
       } else {
         if (prevState.sourceData !== data) {
           let newData = data || [];
           let dataList = treeToList(newData).list;
           nextState.dataList = dataList;
           nextState.data = newData;
-          nextState.sourceData = cloneDeep(newData);
+          nextState.sourceData = cloneData(newData);
         }
       }
     }
@@ -92,9 +101,9 @@ class EditableTable extends React.Component {
     let { data, dataList, addedData } = this.state;
 
     this.setState({
-      data: cloneDeep(data),
-      dataList: cloneDeep(dataList),
-      addedData: cloneDeep(addedData)
+      data: cloneData(data),
+      dataList: cloneData(dataList),
+      addedData: cloneData(addedData)
     });
   };
 
@@ -578,7 +587,7 @@ class EditableTable extends React.Component {
       editKeys: [],
       changedRows: [],
       addedData: [],
-      sourceData: cloneDeep(this.state.data)
+      sourceData: cloneData(this.state.data)
     };
 
     if (typeof callBack === "function") {
@@ -668,7 +677,7 @@ class EditableTable extends React.Component {
   };
 
   reset = () => {
-    let data = cloneDeep(this.state.sourceData);
+    let data = cloneData(this.state.sourceData);
 
     let nextState = {
       isEditAll: false,
