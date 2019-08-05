@@ -181,24 +181,6 @@ class TreeGrid extends Component {
       rowKey
     );
 
-    console.log(
-      "getDataListWithExpandedfinished :",
-      (new Date().getTime() - bd1.getTime()) / 1000
-    );
-
-    bd1 = new Date();
-    let arr = getFlatDataFromTree({
-      treeData: rawData,
-      getNodeKey: ({ node }) => {
-        return node[rowKey];
-      },
-      expandedKeys: nextExpandedKeys
-    });
-
-    console.log(
-      "getFlatDataFromTree finished :",
-      (new Date().getTime() - bd1.getTime()) / 1000
-    );
 
     this.setState({
       expandedRowKeys: nextExpandedKeys,
