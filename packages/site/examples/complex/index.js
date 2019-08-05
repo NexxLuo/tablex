@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Table, flatten } from "tablex";
+import { Table, unflatten } from "tablex";
 import { Button, Input } from "antd";
 import _ from "lodash";
 
@@ -24,46 +24,6 @@ function requestGet(url, options) {
   xhr.onerror = options.onError;
 
   xhr.send();
-}
-
-function getTreeFromFlatData({
-  flatData,
-  getKey = node => node.id,
-  getParentKey = node => node.pid,
-  rootKey = ""
-}) {
-  if (!flatData) {
-    return [];
-  }
-
-  const childrenToParents = {};
-  flatData.forEach(child => {
-    const parentKey = getParentKey(child);
-
-    if (parentKey in childrenToParents) {
-      childrenToParents[parentKey].push(child);
-    } else {
-      childrenToParents[parentKey] = [child];
-    }
-  });
-
-  if (!(rootKey in childrenToParents)) {
-    return [];
-  }
-
-  const trav = parent => {
-    const parentKey = getKey(parent);
-    if (parentKey in childrenToParents) {
-      return {
-        ...parent,
-        children: childrenToParents[parentKey].map(child => trav(child))
-      };
-    }
-
-    return { ...parent };
-  };
-
-  return childrenToParents[rootKey].map(child => trav(child));
 }
 
 function createData(level, parentKey, maxLevel, index) {
@@ -168,9 +128,7 @@ class Demo extends Component {
   };
 
   getData = () => {
-    this.setState({ loading: false, data: createTreeData() });
-
-    return;
+    this.setState({ loading: false });
 
     requestGet("/public/data.json", {
       onSuccess: data => {
@@ -192,17 +150,10 @@ class Demo extends Component {
         });
 
         //data= data.splice(0,10000)
-        //console.log("data:", data);
+        //let bd = new Date();
 
-        //  let treeData=unflatten(data,"id","pid");
-
-        let treeData = getTreeFromFlatData({ flatData: data });
-
-        let bd = new Date();
-        //console.log("tree formatting :");
-
-        let flatData = flatten(treeData);
-
+        //  console.log("tree formatting :", data.length);
+        let treeData = unflatten(data, "id", "pid");
         // console.log(
         //   "tree format finished :",
         //   (new Date().getTime() - bd.getTime()) / 1000

@@ -1,6 +1,5 @@
 import Table from "./expandable";
+import { flatten, unflatten } from "./utils";
 
-export { flatten, unflatten } from "./utils";
-
-export { Table };
+export { Table, flatten, unflatten };
 export default Table;

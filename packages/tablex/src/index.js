@@ -1,7 +1,5 @@
-import React from "react";
 import Table from "./featured";
+import { flatten, unflatten } from "react-base-datagrid";
 
-export { flatten, unflatten } from "./utils";
-
-export { Table };
+export { Table, flatten, unflatten };
 export default Table;
