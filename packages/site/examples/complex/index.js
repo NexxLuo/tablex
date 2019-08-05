@@ -66,6 +66,49 @@ function getTreeFromFlatData({
   return childrenToParents[rootKey].map(child => trav(child));
 }
 
+
+
+function createData(level, parentKey, maxLevel, index) {
+  if (level > maxLevel) {
+    return;
+  }
+
+  let l = level;
+  let data = [];
+  for (let i = 0; i < 10; i++) {
+    let k = parentKey + "-" + level + "-" + i;
+    let d = {
+      id: k,
+      "name": "Edward King " + k,
+      age: 32,
+      address: "London, Park Lane no. " + i
+    };
+
+    if (i % 2===0) {
+      d.children = createData(l + 1, k, maxLevel, i);
+    }
+
+    data.push(d);
+  }
+  return data;
+}
+
+function createTreeData() {
+  let data = [];
+  for (let i = 0; i < 100; i++) {
+    data.push({
+      id: "" + i,
+      level: 0,
+      "name": "Edward King " + i,
+      age: 32,
+      address: "London, Park Lane no. " + i,
+      children: createData(0, i, 4)
+    });
+  }
+
+  return data;
+}
+
 class Demo extends Component {
   columns = [
     {
@@ -124,7 +167,12 @@ class Demo extends Component {
   };
 
   getData = () => {
-    this.setState({ loading: true });
+    this.setState({ loading: false,data: createTreeData() });
+
+
+   
+
+    return;
 
     requestGet("/public/data.json", {
       onSuccess: data => {
@@ -146,23 +194,23 @@ class Demo extends Component {
         });
 
         //data= data.splice(0,10000)
-        console.log("data:", data);
+        //console.log("data:", data);
 
         //  let treeData=unflatten(data,"id","pid");
 
         let treeData = getTreeFromFlatData({ flatData: data });
 
         let bd = new Date();
-        console.log("tree formatting :");
+        //console.log("tree formatting :");
 
         let flatData = flatten(treeData);
 
-        console.log(
-          "tree format finished :",
-          (new Date().getTime() - bd.getTime()) / 1000
-        );
+        // console.log(
+        //   "tree format finished :",
+        //   (new Date().getTime() - bd.getTime()) / 1000
+        // );
 
-        console.log("treeData:", treeData);
+        // console.log("treeData:", treeData);
 
         this.setState({ data: treeData, loading: false });
       }
@@ -174,7 +222,7 @@ class Demo extends Component {
   render() {
     return (
       <Table
-        rowKey="code"
+        rowKey="id"
         editable={true}
         loading={this.state.loading}
         columns={this.columns}

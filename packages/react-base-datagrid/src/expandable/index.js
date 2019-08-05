@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Table from "../selection";
 import { getDataListWithExpanded, getTreeProps } from "./utils";
+import { getFlatDataFromTree } from "./tree-utils";
+
 import ExpandIcon from "./ExpandIcon";
 import "./styles.css";
 
@@ -171,10 +173,31 @@ class TreeGrid extends Component {
       nextExpandedKeys.push(key);
     }
 
+    let bd1 = new Date();
+
     let { data: expandedData } = getDataListWithExpanded(
       rawData,
       nextExpandedKeys,
       rowKey
+    );
+
+    console.log(
+      "getDataListWithExpandedfinished :",
+      (new Date().getTime() - bd1.getTime()) / 1000
+    );
+
+    bd1 = new Date();
+    let arr = getFlatDataFromTree({
+      treeData: rawData,
+      getNodeKey: ({ node }) => {
+        return node[rowKey];
+      },
+      expandedKeys: nextExpandedKeys
+    });
+
+    console.log(
+      "getFlatDataFromTree finished :",
+      (new Date().getTime() - bd1.getTime()) / 1000
     );
 
     this.setState({

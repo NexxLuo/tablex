@@ -42,6 +42,7 @@
     "docz": "^1.2.0",
     "docz-plugin-css": "^0.11.0",
     "docz-theme-default": "^1.2.0",
-    "gh-pages": "^2.0.1"
+    "gh-pages": "^2.0.1",
+    "react-hot-loader": "^4.12.10"
   }
 }
