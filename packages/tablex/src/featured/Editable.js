@@ -677,18 +677,20 @@ class EditableTable extends React.Component {
   };
 
   reset = () => {
-    let data = cloneData(this.state.sourceData);
-
     let nextState = {
       isEditAll: false,
       isAdding: false,
       isAddingRange: false,
       isEditing: false,
       editKeys: [],
-      data: data,
       changedRows: [],
       addedData: []
     };
+
+    if (this.changedRows.length > 0) {
+      let data = cloneData(this.state.sourceData);
+      nextState.data = data;
+    }
 
     this.changedRows = [];
     this.rowsValidation = [];

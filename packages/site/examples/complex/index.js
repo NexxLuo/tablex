@@ -129,7 +129,7 @@ class Demo extends Component {
   };
 
   getData = () => {
-    this.setState({ loading: false });
+    this.setState({ loading: true });
 
     let c = 0;
     requestGet("/public/data.json", {
@@ -158,7 +158,7 @@ class Demo extends Component {
             }
 
             if (bl === true) {
-              pid = "";
+              pid = "0407";
             } else {
               pid = id.substring(0, len - pl);
             }
@@ -168,18 +168,17 @@ class Demo extends Component {
         });
 
         //data= data.splice(0,10000)
-        //let bd = new Date();
+       let bd = new Date();
 
-        //  console.log("tree formatting :", data.length);
+         console.log("tree formatting :", data.length);
         let treeData = unflatten(data, "id", "pid");
-        // console.log(
-        //   "tree format finished :",
-        //   (new Date().getTime() - bd.getTime()) / 1000
-        // );
+        console.log(
+          "tree format finished :",
+          (new Date().getTime() - bd.getTime()) / 1000
+        );
 
         // console.log("treeData:", treeData);
-        console.log("c:", c);
-
+   
         this.setState({ data: treeData, flatData: data, loading: false });
       }
     });
