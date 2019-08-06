@@ -134,6 +134,8 @@ class Demo extends Component {
     let c = 0;
     requestGet("/public/data.json", {
       onSuccess: data => {
+        this.setState({ loading: false });
+
         data = _.uniqBy(data, d => {
           return d.code;
         });
@@ -168,9 +170,9 @@ class Demo extends Component {
         });
 
         //data= data.splice(0,10000)
-       let bd = new Date();
+        let bd = new Date();
 
-         console.log("tree formatting :", data.length);
+        console.log("tree formatting :", data.length);
         let treeData = unflatten(data, "id", "pid");
         console.log(
           "tree format finished :",
@@ -178,7 +180,7 @@ class Demo extends Component {
         );
 
         // console.log("treeData:", treeData);
-   
+
         this.setState({ data: treeData, flatData: data, loading: false });
       }
     });
@@ -221,7 +223,7 @@ class Demo extends Component {
         loading={this.state.loading}
         expandedRowKeys={this.state.expandedRowKeys}
         columns={this.columns}
-        selectMode="none"
+        selectMode="multiple"
         data={this.state.data}
         orderNumber={true}
         header={() => (

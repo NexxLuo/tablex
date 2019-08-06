@@ -109,12 +109,18 @@ class SelectionGrid extends Component {
     let rows = [];
     let { rowKey, flatData: arr } = this.state;
 
-    keys.forEach(k => {
-      let row = arr.find(r => r[rowKey] === k);
-      if (row != null) {
-        rows.push(Object.assign({}, row));
+    let rowKeys = {};
+
+    for (let i = 0, len = keys.length; i < len; i++) {
+      rowKeys[keys[i]] = true;
+    }
+
+    for (let i = 0, len = arr.length; i < len.length; i++) {
+      let d = arr[i];
+      if (rowKeys[d[rowKey]] === true) {
+        rows.push(d);
       }
-    });
+    }
 
     return rows;
   };
@@ -211,6 +217,46 @@ class SelectionGrid extends Component {
       } else {
         this.removeChecked(value);
       }
+    }
+  };
+
+  isSelected = key => {
+    let { selectedRowKeys: keys } = this.state;
+    for (let i = 0, len = keys.length; i < len; i++) {
+      if (key === keys[i]) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  isSelectedAll = () => {
+    let { selectedRowKeys, flatData, rowKey } = this.state;
+
+    if (flatData.length === 0 || selectedRowKeys.length === 0) {
+      return false;
+    }
+
+    if (selectedRowKeys.length >= flatData.length) {
+      let bl = true;
+
+      let selectedMap = {};
+
+      for (let i = 0, len = selectedRowKeys.length; i < len; i++) {
+        selectedMap[selectedRowKeys[i]] = true;
+      }
+
+      for (let i = 0, len = flatData.length; i < len; i++) {
+        let dk = flatData[i][rowKey];
+        if (selectedMap[dk] !== true) {
+          bl = false;
+          break;
+        }
+      }
+
+      return bl;
+    } else {
+      return false;
     }
   };
 
@@ -374,24 +420,9 @@ class SelectionGrid extends Component {
 
     let attr = {};
 
+    isCheckedAll = this.isSelectedAll();
+
     if (flatData.length > 0) {
-      if (selectedRowKeys.length === 0) {
-        isCheckedAll = false;
-      }
-
-      for (let i = 0; i < flatData.length; i++) {
-        const key = flatData[i][rowKey];
-
-        if (this.isDisabledCheck(key, flatData[i])) {
-          continue;
-        }
-
-        if (selectedRowKeys.indexOf(key) === -1) {
-          isCheckedAll = false;
-          break;
-        }
-      }
-
       if (isCheckedAll === true) {
         attr.checked = true;
       } else {
@@ -477,7 +508,6 @@ class SelectionGrid extends Component {
       checkboxColumn.render = this.checkboxCellRender;
       checkboxColumn.title = this.checkboxHeadRender;
     }
-
     let newProps = {
       columns,
       prependColumns,

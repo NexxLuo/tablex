@@ -1,7 +1,13 @@
 function getParents(key, treeProps) {
   let p = (treeProps || {})[key] || {};
-  let parents = p.parents || [];
-  return parents;
+  let keys = p.parents || [];
+  return keys;
+}
+
+function getChildrens(key, treeProps) {
+  let p = (treeProps || {})[key] || {};
+  let keys = p.childrens || [];
+  return keys;
 }
 
 /**
@@ -17,8 +23,6 @@ export function removeCheckedKey({
   key,
   treeProps,
   selectedRowKeys,
-  rowKey,
-  flatData,
   halfCheckedKeys
 }) {
   let nextKeys = [].concat(selectedRowKeys);
@@ -26,20 +30,13 @@ export function removeCheckedKey({
 
   let parentKeys = getParents(key, treeProps);
 
+  console.log("removeCheckedKey:",treeProps[key])
+
   //父级半选的key
   let parentHalfCheckedKeys = [];
 
   //子级key
-  let childrenKeys = [];
-
-  flatData.filter(d => {
-    let pArr = getParents(d[rowKey], treeProps);
-    let bl = pArr.indexOf(key) > -1;
-    if (bl) {
-      childrenKeys.push(d[rowKey]);
-    }
-    return bl;
-  });
+  let childrenKeys = getChildrens(key, treeProps);
 
   //移除子级
   if (childrenKeys.length > 0) {
@@ -74,16 +71,13 @@ export function removeCheckedKey({
 
   for (let i = parentKeys.length - 1; i >= 0; i--) {
     let p = parentKeys[i];
-    let childrens = flatData.filter(d => {
-      let pArr = getParents(d[rowKey], treeProps);
-      return (pArr || []).indexOf(p) > -1;
-    });
+    let childrens = getChildrens(p, treeProps);
 
     //子级是否全未选中
     let childrensAllUnChecked = true;
 
     for (let i = 0; i < childrens.length; i++) {
-      const cKey = childrens[i][rowKey];
+      const cKey = childrens[i];
       if (nextKeys.indexOf(cKey) > -1) {
         childrensAllUnChecked = false;
         break;

@@ -38,6 +38,8 @@ export function getDataListWithExpanded(list, expandedKeys = [], rowKey) {
 }
 
 export function getTreeProps(arr, idField = "id") {
+  let bt = new Date();
+
   let treeProps = {};
   let list = [];
 
@@ -48,6 +50,8 @@ export function getTreeProps(arr, idField = "id") {
 
   let treeList = arr || [];
 
+  let _childrensKeys = [];
+
   for (let i = 0; i < treeList.length; i++) {
     const d = treeList[i];
     let k = d[idField];
@@ -57,14 +61,22 @@ export function getTreeProps(arr, idField = "id") {
 
     const childrens = d.children || [];
 
-    setTree(k, { depth: 0, orders: [index] });
+    let _childrens = [];
+    _childrensKeys = [];
 
     if (childrens.length > 0) {
-      getChildren(d, 0, [], [index]);
+      _childrens = getChildren(d, 0, [], [index], _childrensKeys);
     }
+
+    setTree(k, {
+      depth: 0,
+      orders: [index],
+      parents: [],
+      childrens: _childrensKeys
+    });
   }
 
-  function getChildren(item, depth, parents, orders) {
+  function getChildren(item, depth, parents, orders, childrenKeys) {
     const childrens = item.children;
     const pk = item[idField];
 
@@ -72,6 +84,8 @@ export function getTreeProps(arr, idField = "id") {
 
     let __parents = parents.slice();
     __parents.push(pk);
+
+    let _childrensKeys = childrenKeys;
 
     for (let i = 0, len = childrens.length; i < len; i++) {
       const d = childrens[i];
@@ -83,17 +97,35 @@ export function getTreeProps(arr, idField = "id") {
       let __orders = orders.slice();
       __orders.push(i + 1);
 
+
+      _childrensKeys.push(k);
+
+
+      if (c_childrens.length > 0) {
+        getChildren(d, __depth, __parents, __orders, _childrensKeys);
+      }
+
+
       setTree(k, {
         orders: __orders,
         depth: __depth,
-        parents: __parents
+        parents: __parents,
+        childrens: _childrensKeys
       });
 
-      if (c_childrens.length > 0) {
-        getChildren(d, __depth, __parents, __orders);
-      }
+      //_childrens=[];
     }
+
+    return _childrensKeys;
   }
+
+  let et = new Date();
+
+  console.log(
+    "getTreeProps:",
+    (et.getTime() - bt.getTime()) / 1000,
+    Object.keys(treeProps).length
+  );
 
   return { list, treeProps: treeProps };
 }
