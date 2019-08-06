@@ -124,28 +124,46 @@ class Demo extends Component {
 
   state = {
     loading: false,
-    data: []
+    data: [],
+    expandedRowKeys: []
   };
 
   getData = () => {
     this.setState({ loading: false });
 
+    let c = 0;
     requestGet("/public/data.json", {
       onSuccess: data => {
         data = _.uniqBy(data, d => {
           return d.code;
         });
 
+        let bl = false;
+
         data.forEach(d => {
           let id = d.code || "";
           let pid = "";
           let len = id.length;
+          d.id = id;
 
-          if (len > 2) {
-            pid = id.substring(0, len - 2);
+          if (len >= 2) {
+            let pl = 2;
+
+            if (len % 2 !== 0) {
+              pl = 3;
+            }
+
+            if (id === "040704") {
+              bl = true;
+            }
+
+            if (bl === true) {
+              pid = "";
+            } else {
+              pid = id.substring(0, len - pl);
+            }
           }
 
-          d.id = id;
           d.pid = pid;
         });
 
@@ -160,20 +178,49 @@ class Demo extends Component {
         // );
 
         // console.log("treeData:", treeData);
+        console.log("c:", c);
 
-        this.setState({ data: treeData, loading: false });
+        this.setState({ data: treeData, flatData: data, loading: false });
       }
     });
   };
 
   componentDidMount() {}
 
+  expandTo = (depth = 2) => {
+    let keys = [];
+
+    let pl = 2;
+
+    this.state.flatData.forEach(d => {
+      let len = d.id.length;
+      if (len <= depth * pl) {
+        keys.push(d.id);
+      }
+    });
+
+    this.setState({ expandedRowKeys: keys });
+  };
+
+  expandAll = () => {
+    let keys = this.state.flatData.map(d => {
+      return d.id;
+    });
+
+    this.setState({ expandedRowKeys: keys });
+  };
+  collapseAll = () => {
+    this.setState({ expandedRowKeys: [] });
+  };
+
   render() {
     return (
       <Table
         rowKey="id"
         editable={true}
+        ref="tb"
         loading={this.state.loading}
+        expandedRowKeys={this.state.expandedRowKeys}
         columns={this.columns}
         selectMode="none"
         data={this.state.data}
@@ -181,6 +228,17 @@ class Demo extends Component {
         header={() => (
           <div style={{ padding: "10px 0" }}>
             <Button onClick={this.getData}>get data</Button>
+            <Button onClick={this.expandAll} style={{ margin: "0 5px" }}>
+              expand all
+            </Button>
+            <Button
+              onClick={() => this.expandTo(2)}
+              style={{ margin: "0 5px" }}
+            >
+              expand to 2
+            </Button>
+
+            <Button onClick={this.collapseAll}>collapse all</Button>
           </div>
         )}
       />

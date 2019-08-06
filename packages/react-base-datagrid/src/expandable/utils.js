@@ -1,13 +1,19 @@
 export function getDataListWithExpanded(list, expandedKeys = [], rowKey) {
   let arr = [];
 
+  let expandeds = {};
+
+  for (let i = 0, len = expandedKeys.length; i < len; i++) {
+    expandeds[expandedKeys[i]] = true;
+  }
+
   for (let i = 0, len = list.length; i < len; i++) {
     let d = list[i];
     let index = i + 1;
 
     arr.push(d);
 
-    if (expandedKeys.indexOf(d[rowKey]) > -1) {
+    if (expandeds[d[rowKey]] === true) {
       if (d.children) {
         setChildren(d, 0, [], [index]);
       }
@@ -20,7 +26,7 @@ export function getDataListWithExpanded(list, expandedKeys = [], rowKey) {
     for (let i = 0, len = c_childrens.length; i < len; i++) {
       let d = c_childrens[i];
       arr.push(d);
-      if (expandedKeys.indexOf(d[rowKey]) > -1) {
+      if (expandeds[d[rowKey]] === true) {
         if (d.children) {
           setChildren(d);
         }
