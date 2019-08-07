@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Table, unflatten } from "tablex";
+import { Table, unflatten, flatten } from "tablex";
 import { Button, Input, Menu, InputNumber } from "antd";
 import _ from "lodash";
 
@@ -99,7 +99,6 @@ class Demo extends Component {
       title: "工程量",
       width: 150,
       editor: (value, record, index, onchange, ref, validate) => {
-        console.log("editor:", index);
         return (
           <Input
             defaultValue={value}
@@ -134,9 +133,6 @@ class Demo extends Component {
       title: "合价",
       width: 150,
       render: (value, row) => {
-        if (row.id === "01") {
-          console.log("totalPrice render:", row.unitPrice);
-        }
         return row.unitPrice * row.quantities;
       }
     },
@@ -151,7 +147,8 @@ class Demo extends Component {
   state = {
     loading: false,
     data: [],
-    expandedRowKeys: []
+    expandedRowKeys: [],
+    selectedRowKeys: []
   };
 
   getData = () => {
@@ -195,19 +192,7 @@ class Demo extends Component {
           d.pid = pid;
         });
 
-        //data= data.splice(0,10000)
-        let bd = new Date();
-
-        console.log("tree formatting :", data.length);
-        let treeData = unflatten(data, "id", "pid");
-        console.log(
-          "tree format finished :",
-          (new Date().getTime() - bd.getTime()) / 1000
-        );
-
-        // console.log("treeData:", treeData);
-
-        this.setState({ data: treeData, flatData: data, loading: false });
+        this.setTreeData(data);
       }
     });
   };
@@ -240,7 +225,9 @@ class Demo extends Component {
     this.setState({ expandedRowKeys: [] });
   };
 
+  contentMenuRow = null;
   showContextMenu = ({ left, top, data }) => {
+    this.contentMenuRow = data;
     let el = document.getElementById("contextMenu");
     if (el) {
       el.style.top = top + "px";
@@ -251,6 +238,7 @@ class Demo extends Component {
   };
 
   hideContextMenu = () => {
+    this.contentMenuRow = null;
     let el = document.getElementById("contextMenu");
     if (el) {
       el.style.display = "none";
@@ -267,7 +255,156 @@ class Demo extends Component {
     };
   };
 
-  onMenuClick = ({ key }) => {};
+  setTreeData = data => {
+    let bd = new Date();
+    console.log("tree data flattening :", data.length);
+    let treeData = unflatten(data, "id", "pid");
+    console.log(
+      "tree data flatten finished :",
+      (new Date().getTime() - bd.getTime()) / 1000
+    );
+    this.setState({ data: treeData, flatData: data, loading: false });
+  };
+
+  rowKey = "id";
+  deleteRow = row => {
+    let rowKey = this.rowKey;
+    let key = row[rowKey];
+    let { flatData } = this.state;
+
+    let i = flatData.findIndex(d => d[rowKey] === key);
+    if (i > -1) {
+      flatData.splice(i, 1);
+    }
+    this.setTreeData(flatData);
+  };
+
+  copiedRow = null;
+  copy = row => {
+    let rowData = {};
+
+    for (const k in row) {
+      if (row.hasOwnProperty(k) && k !== "children") {
+        rowData[k] = row[k];
+      }
+    }
+    let str = JSON.stringify(rowData);
+    this.copiedRow = JSON.stringify(rowData);
+
+    const input = document.createElement("input");
+    document.body.appendChild(input);
+    input.setAttribute("value", str);
+    input.select();
+    if (document.execCommand("copy")) {
+      document.execCommand("copy");
+    }
+    document.body.removeChild(input);
+  };
+
+  pasteChildren = targetRow => {
+    let rowKey = this.rowKey;
+
+    let copiedRow = this.copiedRow;
+
+    if (copiedRow) {
+      let sourceRow = JSON.parse(copiedRow);
+
+      let { list, roots } = flatten([sourceRow]);
+
+      let sourceRowList = [];
+
+      for (let i = 0; i < list.length; i++) {
+        let d = Object.assign({}, list[i]);
+        if (this.isCut !== true) {
+          d[rowKey] = d[rowKey] + "_copiedRow";
+          d["pid"] = targetRow[rowKey];
+        }
+        sourceRowList.push(d);
+      }
+
+      let { flatData } = this.state;
+
+      if (this.isCut === true) {
+        let i = flatData.findIndex(d => d[rowKey] === sourceRow[rowKey]);
+        if (i > -1) {
+          flatData.splice(i, 1);
+        }
+      }
+
+      flatData = flatData.concat(sourceRowList);
+
+      this.isCut = false;
+      this.copiedRow = null;
+      this.setTreeData(flatData);
+    }
+  };
+
+  isCut = false;
+  cut = row => {
+    this.copy(row);
+    this.isCut = true;
+  };
+
+  toggleSelectOrExpand = (rowData, type = 0) => {
+    let stateName = ["expandedRowKeys", "selectedRowKeys"][type];
+
+    let rowKey = this.rowKey;
+    let key = rowData[rowKey];
+    let keys = this.state[stateName];
+
+    let nextKeys = keys.slice();
+
+    let keysMap = {};
+
+    for (let i = 0; i < keys.length; i++) {
+      keysMap[keys[i]] = true;
+    }
+
+    let { list } = flatten([rowData]);
+
+    let isExist = keysMap[key] === true;
+
+    for (let i = 0; i < list.length; i++) {
+      const k = list[i][rowKey];
+
+      if (isExist) {
+        let j = nextKeys.findIndex(d => d === k);
+        nextKeys.splice(j, 1);
+      } else {
+        if (k in keysMap) {
+        } else {
+          nextKeys.push(k);
+        }
+      }
+    }
+
+    this.setState({ [stateName]: nextKeys });
+  };
+
+  selectAll = rowData => {
+    this.toggleSelectOrExpand(rowData, 1);
+  };
+
+  expandToggle = rowData => {
+    this.toggleSelectOrExpand(rowData, 0);
+  };
+
+  onMenuClick = ({ key }) => {
+    let actions = {
+      del: this.deleteRow,
+      copy: this.copy,
+      cut: this.cut,
+      pasteChildren: this.pasteChildren,
+      selectAll: this.selectAll,
+      expandToggle: this.expandToggle,
+      export: this.export
+    };
+
+    let fn = actions[key];
+    if (typeof fn === "function") {
+      fn(this.contentMenuRow);
+    }
+  };
 
   render() {
     let menuItemStyle = { height: "auto", lineHeight: "normal" };
@@ -282,6 +419,10 @@ class Demo extends Component {
           expandedRowKeys={this.state.expandedRowKeys}
           onExpandedRowsChange={keys => {
             this.setState({ expandedRowKeys: keys });
+          }}
+          selectedRowKeys={this.state.selectedRowKeys}
+          onSelectChange={keys => {
+            this.setState({ selectedRowKeys: keys });
           }}
           columns={this.columns}
           selectMode="multiple"
