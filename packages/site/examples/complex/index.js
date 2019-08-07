@@ -452,7 +452,8 @@ class Demo extends Component {
           style={{
             display: "none",
             position: "fixed",
-            border: "1px solid #ccc"
+            border: "1px solid #ccc",
+            boxShadow: "2px 2px 5px 2px rgba(0, 0, 0, 0.15)"
           }}
           tabIndex="1"
           id="contextMenu"
