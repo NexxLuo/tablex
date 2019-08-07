@@ -10,6 +10,14 @@ function getChildrens(key, treeProps) {
   return keys;
 }
 
+function testTime(v) {
+  if (v) {
+    return (new Date().getTime() - v) / 1000;
+  }
+
+  return new Date();
+}
+
 /**
  * 添加选中行
  * @key {Array} 行key
@@ -25,12 +33,10 @@ export function removeCheckedKey({
   selectedRowKeys,
   halfCheckedKeys
 }) {
-  let nextKeys = [].concat(selectedRowKeys);
-  let nextHalfCheckedKeys = [].concat(halfCheckedKeys);
+  let nextKeys = selectedRowKeys.slice();
+  let nextHalfCheckedKeys = halfCheckedKeys.slice();
 
   let parentKeys = getParents(key, treeProps);
-
-  console.log("removeCheckedKey:",treeProps[key])
 
   //父级半选的key
   let parentHalfCheckedKeys = [];
@@ -40,21 +46,35 @@ export function removeCheckedKey({
 
   //移除子级
   if (childrenKeys.length > 0) {
+    let childrenKeysMap = {};
+
     for (let i = 0; i < childrenKeys.length; i++) {
-      const k = childrenKeys[i];
+      childrenKeysMap[childrenKeys[i]] = true;
+    }
 
-      //移除选中
-      let j = nextKeys.findIndex(d => d === k);
-      if (j > -1) {
-        nextKeys.splice(j, 1);
-      }
+    let new_nextKeys = [];
+    let new_nextHalfCheckedKeys = [];
 
-      //移除半选
-      let m = nextHalfCheckedKeys.findIndex(d => d === k);
-      if (m > -1) {
-        nextHalfCheckedKeys.splice(m, 1);
+    //移除选中
+    for (let i = 0; i < selectedRowKeys.length; i++) {
+      let sk = selectedRowKeys[i];
+
+      if (childrenKeysMap[sk] !== true) {
+        new_nextKeys.push(sk);
       }
     }
+
+    //移除半选
+    for (let i = 0; i < halfCheckedKeys.length; i++) {
+      let sk = halfCheckedKeys[i];
+
+      if (childrenKeysMap[sk] !== true) {
+        new_nextHalfCheckedKeys.push(sk);
+      }
+    }
+
+    nextKeys = new_nextKeys;
+    nextHalfCheckedKeys = new_nextHalfCheckedKeys;
   }
 
   //移除本级选中
@@ -133,8 +153,6 @@ export function addCheckedKeyWithDisabled({
   key,
   treeProps,
   selectedRowKeys,
-  rowKey,
-  flatData,
   halfCheckedKeys,
   disabledSelectKeys = []
 }) {
@@ -173,13 +191,19 @@ export function addCheckedKeyWithDisabled({
     };
   }
 
-  if (selectedRowKeys.indexOf(key) === -1) {
+  let selectedRowKeysMap = {};
+
+  for (let i = 0; i < selectedRowKeys.length; i++) {
+    selectedRowKeysMap[selectedRowKeys[i]] = true;
+  }
+
+  if (selectedRowKeysMap[key] !== true) {
     let halfIndex = nextHalfCheckedKeys.indexOf(key);
     if (halfIndex > -1) {
       nextHalfCheckedKeys.splice(halfIndex, 1);
     }
-
-    nextKeys.push(key);
+    selectedRowKeysMap[key] = true;
+    nextKeys.push(key);//此处需要作调整，当子级存在禁选key时，不push此列2019年8月7日 01点16分
   }
 
   //父级半选的key
@@ -188,57 +212,58 @@ export function addCheckedKeyWithDisabled({
   //子级key
   let childrenSelectedKeys = [];
 
-  flatData.filter(d => {
-    let ck = d[rowKey];
-    let pArr = getParents(ck, treeProps);
-    let bl = pArr.indexOf(key) > -1;
-    if (bl) {
-      if (selectedRowKeys.indexOf(ck) === -1) {
-        //子级是否允许被选择
-        let isEnableSelect = isEnabled(ck);
+  let childrenKeys = getChildrens(key, treeProps);
 
-        for (let i = 0; i < pArr.length; i++) {
-          const cpk = pArr[i];
-          if (isEnabled(cpk) === false) {
-            isEnableSelect = false;
-            break;
-          }
+  for (let i = 0; i < childrenKeys.length; i++) {
+    let ck = childrenKeys[i];
+    if (selectedRowKeysMap[ck] !== true) {
+      //子级是否允许被选择
+      let isEnableSelect = isEnabled(ck);
+
+      let pArr = getParents(ck, treeProps);
+
+      for (let i = 0; i < pArr.length; i++) {
+        const cpk = pArr[i];
+        if (isEnabled(cpk) === false) {
+          isEnableSelect = false;
+          break;
         }
+      }
 
-        isEnableSelect && childrenSelectedKeys.push(ck);
+      if (isEnableSelect) {
+        childrenSelectedKeys.push(ck);
+        selectedRowKeysMap[ck] = true;
       }
     }
-    return bl;
-  });
+  }
 
   nextKeys = nextKeys.concat(childrenSelectedKeys);
 
   for (let i = parentKeys.length - 1; i >= 0; i--) {
     let p = parentKeys[i];
 
-    let pNode = flatData.find(d => {
-      return d[rowKey] === p;
-    });
 
-    let childrens = [];
-    if (pNode) {
-      childrens = pNode.children || [];
-    }
+    let childrens = getChildrens(p, treeProps);
 
     //子级是否全被选中
     let childrensAllChecked = true;
 
     for (let i = 0; i < childrens.length; i++) {
-      const cKey = childrens[i][rowKey];
-      if (isEnabled(cKey) && nextKeys.indexOf(cKey) === -1) {
+      const cKey = childrens[i];
+      if (isEnabled(cKey) && selectedRowKeysMap[cKey] !== true) {
         childrensAllChecked = false;
         break;
       }
     }
 
+    if (p==="0101") {
+      console.log("010101:",childrens);
+    }
+
+
     //子级全被选中，则勾选其父节点
     if (childrensAllChecked === true) {
-      if (nextKeys.indexOf(p) === -1) {
+      if (selectedRowKeysMap[p] !== true) {
         isEnabled(p) && nextKeys.push(p);
       }
 

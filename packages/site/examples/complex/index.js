@@ -222,6 +222,7 @@ class Demo extends Component {
         ref="tb"
         loading={this.state.loading}
         expandedRowKeys={this.state.expandedRowKeys}
+        disabledSelectKeys={["010101"]}
         columns={this.columns}
         selectMode="multiple"
         data={this.state.data}

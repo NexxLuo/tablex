@@ -65,18 +65,17 @@ export function getTreeProps(arr, idField = "id") {
     _childrensKeys = [];
 
     if (childrens.length > 0) {
-      _childrens = getChildren(d, 0, [], [index], _childrensKeys);
+      _childrens = getChildren(d, 0, [], [index]);
     }
 
     setTree(k, {
       depth: 0,
       orders: [index],
-      parents: [],
-      childrens: _childrensKeys
+      parents: [] 
     });
   }
 
-  function getChildren(item, depth, parents, orders, childrenKeys) {
+  function getChildren(item, depth, parents, orders) {
     const childrens = item.children;
     const pk = item[idField];
 
@@ -85,7 +84,7 @@ export function getTreeProps(arr, idField = "id") {
     let __parents = parents.slice();
     __parents.push(pk);
 
-    let _childrensKeys = childrenKeys;
+    let _childrensKeys = [];
 
     for (let i = 0, len = childrens.length; i < len; i++) {
       const d = childrens[i];
@@ -97,24 +96,30 @@ export function getTreeProps(arr, idField = "id") {
       let __orders = orders.slice();
       __orders.push(i + 1);
 
-
+      //_childrensKeys=_childrensKeys.slice();
       _childrensKeys.push(k);
 
-
+      let cArr = [];
       if (c_childrens.length > 0) {
-        getChildren(d, __depth, __parents, __orders, _childrensKeys);
+        cArr = getChildren(d, __depth, __parents, __orders);
       }
 
+      for (let j = 0; j < cArr.length; j++) {
+        _childrensKeys.push(cArr[j]);
+      }
 
       setTree(k, {
         orders: __orders,
         depth: __depth,
-        parents: __parents,
-        childrens: _childrensKeys
+        parents: __parents
       });
 
       //_childrens=[];
     }
+
+    setTree(pk, {
+      childrens: _childrensKeys
+    });
 
     return _childrensKeys;
   }
