@@ -79,19 +79,20 @@ class TreeGrid extends Component {
     );
 
     if (prevState.prevProps !== nextProps) {
-      let { treeProps, list } = getTreeProps(nextData, rowKey);
-
       let nextState = {
         rowKey,
-        data: nextData,
-        rawData: data,
-        flatData: list,
-        treeProps: treeProps,
         columns: columns,
         prevProps: nextProps,
         expandColumnKey,
         disabledSelectKeys: disabledSelectKeys || []
       };
+
+      if (data !== prevState.rawData) {
+        let { treeProps, list } = getTreeProps(nextData, rowKey);
+        nextState.treeProps = treeProps;
+        nextState.flatData = list;
+        nextState.rawData = data;
+      }
 
       if ("expandedRowKeys" in nextProps) {
         nextState.expandedRowKeys = expandedRowKeys;
@@ -102,6 +103,8 @@ class TreeGrid extends Component {
             rowKey
           );
           nextState.data = data;
+        } else {
+          nextState.data = nextData;
         }
       } else {
         let { expandedRowKeys: prevExpandedKeys } = prevState;

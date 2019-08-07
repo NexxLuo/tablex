@@ -98,13 +98,7 @@ class EditableTable extends React.Component {
   }
 
   updateComponent = () => {
-    let { data, dataList, addedData } = this.state;
-
-    this.setState({
-      data: cloneData(data),
-      dataList: cloneData(dataList),
-      addedData: cloneData(addedData)
-    });
+    this.forceUpdate();
   };
 
   delayTimer = null;

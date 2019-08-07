@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Table, unflatten } from "tablex";
-import { Button, Input } from "antd";
+import { Button, Input, Menu, InputNumber } from "antd";
 import _ from "lodash";
 
 function requestGet(url, options) {
@@ -80,8 +80,16 @@ class Demo extends Component {
       width: 150,
       key: "name",
       dataIndex: "name",
-      editor: (value, record, index) => {
-        return <Input defaultValue={value} />;
+      editor: (value, record, index, onchange, ref) => {
+        return (
+          <Input
+            defaultValue={value}
+            ref={ref}
+            onChange={v => {
+              onchange({ name: v });
+            }}
+          />
+        );
       }
     },
     {
@@ -100,19 +108,52 @@ class Demo extends Component {
       dataIndex: "quantities",
       key: "quantities",
       title: "工程量",
-      width: 150
+      width: 150,
+      editor: (value, record, index, onchange, ref, validate) => {
+        return (
+          <InputNumber
+            defaultValue={value}
+            ref={ref}
+            onChange={v => {
+              onchange({ quantities: v });
+            }}
+          />
+        );
+      }
     },
     {
       dataIndex: "unitPrice",
       key: "unitPrice",
       title: "综合单价",
-      width: 150
+      width: 150,
+      editor: (value, record, index, onchange, ref, validate) => {
+        return (
+          <Input
+            defaultValue={value}
+            ref={ref}
+            onBlur={(e)=>{
+              if (e.target.value!==value) {
+                validate()
+              }
+            }}
+            onChange={e => {
+              onchange({ unitPrice: e.target.value });
+            }}
+          />
+        );
+      }
     },
     {
       dataIndex: "totalPrice",
       key: "totalPrice",
       title: "合价",
-      width: 150
+      width: 150,
+      render: (value, row) => {
+        if (row.id === "01") {
+          console.log("totalPrice render:", row.unitPrice);
+        }
+        return row.unitPrice * row.quantities;
+      }
     },
     {
       dataIndex: "evaluation",
@@ -214,36 +255,109 @@ class Demo extends Component {
     this.setState({ expandedRowKeys: [] });
   };
 
-  render() {
-    return (
-      <Table
-        rowKey="id"
-        editable={true}
-        ref="tb"
-        loading={this.state.loading}
-        expandedRowKeys={this.state.expandedRowKeys}
-        disabledSelectKeys={["010101"]}
-        columns={this.columns}
-        selectMode="multiple"
-        data={this.state.data}
-        orderNumber={true}
-        header={() => (
-          <div style={{ padding: "10px 0" }}>
-            <Button onClick={this.getData}>get data</Button>
-            <Button onClick={this.expandAll} style={{ margin: "0 5px" }}>
-              expand all
-            </Button>
-            <Button
-              onClick={() => this.expandTo(2)}
-              style={{ margin: "0 5px" }}
-            >
-              expand to 2
-            </Button>
+  showContextMenu = ({ left, top, data }) => {
+    let el = document.getElementById("contextMenu");
+    if (el) {
+      el.style.top = top + "px";
+      el.style.left = left + "px";
+      el.style.display = "block";
+      el.focus();
+    }
+  };
 
-            <Button onClick={this.collapseAll}>collapse all</Button>
-          </div>
-        )}
-      />
+  hideContextMenu = () => {
+    let el = document.getElementById("contextMenu");
+    if (el) {
+      el.style.display = "none";
+    }
+  };
+
+  onRow = row => {
+    return {
+      onContextMenu: e => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.showContextMenu({ left: e.pageX, top: e.pageY, data: row });
+      }
+    };
+  };
+
+  onMenuClick = ({ key }) => {};
+
+  render() {
+    let menuItemStyle = { height: "auto", lineHeight: "normal" };
+
+    return (
+      <div style={{ height: "100%" }}>
+        <Table
+          rowKey="id"
+          editable={true}
+          ref="tb"
+          loading={this.state.loading}
+          expandedRowKeys={this.state.expandedRowKeys}
+          onExpandedRowsChange={keys => {}}
+          columns={this.columns}
+          selectMode="multiple"
+          checkStrictly={false}
+          data={this.state.data}
+          orderNumber={true}
+          onRow={this.onRow}
+          validateTrigger="onChange"
+          header={() => (
+            <div style={{ padding: "10px 0" }}>
+              <Button onClick={this.getData}>get data</Button>
+              <Button onClick={this.expandAll} style={{ margin: "0 5px" }}>
+                expand all
+              </Button>
+              <Button
+                onClick={() => this.expandTo(2)}
+                style={{ margin: "0 5px" }}
+              >
+                expand to 2
+              </Button>
+
+              <Button onClick={this.collapseAll}>collapse all</Button>
+            </div>
+          )}
+        />
+        <Menu
+          style={{
+            display: "none",
+            position: "fixed",
+            border: "1px solid #ccc"
+          }}
+          tabIndex="1"
+          id="contextMenu"
+          onBlur={this.hideContextMenu}
+          onClick={this.onMenuClick}
+          selectable={false}
+        >
+          <Menu.Item key="del" style={menuItemStyle}>
+            删除行
+          </Menu.Item>
+          <Menu.Item key="copy" style={menuItemStyle}>
+            复制行
+          </Menu.Item>
+          <Menu.Item key="cut" style={menuItemStyle}>
+            剪切行
+          </Menu.Item>
+          <Menu.Item key="pasteChildren" style={menuItemStyle}>
+            粘贴行(下级)
+          </Menu.Item>
+          <Menu.Item key="selectAll" style={menuItemStyle}>
+            全选/全否
+          </Menu.Item>
+          <Menu.Item key="expandToggle" style={menuItemStyle}>
+            展开/收缩
+          </Menu.Item>
+          <Menu.Item key="export" style={menuItemStyle}>
+            导出
+          </Menu.Item>
+          <Menu.Item key="print" style={menuItemStyle}>
+            打印
+          </Menu.Item>
+        </Menu>
+      </div>
     );
   }
 }
