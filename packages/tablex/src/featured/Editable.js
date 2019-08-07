@@ -97,6 +97,24 @@ class EditableTable extends React.Component {
     return nextState;
   }
 
+  innerTable = null;
+
+  innerTableRef = ins => {
+    this.innerTable = ins;
+    if (typeof this.innerRef === "function") {
+      this.innerRef(ins);
+    }
+  };
+
+  getDataList = () => {
+    let arr = [];
+    if (this.innerTable) {
+      arr = this.innerTable.state.data;
+    }
+
+    return arr;
+  };
+
   updateComponent = () => {
     this.forceUpdate();
   };
@@ -722,9 +740,10 @@ class EditableTable extends React.Component {
 
     let columnKey = column.dataIndex;
 
-    let { data, addedData, columns } = this.state;
+    let { columns } = this.state;
+    let dataList = this.getDataList();
 
-    let rows = [].concat(data).concat(addedData);
+    let rows = [].concat(dataList);
 
     let arr = treeToList(columns).leafs;
 
@@ -1349,7 +1368,8 @@ class EditableTable extends React.Component {
       columns,
       onSelectChange: this.onSelectChange,
       headerExtra: this.headerExtra,
-      footerExtra: this.footerExtra
+      footerExtra: this.footerExtra,
+      innerRef: this.innerTableRef
     };
 
     if (props.readOnly === true) {

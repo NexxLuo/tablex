@@ -79,18 +79,7 @@ class Demo extends Component {
       title: "名称",
       width: 150,
       key: "name",
-      dataIndex: "name",
-      editor: (value, record, index, onchange, ref) => {
-        return (
-          <Input
-            defaultValue={value}
-            ref={ref}
-            onChange={v => {
-              onchange({ name: v });
-            }}
-          />
-        );
-      }
+      dataIndex: "name"
     },
     {
       dataIndex: "description",
@@ -110,12 +99,13 @@ class Demo extends Component {
       title: "工程量",
       width: 150,
       editor: (value, record, index, onchange, ref, validate) => {
+        console.log("editor:", index);
         return (
-          <InputNumber
+          <Input
             defaultValue={value}
             ref={ref}
             onChange={v => {
-              onchange({ quantities: v });
+              onchange({ quantities: v.target.value });
             }}
           />
         );
@@ -131,11 +121,6 @@ class Demo extends Component {
           <Input
             defaultValue={value}
             ref={ref}
-            onBlur={(e)=>{
-              if (e.target.value!==value) {
-                validate()
-              }
-            }}
             onChange={e => {
               onchange({ unitPrice: e.target.value });
             }}
@@ -295,7 +280,9 @@ class Demo extends Component {
           ref="tb"
           loading={this.state.loading}
           expandedRowKeys={this.state.expandedRowKeys}
-          onExpandedRowsChange={keys => {}}
+          onExpandedRowsChange={keys => {
+            this.setState({ expandedRowKeys: keys });
+          }}
           columns={this.columns}
           selectMode="multiple"
           checkStrictly={false}
