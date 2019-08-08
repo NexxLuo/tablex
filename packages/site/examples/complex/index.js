@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import { Table, unflatten, flatten } from "tablex";
 import { Button, Input, Menu, InputNumber } from "antd";
 import _ from "lodash";
+import "./index.css";
+
+const { Search } = Input;
 
 function requestGet(url, options) {
   let xhr = new XMLHttpRequest();
@@ -198,6 +201,17 @@ class Demo extends Component {
   };
 
   componentDidMount() {}
+
+  innerTable = null;
+  innerTableRef = ins => {
+    this.innerTable = ins;
+  };
+
+  scrollToItem = index => {
+    if (this.innerTable) {
+      this.innerTable.scrollToItem(index, "center");
+    }
+  };
 
   expandTo = (depth = 2) => {
     let keys = [];
@@ -406,16 +420,69 @@ class Demo extends Component {
     }
   };
 
+  searchIndex = -1;
+  searchedKey = "";
+  onChangeSearch = () => {
+    this.searchIndex = 0;
+    this.searchedKey = "";
+  };
+
+  onSearch = v => {
+    let { flatData } = this.state;
+
+    if (!v) {
+      this.searchIndex = 0;
+      this.searchedKey = "";
+      this.forceUpdate();
+      return;
+    }
+
+    //先展开所有以便查询定位
+    this.expandAll();
+
+    let searchedIndex = -1;
+    let searchedKey = "";
+
+    for (let i = this.searchIndex + 1, len = flatData.length; i < len; i++) {
+      let name = flatData[i].name;
+
+      if (name.indexOf(v) > -1) {
+        searchedIndex = i;
+        searchedKey = flatData[i].id;
+        break;
+      }
+    }
+
+    if (searchedIndex > -1) {
+      this.scrollToItem(searchedIndex);
+      this.searchIndex = searchedIndex + 1;
+      this.searchedKey = searchedKey;
+    } else {
+      this.searchIndex = -1;
+      this.searchedKey = "";
+    }
+  };
+
+  rowClassName = (row, index) => {
+    if (row.id === this.searchedKey) {
+      return "row-searched";
+    }
+
+    return "";
+  };
+
   render() {
     let menuItemStyle = { height: "auto", lineHeight: "normal" };
 
     return (
-      <div style={{ height: "100%" }}>
+      <div >
         <Table
           rowKey="id"
           editable={true}
           ref="tb"
+          innerRef={this.innerTableRef}
           loading={this.state.loading}
+          rowClassName={this.rowClassName}
           expandedRowKeys={this.state.expandedRowKeys}
           onExpandedRowsChange={keys => {
             this.setState({ expandedRowKeys: keys });
@@ -445,6 +512,13 @@ class Demo extends Component {
               </Button>
 
               <Button onClick={this.collapseAll}>collapse all</Button>
+
+              <Search
+                style={{ float: "right", margin: "0 5px", width: "200px" }}
+                placeholder="输入名称查找"
+                onSearch={this.onSearch}
+                onChange={this.onChangeSearch}
+              />
             </div>
           )}
         />
