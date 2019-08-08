@@ -574,7 +574,7 @@ class FeaturedTable extends React.Component {
     if (typeof fn === "function") {
       let cls = fn(rowData, rowIndex);
       if (cls) {
-        clsArr.push("cls");
+        clsArr.push(cls);
       }
     }
 

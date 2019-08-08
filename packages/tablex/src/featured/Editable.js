@@ -111,8 +111,8 @@ class EditableTable extends React.Component {
 
   innerTableRef = ins => {
     this.innerTable = ins;
-    if (typeof this.innerRef === "function") {
-      this.innerRef(ins);
+    if (typeof this.props.innerRef === "function") {
+      this.props.innerRef(ins);
     }
   };
 
