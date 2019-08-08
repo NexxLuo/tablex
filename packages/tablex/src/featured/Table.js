@@ -630,9 +630,20 @@ class FeaturedTable extends React.Component {
     let columnMenuState = columnMenu || {};
 
     let footer = this.renderFooter();
+    let header = this.renderHeader();
+
+    let extraHeight = 0;
+
     let bodyStyles = {};
     if (footer) {
-      bodyStyles.height = "calc(100% - 50px)";
+      extraHeight += 50;
+    }
+    if (header) {
+      extraHeight += 50;
+    }
+
+    if (extraHeight > 0) {
+      bodyStyles.height = `calc(100% - ${extraHeight}px)`;
     }
 
     let wrapperStyles = Object.assign({}, props.style || {});
@@ -643,7 +654,7 @@ class FeaturedTable extends React.Component {
 
     return (
       <div className="tablex__container" style={wrapperStyles}>
-        {this.renderHeader()}
+        {header}
         <div className="tablex__container__body" style={bodyStyles}>
           <Table {...props} {...newProps} />
         </div>
