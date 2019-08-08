@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Table, unflatten, flatten } from "tablex";
 import { Button, Input, Menu, InputNumber } from "antd";
+import { find } from "./tree-data-utils";
 import _ from "lodash";
 import "./index.css";
 
@@ -153,7 +154,10 @@ class Demo extends Component {
 
   state = {
     loading: false,
-    data: [],
+    treeData: [],
+    rawTreeData: [],
+    flatData: [],
+    rawFlatData: [],
     expandedRowKeys: [],
     selectedRowKeys: []
   };
@@ -164,8 +168,6 @@ class Demo extends Component {
     let c = 0;
     requestGet("/public/data.json", {
       onSuccess: data => {
-        this.setState({ loading: false });
-
         data = _.uniqBy(data, d => {
           return d.code;
         });
@@ -199,7 +201,15 @@ class Demo extends Component {
           d.pid = pid;
         });
 
-        this.setTreeData(data);
+        let treeData = unflatten(data, "id", "pid");
+
+        this.setState({
+          loading: false,
+          treeData: treeData,
+          rawTreeData: treeData.slice(),
+          flatData: data,
+          rawFlatData: data.slice()
+        });
       }
     });
   };
@@ -268,7 +278,7 @@ class Demo extends Component {
     };
   };
 
-  setTreeData = data => {
+  setTreeData = (data, callback) => {
     let bd = new Date();
     console.log("tree data flattening :", data.length);
     let treeData = unflatten(data, "id", "pid");
@@ -276,7 +286,11 @@ class Demo extends Component {
       "tree data flatten finished :",
       (new Date().getTime() - bd.getTime()) / 1000
     );
-    this.setState({ data: treeData, flatData: data, loading: false });
+
+    this.setState(
+      { treeData: treeData, flatData: data, loading: false },
+      callback
+    );
   };
 
   rowKey = "id";
@@ -474,6 +488,55 @@ class Demo extends Component {
     }
   };
 
+  onFilter = v => {
+    let rowKey = this.rowKey;
+    let { rawTreeData, rawFlatData } = this.state;
+
+    if (!v) {
+      this.setTreeData(rawFlatData.slice(), this.collapseAll);
+      return;
+    }
+
+    let { matches } = find({
+      getNodeKey: ({ node }) => {
+        return node[rowKey];
+      },
+      treeData: rawTreeData.slice(),
+      searchQuery: v,
+      searchMethod: ({ node }) => {
+        return node.name.indexOf(v) > -1;
+      },
+      searchFocusOffset: 0
+    });
+
+    let flatDataMap = {};
+
+    for (let i = 0; i < rawFlatData.length; i++) {
+      const d = rawFlatData[i];
+      flatDataMap[d[rowKey]] = d;
+    }
+
+    let list = [];
+
+    for (let i = 0; i < matches.length; i++) {
+      const d = matches[i];
+      let paths = d.path || [];
+
+      for (let j = 0; j < paths.length; j++) {
+        let p = flatDataMap[paths[j]];
+        if (p) {
+          list.push(p);
+        }
+      }
+    }
+
+    list = _.uniqBy(list, d => {
+      return d[rowKey];
+    });
+
+    this.setTreeData(list, this.expandAll);
+  };
+
   rowClassName = (row, index) => {
     if (row.id === this.searchedKey) {
       return "row-searched";
@@ -504,27 +567,31 @@ class Demo extends Component {
           columns={this.columns}
           selectMode="multiple"
           checkStrictly={false}
-          data={this.state.data}
+          data={this.state.treeData}
           orderNumber={true}
           onRow={this.onRow}
           validateTrigger="onChange"
           header={() => (
             <div style={{ padding: "10px 0" }}>
-              <Button onClick={this.getData}>get data</Button>
+              <Button onClick={this.getData}>获取数据</Button>
               <Button onClick={this.expandAll} style={{ margin: "0 5px" }}>
-                expand all
+                展开所有
               </Button>
               <Button
                 onClick={() => this.expandTo(2)}
                 style={{ margin: "0 5px" }}
               >
-                expand to 2
+                展开至第二级
               </Button>
 
-              <Button onClick={this.collapseAll}>collapse all</Button>
-
+              <Button onClick={this.collapseAll}>折叠所有</Button>
               <Search
-                style={{ float: "right", margin: "0 5px", width: "200px" }}
+                style={{ float: "right", margin: "0 5px", width: "150px" }}
+                placeholder="输入名称过滤"
+                onSearch={this.onFilter}
+              />
+              <Search
+                style={{ float: "right", margin: "0 5px", width: "150px" }}
                 placeholder="输入名称查找"
                 onSearch={this.onSearch}
                 onChange={this.onChangeSearch}
