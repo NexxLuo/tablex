@@ -136,7 +136,11 @@ class Demo extends Component {
       title: "合价",
       width: 150,
       render: (value, row) => {
-        return row.unitPrice * row.quantities;
+        let v = row.unitPrice * row.quantities;
+        if (isNaN(v)) {
+          return "";
+        }
+        return v;
       }
     },
     {
@@ -357,11 +361,13 @@ class Demo extends Component {
   toggleSelectOrExpand = (rowData, type = 0) => {
     let stateName = ["expandedRowKeys", "selectedRowKeys"][type];
 
+    let bd = new Date();
+    console.log("toggleSelectOrExpand " + stateName + " :");
+
     let rowKey = this.rowKey;
     let key = rowData[rowKey];
     let keys = this.state[stateName];
 
-  
     let nextKeys = [];
 
     let keysMap = {};
@@ -369,13 +375,8 @@ class Demo extends Component {
     for (let i = 0; i < keys.length; i++) {
       keysMap[keys[i]] = true;
     }
-    let bd = new Date();
-    console.log("toggleSelectOrExpand " + stateName + " :");
+
     let { list } = flatten([rowData]);
-    console.log(
-      "toggleSelectOrExpand " + stateName + ":",
-      (new Date().getTime() - bd.getTime()) / 1000
-    );
 
     let isExist = keysMap[key] === true;
 
@@ -397,7 +398,10 @@ class Demo extends Component {
       }
     }
 
-
+    console.log(
+      "toggleSelectOrExpand " + stateName + ":",
+      (new Date().getTime() - bd.getTime()) / 1000
+    );
 
     this.setState({ [stateName]: nextKeys });
   };
@@ -498,7 +502,7 @@ class Demo extends Component {
             this.setState({ selectedRowKeys: keys });
           }}
           columns={this.columns}
-          selectMode="none"
+          selectMode="multiple"
           checkStrictly={false}
           data={this.state.data}
           orderNumber={true}
