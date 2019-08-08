@@ -475,7 +475,7 @@ class Demo extends Component {
     let menuItemStyle = { height: "auto", lineHeight: "normal" };
 
     return (
-      <div >
+      <div style={{ height: "100%" }}>
         <Table
           rowKey="id"
           editable={true}
