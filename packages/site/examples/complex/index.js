@@ -202,14 +202,9 @@ class Demo extends Component {
 
   componentDidMount() {}
 
-  innerTable = null;
-  innerTableRef = ins => {
-    this.innerTable = ins;
-  };
-
   scrollToItem = index => {
-    if (this.innerTable) {
-      this.innerTable.scrollToItem(index, "center");
+    if (this.refs.tb) {
+      this.refs.tb.scrollToItem(index, "center");
     }
   };
 
@@ -366,15 +361,21 @@ class Demo extends Component {
     let key = rowData[rowKey];
     let keys = this.state[stateName];
 
-    let nextKeys = keys.slice();
+  
+    let nextKeys = [];
 
     let keysMap = {};
 
     for (let i = 0; i < keys.length; i++) {
       keysMap[keys[i]] = true;
     }
-
+    let bd = new Date();
+    console.log("toggleSelectOrExpand " + stateName + " :");
     let { list } = flatten([rowData]);
+    console.log(
+      "toggleSelectOrExpand " + stateName + ":",
+      (new Date().getTime() - bd.getTime()) / 1000
+    );
 
     let isExist = keysMap[key] === true;
 
@@ -382,15 +383,21 @@ class Demo extends Component {
       const k = list[i][rowKey];
 
       if (isExist) {
-        let j = nextKeys.findIndex(d => d === k);
-        nextKeys.splice(j, 1);
+        keysMap[k] = false;
       } else {
-        if (k in keysMap) {
-        } else {
-          nextKeys.push(k);
+        if (keysMap[k] !== true) {
+          keysMap[k] = true;
         }
       }
     }
+
+    for (const d in keysMap) {
+      if (keysMap[d] === true) {
+        nextKeys.push(d);
+      }
+    }
+
+
 
     this.setState({ [stateName]: nextKeys });
   };
@@ -480,7 +487,6 @@ class Demo extends Component {
           rowKey="id"
           editable={true}
           ref="tb"
-          innerRef={this.innerTableRef}
           loading={this.state.loading}
           rowClassName={this.rowClassName}
           expandedRowKeys={this.state.expandedRowKeys}
@@ -492,7 +498,7 @@ class Demo extends Component {
             this.setState({ selectedRowKeys: keys });
           }}
           columns={this.columns}
-          selectMode="multiple"
+          selectMode="none"
           checkStrictly={false}
           data={this.state.data}
           orderNumber={true}

@@ -121,9 +121,20 @@ class EditableTable extends React.Component {
     if (this.innerTable) {
       arr = this.innerTable.state.data;
     }
-
     return arr;
   };
+
+  resetAfterIndex(index, shouldForceUpdate) {
+    if (this.innerTable) {
+      this.innerTable.resetAfterIndex(index, shouldForceUpdate);
+    }
+  }
+
+  scrollToItem(index, align) {
+    if (this.innerTable) {
+      this.innerTable.scrollToItem(index, align);
+    }
+  }
 
   updateComponent = () => {
     this.forceUpdate();
