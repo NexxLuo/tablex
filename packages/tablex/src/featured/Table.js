@@ -649,7 +649,7 @@ class FeaturedTable extends React.Component {
     let wrapperStyles = Object.assign({}, props.style || {});
 
     if (props.minHeight) {
-      wrapperStyles.minHeight = props.minHeight;
+      wrapperStyles.minHeight = props.minHeight + extraHeight;
     }
 
     return (
