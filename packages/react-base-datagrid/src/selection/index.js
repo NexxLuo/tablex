@@ -115,7 +115,7 @@ class SelectionGrid extends Component {
       rowKeys[keys[i]] = true;
     }
 
-    for (let i = 0, len = arr.length; i < len.length; i++) {
+    for (let i = 0, len = arr.length; i < len; i++) {
       let d = arr[i];
       if (rowKeys[d[rowKey]] === true) {
         rows.push(d);
