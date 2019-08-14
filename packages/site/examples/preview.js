@@ -50,44 +50,32 @@ fixedColumns = [
     titleRender: () => {
       return <div>titleRender</div>;
     },
-    width: 100,
     align: "left",
-    halign: "center",
-    fixedable: false,
-    fixed: "left",
-    render: function(a, b, c, d) {
-      return a;
-    }
+    halign: "center"
   },
   {
     title: "appellation",
     width: 150,
-    key: "column-11",
     halign: "left",
     children: [
       {
         dataIndex: "address",
-        title: "name",
-        key: "column-2",
+        title: "name"
 
-        width: 150
       },
       {
-        dataIndex: "id",
-        key: "column-3",
+ 
         title: "nick name",
         width: 150,
         children: [
           {
             dataIndex: "id",
             title: "nick-1",
-            key: "column-21",
             maxWidth: 300,
             width: 150
           },
           {
             dataIndex: "column-31",
-            key: "column-31",
             title: "nick-2"
           }
         ]
@@ -97,8 +85,7 @@ fixedColumns = [
   {
     dataIndex: "age",
     key: "column-4",
-    title: "age",
-    fixed: "right"
+    title: "age"
   }
 ];
 
@@ -228,7 +215,6 @@ class Demo extends Component {
         <div>
           <Table
             loading={this.state.loading}
-            tableId="preview_table"
             rowKey="id"
             innerRef={this.innerRef}
             columns={fixedColumns}

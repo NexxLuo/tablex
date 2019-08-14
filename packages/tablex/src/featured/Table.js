@@ -368,9 +368,17 @@ class FeaturedTable extends React.Component {
 
     let arr = columns;
 
-    arr = treeFilter(columns, d => {
-      let columnKey = d.key || d.dataIndex;
+    arr = treeFilter(columns, (d, i, depth) => {
+      if (!d.key) {
+        d.key = depth + "-" + i;
+      }
+
+      let columnKey = d.key;
       let bl = true;
+
+      if (depth > 0) {
+        d.width = d.width || 100;
+      }
 
       d.key = columnKey;
       let config = configs[columnKey] || {};
