@@ -278,14 +278,11 @@ class BaseDataGrid extends React.Component {
       headerHeight = 0;
     }
 
-    scrollbarY = scrollbarY + 1;
     let headStyle = {};
 
-    if (hasRight) {
-      headStyle.marginRight = scrollbarY;
-    } else {
-      headStyle.marginRight = scrollbarY - 1;
-    }
+    headStyle.marginRight = scrollbarY;
+
+    scrollbarY = scrollbarY + 1;
 
     let rightStyles = {
       width: rightWidth,

@@ -18,7 +18,7 @@ const DraggableContainer = SortableContainer(({ children }) => {
 });
 
 const RadioGroup = Radio.Group;
-const RadioButton = Radio.Button; 
+const RadioButton = Radio.Button;
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -52,7 +52,6 @@ class SortableItem extends Component {
 
     let d = this.props.data;
 
-    
     let TitleComponent = d.title;
     let titleElement = null;
 
@@ -61,7 +60,6 @@ class SortableItem extends Component {
     } else {
       titleElement = d.title;
     }
-
 
     return (
       <div
@@ -219,8 +217,6 @@ class SettingModal extends React.Component {
 
         if ("order" in config) {
           d.order = config.order;
-        } else {
-          d.order = i;
         }
       });
 
@@ -354,8 +350,6 @@ class SettingModal extends React.Component {
     let configs = this.state.configs || {};
 
     items.forEach((d, index) => {
-      // d.order = index;
-
       let columnKey = d.key || d.dataIndex;
       let config = configs[columnKey];
       if (config) {
