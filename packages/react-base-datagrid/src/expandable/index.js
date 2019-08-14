@@ -230,7 +230,7 @@ class TreeGrid extends Component {
    * 设置行的子级加载状态
    */
   setLoadingChildren = (key, bl, callback) => {
-    let { loadingKeys } = this.state;
+    let { loadingKeys, rawData } = this.state;
 
     let i = loadingKeys.indexOf(key);
 
@@ -246,7 +246,10 @@ class TreeGrid extends Component {
       }
     }
 
-    return this.setState({ loadingKeys: nextKeys }, callback);
+    return this.setState(
+      { loadingKeys: nextKeys, rawData: rawData.slice() },
+      callback
+    );
   };
 
   /**
@@ -261,7 +264,7 @@ class TreeGrid extends Component {
 
     if (res && res.constructor.name === "Promise") {
       this.setLoadingChildren(key, true);
-      this.forceUpdate();
+
       res.then(childrens => {
         if (childrens) {
           row.children = childrens;
