@@ -63,9 +63,9 @@ class FeaturedTable extends React.Component {
       let data = nextProps.data || nextProps.dataSource || [];
 
       //给列key、width设置缺省值
-      let columnsArr = treeFilter(columns, (d, i, depth) => {
+      let columnsArr = treeFilter(columns, (d, i, depth, treeIndex) => {
         if (!d.key) {
-          d.key = depth + "-" + i;
+          d.key = depth + "-" + i + "-" + treeIndex;
         }
 
         if (depth > 0) {

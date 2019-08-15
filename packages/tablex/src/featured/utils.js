@@ -175,11 +175,14 @@ export function treeFilter(arr, fn) {
 
   //根
   let roots = [];
+  let j = 0;
 
   for (let i = 0; i < treeList.length; i++) {
     const d = treeList[i];
 
-    let bl = fn(d, i, 0);
+  
+    let bl = fn(d, i, 0,j);
+    j++;
 
     if (bl === true) {
       if (d.children && d.children.length > 0) {
@@ -197,8 +200,11 @@ export function treeFilter(arr, fn) {
 
     for (let i = 0; i < tempArr.length; i++) {
       const d = tempArr[i];
+  
 
-      let bl = fn(d, i, depth + 1);
+      let bl = fn(d, i, depth + 1,j);
+
+      j++;
 
       if (bl === true) {
         if (d.children && d.children.length > 0) {
