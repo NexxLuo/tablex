@@ -175,34 +175,40 @@ export function treeFilter(arr, fn) {
 
   //根
   let roots = [];
+  let j = 0;
 
   for (let i = 0; i < treeList.length; i++) {
     const d = treeList[i];
 
-    let bl = fn(d, i);
+  
+    let bl = fn(d, i, 0,j);
+    j++;
 
     if (bl === true) {
       if (d.children && d.children.length > 0) {
-        d.children = getChildren(d);
+        d.children = getChildren(d, 0);
       }
 
       roots.push(d);
     }
   }
 
-  function getChildren(node) {
+  function getChildren(node, depth) {
     const tempArr = node.children || [];
 
     const nextChildrens = [];
 
     for (let i = 0; i < tempArr.length; i++) {
       const d = tempArr[i];
+  
 
-      let bl = fn(d, i);
+      let bl = fn(d, i, depth + 1,j);
+
+      j++;
 
       if (bl === true) {
         if (d.children && d.children.length > 0) {
-          d.children = getChildren(d);
+          d.children = getChildren(d, i, depth + 1);
         }
 
         nextChildrens.push(d);

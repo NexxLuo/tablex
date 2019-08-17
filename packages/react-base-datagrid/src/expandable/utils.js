@@ -38,8 +38,6 @@ export function getDataListWithExpanded(list, expandedKeys = [], rowKey) {
 }
 
 export function getTreeProps(arr, idField = "id") {
-  let bt = new Date();
-
   let treeProps = {};
   let list = [];
 
@@ -50,9 +48,7 @@ export function getTreeProps(arr, idField = "id") {
 
   let treeList = arr || [];
 
-  let _childrensKeys = [];
-
-  for (let i = 0; i < treeList.length; i++) {
+  for (let i = 0, len = treeList.length; i < len; i++) {
     const d = treeList[i];
     let k = d[idField];
     let index = i + 1;
@@ -61,17 +57,14 @@ export function getTreeProps(arr, idField = "id") {
 
     const childrens = d.children || [];
 
-    let _childrens = [];
-    _childrensKeys = [];
-
     if (childrens.length > 0) {
-      _childrens = getChildren(d, 0, [], [index]);
+      getChildren(d, 0, [], [index]);
     }
 
     setTree(k, {
       depth: 0,
       orders: [index],
-      parents: [] 
+      parents: []
     });
   }
 
@@ -96,7 +89,6 @@ export function getTreeProps(arr, idField = "id") {
       let __orders = orders.slice();
       __orders.push(i + 1);
 
-      //_childrensKeys=_childrensKeys.slice();
       _childrensKeys.push(k);
 
       let cArr = [];
@@ -113,8 +105,6 @@ export function getTreeProps(arr, idField = "id") {
         depth: __depth,
         parents: __parents
       });
-
-      //_childrens=[];
     }
 
     setTree(pk, {
@@ -123,14 +113,6 @@ export function getTreeProps(arr, idField = "id") {
 
     return _childrensKeys;
   }
-
-  let et = new Date();
-
-  console.log(
-    "getTreeProps:",
-    (et.getTime() - bt.getTime()) / 1000,
-    Object.keys(treeProps).length
-  );
 
   return { list, treeProps: treeProps };
 }

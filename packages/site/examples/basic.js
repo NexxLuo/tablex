@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {Table} from "tablex";
+import { Table } from "tablex";
 
 const generateColumns = (count = 10, prefix = "column-", props) =>
   new Array(count).fill(0).map((column, columnIndex) => ({
@@ -58,26 +58,26 @@ fixedColumns = [
         title: "name",
         key: "column-2",
 
-        width: 150 
+        width: 150
       },
       {
         dataIndex: "id",
         key: "column-3",
         title: "nick name",
-        width: 150, 
+        width: 150,
         children: [
           {
             dataIndex: "id",
             title: "nick-1",
             key: "column-21",
             maxWidth: 300,
-            width: 150 
+            width: 150
           },
           {
             dataIndex: "column-31",
             key: "column-31",
             title: "nick-2",
-            width: 150 
+            width: 150
           }
         ]
       }
@@ -125,7 +125,7 @@ function createTreeData() {
       "column-1": "Edward King " + i,
       age: 32,
       address: "London, Park Lane no. " + i,
-      children: createData(0, i, 2)
+      children: []
     });
   }
 
@@ -148,7 +148,13 @@ class Demo extends Component {
       let rows = this.state.data;
 
       setTimeout(() => {
-        let childrens = [{ id: "123123123", "column-0": "children async" }];
+        let childrens = [
+          {
+            id: record.id + "-123123123",
+            "column-1": "children async",
+            children:[]
+          }
+        ];
         // record.isLoading=false;
         record.children = childrens;
         //rows[0] = Object.assign({}, record, { children: childrens });
@@ -156,8 +162,9 @@ class Demo extends Component {
         this.setState({
           data: rows
         });
-
-        resolve();
+        resolve(childrens);
+    
+        //this.forceUpdate();
       }, 1300);
     });
   };
@@ -171,6 +178,7 @@ class Demo extends Component {
         selectMode="multiple"
         data={this.state.data}
         orderNumber={true}
+        loadChildrenData={this.loadChildrenData}
         disabledSelectKeys={[]}
         onSelectChange={(keys, rows) => {
           console.log("onSelectChange:", rows);

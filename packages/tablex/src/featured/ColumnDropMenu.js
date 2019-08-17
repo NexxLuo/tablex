@@ -38,7 +38,7 @@ const MenuIcon = () => {
   );
 };
 
-export const ColumnDropMenuButton = (props) => {
+export const ColumnDropMenuButton = props => {
   return (
     <span {...props}>
       <MenuIcon />
@@ -158,6 +158,7 @@ class HeadDropMenu extends React.Component {
         <Menu
           forceSubMenuRender={false}
           onClick={this.handleClick}
+          selectable={false}
           style={{ width: 160 }}
           mode="vertical"
         >

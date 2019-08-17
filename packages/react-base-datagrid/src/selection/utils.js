@@ -36,10 +36,8 @@ export function removeCheckedKey({
   let nextKeys = selectedRowKeys.slice();
   let nextHalfCheckedKeys = halfCheckedKeys.slice();
 
+  //父级key
   let parentKeys = getParents(key, treeProps);
-
-  //父级半选的key
-  let parentHalfCheckedKeys = [];
 
   //子级key
   let childrenKeys = getChildrens(key, treeProps);
@@ -89,6 +87,9 @@ export function removeCheckedKey({
     nextHalfCheckedKeys.splice(j, 1);
   }
 
+  //父级半选的key
+  let parentHalfCheckedKeys = [];
+
   for (let i = parentKeys.length - 1; i >= 0; i--) {
     let p = parentKeys[i];
     let childrens = getChildrens(p, treeProps);
@@ -121,12 +122,12 @@ export function removeCheckedKey({
       //否则半选父节点
       if (halfCheckedKeys.indexOf(p) === -1) {
         parentHalfCheckedKeys.push(p);
+      }
 
-        //取消选中父级
-        let j = nextKeys.findIndex(d => d === p);
-        if (j > -1) {
-          nextKeys.splice(j, 1);
-        }
+      //取消选中父级
+      let j = nextKeys.findIndex(d => d === p);
+      if (j > -1) {
+        nextKeys.splice(j, 1);
       }
     }
   }
@@ -160,6 +161,7 @@ export function addCheckedKeyWithDisabled({
   let nextHalfCheckedKeys = [].concat(halfCheckedKeys);
 
   let parentKeys = getParents(key, treeProps);
+  let childrenKeys = getChildrens(key, treeProps);
 
   /** 是否允许被选择 */
   function isEnabled(itemKey) {
@@ -197,22 +199,19 @@ export function addCheckedKeyWithDisabled({
     selectedRowKeysMap[selectedRowKeys[i]] = true;
   }
 
+  //选中本级
   if (selectedRowKeysMap[key] !== true) {
     let halfIndex = nextHalfCheckedKeys.indexOf(key);
     if (halfIndex > -1) {
       nextHalfCheckedKeys.splice(halfIndex, 1);
     }
+
     selectedRowKeysMap[key] = true;
-    nextKeys.push(key);//此处需要作调整，当子级存在禁选key时，不push此列2019年8月7日 01点16分
+    nextKeys.push(key);
   }
 
-  //父级半选的key
-  let parentHalfCheckedKeys = [];
-
-  //子级key
+  //选中子级
   let childrenSelectedKeys = [];
-
-  let childrenKeys = getChildrens(key, treeProps);
 
   for (let i = 0; i < childrenKeys.length; i++) {
     let ck = childrenKeys[i];
@@ -239,9 +238,14 @@ export function addCheckedKeyWithDisabled({
 
   nextKeys = nextKeys.concat(childrenSelectedKeys);
 
+  //半选父级
+  let parentHalfCheckedKeys = [];
+
+  //选中父级
+  let parentCheckedKeys = [];
+
   for (let i = parentKeys.length - 1; i >= 0; i--) {
     let p = parentKeys[i];
-
 
     let childrens = getChildrens(p, treeProps);
 
@@ -255,11 +259,6 @@ export function addCheckedKeyWithDisabled({
         break;
       }
     }
-
-    if (p==="0101") {
-      console.log("010101:",childrens);
-    }
-
 
     //子级全被选中，则勾选其父节点
     if (childrensAllChecked === true) {
@@ -286,10 +285,11 @@ export function addCheckedKeyWithDisabled({
     }
   }
 
-  let newHalflCheckedKeys = nextHalfCheckedKeys.concat(parentHalfCheckedKeys);
+  let newHalfCheckedKeys = nextHalfCheckedKeys.concat(parentHalfCheckedKeys);
+  let newCheckedKeys = nextKeys.concat(parentCheckedKeys);
 
   return {
-    selectedRowKeys: nextKeys,
-    halfCheckedKeys: newHalflCheckedKeys
+    selectedRowKeys: newCheckedKeys,
+    halfCheckedKeys: newHalfCheckedKeys
   };
 }

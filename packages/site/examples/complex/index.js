@@ -1,7 +1,11 @@
 import React, { Component } from "react";
-import { Table, unflatten } from "tablex";
-import { Button, Input } from "antd";
+import { Table, unflatten, flatten } from "tablex";
+import { Button, Input, Menu, InputNumber } from "antd";
+import { find } from "./tree-data-utils";
 import _ from "lodash";
+import "./index.css";
+
+const { Search } = Input;
 
 function requestGet(url, options) {
   let xhr = new XMLHttpRequest();
@@ -79,10 +83,7 @@ class Demo extends Component {
       title: "名称",
       width: 150,
       key: "name",
-      dataIndex: "name",
-      editor: (value, record, index) => {
-        return <Input defaultValue={value} />;
-      }
+      dataIndex: "name"
     },
     {
       dataIndex: "description",
@@ -100,19 +101,48 @@ class Demo extends Component {
       dataIndex: "quantities",
       key: "quantities",
       title: "工程量",
-      width: 150
+      width: 150,
+      editor: (value, record, index, onchange, ref, validate) => {
+        return (
+          <Input
+            defaultValue={value}
+            ref={ref}
+            onChange={v => {
+              onchange({ quantities: v.target.value });
+            }}
+          />
+        );
+      }
     },
     {
       dataIndex: "unitPrice",
       key: "unitPrice",
       title: "综合单价",
-      width: 150
+      width: 150,
+      editor: (value, record, index, onchange, ref, validate) => {
+        return (
+          <Input
+            defaultValue={value}
+            ref={ref}
+            onChange={e => {
+              onchange({ unitPrice: e.target.value });
+            }}
+          />
+        );
+      }
     },
     {
       dataIndex: "totalPrice",
       key: "totalPrice",
       title: "合价",
-      width: 150
+      width: 150,
+      render: (value, row) => {
+        let v = row.unitPrice * row.quantities;
+        if (isNaN(v)) {
+          return "";
+        }
+        return v;
+      }
     },
     {
       dataIndex: "evaluation",
@@ -124,8 +154,12 @@ class Demo extends Component {
 
   state = {
     loading: false,
-    data: [],
-    expandedRowKeys: []
+    treeData: [],
+    rawTreeData: [],
+    flatData: [],
+    rawFlatData: [],
+    expandedRowKeys: [],
+    selectedRowKeys: []
   };
 
   getData = () => {
@@ -134,8 +168,6 @@ class Demo extends Component {
     let c = 0;
     requestGet("/public/data.json", {
       onSuccess: data => {
-        this.setState({ loading: false });
-
         data = _.uniqBy(data, d => {
           return d.code;
         });
@@ -169,24 +201,26 @@ class Demo extends Component {
           d.pid = pid;
         });
 
-        //data= data.splice(0,10000)
-        let bd = new Date();
-
-        console.log("tree formatting :", data.length);
         let treeData = unflatten(data, "id", "pid");
-        console.log(
-          "tree format finished :",
-          (new Date().getTime() - bd.getTime()) / 1000
-        );
 
-        // console.log("treeData:", treeData);
-
-        this.setState({ data: treeData, flatData: data, loading: false });
+        this.setState({
+          loading: false,
+          treeData: treeData,
+          rawTreeData: treeData.slice(),
+          flatData: data,
+          rawFlatData: data.slice()
+        });
       }
     });
   };
 
   componentDidMount() {}
+
+  scrollToItem = index => {
+    if (this.refs.tb) {
+      this.refs.tb.scrollToItem(index, "center");
+    }
+  };
 
   expandTo = (depth = 2) => {
     let keys = [];
@@ -214,36 +248,396 @@ class Demo extends Component {
     this.setState({ expandedRowKeys: [] });
   };
 
-  render() {
-    return (
-      <Table
-        rowKey="id"
-        editable={true}
-        ref="tb"
-        loading={this.state.loading}
-        expandedRowKeys={this.state.expandedRowKeys}
-        disabledSelectKeys={["010101"]}
-        columns={this.columns}
-        selectMode="multiple"
-        data={this.state.data}
-        orderNumber={true}
-        header={() => (
-          <div style={{ padding: "10px 0" }}>
-            <Button onClick={this.getData}>get data</Button>
-            <Button onClick={this.expandAll} style={{ margin: "0 5px" }}>
-              expand all
-            </Button>
-            <Button
-              onClick={() => this.expandTo(2)}
-              style={{ margin: "0 5px" }}
-            >
-              expand to 2
-            </Button>
+  contentMenuRow = null;
+  showContextMenu = ({ left, top, data }) => {
+    this.contentMenuRow = data;
+    let el = document.getElementById("contextMenu");
+    if (el) {
+      el.style.top = top + "px";
+      el.style.left = left + "px";
+      el.style.display = "block";
+      el.focus();
+    }
+  };
 
-            <Button onClick={this.collapseAll}>collapse all</Button>
-          </div>
-        )}
-      />
+  hideContextMenu = () => {
+    this.contentMenuRow = null;
+    let el = document.getElementById("contextMenu");
+    if (el) {
+      el.style.display = "none";
+    }
+  };
+
+  onRow = row => {
+    return {
+      onContextMenu: e => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.showContextMenu({ left: e.pageX, top: e.pageY, data: row });
+      }
+    };
+  };
+
+  setTreeData = (data, callback) => {
+    let bd = new Date();
+    console.log("tree data flattening :", data.length);
+    let treeData = unflatten(data, "id", "pid");
+    console.log(
+      "tree data flatten finished :",
+      (new Date().getTime() - bd.getTime()) / 1000
+    );
+
+    this.setState(
+      { treeData: treeData, flatData: data, loading: false },
+      callback
+    );
+  };
+
+  rowKey = "id";
+  deleteRow = row => {
+    let rowKey = this.rowKey;
+    let key = row[rowKey];
+    let { flatData } = this.state;
+
+    let i = flatData.findIndex(d => d[rowKey] === key);
+    if (i > -1) {
+      flatData.splice(i, 1);
+    }
+    this.setTreeData(flatData);
+  };
+
+  copiedRow = null;
+  copy = row => {
+    let rowData = {};
+
+    for (const k in row) {
+      if (row.hasOwnProperty(k) && k !== "children") {
+        rowData[k] = row[k];
+      }
+    }
+    let str = JSON.stringify(rowData);
+    this.copiedRow = JSON.stringify(rowData);
+
+    const input = document.createElement("input");
+    document.body.appendChild(input);
+    input.setAttribute("value", str);
+    input.select();
+    if (document.execCommand("copy")) {
+      document.execCommand("copy");
+    }
+    document.body.removeChild(input);
+  };
+
+  pasteChildren = targetRow => {
+    let rowKey = this.rowKey;
+
+    let copiedRow = this.copiedRow;
+
+    if (copiedRow) {
+      let sourceRow = JSON.parse(copiedRow);
+
+      let { list, roots } = flatten([sourceRow]);
+
+      let sourceRowList = [];
+
+      for (let i = 0; i < list.length; i++) {
+        let d = Object.assign({}, list[i]);
+        if (this.isCut !== true) {
+          d[rowKey] = d[rowKey] + "_copiedRow";
+          d["pid"] = targetRow[rowKey];
+        }
+        sourceRowList.push(d);
+      }
+
+      let { flatData } = this.state;
+
+      if (this.isCut === true) {
+        let i = flatData.findIndex(d => d[rowKey] === sourceRow[rowKey]);
+        if (i > -1) {
+          flatData.splice(i, 1);
+        }
+      }
+
+      flatData = flatData.concat(sourceRowList);
+
+      this.isCut = false;
+      this.copiedRow = null;
+      this.setTreeData(flatData);
+    }
+  };
+
+  isCut = false;
+  cut = row => {
+    this.copy(row);
+    this.isCut = true;
+  };
+
+  toggleSelectOrExpand = (rowData, type = 0) => {
+    let stateName = ["expandedRowKeys", "selectedRowKeys"][type];
+
+    let bd = new Date();
+    console.log("toggleSelectOrExpand " + stateName + " :");
+
+    let rowKey = this.rowKey;
+    let key = rowData[rowKey];
+    let keys = this.state[stateName];
+
+    let nextKeys = [];
+
+    let keysMap = {};
+
+    for (let i = 0; i < keys.length; i++) {
+      keysMap[keys[i]] = true;
+    }
+
+    let { list } = flatten([rowData]);
+
+    let isExist = keysMap[key] === true;
+
+    for (let i = 0; i < list.length; i++) {
+      const k = list[i][rowKey];
+
+      if (isExist) {
+        keysMap[k] = false;
+      } else {
+        if (keysMap[k] !== true) {
+          keysMap[k] = true;
+        }
+      }
+    }
+
+    for (const d in keysMap) {
+      if (keysMap[d] === true) {
+        nextKeys.push(d);
+      }
+    }
+
+    console.log(
+      "toggleSelectOrExpand " + stateName + ":",
+      (new Date().getTime() - bd.getTime()) / 1000
+    );
+
+    this.setState({ [stateName]: nextKeys });
+  };
+
+  selectAll = rowData => {
+    this.toggleSelectOrExpand(rowData, 1);
+  };
+
+  expandToggle = rowData => {
+    this.toggleSelectOrExpand(rowData, 0);
+  };
+
+  onMenuClick = ({ key }) => {
+    let actions = {
+      del: this.deleteRow,
+      copy: this.copy,
+      cut: this.cut,
+      pasteChildren: this.pasteChildren,
+      selectAll: this.selectAll,
+      expandToggle: this.expandToggle,
+      export: this.export
+    };
+
+    let fn = actions[key];
+    if (typeof fn === "function") {
+      fn(this.contentMenuRow);
+    }
+  };
+
+  searchIndex = -1;
+  searchedKey = "";
+  onChangeSearch = () => {
+    this.searchIndex = 0;
+    this.searchedKey = "";
+  };
+
+  onSearch = v => {
+    let { flatData } = this.state;
+
+    if (!v) {
+      this.searchIndex = 0;
+      this.searchedKey = "";
+      this.forceUpdate();
+      return;
+    }
+
+    //先展开所有以便查询定位
+    this.expandAll();
+
+    let searchedIndex = -1;
+    let searchedKey = "";
+
+    for (let i = this.searchIndex + 1, len = flatData.length; i < len; i++) {
+      let name = flatData[i].name;
+
+      if (name.indexOf(v) > -1) {
+        searchedIndex = i;
+        searchedKey = flatData[i].id;
+        break;
+      }
+    }
+
+    if (searchedIndex > -1) {
+      this.scrollToItem(searchedIndex);
+      this.searchIndex = searchedIndex + 1;
+      this.searchedKey = searchedKey;
+    } else {
+      this.searchIndex = -1;
+      this.searchedKey = "";
+    }
+  };
+
+  onFilter = v => {
+    let rowKey = this.rowKey;
+    let { rawTreeData, rawFlatData } = this.state;
+
+    if (!v) {
+      this.setTreeData(rawFlatData.slice(), this.collapseAll);
+      return;
+    }
+
+    let { matches } = find({
+      getNodeKey: ({ node }) => {
+        return node[rowKey];
+      },
+      treeData: rawTreeData.slice(),
+      searchQuery: v,
+      searchMethod: ({ node }) => {
+        return node.name.indexOf(v) > -1;
+      },
+      searchFocusOffset: 0
+    });
+
+    let flatDataMap = {};
+
+    for (let i = 0; i < rawFlatData.length; i++) {
+      const d = rawFlatData[i];
+      flatDataMap[d[rowKey]] = d;
+    }
+
+    let list = [];
+
+    for (let i = 0; i < matches.length; i++) {
+      const d = matches[i];
+      let paths = d.path || [];
+
+      for (let j = 0; j < paths.length; j++) {
+        let p = flatDataMap[paths[j]];
+        if (p) {
+          list.push(p);
+        }
+      }
+    }
+
+    list = _.uniqBy(list, d => {
+      return d[rowKey];
+    });
+
+    this.setTreeData(list, this.expandAll);
+  };
+
+  rowClassName = (row, index) => {
+    if (row.id === this.searchedKey) {
+      return "row-searched";
+    }
+
+    return "";
+  };
+
+  render() {
+    let menuItemStyle = { height: "auto", lineHeight: "normal" };
+
+    return (
+      <div style={{ height: "100%" }}>
+        <Table
+          rowKey="id"
+          editable={true}
+          ref="tb"
+          loading={this.state.loading}
+          rowClassName={this.rowClassName}
+          expandedRowKeys={this.state.expandedRowKeys}
+          onExpandedRowsChange={keys => {
+            this.setState({ expandedRowKeys: keys });
+          }}
+          selectedRowKeys={this.state.selectedRowKeys}
+          onSelectChange={keys => {
+            this.setState({ selectedRowKeys: keys });
+          }}
+          columns={this.columns}
+          selectMode="multiple"
+          checkStrictly={false}
+          data={this.state.treeData}
+          orderNumber={true}
+          onRow={this.onRow}
+          validateTrigger="onChange"
+          header={() => (
+            <div style={{ padding: "10px 0" }}>
+              <Button onClick={this.getData}>获取数据</Button>
+              <Button onClick={this.expandAll} style={{ margin: "0 5px" }}>
+                展开所有
+              </Button>
+              <Button
+                onClick={() => this.expandTo(2)}
+                style={{ margin: "0 5px" }}
+              >
+                展开至第二级
+              </Button>
+
+              <Button onClick={this.collapseAll}>折叠所有</Button>
+              <Search
+                style={{ float: "right", margin: "0 5px", width: "150px" }}
+                placeholder="输入名称过滤"
+                onSearch={this.onFilter}
+              />
+              <Search
+                style={{ float: "right", margin: "0 5px", width: "150px" }}
+                placeholder="输入名称查找"
+                onSearch={this.onSearch}
+                onChange={this.onChangeSearch}
+              />
+            </div>
+          )}
+        />
+        <Menu
+          style={{
+            display: "none",
+            position: "fixed",
+            border: "1px solid #ccc",
+            boxShadow: "2px 2px 5px 2px rgba(0, 0, 0, 0.15)"
+          }}
+          tabIndex="1"
+          id="contextMenu"
+          onBlur={this.hideContextMenu}
+          onClick={this.onMenuClick}
+          selectable={false}
+        >
+          <Menu.Item key="del" style={menuItemStyle}>
+            删除行
+          </Menu.Item>
+          <Menu.Item key="copy" style={menuItemStyle}>
+            复制行
+          </Menu.Item>
+          <Menu.Item key="cut" style={menuItemStyle}>
+            剪切行
+          </Menu.Item>
+          <Menu.Item key="pasteChildren" style={menuItemStyle}>
+            粘贴行(下级)
+          </Menu.Item>
+          <Menu.Item key="selectAll" style={menuItemStyle}>
+            全选/全否
+          </Menu.Item>
+          <Menu.Item key="expandToggle" style={menuItemStyle}>
+            展开/收缩
+          </Menu.Item>
+          <Menu.Item key="export" style={menuItemStyle}>
+            导出
+          </Menu.Item>
+          <Menu.Item key="print" style={menuItemStyle}>
+            打印
+          </Menu.Item>
+        </Menu>
+      </div>
     );
   }
 }

@@ -23,6 +23,14 @@ function cloneData(source) {
   }
 }
 
+function testTime(v) {
+  if (v) {
+    return (new Date().getTime() - v.getTime()) / 1000;
+  } else {
+    return new Date();
+  }
+}
+
 /**
  * 表格
  */
@@ -32,12 +40,14 @@ class EditableTable extends React.Component {
 
     this.state = {
       rowKey: props.rowKey,
-      propsOriginal: {},
+      prevProps: {},
       rawColumns: [],
       columns: [],
+      columnList: [],
       data: [],
       dataList: [],
       sourceData: [],
+      rawData: [],
       changedRows: [],
       isEditAll: false,
       isAdding: false,
@@ -59,52 +69,75 @@ class EditableTable extends React.Component {
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    let nextState = {};
+    if (prevState.prevProps !== nextProps) {
+      let nextState = {
+        prevProps: nextProps,
+        dataControled: nextProps.dataControled || false,
+        readOnly: nextProps.readOnly,
+        rawColumns: nextProps.columns || []
+      };
 
-    //是否让数据受控
-    nextState.dataControled = nextProps.dataControled || false;
-    //
-    let columns = cloneDeep(nextProps.columns || []);
-    let columnList = treeToList(columns).list;
-    nextState.columns = columns;
-    nextState.columnList = columnList;
-    nextState.rawColumns = nextProps.columns || [];
-    nextState.readOnly = nextProps.readOnly;
-
-    let data = nextProps.data || nextProps.dataSource;
-
-    if (prevState.propsOriginal !== nextProps) {
-      nextState.propsOriginal = nextProps;
+      let columns = cloneDeep(nextProps.columns || []);
+      let columnList = treeToList(columns).list;
+      nextState.columns = columns;
+      nextState.columnList = columnList;
 
       nextState.changedRows = [];
 
+      let data = nextProps.data || nextProps.dataSource || [];
+
       if (prevState.dataControled === true) {
-        let newData = data || [];
-        let dataList = treeToList(newData).list;
+        let dataList = treeToList(data).list;
         nextState.dataList = dataList;
-        nextState.data = newData;
-        nextState.sourceData = cloneData(newData);
+        nextState.data = data;
+        nextState.sourceData = cloneData(data);
       } else {
-        if (prevState.sourceData !== data) {
-          let newData = data || [];
-          let dataList = treeToList(newData).list;
+        if (prevState.rawData !== data) {
+          nextState.rawData = data;
+          let dataList = treeToList(data).list;
           nextState.dataList = dataList;
-          nextState.data = newData;
-          nextState.sourceData = cloneData(newData);
+          nextState.data = data;
+          nextState.sourceData = cloneData(data);
         }
       }
+
+      return nextState;
     }
-    return nextState;
+
+    return null;
+  }
+
+  innerTable = null;
+
+  innerTableRef = ins => {
+    this.innerTable = ins;
+    if (typeof this.props.innerRef === "function") {
+      this.props.innerRef(ins);
+    }
+  };
+
+  getDataList = () => {
+    let arr = [];
+    if (this.innerTable) {
+      arr = this.innerTable.state.data;
+    }
+    return arr;
+  };
+
+  resetAfterIndex(index, shouldForceUpdate) {
+    if (this.innerTable) {
+      this.innerTable.resetAfterIndex(index, shouldForceUpdate);
+    }
+  }
+
+  scrollToItem(index, align) {
+    if (this.innerTable) {
+      this.innerTable.scrollToItem(index, align);
+    }
   }
 
   updateComponent = () => {
-    let { data, dataList, addedData } = this.state;
-
-    this.setState({
-      data: cloneData(data),
-      dataList: cloneData(dataList),
-      addedData: cloneData(addedData)
-    });
+    this.forceUpdate();
   };
 
   delayTimer = null;
@@ -414,10 +447,12 @@ class EditableTable extends React.Component {
 
     let rowKey = this.props.rowKey;
 
-    let arr = columns;
+    let columnArr = cloneDeep(columns);
+
+    let arr = columnArr;
 
     if (isEditing === true) {
-      arr = treeFilter(columns, d => {
+      arr = treeFilter(columnArr, d => {
         if (d.editingVisible === true) {
           d.hidden = false;
         }
@@ -728,9 +763,10 @@ class EditableTable extends React.Component {
 
     let columnKey = column.dataIndex;
 
-    let { data, addedData, columns } = this.state;
+    let { columns } = this.state;
+    let dataList = this.getDataList();
 
-    let rows = [].concat(data).concat(addedData);
+    let rows = [].concat(dataList);
 
     let arr = treeToList(columns).leafs;
 
@@ -1355,7 +1391,8 @@ class EditableTable extends React.Component {
       columns,
       onSelectChange: this.onSelectChange,
       headerExtra: this.headerExtra,
-      footerExtra: this.footerExtra
+      footerExtra: this.footerExtra,
+      innerRef: this.innerTableRef
     };
 
     if (props.readOnly === true) {

@@ -16,6 +16,8 @@ import Popover from "antd/lib/popover";
 import cloneDeep from "lodash/cloneDeep";
 import SortIcon from "./SortIndicator";
 
+const DEFAULT_COLUMN_WIDTH = 100;
+
 function orderNumberCellRender(value, rowData, index) {
   return index + 1;
 }
@@ -60,11 +62,24 @@ class FeaturedTable extends React.Component {
 
       let data = nextProps.data || nextProps.dataSource || [];
 
+      //给列key、width设置缺省值
+      let columnsArr = treeFilter(columns, (d, i, depth, treeIndex) => {
+        if (!d.key) {
+          d.key = depth + "-" + i + "-" + treeIndex;
+        }
+
+        if (depth > 0) {
+          d.width = d.width || DEFAULT_COLUMN_WIDTH;
+        }
+
+        return true;
+      });
+
       nextState = {
-        columns: cloneDeep(columns),
+        columns: cloneDeep(columnsArr),
         data: data,
         rawData: data,
-        rawColumns: columns,
+        rawColumns: columnsArr,
         columnDropMenu,
         prevProps: nextProps
       };
@@ -366,14 +381,18 @@ class FeaturedTable extends React.Component {
 
     let configs = columnsConfig || {};
 
-    let arr = columns;
+    let arr = [];
+    let maxDepth = 0;
 
-    arr = treeFilter(columns, d => {
+    arr = treeFilter(cloneDeep(columns), (d, i, depth) => {
       let columnKey = d.key || d.dataIndex;
       let bl = true;
 
-      d.key = columnKey;
       let config = configs[columnKey] || {};
+
+      if (depth > maxDepth) {
+        maxDepth = depth;
+      }
 
       if ("hidden" in config) {
         bl = !config.hidden;
@@ -387,7 +406,7 @@ class FeaturedTable extends React.Component {
     let cols = treeToList(arr).leafs;
     let needSortColumn = false;
 
-    cols.forEach((d, i) => {
+    cols.forEach(d => {
       let columnKey = d.key || d.dataIndex;
       let config = configs[columnKey] || configs[columnKey] || {};
       let dropMenu = columnDropMenu;
@@ -402,7 +421,11 @@ class FeaturedTable extends React.Component {
       }
 
       if ("width" in config) {
-        d.width = config.width;
+        if (maxDepth > 0 && !config.width) {
+          d.width = DEFAULT_COLUMN_WIDTH;
+        } else {
+          d.width = config.width;
+        }
       }
 
       if ("order" in config) {
@@ -574,7 +597,7 @@ class FeaturedTable extends React.Component {
     if (typeof fn === "function") {
       let cls = fn(rowData, rowIndex);
       if (cls) {
-        clsArr.push("cls");
+        clsArr.push(cls);
       }
     }
 
@@ -630,20 +653,31 @@ class FeaturedTable extends React.Component {
     let columnMenuState = columnMenu || {};
 
     let footer = this.renderFooter();
+    let header = this.renderHeader();
+
+    let extraHeight = 0;
+
     let bodyStyles = {};
     if (footer) {
-      bodyStyles.height = "calc(100% - 50px)";
+      extraHeight += 50;
+    }
+    if (header) {
+      extraHeight += 50;
     }
 
-    let wrapperStyles = props.style || {};
+    if (extraHeight > 0) {
+      bodyStyles.height = `calc(100% - ${extraHeight}px)`;
+    }
+
+    let wrapperStyles = Object.assign({}, props.style || {});
 
     if (props.minHeight) {
-      wrapperStyles.minHeight = props.minHeight;
+      wrapperStyles.minHeight = props.minHeight + extraHeight;
     }
 
     return (
       <div className="tablex__container" style={wrapperStyles}>
-        {this.renderHeader()}
+        {header}
         <div className="tablex__container__body" style={bodyStyles}>
           <Table {...props} {...newProps} />
         </div>
