@@ -47,11 +47,11 @@ export function flatten(arr) {
 export function unflatten(flatData = [], idField, pidField) {
   let rootKey = "";
   function getKey(node) {
-    return node[idField];
+    return node[idField] || "";
   }
 
   function getParentKey(node) {
-    return node[pidField];
+    return node[pidField] || "";
   }
 
   if (!flatData) {

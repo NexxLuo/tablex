@@ -150,7 +150,7 @@ class Demo extends Component {
 
   expandedRowRender = (record, index, extra) => {
     if (extra.frozen === "none") {
-      return <div>expandedRowRender{new Date().getTime()}</div>;
+      return <div>expandedRowRender{ new Date().getTime() }</div>;
     }
     return null;
   };
@@ -195,13 +195,22 @@ class Demo extends Component {
 
   selectionColumn = {
     fixed: "left",
+    title: (attrs) => {
+      return <Checkbox
+        { ...attrs }
+        disabled={true}
+        onChange={ e => {
+          attrs.onChange(e.target.checked);
+        } }
+      />
+    },
     render: (row, index, extra) => {
       return (
         <Checkbox
-          {...extra}
-          onChange={e => {
+          { ...extra }
+          onChange={ e => {
             extra.onChange(e.target.checked);
-          }}
+          } }
         />
       );
     }
@@ -211,45 +220,45 @@ class Demo extends Component {
     return (
       <>
         <div>
-          <span onClick={this.scrollToItem} style={{ cursor: "pointer" }}>
+          <span onClick={ this.scrollToItem } style={ { cursor: "pointer" } }>
             scroll to item
           </span>
           <span
-            onClick={this.getData}
-            style={{ cursor: "pointer", marginLeft: 10 }}
+            onClick={ this.getData }
+            style={ { cursor: "pointer", marginLeft: 10 } }
           >
             get data
           </span>
         </div>
         <div>
           <Table
-            loading={this.state.loading}
+            loading={ this.state.loading }
             rowKey="id"
-            innerRef={this.innerRef}
-            columns={fixedColumns}
-            checkStrictly={true}
+            innerRef={ this.innerRef }
+            columns={ fixedColumns }
+            checkStrictly={ true }
             selectMode="multiple"
-            defaultExpandedRowKeys={["0"]}
-            data={this.state.data}
-            onExpand={(b, r) => {
+            defaultExpandedRowKeys={ ["0"] }
+            data={ this.state.data }
+            onExpand={ (b, r) => {
               //  console.log("onExpand:", r);
-            }}
-            onExpandedRowsChange={this.onExpandedRowsChange}
-            onSelectChange={this.onSelectChange}
-            rowClassName={() => {
+            } }
+            onExpandedRowsChange={ this.onExpandedRowsChange }
+            onSelectChange={ this.onSelectChange }
+            rowClassName={ () => {
               // console.log("rowClassName");
-            }}
-            orderNumber={this.orderNumber}
-            selectionColumn={this.selectionColumn}
-            rowHeight={(d, i) => {
+            } }
+            orderNumber={ this.orderNumber }
+            selectionColumn={ this.selectionColumn }
+            rowHeight={ (d, i) => {
               if (i % 2 === 0) {
                 return 50;
               } else {
                 return 30;
               }
-            }}
-            expandRowHeight={200}
-            minHeight={600}
+            } }
+            expandRowHeight={ 200 }
+            minHeight={ 600 }
           />
         </div>
       </>

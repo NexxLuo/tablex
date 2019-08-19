@@ -410,32 +410,31 @@ class SelectionGrid extends Component {
     }
 
     let c = this.props.selectionColumn;
-    let selectionColumnRender = null;
 
     if (c !== false && c !== null) {
       if (c instanceof Object) {
-        selectionColumnRender = c.render;
+        let selectionColumnRender = c.render;
+        if (typeof selectionColumnRender === "function") {
+          return selectionColumnRender(rowData, index, {
+            ...attr,
+            value: key,
+            onChange: checked => {
+              this.onCheckChange(checked, key);
+            }
+          }) || null;
+        }
+
       }
     }
 
-    if (typeof selectionColumnRender === "function") {
-      return selectionColumnRender(rowData, index, {
-        ...attr,
-        value: key,
-        onChange: checked => {
-          this.onCheckChange(checked, key);
-        }
-      });
-    } else {
-      return (
-        <Checkbox
-          rowData={rowData}
-          value={key}
-          {...attr}
-          onChange={this.onCheckChange}
-        />
-      );
-    }
+    return (
+      <Checkbox
+        rowData={ rowData }
+        value={ key }
+        { ...attr }
+        onChange={ this.onCheckChange }
+      />
+    );
   };
 
   checkboxHeadRender = () => {
@@ -443,7 +442,10 @@ class SelectionGrid extends Component {
 
     let isCheckedAll = true;
 
-    let attr = {};
+    let attr = {
+      checked: false,
+      indeterminate: false
+    };
 
     isCheckedAll = this.isSelectedAll();
 
@@ -457,7 +459,20 @@ class SelectionGrid extends Component {
       }
     }
 
-    return <Checkbox {...attr} onChange={this.onCheckAllChange} />;
+
+    let c = this.props.selectionColumn;
+
+    if (c !== false && c !== null) {
+      if (c instanceof Object) {
+        let selectionColumnTitle = c.title;
+
+        if (typeof selectionColumnTitle === "function") {
+          return selectionColumnTitle({ ...attr, onChange: (checked) => this.onCheckAllChange(checked) }) || null;
+        }
+      }
+    }
+
+    return <Checkbox { ...attr } onChange={ this.onCheckAllChange } />;
   };
 
   rowClassName = ({ rowData, rowIndex }) => {
@@ -520,11 +535,6 @@ class SelectionGrid extends Component {
     let { columns, prependColumns } = this.state;
     let props = this.props;
 
-    let expandColumnKey = props.expandColumnKey;
-    if (!expandColumnKey && props.columns.length > 0) {
-      expandColumnKey = props.columns[0].key;
-    }
-
     let checkboxColumn = prependColumns.find(
       d => d.__type === "__checkbox_column"
     );
@@ -536,12 +546,11 @@ class SelectionGrid extends Component {
     let newProps = {
       columns,
       prependColumns,
-      expandColumnKey,
       rowClassName: this.rowClassName,
       onRow: this.onRow
     };
 
-    return <Table {...props} {...newProps} />;
+    return <Table { ...props } { ...newProps } />;
   }
 }
 
@@ -563,6 +572,9 @@ SelectionGrid.propTypes = {
 
   /** 复选列配置 */
   selectionColumn: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+
+  /** 如若设置了此列，复选框将独占一列 */
+  selectionColumnKey: PropTypes.string,
 
   /** 默认选中的行键值 */
   defaultSelectedRowKeys: PropTypes.array,
