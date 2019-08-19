@@ -388,9 +388,14 @@ class SelectionGrid extends Component {
 
   checkboxCellRender = (value, rowData, index) => {
     let { rowKey, selectedRowKeys, halfCheckedKeys } = this.state;
+
     let key = rowData[rowKey];
 
-    let attr = {};
+    let attr = {
+      checked: false,
+      disabled: false,
+      indeterminate: false
+    };
 
     if (selectedRowKeys.indexOf(key) > -1) {
       attr.checked = true;
@@ -403,14 +408,34 @@ class SelectionGrid extends Component {
     if (this.isDisabledCheck(key, rowData)) {
       attr.disabled = true;
     }
-    return (
-      <Checkbox
-        rowData={rowData}
-        value={key}
-        onChange={this.onCheckChange}
-        {...attr}
-      />
-    );
+
+    let c = this.props.selectionColumn;
+    let selectionColumnRender = null;
+
+    if (c !== false && c !== null) {
+      if (c instanceof Object) {
+        selectionColumnRender = c.render;
+      }
+    }
+
+    if (typeof selectionColumnRender === "function") {
+      return selectionColumnRender(rowData, index, {
+        ...attr,
+        value: key,
+        onChange: checked => {
+          this.onCheckChange(checked, key);
+        }
+      });
+    } else {
+      return (
+        <Checkbox
+          rowData={rowData}
+          value={key}
+          {...attr}
+          onChange={this.onCheckChange}
+        />
+      );
+    }
   };
 
   checkboxHeadRender = () => {

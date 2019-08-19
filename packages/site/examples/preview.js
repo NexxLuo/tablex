@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Table } from "tablex";
+import { Checkbox } from "antd";
 
 const generateColumns = (count = 10, prefix = "column-", props) =>
   new Array(count).fill(0).map((column, columnIndex) => ({
@@ -61,10 +62,8 @@ fixedColumns = [
       {
         dataIndex: "address",
         title: "name"
-
       },
       {
- 
         title: "nick name",
         width: 150,
         children: [
@@ -179,7 +178,7 @@ class Demo extends Component {
   };
 
   onSelectChange = (a, b, c) => {
-    console.log("onSelectChange:", b);
+    //console.log("onSelectChange:", b);
   };
 
   orderNumber = {
@@ -187,16 +186,26 @@ class Demo extends Component {
     width: 50,
     align: "left",
     resizable: true,
-    fixed:"left",
+    fixed: "left",
     render: (value, row, index, extra) => {
       let { orders } = extra;
       return orders.join("-");
     }
   };
 
-  selectionColumn={
-    fixed:"left"
-  }
+  selectionColumn = {
+    fixed: "left",
+    render: (row, index, extra) => {
+      return (
+        <Checkbox
+          {...extra}
+          onChange={e => {
+            extra.onChange(e.target.checked);
+          }}
+        />
+      );
+    }
+  };
 
   render() {
     return (
@@ -219,16 +228,16 @@ class Demo extends Component {
             innerRef={this.innerRef}
             columns={fixedColumns}
             checkStrictly={true}
-            selectMode="single"
+            selectMode="multiple"
             defaultExpandedRowKeys={["0"]}
             data={this.state.data}
             onExpand={(b, r) => {
-              console.log("onExpand:", r);
+              //  console.log("onExpand:", r);
             }}
             onExpandedRowsChange={this.onExpandedRowsChange}
             onSelectChange={this.onSelectChange}
             rowClassName={() => {
-                console.log("rowClassName");
+              // console.log("rowClassName");
             }}
             orderNumber={this.orderNumber}
             selectionColumn={this.selectionColumn}
