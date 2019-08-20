@@ -49,7 +49,7 @@ fixedColumns = [
       return "fn title";
     },
     titleRender: () => {
-      return <div>titleRender</div>;
+      return <span>titleRender</span>;
     },
     align: "left",
     halign: "center"
@@ -198,7 +198,7 @@ class Demo extends Component {
     title: (attrs) => {
       return <Checkbox
         { ...attrs }
-        disabled={true}
+        disabled={ true }
         onChange={ e => {
           attrs.onChange(e.target.checked);
         } }
@@ -233,6 +233,7 @@ class Demo extends Component {
         <div>
           <Table
             loading={ this.state.loading }
+            editable={ true }
             rowKey="id"
             innerRef={ this.innerRef }
             columns={ fixedColumns }
@@ -250,6 +251,14 @@ class Demo extends Component {
             } }
             orderNumber={ this.orderNumber }
             selectionColumn={ this.selectionColumn }
+            footerExtra={ () => {
+              return <div style={ { padding: "14px 10px" } }>
+                总计：{ this.state.data.length }
+                <span style={ { marginLeft: 10 } }></span> 最大值：9
+                 <span style={ { marginLeft: 10 } }></span>最小值：1
+                 </div>
+            } }
+
             rowHeight={ (d, i) => {
               if (i % 2 === 0) {
                 return 50;

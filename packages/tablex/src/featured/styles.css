@@ -21,14 +21,23 @@
 }
 
 .tablex__container__footer {
-  padding: 10px 10px;
+  border-left: 1px solid #eaeaea;
+  border-right: 1px solid #eaeaea;
+}
+
+.tablex__container__footer__extra {
   height: 50px;
-  border: 1px solid #eaeaea;
-  border-top: none;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.tablex__container__footer__content {
+  height: 50px;
+  padding: 10px 10px;
   display: flex;
   align-items: center;
   white-space: nowrap;
   overflow: hidden;
+  border-bottom: 1px solid #eaeaea;
 }
 
 .tablex__head__cell__title {

@@ -231,7 +231,9 @@ class BaseDataGrid extends React.Component {
   }
 
   scrollToItem(index, align) {
+    this.leftRef.current && this.leftRef.current.scrollToItem(index, align);
     this.middleRef.current && this.middleRef.current.scrollToItem(index, align);
+    this.rightRef.current && this.rightRef.current.scrollToItem(index, align);
   }
 
   rowRender = params => {
@@ -336,33 +338,33 @@ class BaseDataGrid extends React.Component {
     cls = cls.join(" ");
 
     return (
-      <div className={cls} style={{ width, height }} ref={this.containerRef}>
-        {overlay}
-        {emptyOverlay}
-        {hasLeft ? (
+      <div className={ cls } style={ { width, height } } ref={ this.containerRef }>
+        { overlay }
+        { emptyOverlay }
+        { hasLeft ? (
           <div
             className="tablex-forzen-left"
-            style={{
+            style={ {
               width: leftWidth,
               overflow: "hidden"
-            }}
+            } }
           >
             <div
               className="tablex-forzen-left-scroll"
-              style={{
+              style={ {
                 width: leftWidth + 20,
                 height: "100%"
-              }}
+              } }
             >
               <Table
-                {...attrs}
-                headerHeight={headerHeight}
-                containerHeight={height - scrollbarX}
-                columns={left}
-                style={{ overflowX: "hidden" }}
-                ref={this.leftRef}
-                onScroll={this.onLeftScroll}
-                rowRender={params =>
+                { ...attrs }
+                headerHeight={ headerHeight }
+                containerHeight={ height - scrollbarX }
+                columns={ left }
+                style={ { overflowX: "hidden" } }
+                ref={ this.leftRef }
+                onScroll={ this.onLeftScroll }
+                rowRender={ params =>
                   this.rowRender({
                     ...params,
                     frozen: "left",
@@ -372,19 +374,19 @@ class BaseDataGrid extends React.Component {
               />
             </div>
           </div>
-        ) : null}
-        <div className="tablex-main" style={{ overflow: "hidden" }}>
+        ) : null }
+        <div className="tablex-main" style={ { overflow: "hidden" } }>
           <Table
-            {...attrs}
-            headerHeight={headerHeight}
-            containerHeight={height}
-            columns={middle}
-            ref={this.middleRef}
-            onScroll={this.onMiddleScroll}
-            outerRef={this.outterInit}
-            headRef={this.headRef}
-            headStyle={headStyle}
-            rowRender={params =>
+            { ...attrs }
+            headerHeight={ headerHeight }
+            containerHeight={ height }
+            columns={ middle }
+            ref={ this.middleRef }
+            onScroll={ this.onMiddleScroll }
+            outerRef={ this.outterInit }
+            headRef={ this.headRef }
+            headStyle={ headStyle }
+            rowRender={ params =>
               this.rowRender({
                 ...params,
                 frozen: "none",
@@ -394,21 +396,21 @@ class BaseDataGrid extends React.Component {
           />
         </div>
 
-        {hasRight ? (
+        { hasRight ? (
           <div
             className="tablex-forzen-right"
-            ref={this.rightWrapperRef}
-            style={rightStyles}
+            ref={ this.rightWrapperRef }
+            style={ rightStyles }
           >
             <Table
-              {...attrs}
-              headerHeight={headerHeight}
-              containerHeight={height - scrollbarX}
-              columns={right}
-              style={{ overflowX: "hidden" }}
-              onScroll={this.onRightScroll}
-              ref={this.rightRef}
-              rowRender={params =>
+              { ...attrs }
+              headerHeight={ headerHeight }
+              containerHeight={ height - scrollbarX }
+              columns={ right }
+              style={ { overflowX: "hidden" } }
+              onScroll={ this.onRightScroll }
+              ref={ this.rightRef }
+              rowRender={ params =>
                 this.rowRender({
                   ...params,
                   frozen: "right",
@@ -417,7 +419,7 @@ class BaseDataGrid extends React.Component {
               }
             />
           </div>
-        ) : null}
+        ) : null }
       </div>
     );
   }
@@ -426,15 +428,15 @@ class BaseDataGrid extends React.Component {
 const AutoSizerTable = forwardRef((props, ref) => {
   return (
     <ReactResizeDetector handleWidth handleHeight>
-      {({ width, height }) => {
+      { ({ width, height }) => {
         if (!height) {
           return <div />;
         }
 
         return (
-          <BaseDataGrid {...props} height={height} width={width} ref={ref} />
+          <BaseDataGrid { ...props } height={ height } width={ width } ref={ ref } />
         );
-      }}
+      } }
     </ReactResizeDetector>
   );
 });

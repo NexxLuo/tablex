@@ -437,17 +437,17 @@ class FeaturedTable extends React.Component {
         return (
           <div
             className="tablex__head__cell__title"
-            onClick={() => this.onTitleClick(d)}
+            onClick={ () => this.onTitleClick(d) }
           >
-            {title}
-            <SortIcon order={sort} />
-            {dropMenu === true ? (
+            { title }
+            <SortIcon order={ sort } />
+            { dropMenu === true ? (
               <span
                 className="tablex__head__cell__title__dropdown"
-                data-columnkey={columnKey}
-                onClick={this.columnSettingMenuShow}
+                data-columnkey={ columnKey }
+                onClick={ this.columnSettingMenuShow }
               />
-            ) : null}
+            ) : null }
           </div>
         );
       };
@@ -470,23 +470,22 @@ class FeaturedTable extends React.Component {
 
   renderHeader = () => {
     let header = null;
-
-    let headerExtra = null;
+    let toolsBar = null;
     let headerEl = null;
 
     if (typeof this.props.header === "function") {
       headerEl = this.props.header();
     }
 
-    if (typeof this.props.headerExtra === "function") {
-      headerExtra = this.props.headerExtra();
+    if (typeof this.props.headerToolsBar === "function") {
+      toolsBar = this.props.headerToolsBar();
     }
 
-    if (headerEl !== null || headerExtra != null) {
+    if (headerEl !== null || toolsBar != null) {
       header = (
         <div className="tablex__container__header">
-          {headerEl}
-          {headerExtra}
+          { headerEl }
+          { toolsBar }
         </div>
       );
     }
@@ -495,79 +494,108 @@ class FeaturedTable extends React.Component {
   };
 
   renderFooter = () => {
-    let footer = null;
+
 
     let { pagination: pageAttr, data } = this.state;
 
     let { settable, tableId } = this.props;
 
-    let footerExtra = null;
+    let footer = null;
+    let footerHeight = 0;
+
+    let footerExtraEl = null;
+    let footerContentEl = null;
+
+
     let footerEl = null;
+    let toolsBarEl = null;
+    let pagerEl = null;
+    let settingButtonEl = null;
+
 
     if (typeof this.props.footer === "function") {
       footerEl = this.props.footer();
     }
 
-    if (typeof this.props.footerExtra === "function") {
-      footerExtra = this.props.footerExtra();
+    if (typeof this.props.footerToolsBar === "function") {
+      toolsBarEl = this.props.footerToolsBar();
     }
+
+
+    if (typeof this.props.footerExtra === "function") {
+      let footerExtra = this.props.footerExtra();
+      if (footerExtra !== null) {
+        footerExtraEl = <div className="tablex__container__footer__extra">{ footerExtra }</div>;
+        footerHeight += 50;
+      }
+    }
+
 
     const dataTotal = pageAttr.total || data.length;
 
     let hasPager = this.hasPagination();
 
-    let pager = null;
-    let settingButton = null;
 
     if (settable === true && tableId) {
-      settingButton = (
-        <div key="_settingButton" style={{ marginRight: "5px" }}>
+      settingButtonEl = (
+        <div key="_settingButton" style={ { marginRight: "5px" } }>
           <Setting
-            tableId={tableId}
-            onSave={this.saveConfig}
-            onReset={this.resetConfig}
-            configs={this.state.columnsConfig}
-            columns={this.state.rawColumns}
+            tableId={ tableId }
+            onSave={ this.saveConfig }
+            onReset={ this.resetConfig }
+            configs={ this.state.columnsConfig }
+            columns={ this.state.rawColumns }
           />
         </div>
       );
     }
 
     if (hasPager) {
-      pager = (
+      pagerEl = (
         <Pagination
-          {...pageAttr}
-          total={dataTotal}
-          onPageChange={this.onPageChange}
+          { ...pageAttr }
+          total={ dataTotal }
+          onPageChange={ this.onPageChange }
         />
       );
     }
 
-    if (
-      pager !== null ||
-      settingButton !== null ||
+
+    if (pagerEl !== null ||
+      settingButtonEl !== null ||
       footerEl !== null ||
-      footerExtra !== null
+      toolsBarEl !== null) {
+      footerHeight += 50;
+      footerContentEl = <div className="tablex__container__footer__content">
+        { settingButtonEl }
+        { footerEl }
+        { toolsBarEl }
+        { pagerEl }
+      </div>
+    }
+
+    if (
+      footerContentEl !== null ||
+      footerExtraEl !== null
     ) {
+
       footer = (
         <div className="tablex__container__footer">
-          {settingButton}
-          {footerEl}
-          {footerExtra}
-          {pager}
+          { footerExtraEl }
+          { footerContentEl }
         </div>
       );
     }
 
-    return footer;
+    return { footer, height: footerHeight };
   };
 
   overlayRenderer = () => {
     return (
       <Spin
-        spinning={true}
+        spinning={ true }
         tip="数据加载中，请稍候..."
-        style={{
+        style={ {
           position: "absolute",
           margin: "auto",
           left: 0,
@@ -577,7 +605,7 @@ class FeaturedTable extends React.Component {
           top: 0,
           bottom: 0,
           zIndex: 2
-        }}
+        } }
       />
     );
   };
@@ -652,14 +680,15 @@ class FeaturedTable extends React.Component {
 
     let columnMenuState = columnMenu || {};
 
-    let footer = this.renderFooter();
+    let { footer, height: footerHeight } = this.renderFooter();
     let header = this.renderHeader();
+
 
     let extraHeight = 0;
 
     let bodyStyles = {};
     if (footer) {
-      extraHeight += 50;
+      extraHeight += footerHeight;
     }
     if (header) {
       extraHeight += 50;
@@ -676,41 +705,41 @@ class FeaturedTable extends React.Component {
     }
 
     return (
-      <div className="tablex__container" style={wrapperStyles}>
-        {header}
-        <div className="tablex__container__body" style={bodyStyles}>
-          <Table {...props} {...newProps} />
+      <div className="tablex__container" style={ wrapperStyles }>
+        { header }
+        <div className="tablex__container__body" style={ bodyStyles }>
+          <Table { ...props } { ...newProps } />
         </div>
-        {footer}
+        { footer }
 
-        {columnDropMenu === true ? (
+        { columnDropMenu === true ? (
           <Popover
             trigger="click"
-            onVisibleChange={this.columnSettingMenuHide}
+            onVisibleChange={ this.columnSettingMenuHide }
             content={
               <ColumnDropMenu
-                options={{ pinable: true, filterable: true, groupable: false }}
-                columns={settableColumns}
-                columnsConfig={this.state.columnsConfig}
-                onChange={this.onColumnChange}
+                options={ { pinable: true, filterable: true, groupable: false } }
+                columns={ settableColumns }
+                columnsConfig={ this.state.columnsConfig }
+                onChange={ this.onColumnChange }
               />
             }
-            arrowPointAtCenter={true}
+            arrowPointAtCenter={ true }
             placement="bottomRight"
           >
             <span
-              style={{
+              style={ {
                 width: 1,
                 height: 1,
                 position: "absolute",
                 left: columnMenuState.offsetX,
                 top: columnMenuState.offsetY,
                 display: columnMenuState.visible ? "block" : "none"
-              }}
-              ref={this.dropdown_button_ref}
+              } }
+              ref={ this.dropdown_button_ref }
             />
           </Popover>
-        ) : null}
+        ) : null }
       </div>
     );
   }
@@ -748,8 +777,17 @@ FeaturedTable.propTypes = {
   /** 奇偶行颜色间隔 */
   striped: PropTypes.bool,
 
+  /** 渲染footer */
+  footer: PropTypes.func,
+
+  /** 渲染额外footer，独占一行 */
+  footerExtra: PropTypes.func,
+
+  /** 渲染header */
+  header: PropTypes.func,
+
   /** 表格全局id，通过此id记忆表格配置，由于采用localStorage存储配置，需保证id唯一 */
-  tableId: function(props, propName, componentName) {
+  tableId: function (props, propName, componentName) {
     let count = 0;
     let v = props[propName];
 

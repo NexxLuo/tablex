@@ -502,13 +502,13 @@ class EditableTable extends React.Component {
 
             let c = (
               <span
-                style={{ verticalAlign: "middle" }}
-                className={valid === false ? "has-error" : ""}
-                onClick={e => this.onClick(e, row, d)}
-                onKeyDown={e => this.onKeyDown(e, row, d)}
+                style={ { verticalAlign: "middle" } }
+                className={ valid === false ? "has-error" : "" }
+                onClick={ e => this.onClick(e, row, d) }
+                onKeyDown={ e => this.onKeyDown(e, row, d) }
               >
-                <Tooltip placement="topLeft" title={msg}>
-                  {ed}
+                <Tooltip placement="topLeft" title={ msg }>
+                  { ed }
                 </Tooltip>
               </span>
             );
@@ -569,13 +569,13 @@ class EditableTable extends React.Component {
 
               let c = (
                 <span
-                  style={{ verticalAlign: "middle" }}
-                  className={valid === false ? "has-error" : ""}
-                  onClick={e => this.onClick(e, row, d)}
-                  onKeyDown={e => this.onKeyDown(e, row, d)}
+                  style={ { verticalAlign: "middle" } }
+                  className={ valid === false ? "has-error" : "" }
+                  onClick={ e => this.onClick(e, row, d) }
+                  onKeyDown={ e => this.onKeyDown(e, row, d) }
                 >
-                  <Tooltip placement="topLeft" title={msg}>
-                    {ed}
+                  <Tooltip placement="topLeft" title={ msg }>
+                    { ed }
                   </Tooltip>
                 </span>
               );
@@ -1097,41 +1097,41 @@ class EditableTable extends React.Component {
 
     let okText = config.okText || "确定";
     let okIcon = config.okIcon || "";
-    okIcon = okIcon ? <Icon type={okIcon} /> : null;
+    okIcon = okIcon ? <Icon type={ okIcon } /> : null;
 
     let cancelText = config.cancelText || "取消";
     let cancelIcon = config.cancelIcon || "";
-    cancelIcon = cancelIcon ? <Icon type={cancelIcon} /> : null;
+    cancelIcon = cancelIcon ? <Icon type={ cancelIcon } /> : null;
 
     let addText = config.addText || "新增";
     let addIcon = config.addIcon || "";
-    addIcon = addIcon ? <Icon type={addIcon} /> : null;
+    addIcon = addIcon ? <Icon type={ addIcon } /> : null;
 
     let editText = config.editText || "编辑";
     let editIcon = config.editIcon || "";
-    editIcon = editIcon ? <Icon type={editIcon} /> : null;
+    editIcon = editIcon ? <Icon type={ editIcon } /> : null;
 
     let deleteText = config.deleteText || "删除";
     let deleteIcon = config.deleteIcon || "";
-    deleteIcon = deleteIcon ? <Icon type={deleteIcon} /> : null;
+    deleteIcon = deleteIcon ? <Icon type={ deleteIcon } /> : null;
 
     if (isEditing) {
       w = 160;
       buttons.push(
         <Button
-          key={"_btnOk"}
-          loading={this.state.editSaveLoading}
-          onClick={this.completeEdit}
-          style={{ ...itemStyle }}
+          key={ "_btnOk" }
+          loading={ this.state.editSaveLoading }
+          onClick={ this.completeEdit }
+          style={ { ...itemStyle } }
         >
-          {okIcon}
-          {okText}
+          { okIcon }
+          { okText }
         </Button>
       );
       buttons.push(
-        <Button key={"_btnCancel"} onClick={this.cancelEdit} style={itemStyle}>
-          {cancelIcon}
-          {cancelText}
+        <Button key={ "_btnCancel" } onClick={ this.cancelEdit } style={ itemStyle }>
+          { cancelIcon }
+          { cancelText }
         </Button>
       );
     } else {
@@ -1141,11 +1141,11 @@ class EditableTable extends React.Component {
         let styles = { ...itemStyle };
 
         const menu = (
-          <Menu onClick={e => this.addRange(e.item.props.value)}>
-            <Menu.Item key="1" value={5}>
+          <Menu onClick={ e => this.addRange(e.item.props.value) }>
+            <Menu.Item key="1" value={ 5 }>
               5 行
             </Menu.Item>
-            <Menu.Item key="2" value={10}>
+            <Menu.Item key="2" value={ 10 }>
               10 行
             </Menu.Item>
           </Menu>
@@ -1154,21 +1154,21 @@ class EditableTable extends React.Component {
         if (d === "addSingle") {
           buttons.push(
             <Button
-              key={d + "_1"}
-              onClick={() => this.addRange(1)}
-              style={styles}
+              key={ d + "_1" }
+              onClick={ () => this.addRange(1) }
+              style={ styles }
             >
-              {addIcon}
-              {addText}
+              { addIcon }
+              { addText }
             </Button>
           );
         }
 
         if (d === "add") {
           buttons.push(
-            <Dropdown key={d + "_1"} overlay={menu}>
-              <Button tool="add" style={styles} onClick={() => this.addRange()}>
-                {addIcon} {addText}
+            <Dropdown key={ d + "_1" } overlay={ menu }>
+              <Button tool="add" style={ styles } onClick={ () => this.addRange() }>
+                { addIcon } { addText }
                 <Icon type="down" />
               </Button>
             </Dropdown>
@@ -1177,9 +1177,9 @@ class EditableTable extends React.Component {
 
         if (d === "edit") {
           buttons.push(
-            <Button key={d + "_1"} onClick={this.edit} style={styles}>
-              {editIcon}
-              {editText}
+            <Button key={ d + "_1" } onClick={ this.edit } style={ styles }>
+              { editIcon }
+              { editText }
             </Button>
           );
         }
@@ -1187,21 +1187,21 @@ class EditableTable extends React.Component {
         if (d === "delete") {
           buttons.push(
             <Popconfirm
-              key={d}
+              key={ d }
               title="确定删除选中的数据吗？"
               okText="确定"
               cancelText="取消"
-              onConfirm={this.delete}
+              onConfirm={ this.delete }
             >
               <Button
-                style={styles}
-                loading={this.state.deleteLoading}
-                onClick={e => {
+                style={ styles }
+                loading={ this.state.deleteLoading }
+                onClick={ e => {
                   e.stopPropagation();
-                }}
+                } }
               >
-                {deleteIcon}
-                {deleteText}
+                { deleteIcon }
+                { deleteText }
               </Button>
             </Popconfirm>
           );
@@ -1209,25 +1209,25 @@ class EditableTable extends React.Component {
 
         if (typeof d === "function") {
           buttons.push(
-            <span style={styles} key={"_fnTools_" + i}>
-              {d()}
+            <span style={ styles } key={ "_fnTools_" + i }>
+              { d() }
             </span>
           );
         }
 
         if (typeof d === "object" && d !== null) {
           let toolIcon = d.icon;
-          toolIcon = toolIcon ? <Icon type={toolIcon} /> : null;
+          toolIcon = toolIcon ? <Icon type={ toolIcon } /> : null;
           let toolAttr = d.props || {};
           buttons.push(
             <Button
-              key={"_objTools_" + i}
-              onClick={d.handler}
-              style={styles}
-              {...toolAttr}
+              key={ "_objTools_" + i }
+              onClick={ d.handler }
+              style={ styles }
+              { ...toolAttr }
             >
-              {toolIcon}
-              {d.text}
+              { toolIcon }
+              { d.text }
             </Button>
           );
         }
@@ -1238,7 +1238,7 @@ class EditableTable extends React.Component {
       return null;
     }
 
-    return <Fragment>{buttons}</Fragment>;
+    return <Fragment>{ buttons }</Fragment>;
   };
 
   getProps = () => {
@@ -1263,13 +1263,13 @@ class EditableTable extends React.Component {
       if (tools !== null) {
         return (
           <div
-            style={{
+            style={ {
               backgroundColor: "#ffffff",
               marginRight: 5,
               ...styles
-            }}
+            } }
           >
-            {tools}
+            { tools }
           </div>
         );
       } else {
@@ -1345,7 +1345,7 @@ class EditableTable extends React.Component {
     }
   };
 
-  headerExtra = () => {
+  headerToolsBar = () => {
     let header = null;
 
     let { editToolsConfig = {} } = this.props;
@@ -1358,7 +1358,7 @@ class EditableTable extends React.Component {
     return header;
   };
 
-  footerExtra = () => {
+  footerToolsBar = () => {
     let { editToolsConfig = {} } = this.props;
     let toolBarPosition = editToolsConfig.position;
 
@@ -1390,8 +1390,8 @@ class EditableTable extends React.Component {
       data: arr,
       columns,
       onSelectChange: this.onSelectChange,
-      headerExtra: this.headerExtra,
-      footerExtra: this.footerExtra,
+      headerToolsBar: this.headerToolsBar,
+      footerToolsBar: this.footerToolsBar,
       innerRef: this.innerTableRef
     };
 
@@ -1399,7 +1399,7 @@ class EditableTable extends React.Component {
       newProps.selectMode = "none";
     }
 
-    return <Table {...props} {...newProps} />;
+    return <Table { ...props } { ...newProps } />;
   }
 }
 
