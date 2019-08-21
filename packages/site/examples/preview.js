@@ -74,8 +74,8 @@ fixedColumns = [
             width: 150
           },
           {
-            dataIndex: "column-31",
-            title: "nick-2"
+            dataIndex: "level",
+            title: "level"
           }
         ]
       }
@@ -101,6 +101,7 @@ function createData(level, parentKey, maxLevel, index) {
       id: k,
       "column-1": "Edward King " + k,
       age: 32,
+      level: level,
       address: "London, Park Lane no. " + i
     };
 
@@ -253,11 +254,25 @@ class Demo extends Component {
             }}
             orderNumber={this.orderNumber}
             selectionColumn={this.selectionColumn}
+            summary={[
+              {
+                age: "sum",
+                level: "min"
+              },
+              {
+                age: "max",
+                level: "max"
+              }
+            ]}
+            summaryRender={(value, type, index) => {
+              return "summary:" + value;
+            }}
             frozenRender={{
               rowHeight: 40,
               rowKey: "id",
               bottom: [this.state.data[0]],
               cellRender: (value, row, index, extra) => {
+                console.log("cellRender:", extra);
                 return value;
               }
             }}

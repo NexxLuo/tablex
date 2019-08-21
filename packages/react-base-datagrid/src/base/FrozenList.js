@@ -7,6 +7,7 @@ const TableCell = props => {
     rowIndex,
     cellRender,
     columnKey,
+    columnIndex,
     column,
     rowPosition,
     onCell
@@ -16,10 +17,9 @@ const TableCell = props => {
 
   let value = row[dataIndex];
 
-  let prepend = null;
-
   let cellExtra = {
     columnKey: columnKey,
+    columnIndex: columnIndex,
     column: column,
     rowPosition: rowPosition
   };
@@ -41,7 +41,6 @@ const TableCell = props => {
   return (
     <div className="tablex-table-row-cell" style={style} {...extraAttr}>
       <div className="tablex-table-row-cell-inner" style={alignStyles}>
-        {prepend}
         {value}
       </div>
     </div>
@@ -68,11 +67,13 @@ const TableRow = ({
 
   let rowCells = columns.map((d, i) => {
     let columnKey = d.key || d.dataIndex || i;
+
     return (
       <TableCell
         key={columnKey}
         rowKey={k}
         columnKey={columnKey}
+        columnIndex={i}
         row={row}
         rowIndex={index}
         cellRender={cellRender}

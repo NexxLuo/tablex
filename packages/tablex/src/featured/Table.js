@@ -14,6 +14,10 @@ import Setting, { getConfigs, setConfigs } from "./setting";
 import orderBy from "lodash/orderBy";
 import Popover from "antd/lib/popover";
 import cloneDeep from "lodash/cloneDeep";
+import maxBy from "lodash/maxBy";
+import minBy from "lodash/minBy";
+import sumBy from "lodash/sumBy";
+
 import SortIcon from "./SortIndicator";
 
 const DEFAULT_COLUMN_WIDTH = 100;
@@ -25,6 +29,43 @@ function orderNumberCellRender(value, rowData, index) {
 function orderNumberHeadRender() {
   return "序号";
 }
+
+let summaryMath = {
+  max: (items, key) => {
+    let r =
+      maxBy(items, function(o) {
+        return o[key];
+      }) || {};
+
+    return r[key];
+  },
+  min: (items, key) => {
+    let r =
+      minBy(items, function(o) {
+        return o[key];
+      }) || {};
+
+    return r[key];
+  },
+  average: (items, key) => {
+    let sum = sumBy(items, function(o) {
+      return o[key];
+    });
+
+    if (sum === undefined) {
+      return "";
+    } else {
+      return sum / items.length;
+    }
+  },
+  sum: (items, key) => {
+    let r = sumBy(items, function(o) {
+      return o[key];
+    });
+
+    return r;
+  }
+};
 
 /**
  * 表格
@@ -437,17 +478,17 @@ class FeaturedTable extends React.Component {
         return (
           <div
             className="tablex__head__cell__title"
-            onClick={ () => this.onTitleClick(d) }
+            onClick={() => this.onTitleClick(d)}
           >
-            { title }
-            <SortIcon order={ sort } />
-            { dropMenu === true ? (
+            {title}
+            <SortIcon order={sort} />
+            {dropMenu === true ? (
               <span
                 className="tablex__head__cell__title__dropdown"
-                data-columnkey={ columnKey }
-                onClick={ this.columnSettingMenuShow }
+                data-columnkey={columnKey}
+                onClick={this.columnSettingMenuShow}
               />
-            ) : null }
+            ) : null}
           </div>
         );
       };
@@ -484,8 +525,8 @@ class FeaturedTable extends React.Component {
     if (headerEl !== null || toolsBar != null) {
       header = (
         <div className="tablex__container__header">
-          { headerEl }
-          { toolsBar }
+          {headerEl}
+          {toolsBar}
         </div>
       );
     }
@@ -494,8 +535,6 @@ class FeaturedTable extends React.Component {
   };
 
   renderFooter = () => {
-
-
     let { pagination: pageAttr, data } = this.state;
 
     let { settable, tableId } = this.props;
@@ -506,12 +545,10 @@ class FeaturedTable extends React.Component {
     let footerExtraEl = null;
     let footerContentEl = null;
 
-
     let footerEl = null;
     let toolsBarEl = null;
     let pagerEl = null;
     let settingButtonEl = null;
-
 
     if (typeof this.props.footer === "function") {
       footerEl = this.props.footer();
@@ -521,30 +558,29 @@ class FeaturedTable extends React.Component {
       toolsBarEl = this.props.footerToolsBar();
     }
 
-
     if (typeof this.props.footerExtra === "function") {
       let footerExtra = this.props.footerExtra();
       if (footerExtra !== null) {
-        footerExtraEl = <div className="tablex__container__footer__extra">{ footerExtra }</div>;
+        footerExtraEl = (
+          <div className="tablex__container__footer__extra">{footerExtra}</div>
+        );
         footerHeight += 50;
       }
     }
-
 
     const dataTotal = pageAttr.total || data.length;
 
     let hasPager = this.hasPagination();
 
-
     if (settable === true && tableId) {
       settingButtonEl = (
-        <div key="_settingButton" style={ { marginRight: "5px" } }>
+        <div key="_settingButton" style={{ marginRight: "5px" }}>
           <Setting
-            tableId={ tableId }
-            onSave={ this.saveConfig }
-            onReset={ this.resetConfig }
-            configs={ this.state.columnsConfig }
-            columns={ this.state.rawColumns }
+            tableId={tableId}
+            onSave={this.saveConfig}
+            onReset={this.resetConfig}
+            configs={this.state.columnsConfig}
+            columns={this.state.rawColumns}
           />
         </div>
       );
@@ -553,36 +589,35 @@ class FeaturedTable extends React.Component {
     if (hasPager) {
       pagerEl = (
         <Pagination
-          { ...pageAttr }
-          total={ dataTotal }
-          onPageChange={ this.onPageChange }
+          {...pageAttr}
+          total={dataTotal}
+          onPageChange={this.onPageChange}
         />
       );
     }
 
-
-    if (pagerEl !== null ||
+    if (
+      pagerEl !== null ||
       settingButtonEl !== null ||
       footerEl !== null ||
-      toolsBarEl !== null) {
+      toolsBarEl !== null
+    ) {
       footerHeight += 50;
-      footerContentEl = <div className="tablex__container__footer__content">
-        { settingButtonEl }
-        { footerEl }
-        { toolsBarEl }
-        { pagerEl }
-      </div>
+      footerContentEl = (
+        <div className="tablex__container__footer__content">
+          {settingButtonEl}
+          {footerEl}
+          {toolsBarEl}
+          {pagerEl}
+        </div>
+      );
     }
 
-    if (
-      footerContentEl !== null ||
-      footerExtraEl !== null
-    ) {
-
+    if (footerContentEl !== null || footerExtraEl !== null) {
       footer = (
         <div className="tablex__container__footer">
-          { footerExtraEl }
-          { footerContentEl }
+          {footerExtraEl}
+          {footerContentEl}
         </div>
       );
     }
@@ -593,9 +628,9 @@ class FeaturedTable extends React.Component {
   overlayRenderer = () => {
     return (
       <Spin
-        spinning={ true }
+        spinning={true}
         tip="数据加载中，请稍候..."
-        style={ {
+        style={{
           position: "absolute",
           margin: "auto",
           left: 0,
@@ -605,7 +640,7 @@ class FeaturedTable extends React.Component {
           top: 0,
           bottom: 0,
           zIndex: 2
-        } }
+        }}
       />
     );
   };
@@ -644,6 +679,54 @@ class FeaturedTable extends React.Component {
     this.innerTableRef && this.innerTableRef.resetScrollbarSize();
   }
 
+  getSummary = () => {
+    let { rowKey, summary = [], summaryRender } = this.props;
+    let { data } = this.state;
+
+    let flatData = treeToList(data).list;
+
+    //summaryMath
+
+    let arr = [];
+
+    summary.forEach((s, i) => {
+      let r = {
+        key: "summary_" + i
+      };
+
+      for (const k in s) {
+        let dataIndex = k;
+
+        let renderFn = summaryRender;
+        let fn = summaryMath[s[k]];
+
+        let summaryValue = "";
+
+        if (typeof fn === "function") {
+          summaryValue = fn(flatData, dataIndex);
+        }
+
+        let v = summaryValue;
+
+        if (typeof renderFn === "function") {
+          v = renderFn(summaryValue, s, i);
+        }
+
+        r[dataIndex] = v;
+      }
+
+      arr.push(r);
+    });
+
+    let frozenRender = {
+      rowHeight: 40,
+      rowKey: "key",
+      bottom: arr
+    };
+
+    return frozenRender;
+  };
+
   render() {
     let props = this.props;
 
@@ -658,6 +741,8 @@ class FeaturedTable extends React.Component {
     let prependColumns = this.formatPrependColumns(tablePrependColumns);
     let settableColumns = tableColumns.filter(d => d.settable !== false);
 
+    let frozenRender = this.getSummary();
+
     let arr = this.getData();
 
     let newProps = {
@@ -666,7 +751,8 @@ class FeaturedTable extends React.Component {
       prependColumns,
       onColumnResizeStop: this.onColumnResize,
       emptyRenderer: this.emptyRenderer,
-      innerRef: this.innerRef
+      innerRef: this.innerRef,
+      frozenRender
     };
 
     if (props.striped === true) {
@@ -682,7 +768,6 @@ class FeaturedTable extends React.Component {
 
     let { footer, height: footerHeight } = this.renderFooter();
     let header = this.renderHeader();
-
 
     let extraHeight = 0;
 
@@ -705,41 +790,41 @@ class FeaturedTable extends React.Component {
     }
 
     return (
-      <div className="tablex__container" style={ wrapperStyles }>
-        { header }
-        <div className="tablex__container__body" style={ bodyStyles }>
-          <Table { ...props } { ...newProps } />
+      <div className="tablex__container" style={wrapperStyles}>
+        {header}
+        <div className="tablex__container__body" style={bodyStyles}>
+          <Table {...props} {...newProps} />
         </div>
-        { footer }
+        {footer}
 
-        { columnDropMenu === true ? (
+        {columnDropMenu === true ? (
           <Popover
             trigger="click"
-            onVisibleChange={ this.columnSettingMenuHide }
+            onVisibleChange={this.columnSettingMenuHide}
             content={
               <ColumnDropMenu
-                options={ { pinable: true, filterable: true, groupable: false } }
-                columns={ settableColumns }
-                columnsConfig={ this.state.columnsConfig }
-                onChange={ this.onColumnChange }
+                options={{ pinable: true, filterable: true, groupable: false }}
+                columns={settableColumns}
+                columnsConfig={this.state.columnsConfig}
+                onChange={this.onColumnChange}
               />
             }
-            arrowPointAtCenter={ true }
+            arrowPointAtCenter={true}
             placement="bottomRight"
           >
             <span
-              style={ {
+              style={{
                 width: 1,
                 height: 1,
                 position: "absolute",
                 left: columnMenuState.offsetX,
                 top: columnMenuState.offsetY,
                 display: columnMenuState.visible ? "block" : "none"
-              } }
-              ref={ this.dropdown_button_ref }
+              }}
+              ref={this.dropdown_button_ref}
             />
           </Popover>
-        ) : null }
+        ) : null}
       </div>
     );
   }
@@ -787,7 +872,7 @@ FeaturedTable.propTypes = {
   header: PropTypes.func,
 
   /** 表格全局id，通过此id记忆表格配置，由于采用localStorage存储配置，需保证id唯一 */
-  tableId: function (props, propName, componentName) {
+  tableId: function(props, propName, componentName) {
     let count = 0;
     let v = props[propName];
 
