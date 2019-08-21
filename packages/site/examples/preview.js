@@ -150,7 +150,7 @@ class Demo extends Component {
 
   expandedRowRender = (record, index, extra) => {
     if (extra.frozen === "none") {
-      return <div>expandedRowRender{ new Date().getTime() }</div>;
+      return <div>expandedRowRender{new Date().getTime()}</div>;
     }
     return null;
   };
@@ -188,29 +188,31 @@ class Demo extends Component {
     resizable: true,
     fixed: "left",
     render: (value, row, index, extra) => {
-      let { orders } = extra;
+      let { orders = [] } = extra;
       return orders.join("-");
     }
   };
 
   selectionColumn = {
     fixed: "left",
-    title: (attrs) => {
-      return <Checkbox
-        { ...attrs }
-        disabled={ true }
-        onChange={ e => {
-          attrs.onChange(e.target.checked);
-        } }
-      />
+    title: attrs => {
+      return (
+        <Checkbox
+          {...attrs}
+          disabled={true}
+          onChange={e => {
+            attrs.onChange(e.target.checked);
+          }}
+        />
+      );
     },
     render: (row, index, extra) => {
       return (
         <Checkbox
-          { ...extra }
-          onChange={ e => {
+          {...extra}
+          onChange={e => {
             extra.onChange(e.target.checked);
-          } }
+          }}
         />
       );
     }
@@ -220,54 +222,77 @@ class Demo extends Component {
     return (
       <>
         <div>
-          <span onClick={ this.scrollToItem } style={ { cursor: "pointer" } }>
+          <span onClick={this.scrollToItem} style={{ cursor: "pointer" }}>
             scroll to item
           </span>
           <span
-            onClick={ this.getData }
-            style={ { cursor: "pointer", marginLeft: 10 } }
+            onClick={this.getData}
+            style={{ cursor: "pointer", marginLeft: 10 }}
           >
             get data
           </span>
         </div>
         <div>
           <Table
-            loading={ this.state.loading }
-            editable={ true }
+            loading={this.state.loading}
+            editable={true}
             rowKey="id"
-            innerRef={ this.innerRef }
-            columns={ fixedColumns }
-            checkStrictly={ true }
+            innerRef={this.innerRef}
+            columns={fixedColumns}
+            checkStrictly={true}
             selectMode="multiple"
-            defaultExpandedRowKeys={ ["0"] }
-            data={ this.state.data }
-            onExpand={ (b, r) => {
+            defaultExpandedRowKeys={["0"]}
+            data={this.state.data}
+            onExpand={(b, r) => {
               //  console.log("onExpand:", r);
-            } }
-            onExpandedRowsChange={ this.onExpandedRowsChange }
-            onSelectChange={ this.onSelectChange }
-            rowClassName={ () => {
+            }}
+            onExpandedRowsChange={this.onExpandedRowsChange}
+            onSelectChange={this.onSelectChange}
+            rowClassName={() => {
               // console.log("rowClassName");
-            } }
-            orderNumber={ this.orderNumber }
-            selectionColumn={ this.selectionColumn }
-            footerExtra={ () => {
-              return <div style={ { padding: "14px 10px" } }>
-                总计：{ this.state.data.length }
-                <span style={ { marginLeft: 10 } }></span> 最大值：9
-                 <span style={ { marginLeft: 10 } }></span>最小值：1
-                 </div>
-            } }
-
-            rowHeight={ (d, i) => {
+            }}
+            orderNumber={this.orderNumber}
+            selectionColumn={this.selectionColumn}
+            frozenRender={{
+              rowHeight: 40,
+              rowKey: "id",
+              bottom: [this.state.data[0]],
+              cellRender: (value, row, index, extra) => {
+                return value;
+              }
+            }}
+            onRow2={(row, index, extra) => {
+              if (index === 4) {
+                return {
+                  style: { position: "sticky", top: 0, zIndex: 2 }
+                };
+              } else {
+                if (index < 4) {
+                  return {
+                    style: { top: extra.style.top + 50 }
+                  };
+                }
+              }
+            }}
+            footerExtra={() => {
+              return (
+                <div style={{ padding: "14px 10px" }}>
+                  总计：{this.state.data.length}
+                  <span style={{ marginLeft: 10 }} /> 最大值：9
+                  <span style={{ marginLeft: 10 }} />
+                  最小值：1
+                </div>
+              );
+            }}
+            rowHeight={(d, i) => {
               if (i % 2 === 0) {
                 return 50;
               } else {
                 return 30;
               }
-            } }
-            expandRowHeight={ 200 }
-            minHeight={ 600 }
+            }}
+            expandRowHeight={200}
+            minHeight={600}
           />
         </div>
       </>

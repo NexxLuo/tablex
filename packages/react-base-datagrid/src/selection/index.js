@@ -415,24 +415,25 @@ class SelectionGrid extends Component {
       if (c instanceof Object) {
         let selectionColumnRender = c.render;
         if (typeof selectionColumnRender === "function") {
-          return selectionColumnRender(rowData, index, {
-            ...attr,
-            value: key,
-            onChange: checked => {
-              this.onCheckChange(checked, key);
-            }
-          }) || null;
+          return (
+            selectionColumnRender(rowData, index, {
+              ...attr,
+              value: key,
+              onChange: checked => {
+                this.onCheckChange(checked, key);
+              }
+            }) || null
+          );
         }
-
       }
     }
 
     return (
       <Checkbox
-        rowData={ rowData }
-        value={ key }
-        { ...attr }
-        onChange={ this.onCheckChange }
+        rowData={rowData}
+        value={key}
+        {...attr}
+        onChange={this.onCheckChange}
       />
     );
   };
@@ -459,7 +460,6 @@ class SelectionGrid extends Component {
       }
     }
 
-
     let c = this.props.selectionColumn;
 
     if (c !== false && c !== null) {
@@ -467,12 +467,17 @@ class SelectionGrid extends Component {
         let selectionColumnTitle = c.title;
 
         if (typeof selectionColumnTitle === "function") {
-          return selectionColumnTitle({ ...attr, onChange: (checked) => this.onCheckAllChange(checked) }) || null;
+          return (
+            selectionColumnTitle({
+              ...attr,
+              onChange: checked => this.onCheckAllChange(checked)
+            }) || null
+          );
         }
       }
     }
 
-    return <Checkbox { ...attr } onChange={ this.onCheckAllChange } />;
+    return <Checkbox {...attr} onChange={this.onCheckAllChange} />;
   };
 
   rowClassName = ({ rowData, rowIndex }) => {
@@ -500,12 +505,12 @@ class SelectionGrid extends Component {
     return cls.join(" ");
   };
 
-  onRow = (rowData, rowIndex) => {
+  onRow = (rowData, rowIndex, extra) => {
     let fn = this.props.onRow;
 
     let o = {};
     if (typeof fn === "function") {
-      o = fn(rowData, rowIndex);
+      o = fn(rowData, rowIndex, extra) || {};
     }
 
     return {
@@ -543,6 +548,7 @@ class SelectionGrid extends Component {
       checkboxColumn.render = this.checkboxCellRender;
       checkboxColumn.title = this.checkboxHeadRender;
     }
+
     let newProps = {
       columns,
       prependColumns,
@@ -550,7 +556,7 @@ class SelectionGrid extends Component {
       onRow: this.onRow
     };
 
-    return <Table { ...props } { ...newProps } />;
+    return <Table {...props} {...newProps} />;
   }
 }
 

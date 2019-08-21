@@ -90,6 +90,17 @@ export interface PaginationProps {
   showLessItems?: boolean;
 }
 
+export interface FrozenRenderProps {
+  rowHeight?: number;
+  rowKey: string;
+  top: any[];
+  bottom: any[];
+  rowRender: (record: object, index: number) => number;
+  cellRender: (record: object, index: number) => number;
+  onRow: (record: object, index: number) => number;
+  onCell: (record: object, index: number) => number;
+}
+
 export interface TableProps<T> {
   rowKey: string;
   columns?: ColumnProps<T>[];
@@ -98,8 +109,8 @@ export interface TableProps<T> {
   rowHeight?: number | ((record: object, index: number) => number);
   minHeight?: number;
   rowClassName?: (record: T, index: number) => string;
-  orderNumber?: false | null | ColumnProps;
-  selectionColumn?: false | null | ColumnProps;
+  orderNumber?: false | null | ColumnProps<T>;
+  selectionColumn?: false | null | ColumnProps<T>;
   showHeader?: boolean;
   bordered?: boolean;
   hoverable?: boolean;
@@ -112,6 +123,7 @@ export interface TableProps<T> {
     children: any
   }) => React.ReactNode;
   onRow?: (record: T, index: number) => object;
+  frozenRender?: FrozenRenderProps;
 
   pagination?: PaginationProps | false | null;
   loading?: boolean;

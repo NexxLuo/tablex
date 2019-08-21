@@ -124,6 +124,8 @@ class BaseDataGrid extends React.Component {
     let scrollLeft = e.target.scrollLeft;
     this.headRef.current.scrollLeft = scrollLeft;
 
+    this.middleRef.current && this.middleRef.current.extraScrollTo(scrollLeft);
+
     this.setFrozenStyle();
   };
 
@@ -258,7 +260,8 @@ class BaseDataGrid extends React.Component {
       showHeader,
       bordered,
       cellRenderExtra,
-      rowHeight
+      rowHeight,
+      frozenRender
     } = this.props;
 
     let { data, rowKey, scrollbarX, scrollbarY, formattedColumns } = this.state;
@@ -284,15 +287,15 @@ class BaseDataGrid extends React.Component {
 
     headStyle.marginRight = scrollbarY;
 
-    scrollbarY = scrollbarY + 1;
+    //scrollbarY = scrollbarY+1;
 
     let rightStyles = {
       width: rightWidth,
       overflow: "hidden"
     };
 
-    if (scrollbarY > 0) {
-      rightStyles.marginLeft = -scrollbarY;
+    if (scrollbarY >= 0) {
+      rightStyles.marginLeft = -(scrollbarY + 1);
     }
 
     let frozens = {};
@@ -313,7 +316,10 @@ class BaseDataGrid extends React.Component {
       onColumnResizeStop,
       components,
       showHeader,
-      cellRenderExtra
+      cellRenderExtra,
+      scrollbarX,
+      scrollbarY,
+      frozenRender
     };
 
     let overlay = null;
@@ -338,33 +344,33 @@ class BaseDataGrid extends React.Component {
     cls = cls.join(" ");
 
     return (
-      <div className={ cls } style={ { width, height } } ref={ this.containerRef }>
-        { overlay }
-        { emptyOverlay }
-        { hasLeft ? (
+      <div className={cls} style={{ width, height }} ref={this.containerRef}>
+        {overlay}
+        {emptyOverlay}
+        {hasLeft ? (
           <div
             className="tablex-forzen-left"
-            style={ {
+            style={{
               width: leftWidth,
               overflow: "hidden"
-            } }
+            }}
           >
             <div
               className="tablex-forzen-left-scroll"
-              style={ {
+              style={{
                 width: leftWidth + 20,
                 height: "100%"
-              } }
+              }}
             >
               <Table
-                { ...attrs }
-                headerHeight={ headerHeight }
-                containerHeight={ height - scrollbarX }
-                columns={ left }
-                style={ { overflowX: "hidden" } }
-                ref={ this.leftRef }
-                onScroll={ this.onLeftScroll }
-                rowRender={ params =>
+                {...attrs}
+                headerHeight={headerHeight}
+                containerHeight={height - scrollbarX}
+                columns={left}
+                style={{ overflowX: "hidden" }}
+                ref={this.leftRef}
+                onScroll={this.onLeftScroll}
+                rowRender={params =>
                   this.rowRender({
                     ...params,
                     frozen: "left",
@@ -374,19 +380,19 @@ class BaseDataGrid extends React.Component {
               />
             </div>
           </div>
-        ) : null }
-        <div className="tablex-main" style={ { overflow: "hidden" } }>
+        ) : null}
+        <div className="tablex-main" style={{ overflow: "hidden" }}>
           <Table
-            { ...attrs }
-            headerHeight={ headerHeight }
-            containerHeight={ height }
-            columns={ middle }
-            ref={ this.middleRef }
-            onScroll={ this.onMiddleScroll }
-            outerRef={ this.outterInit }
-            headRef={ this.headRef }
-            headStyle={ headStyle }
-            rowRender={ params =>
+            {...attrs}
+            headerHeight={headerHeight}
+            containerHeight={height}
+            columns={middle}
+            ref={this.middleRef}
+            onScroll={this.onMiddleScroll}
+            outerRef={this.outterInit}
+            headRef={this.headRef}
+            headStyle={headStyle}
+            rowRender={params =>
               this.rowRender({
                 ...params,
                 frozen: "none",
@@ -396,21 +402,21 @@ class BaseDataGrid extends React.Component {
           />
         </div>
 
-        { hasRight ? (
+        {hasRight ? (
           <div
             className="tablex-forzen-right"
-            ref={ this.rightWrapperRef }
-            style={ rightStyles }
+            ref={this.rightWrapperRef}
+            style={rightStyles}
           >
             <Table
-              { ...attrs }
-              headerHeight={ headerHeight }
-              containerHeight={ height - scrollbarX }
-              columns={ right }
-              style={ { overflowX: "hidden" } }
-              onScroll={ this.onRightScroll }
-              ref={ this.rightRef }
-              rowRender={ params =>
+              {...attrs}
+              headerHeight={headerHeight}
+              containerHeight={height - scrollbarX}
+              columns={right}
+              style={{ overflowX: "hidden" }}
+              onScroll={this.onRightScroll}
+              ref={this.rightRef}
+              rowRender={params =>
                 this.rowRender({
                   ...params,
                   frozen: "right",
@@ -419,7 +425,7 @@ class BaseDataGrid extends React.Component {
               }
             />
           </div>
-        ) : null }
+        ) : null}
       </div>
     );
   }
@@ -428,15 +434,15 @@ class BaseDataGrid extends React.Component {
 const AutoSizerTable = forwardRef((props, ref) => {
   return (
     <ReactResizeDetector handleWidth handleHeight>
-      { ({ width, height }) => {
+      {({ width, height }) => {
         if (!height) {
           return <div />;
         }
 
         return (
-          <BaseDataGrid { ...props } height={ height } width={ width } ref={ ref } />
+          <BaseDataGrid {...props} height={height} width={width} ref={ref} />
         );
-      } }
+      }}
     </ReactResizeDetector>
   );
 });
@@ -445,6 +451,12 @@ BaseDataGrid.defaultProps = {
   columns: [],
   prependColumns: [],
   data: [],
+  frozenRender: {
+    rowHeight: 40,
+    rowKey: "",
+    top: [],
+    bottom: []
+  },
   rowHeight: 40,
   rowKey: "key",
   showHeader: true,
@@ -499,6 +511,19 @@ BaseDataGrid.propTypes = {
    * 表格数据
    */
   data: PropTypes.array.isRequired,
+
+  /** 固定行数据渲染 */
+  frozenRender: PropTypes.shape({
+    rowHeight: PropTypes.number,
+    rowKey: PropTypes.string.isRequired,
+    top: PropTypes.array,
+    bottom: PropTypes.array,
+    rowRender: PropTypes.func,
+    cellRender: PropTypes.func,
+    onRow: PropTypes.func,
+    onCell: PropTypes.func
+  }),
+
   /** 数据行主键字段
    */
   rowKey: PropTypes.string.isRequired,

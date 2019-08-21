@@ -12,7 +12,8 @@ const createItemData = memoize(
     rowClassName,
     rowComponent,
     rowRender,
-    cellRenderExtra
+    cellRenderExtra,
+    placeholders
   ) => ({
     data,
     columns,
@@ -21,7 +22,8 @@ const createItemData = memoize(
     rowClassName,
     rowComponent,
     rowRender,
-    cellRenderExtra
+    cellRenderExtra,
+    placeholders
   })
 );
 
@@ -93,9 +95,24 @@ const TableRow = memo(({ data, index, style }) => {
     rowClassName,
     rowComponent,
     rowRender,
-    cellRenderExtra
+    cellRenderExtra,
+    placeholders
   } = data;
   let row = rows[index];
+
+  let placeholderTop = placeholders.top || 0;
+  let placeholderBottom = placeholders.bottom || 0;
+  let placeholderTotalHeight = placeholderTop + placeholderBottom;
+
+  if (!row) {
+    return (
+      <div
+        style={{ ...style, height: placeholderTotalHeight, zIndex: -1 }}
+        className="tablex-row-placeholder"
+      />
+    );
+  }
+
   let k = row[rowKey];
 
   let cls = ["tablex-table-row", "tablex-table-row-" + index];
@@ -122,15 +139,26 @@ const TableRow = memo(({ data, index, style }) => {
   });
 
   /** must be given to row element */
+
+  let virtualStyles = Object.assign({}, style);
+  if (placeholderTop > 0) {
+    virtualStyles.top = style.top + placeholderTop;
+  }
+
   let rowProps = {
     className: cls.join(" "),
     "data-rowindex": index,
-    style: { ...style, width: "auto", minWidth: "100%" },
+    style: {
+      ...virtualStyles,
+      width: "auto",
+      minWidth: "100%"
+    },
     children: rowCells
   };
 
   let extraAttr = {};
 
+  /** rowRender used to create row inner element */
   if (typeof rowRender === "function") {
     let r = rowRender({
       rowData: row,
@@ -141,17 +169,18 @@ const TableRow = memo(({ data, index, style }) => {
       rowProps.children = r;
     } else {
       if (typeof onRow === "function") {
-        extraAttr = onRow(row, index);
+        extraAttr = onRow(row, index, rowProps);
       }
     }
   } else {
     if (typeof onRow === "function") {
-      extraAttr = onRow(row, index);
+      extraAttr = onRow(row, index, rowProps);
     }
   }
 
   let rowElement = null;
 
+    /** rowComponent used to create row outter element */
   if (typeof rowComponent === "function") {
     let RowCmp = rowComponent;
 
@@ -164,6 +193,10 @@ const TableRow = memo(({ data, index, style }) => {
 
     rowElement = <RowCmp {...componentProps} />;
   } else {
+    if (extraAttr.style) {
+      rowProps.style = Object.assign({}, rowProps.style, extraAttr.style || {});
+    }
+
     rowElement = <div {...extraAttr} {...rowProps} />;
   }
 
@@ -195,6 +228,11 @@ class DataList extends Component {
     let row = data[index];
     let h = 40;
 
+    if (!row) {
+      let placeholderTotalHeight = this.getPlaceholderHeight();
+      return placeholderTotalHeight;
+    }
+
     if (typeof rowHeight === "function") {
       h = rowHeight(row, index);
     } else {
@@ -208,7 +246,20 @@ class DataList extends Component {
     let { rowKey } = this.props;
 
     let { data } = itemData;
-    return data[index][rowKey];
+    let row = data[index];
+    if (row) {
+      return row[rowKey];
+    }
+    return "";
+  };
+
+  getPlaceholderHeight = () => {
+    let { placeholders = {} } = this.props;
+
+    let topHeight = placeholders.top || 0;
+    let bottomHeight = placeholders.bottom || 0;
+
+    return topHeight + bottomHeight;
   };
 
   render() {
@@ -225,7 +276,8 @@ class DataList extends Component {
       onScroll,
       listRef,
       rowRender,
-      cellRenderExtra
+      cellRenderExtra,
+      placeholders
     } = this.props;
 
     let itemData = createItemData(
@@ -236,10 +288,15 @@ class DataList extends Component {
       rowClassName,
       rowComponent,
       rowRender,
-      cellRenderExtra
+      cellRenderExtra,
+      placeholders
     );
 
     let itemCount = data.length;
+
+    if (this.getPlaceholderHeight() > 0) {
+      itemCount = itemCount + 1;
+    }
 
     let attrs = {
       style,
