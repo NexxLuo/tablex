@@ -254,18 +254,18 @@ class Demo extends Component {
             }}
             orderNumber={this.orderNumber}
             selectionColumn={this.selectionColumn}
-            summary={[
-              {
-                age: "sum",
-                level: "min"
-              },
-              {
-                age: "max",
-                level: "max"
+            summary={{
+              style: { border: "none" },
+              title: { text: "合计:", column: "__checkbox_column" },
+              data: [
+                {
+                  age: "sum",
+                  level: "min"
+                }
+              ],
+              render: (value, dataIndex, type, index) => {
+                return type + ":" + value;
               }
-            ]}
-            summaryRender={(value, type, index) => {
-              return "summary:" + value;
             }}
             frozenRender={{
               rowHeight: 40,
@@ -292,10 +292,7 @@ class Demo extends Component {
             footerExtra={() => {
               return (
                 <div style={{ padding: "14px 10px" }}>
-                  总计：{this.state.data.length}
-                  <span style={{ marginLeft: 10 }} /> 最大值：9
-                  <span style={{ marginLeft: 10 }} />
-                  最小值：1
+                 底部信息展示
                 </div>
               );
             }}

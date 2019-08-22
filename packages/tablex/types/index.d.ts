@@ -95,10 +95,32 @@ export interface FrozenRenderProps {
   rowKey: string;
   top: any[];
   bottom: any[];
-  rowRender: (record: object, index: number) => number;
-  cellRender: (record: object, index: number) => number;
-  onRow: (record: object, index: number) => number;
-  onCell: (record: object, index: number) => number;
+  rowRender: (props: object) => React.ReactNode;
+  onRow?: (
+    row: object,
+    index: number,
+    rowProps: object,
+    position: "top" | "bottom"
+  ) => object;
+  onCell?: (row: object, rowIndex: number, extra: object) => object;
+  cellRender?: (
+    value: any,
+    row: object,
+    rowIndex: number,
+    extra: object
+  ) => React.ReactNode;
+}
+
+export interface SummaryProps {
+  style?: object;
+  title?: { text: string; column: string; render?: () => React.ReactNode };
+  data: any[];
+  render?: (
+    value: any,
+    dataIndex: string,
+    type: string,
+    index: number
+  ) => React.ReactNode;
 }
 
 export interface TableProps<T> {
@@ -130,6 +152,8 @@ export interface TableProps<T> {
   settable?: boolean;
   striped?: boolean;
   tableId?: string;
+  footerExtra?: () => React.ReactNode;
+  summary?: SummaryProps;
 
   selectMode?: "multiple" | "single" | "none";
   checkStrictly?: boolean;

@@ -58,6 +58,17 @@ let summaryMath = {
       return sum / items.length;
     }
   },
+  avg: (items, key) => {
+    let sum = sumBy(items, function(o) {
+      return o[key];
+    });
+
+    if (sum === undefined) {
+      return "";
+    } else {
+      return sum / items.length;
+    }
+  },
   sum: (items, key) => {
     let r = sumBy(items, function(o) {
       return o[key];
@@ -138,7 +149,7 @@ class FeaturedTable extends React.Component {
         if (hasOrderNumber === true) {
           let orderNumberColumn = {
             key: "__ordernumber_column",
-            dataKey: "__ordernumber_column",
+            dataIndex: "__ordernumber_column",
             __type: "__ordernumber_column",
             resizable: false,
             width: 50,
@@ -680,25 +691,29 @@ class FeaturedTable extends React.Component {
   }
 
   getSummary = () => {
-    let { rowKey, summary = [], summaryRender } = this.props;
+    let { summary = {} } = this.props;
     let { data } = this.state;
 
     let flatData = treeToList(data).list;
 
-    //summaryMath
+    let { data: summaryTypes = [], title = {}, render, style = {} } = summary;
+
+    let titleColumn = title.column || "";
+    let titleRender = title.render;
+    let titleText = title.text || "";
 
     let arr = [];
 
-    summary.forEach((s, i) => {
+    summaryTypes.forEach((s, i) => {
       let r = {
         key: "summary_" + i
       };
 
       for (const k in s) {
         let dataIndex = k;
+        let type = s[k];
 
-        let renderFn = summaryRender;
-        let fn = summaryMath[s[k]];
+        let fn = summaryMath[type];
 
         let summaryValue = "";
 
@@ -708,11 +723,18 @@ class FeaturedTable extends React.Component {
 
         let v = summaryValue;
 
-        if (typeof renderFn === "function") {
-          v = renderFn(summaryValue, s, i);
+        if (typeof render === "function") {
+          v = render(summaryValue, k, type, i);
         }
 
         r[dataIndex] = v;
+      }
+
+      if (titleColumn) {
+        r[titleColumn] = titleText;
+        if (typeof titleRender === "function") {
+          r[titleColumn] = titleRender(s, i);
+        }
       }
 
       arr.push(r);
@@ -721,7 +743,18 @@ class FeaturedTable extends React.Component {
     let frozenRender = {
       rowHeight: 40,
       rowKey: "key",
-      bottom: arr
+      bottom: arr,
+      onCell: (row, rowIndex, { columnKey }) => {
+        let styles = Object.assign({}, style);
+        if (
+          columnKey === "__checkbox_column" ||
+          columnKey === "__ordernumber_column"
+        ) {
+          styles.border = "none";
+        }
+
+        return { style: styles };
+      }
     };
 
     return frozenRender;
@@ -741,8 +774,6 @@ class FeaturedTable extends React.Component {
     let prependColumns = this.formatPrependColumns(tablePrependColumns);
     let settableColumns = tableColumns.filter(d => d.settable !== false);
 
-    let frozenRender = this.getSummary();
-
     let arr = this.getData();
 
     let newProps = {
@@ -751,9 +782,12 @@ class FeaturedTable extends React.Component {
       prependColumns,
       onColumnResizeStop: this.onColumnResize,
       emptyRenderer: this.emptyRenderer,
-      innerRef: this.innerRef,
-      frozenRender
+      innerRef: this.innerRef
     };
+
+    if (props.summary) {
+      newProps.frozenRender = this.getSummary();
+    }
 
     if (props.striped === true) {
       newProps.rowClassName = this.rowClassName;
@@ -837,7 +871,12 @@ FeaturedTable.defaultProps = {
   pagination: false,
   loading: false,
   striped: true,
-  minHeight: 200
+  minHeight: 200,
+  summary: {
+    style: {},
+    title: { text: "", column: "" },
+    data: []
+  }
 };
 
 FeaturedTable.propTypes = {
@@ -870,6 +909,14 @@ FeaturedTable.propTypes = {
 
   /** 渲染header */
   header: PropTypes.func,
+
+  /** 汇总信息渲染 */
+  summary: PropTypes.shape({
+    style: PropTypes.object,
+    title: PropTypes.object,
+    data: PropTypes.array,
+    render: PropTypes.func
+  }),
 
   /** 表格全局id，通过此id记忆表格配置，由于采用localStorage存储配置，需保证id唯一 */
   tableId: function(props, propName, componentName) {

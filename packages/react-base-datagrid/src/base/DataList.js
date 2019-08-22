@@ -53,7 +53,7 @@ const TableCell = props => {
 
   let extraAttr = {};
   if (typeof onCell === "function") {
-    extraAttr = onCell(row, index);
+    extraAttr = onCell(row, index) || {};
   }
 
   let cellExtra = {};
@@ -72,12 +72,13 @@ const TableCell = props => {
   }
 
   let style = getColumnWidthStyle({ width, minWidth });
+  let cellStyles = Object.assign({}, style, extraAttr.style || {});
 
   let alignStyles = {};
   align && (alignStyles.textAlign = align);
 
   return (
-    <div className="tablex-table-row-cell" style={style} {...extraAttr}>
+    <div className="tablex-table-row-cell" {...extraAttr} style={cellStyles}>
       <div className="tablex-table-row-cell-inner" style={alignStyles}>
         {prepend}
         {value}
@@ -180,7 +181,7 @@ const TableRow = memo(({ data, index, style }) => {
 
   let rowElement = null;
 
-    /** rowComponent used to create row outter element */
+  /** rowComponent used to create row outter element */
   if (typeof rowComponent === "function") {
     let RowCmp = rowComponent;
 

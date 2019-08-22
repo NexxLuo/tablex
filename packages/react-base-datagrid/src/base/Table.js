@@ -236,8 +236,8 @@ class Table extends React.Component {
 
     let styles = {
       height: height,
-      borderTop: "1px solid #eeeeee",
       position: "absolute",
+      borderTop: "1px solid #eeeeee",
       left: 0,
       backgroundColor: "#fff",
       right: scrollbarY
@@ -262,7 +262,7 @@ class Table extends React.Component {
           position={position}
           columns={columnsLeafs}
           rowKey={rowKey}
-          rowHeight={rowHeight}
+          rowHeight={rowHeight + 1}
           rowRender={rowRender}
           cellRender={cellRender}
           onRow={onRow}

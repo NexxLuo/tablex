@@ -55,7 +55,7 @@ class SelectionGrid extends Component {
       if (selectMode === "multiple") {
         let selectionColumn = {
           key: "__checkbox_column",
-          dataKey: "__checkbox_column",
+          dataIndex: "__checkbox_column",
           __type: "__checkbox_column",
           resizable: false,
           width: 50,
