@@ -805,7 +805,7 @@ class FeaturedTable extends React.Component {
 
     let extraHeight = 0;
 
-    let bodyStyles = {};
+    let bodyStyles = { height: "100%" };
     if (footer) {
       extraHeight += footerHeight;
     }
