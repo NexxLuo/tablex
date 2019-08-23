@@ -39,6 +39,7 @@ export interface ColumnProps<T> {
   minWidth?: number;
   width?: string | number;
   fixed?: "left" | "right" | "none";
+
   hidden?: boolean;
   editingVisible?: boolean;
   settable?: boolean;
@@ -126,12 +127,10 @@ export interface SummaryProps {
 export interface TableProps<T> {
   rowKey: string;
   columns?: ColumnProps<T>[];
-  columnDropMenu?: boolean;
   data?: T[];
   rowHeight?: number | ((record: object, index: number) => number);
-  minHeight?: number;
+
   rowClassName?: (record: T, index: number) => string;
-  orderNumber?: false | null | ColumnProps<T>;
   selectionColumn?: false | null | ColumnProps<T>;
   showHeader?: boolean;
   bordered?: boolean;
@@ -147,6 +146,9 @@ export interface TableProps<T> {
   onRow?: (record: T, index: number) => object;
   frozenRender?: FrozenRenderProps;
 
+  minHeight?: number;
+  columnDropMenu?: boolean;
+  orderNumber?: false | null | ColumnProps<T>;
   pagination?: PaginationProps | false | null;
   loading?: boolean;
   settable?: boolean;
@@ -154,6 +156,8 @@ export interface TableProps<T> {
   tableId?: string;
   footerExtra?: () => React.ReactNode;
   summary?: SummaryProps;
+  emptyRenderer?: ({ headerHeight: number }) => React.ReactNode;
+  loadingRender?: ({ headerHeight: number }) => React.ReactNode;
 
   selectMode?: "multiple" | "single" | "none";
   checkStrictly?: boolean;

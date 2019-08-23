@@ -19,6 +19,7 @@ import minBy from "lodash/minBy";
 import sumBy from "lodash/sumBy";
 
 import SortIcon from "./SortIndicator";
+import EmptyIcon from "./EmptyIcon";
 
 const DEFAULT_COLUMN_WIDTH = 100;
 
@@ -636,27 +637,54 @@ class FeaturedTable extends React.Component {
     return { footer, height: footerHeight };
   };
 
-  overlayRenderer = () => {
+  loadingRender = ({ headerHeight }) => {
+    if (typeof this.props.loadingRender === "function") {
+      return this.props.loadingRender({ headerHeight });
+    }
+
     return (
-      <Spin
-        spinning={true}
-        tip="数据加载中，请稍候..."
+      <div
+        className="tablex__overlay"
         style={{
-          position: "absolute",
-          margin: "auto",
-          left: 0,
-          right: 0,
-          width: 300,
-          height: 50,
-          top: 0,
-          bottom: 0,
-          zIndex: 2
+          top: headerHeight
         }}
-      />
+      >
+        <Spin
+          spinning={true}
+          tip="数据加载中，请稍候..."
+          style={{
+            position: "absolute",
+            margin: "auto",
+            left: 0,
+            right: 0,
+            width: 300,
+            height: 50,
+            top: 0,
+            bottom: 0,
+            zIndex: 3
+          }}
+        />
+      </div>
     );
   };
-  emptyRenderer = () => {
-    return <div className="tablex__emptydata">暂无数据</div>;
+  emptyRenderer = ({ headerHeight }) => {
+    if (typeof this.props.emptyRenderer === "function") {
+      return this.props.emptyRenderer({ headerHeight });
+    }
+
+    return (
+      <div
+        className="tablex__overlay"
+        style={{
+          top: headerHeight
+        }}
+      >
+        <div className="tablex__emptydata">
+          <EmptyIcon />
+          暂无数据
+        </div>
+      </div>
+    );
   };
 
   rowClassName = (rowData, rowIndex) => {
@@ -719,12 +747,18 @@ class FeaturedTable extends React.Component {
 
         if (typeof fn === "function") {
           summaryValue = fn(flatData, dataIndex);
+          if (typeof summaryValue === "undefined") {
+            summaryValue = "";
+          }
         }
 
         let v = summaryValue;
 
         if (typeof render === "function") {
           v = render(summaryValue, k, type, i);
+          if (typeof v === "undefined" || v === null) {
+            summaryValue = "";
+          }
         }
 
         r[dataIndex] = v;
@@ -781,7 +815,6 @@ class FeaturedTable extends React.Component {
       columns,
       prependColumns,
       onColumnResizeStop: this.onColumnResize,
-      emptyRenderer: this.emptyRenderer,
       innerRef: this.innerRef
     };
 
@@ -795,7 +828,11 @@ class FeaturedTable extends React.Component {
     }
 
     if (this.props.loading === true) {
-      newProps.overlayRenderer = this.overlayRenderer;
+      newProps.overlayRenderer = this.loadingRender;
+    } else {
+      if (arr.length === 0) {
+        newProps.overlayRenderer = this.emptyRenderer;
+      }
     }
 
     let columnMenuState = columnMenu || {};
@@ -906,6 +943,12 @@ FeaturedTable.propTypes = {
 
   /** 渲染额外footer，独占一行 */
   footerExtra: PropTypes.func,
+
+  /** loading层自定义render */
+  loadingRender: PropTypes.func,
+
+  /** 无数据时的自定义render */
+  emptyRenderer: PropTypes.func,
 
   /** 渲染header */
   header: PropTypes.func,

@@ -255,7 +255,6 @@ class BaseDataGrid extends React.Component {
       className,
       onColumnResizeStop,
       overlayRenderer,
-      emptyRenderer,
       components,
       showHeader,
       bordered,
@@ -324,12 +323,7 @@ class BaseDataGrid extends React.Component {
 
     let overlay = null;
     if (typeof overlayRenderer === "function") {
-      overlay = overlayRenderer();
-    }
-
-    let emptyOverlay = null;
-    if (data.length === 0 && typeof emptyRenderer === "function") {
-      emptyOverlay = emptyRenderer();
+      overlay = overlayRenderer({ headerHeight });
     }
 
     let cls = ["tablex-container"];
@@ -346,7 +340,6 @@ class BaseDataGrid extends React.Component {
     return (
       <div className={cls} style={{ width, height }} ref={this.containerRef}>
         {overlay}
-        {emptyOverlay}
         {hasLeft ? (
           <div
             className="tablex-forzen-left"

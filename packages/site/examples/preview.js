@@ -290,11 +290,7 @@ class Demo extends Component {
               }
             }}
             footerExtra={() => {
-              return (
-                <div style={{ padding: "14px 10px" }}>
-                 底部信息展示
-                </div>
-              );
+              return <div style={{ padding: "14px 10px" }}>底部信息展示</div>;
             }}
             rowHeight={(d, i) => {
               if (i % 2 === 0) {
