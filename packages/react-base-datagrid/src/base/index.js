@@ -351,13 +351,14 @@ class BaseDataGrid extends React.Component {
             <div
               className="tablex-forzen-left-scroll"
               style={{
-                width: leftWidth + 20,
+                width: leftWidth + scrollbarY,
                 height: "100%"
               }}
             >
               <Table
                 {...attrs}
                 headerHeight={headerHeight}
+                headStyle={{ width: leftWidth }}
                 containerHeight={height - scrollbarX}
                 columns={left}
                 style={{ overflowX: "hidden" }}
@@ -405,6 +406,7 @@ class BaseDataGrid extends React.Component {
               {...attrs}
               headerHeight={headerHeight}
               containerHeight={height - scrollbarX}
+              headStyle={{ width: rightWidth }}
               columns={right}
               style={{ overflowX: "hidden" }}
               onScroll={this.onRightScroll}
