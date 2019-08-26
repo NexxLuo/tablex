@@ -126,6 +126,8 @@ class SortableList extends Component {
     };
   }
 
+  containerRef = React.createRef();
+
   static getDerivedStateFromProps(nextProps, prevState) {
     return { items: nextProps.items };
   }
@@ -137,12 +139,12 @@ class SortableList extends Component {
   };
 
   getHelperContainer = () => {
-    return this.refs["draggableContainer"];
+    return this.containerRef.current;
   };
 
   render() {
     return (
-      <div ref="draggableContainer">
+      <div ref={this.containerRef}>
         <DraggableContainer
           onSortEnd={this.onSortEnd}
           distance={10}
