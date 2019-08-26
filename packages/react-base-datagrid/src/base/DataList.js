@@ -27,6 +27,30 @@ const createItemData = memoize(
   })
 );
 
+class CellWithTitle extends Component {
+  elRef = React.createRef();
+  componentDidUpdate() {
+    let { value } = this.props;
+    let el = this.elRef.current;
+
+    if (el) {
+      let parentEl = el.parentNode;
+      if (parentEl) {
+        if (parentEl.scrollWidth > parentEl.offsetWidth) {
+          el.title = value;
+        } else {
+          el.title = "";
+        }
+      }
+    }
+  }
+
+  render() {
+    let { value } = this.props;
+    return <span ref={this.elRef}>{value}</span>;
+  }
+}
+
 const TableCell = props => {
   let {
     row,
@@ -76,6 +100,10 @@ const TableCell = props => {
 
   let alignStyles = {};
   align && (alignStyles.textAlign = align);
+
+  if (typeof value === "string" || typeof value === "number") {
+    value = <CellWithTitle value={value} />;
+  }
 
   return (
     <div className="tablex-table-row-cell" {...extraAttr} style={cellStyles}>

@@ -121,11 +121,14 @@ class Demo extends Component {
       width: 150,
       editor: (value, record, index, onchange, ref, validate) => {
         return (
-          <Input
+          <InputNumber
             defaultValue={value}
             ref={ref}
+            onKeyDown={e => {
+              e.stopPropagation();
+            }}
             onChange={e => {
-              onchange({ unitPrice: e.target.value });
+              onchange({ unitPrice: e });
             }}
           />
         );
