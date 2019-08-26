@@ -29,7 +29,8 @@ const createItemData = memoize(
 
 class CellWithTitle extends Component {
   elRef = React.createRef();
-  componentDidUpdate() {
+
+  setTitle() {
     let { value } = this.props;
     let el = this.elRef.current;
 
@@ -43,6 +44,14 @@ class CellWithTitle extends Component {
         }
       }
     }
+  }
+
+  componentDidMount() {
+    this.setTitle();
+  }
+
+  componentDidUpdate() {
+    this.setTitle();
   }
 
   render() {
