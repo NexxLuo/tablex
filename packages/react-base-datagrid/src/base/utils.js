@@ -516,3 +516,12 @@ export function hasFlexibleColumn(arr) {
 
   return bl;
 }
+
+
+export function isNumber(v) {
+  if (v === undefined || v === null || isNaN(v - 0)) {
+    return false;
+  }
+
+  return true;
+}

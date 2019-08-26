@@ -70,7 +70,8 @@ class Table extends React.Component {
       onColumnResizeStop,
       components,
       headStyle = {},
-      headerHeight
+      headerHeight,
+      headerRowHeight
     } = this.props;
 
     let { columns, showHeader, columnsLeafs } = this.state;
@@ -93,6 +94,7 @@ class Table extends React.Component {
         columnsLeafs={columnsLeafs}
         maxDepth={columnsDepth}
         onColumnResizeStop={onColumnResizeStop}
+        headerRowHeight={headerRowHeight}
       />
     );
 

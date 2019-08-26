@@ -129,6 +129,7 @@ export interface TableProps<T> {
   columns?: ColumnProps<T>[];
   data?: T[];
   rowHeight?: number | ((record: object, index: number) => number);
+  headerRowHeight?: number[];
 
   rowClassName?: (record: T, index: number) => string;
   selectionColumn?: false | null | ColumnProps<T>;

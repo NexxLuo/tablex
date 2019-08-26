@@ -301,6 +301,7 @@ class Demo extends Component {
               }
             }}
             expandRowHeight={200}
+            headerRowHeight={[30, 40, 60]}
             minHeight={500}
           />
         </div>

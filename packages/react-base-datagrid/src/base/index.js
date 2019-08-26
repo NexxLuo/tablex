@@ -2,8 +2,16 @@ import React, { forwardRef } from "react";
 import PropTypes from "prop-types";
 import Table from "./Table";
 import "./styles.css";
-import { formatColumns, addClass, removeClass, delegate } from "./utils";
+import {
+  formatColumns,
+  addClass,
+  removeClass,
+  delegate,
+  isNumber
+} from "./utils";
 import ReactResizeDetector from "react-resize-detector";
+
+const HEADER_HEIGHT = 40;
 
 class BaseDataGrid extends React.Component {
   headRef = React.createRef();
@@ -260,7 +268,8 @@ class BaseDataGrid extends React.Component {
       bordered,
       cellRenderExtra,
       rowHeight,
-      frozenRender
+      frozenRender,
+      headerRowHeight
     } = this.props;
 
     let { data, rowKey, scrollbarX, scrollbarY, formattedColumns } = this.state;
@@ -277,7 +286,18 @@ class BaseDataGrid extends React.Component {
     let hasLeft = left.length > 0;
     let hasRight = right.length > 0;
 
-    let headerHeight = (maxDepth + 1) * 40;
+    let headerHeight = 0;
+    let headerHeights = [];
+
+    for (let i = 0; i < maxDepth + 1; i++) {
+      let h = headerRowHeight[i];
+      if (!isNumber(h)) {
+        h = HEADER_HEIGHT;
+      }
+      headerHeights.push(h);
+      headerHeight = headerHeight + h;
+    }
+
     if (showHeader === false) {
       headerHeight = 0;
     }
@@ -318,7 +338,9 @@ class BaseDataGrid extends React.Component {
       cellRenderExtra,
       scrollbarX,
       scrollbarY,
-      frozenRender
+      frozenRender,
+      headerHeight,
+      headerRowHeight: headerHeights
     };
 
     let overlay = null;
@@ -357,7 +379,6 @@ class BaseDataGrid extends React.Component {
             >
               <Table
                 {...attrs}
-                headerHeight={headerHeight}
                 headStyle={{ width: leftWidth }}
                 containerHeight={height - scrollbarX}
                 columns={left}
@@ -378,7 +399,6 @@ class BaseDataGrid extends React.Component {
         <div className="tablex-main" style={{ overflow: "hidden" }}>
           <Table
             {...attrs}
-            headerHeight={headerHeight}
             containerHeight={height}
             columns={middle}
             ref={this.middleRef}
@@ -404,7 +424,6 @@ class BaseDataGrid extends React.Component {
           >
             <Table
               {...attrs}
-              headerHeight={headerHeight}
               containerHeight={height - scrollbarX}
               headStyle={{ width: rightWidth }}
               columns={right}
@@ -453,6 +472,7 @@ BaseDataGrid.defaultProps = {
     bottom: []
   },
   rowHeight: 40,
+  headerRowHeight: [],
   rowKey: "key",
   showHeader: true,
   hoverable: true,
@@ -471,6 +491,9 @@ BaseDataGrid.propTypes = {
 
   /** 行高 */
   rowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
+
+  /** 表头行高 */
+  headerRowHeight: PropTypes.arrayOf(PropTypes.number),
 
   /** table最小高度，虚拟加载的表格依赖外部区域的高度，如果未探测到外部高度，将使用此高度 */
   minHeight: PropTypes.number,

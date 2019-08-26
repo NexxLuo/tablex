@@ -1,6 +1,6 @@
 import React from "react";
 import Resizer from "./ColumnResizer";
-import { getColumnWidthStyle, hasFlexibleColumn } from "./utils";
+import { getColumnWidthStyle, hasFlexibleColumn, isNumber } from "./utils";
 
 const HEADER_HEIGHT = 40;
 
@@ -34,7 +34,7 @@ const Column = ({
   );
 };
 
-const ColumnGroup = ({ title, children, flexible, alignStyles }) => {
+const ColumnGroup = ({ title, children, flexible, alignStyles, height }) => {
   let styles = {};
   if (flexible) {
     styles.flexGrow = 1;
@@ -43,14 +43,16 @@ const ColumnGroup = ({ title, children, flexible, alignStyles }) => {
 
   return (
     <div className="tablex-table-head-group" style={styles}>
-      <div
-        className="tablex-table-head-group-cell"
-        style={{ height: HEADER_HEIGHT }}
-      >
-        <div className="tablex-table-head-group-inner" style={alignStyles}>
-          {title}
+      {height > 0 ? (
+        <div
+          className="tablex-table-head-group-cell"
+          style={{ height: height }}
+        >
+          <div className="tablex-table-head-group-inner" style={alignStyles}>
+            {title}
+          </div>
         </div>
-      </div>
+      ) : null}
       <div className="tablex-table-head-group-children" style={styles}>
         {children}
       </div>
@@ -62,10 +64,13 @@ const renderColumns = ({
   columns,
   columnDepth,
   onColumnResizeStop,
-  columnsLeafs
+  columnsLeafs,
+  headerRowHeight
 }) => {
   return columns.map((d, i) => {
     let columnKey = d.key || d.dataIndex || i;
+
+    let depth = d.__depth || 0;
 
     let alignStyles = {};
 
@@ -91,31 +96,50 @@ const renderColumns = ({
     if (d.children instanceof Array && d.children.length > 0) {
       let flexible = hasFlexibleColumn(d.children);
 
+      let columnGroupHeight = headerRowHeight[depth];
+
+      if (!isNumber(columnGroupHeight)) {
+        columnGroupHeight = HEADER_HEIGHT;
+      }
+
       return (
         <ColumnGroup
           key={columnKey}
           title={titleElement}
           flexible={flexible}
           alignStyles={alignStyles}
+          height={columnGroupHeight}
         >
           {renderColumns({
             columns: d.children,
             columnDepth,
             onColumnResizeStop,
-            columnsLeafs
+            columnsLeafs,
+            headerRowHeight
           })}
         </ColumnGroup>
       );
     }
 
-    let depth = d.__depth || 0;
-
-    let h = (columnDepth - depth + 1) * HEADER_HEIGHT;
-
     let renderFn = d.headCellRender;
 
     if (typeof renderFn === "function") {
       titleElement = renderFn({ column: d, title: titleElement });
+    }
+
+    let columnHeight = 0;
+    for (let i = depth; i < columnDepth + 1; i++) {
+      let h = headerRowHeight[i];
+
+      if (!isNumber(h)) {
+        h = HEADER_HEIGHT;
+      }
+
+      columnHeight = columnHeight + h;
+    }
+
+    if (columnHeight === 0) {
+      columnHeight = HEADER_HEIGHT;
     }
 
     return (
@@ -124,7 +148,7 @@ const renderColumns = ({
         columnKey={columnKey}
         width={d.width}
         minWidth={d.minWidth}
-        height={h}
+        height={columnHeight}
         resizable={d.resizable}
         alignStyles={alignStyles}
         onColumnResizeStop={onColumnResizeStop}
@@ -141,7 +165,13 @@ class TableHead extends React.Component {
   };
 
   render() {
-    let { columns, maxDepth, onColumnResizeStop, columnsLeafs } = this.props;
+    let {
+      columns,
+      maxDepth,
+      onColumnResizeStop,
+      columnsLeafs,
+      headerRowHeight = []
+    } = this.props;
 
     let w = 0;
     columnsLeafs.forEach(d => {
@@ -155,7 +185,8 @@ class TableHead extends React.Component {
           columns,
           columnDepth: maxDepth,
           onColumnResizeStop,
-          columnsLeafs
+          columnsLeafs,
+          headerRowHeight
         })}
       </div>
     );
