@@ -87,6 +87,8 @@ class SortableItem extends Component {
             宽度：
             <InputNumber
               value={d.width}
+              min={0}
+              max={10000}
               style={{ width: 80 }}
               onChange={this.onChangeWidth}
             />

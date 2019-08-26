@@ -476,7 +476,7 @@ export function getColumnWidthStyle({ width, minWidth }) {
     styles.flexShrink = 1;
     styles.width = DEFAULT_COLUMN_WIDTH;
   } else {
-    styles.width = width || minWidth;
+    styles.width = width || minWidth || 0;
   }
 
   return styles;
