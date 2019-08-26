@@ -384,9 +384,12 @@ class SettingModal extends React.Component {
       },
       maskClosable: false,
       footer: (
-        <div style={{ textAlign: "center" }}>
+        <div
+          style={{ textAlign: "center" }}
+          className="tablex__setting__modal__footer"
+        >
           <Button
-            type="primary"
+            type="purple"
             loading={this.state.resetLoading}
             onClick={this.reset}
           >
@@ -394,13 +397,17 @@ class SettingModal extends React.Component {
           </Button>
           <Button
             loading={this.state.loading}
-            type="primary"
+            type="purple"
             onClick={this.onOk}
             style={{ marginLeft: 20 }}
           >
             确定
           </Button>
-          <Button style={{ marginLeft: 20 }} onClick={this.onCancel}>
+          <Button
+            type="gray"
+            style={{ marginLeft: 20 }}
+            onClick={this.onCancel}
+          >
             取消
           </Button>
         </div>
