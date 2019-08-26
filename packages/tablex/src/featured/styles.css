@@ -117,13 +117,12 @@
   letter-spacing: 1px;
 }
 
-.tablex__row__dragging {
-  border: 1px solid #eeeeee;
-  background-color: #ffffff;
-}
-
 .tablex__striped .tablex__row--even {
   background-color: #fafbfc;
+}
+
+.tablex__setting__modal__item__dragging {
+  box-shadow: 0 0px 5px 0px rgba(0, 0, 0, 0.2);
 }
 
 .tablex__setting__modal__footer .ant-btn.ant-btn-purple {

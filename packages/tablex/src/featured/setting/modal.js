@@ -66,16 +66,15 @@ class SortableItem extends Component {
         style={{
           borderBottom: "1px solid #e8e8e8",
           width: "100%",
-          marginBottom: 5,
-          paddingBottom: 10
+          padding: 5,
+          backgroundColor: "#ffffff"
         }}
       >
         <div
           style={{
             display: "inline-block",
             width: "30%",
-            fontWeight: "bold",
-            padding: "5px 0 0px 0px"
+            fontWeight: "bold"
           }}
         >
           {titleElement}
@@ -151,6 +150,7 @@ class SortableList extends Component {
           onSortEnd={this.onSortEnd}
           distance={10}
           helperContainer={this.getHelperContainer}
+          helperClass="tablex__setting__modal__item__dragging"
         >
           {this.state.items.map((item, index) => (
             <DraggableItem
@@ -380,7 +380,8 @@ class SettingModal extends React.Component {
       bodyStyle: {
         minHeight: "300px",
         maxHeight: "500px",
-        overflow: "auto"
+        overflow: "auto",
+        padding: 10
       },
       maskClosable: false,
       footer: (
