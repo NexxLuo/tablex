@@ -242,6 +242,7 @@ class Demo extends Component {
             columns={fixedColumns}
             checkStrictly={true}
             selectMode="multiple"
+            selectOnRowClick={false}
             defaultExpandedRowKeys={["0"]}
             data={this.state.data}
             onExpand={(b, r) => {

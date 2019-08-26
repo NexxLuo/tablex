@@ -44,7 +44,8 @@ class SelectionGrid extends Component {
       treeProps,
       selectedRowKeys,
       disabledSelectKeys,
-      prependColumns = []
+      prependColumns = [],
+      selectOnRowClick
     } = nextProps;
 
     let nextState = {};
@@ -81,7 +82,8 @@ class SelectionGrid extends Component {
         prevProps: nextProps,
         selectMode,
         rowSelectClassName,
-        checkStrictly
+        checkStrictly,
+        selectOnRowClick
       };
 
       if ("selectedRowKeys" in nextProps) {
@@ -516,14 +518,14 @@ class SelectionGrid extends Component {
     return {
       ...o,
       onClick: () => {
-        let { selectedRowKeys, rowKey: key } = this.state;
+        let { selectedRowKeys, rowKey: key, selectOnRowClick } = this.state;
         let rowKey = rowData[key];
 
         if (this.isSingleSelect()) {
           this.onSelectChange(rowKey, rowData, rowIndex);
         }
 
-        if (this.isMultipleSelect()) {
+        if (selectOnRowClick && this.isMultipleSelect()) {
           let isSelected = selectedRowKeys.indexOf(rowKey) > -1;
           let isEnabled = !this.isDisabledCheck(rowKey, rowData);
           isEnabled && this.onCheckChange(!isSelected, rowKey);
@@ -567,7 +569,8 @@ SelectionGrid.defaultProps = {
   selectMode: "single",
   checkStrictly: true,
   rowSelectClassName: "tablex__row--selected",
-  selectionColumn: true
+  selectionColumn: true,
+  selectOnRowClick: true
 };
 
 SelectionGrid.propTypes = {
@@ -578,6 +581,9 @@ SelectionGrid.propTypes = {
 
   /** 复选列配置 */
   selectionColumn: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+
+  /** 点击行时，是否触发选择操作 */
+  selectOnRowClick: PropTypes.bool,
 
   /** 如若设置了此列，复选框将独占一列 */
   selectionColumnKey: PropTypes.string,
