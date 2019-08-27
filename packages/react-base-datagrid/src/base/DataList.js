@@ -86,7 +86,7 @@ const TableCell = props => {
 
   let extraAttr = {};
   if (typeof onCell === "function") {
-    extraAttr = onCell(row, index) || {};
+    extraAttr = onCell(row, rowIndex) || {};
   }
 
   let cellExtra = {};

@@ -97,6 +97,17 @@ export function getFlattenColumns(arr, idField = "key") {
   return { list, leafs, roots, maxDepth };
 }
 
+function getDepth(node, depth = 0) {
+  if (!node.children) {
+    return depth;
+  }
+
+  return node.children.reduce(
+    (deepest, child) => Math.max(deepest, getDepth(child, depth + 1)),
+    depth
+  );
+}
+
 export function formatColumns(columns = [], prepend = [], keyField = "key") {
   let DEFAULT_COLUMN_WIDTH = 100;
 
@@ -111,10 +122,6 @@ export function formatColumns(columns = [], prepend = [], keyField = "key") {
     }
   }
 
-  let leftDepth = 0,
-    rightDepth = 0,
-    middleDepth = 0;
-
   let left = [],
     middle = [],
     right = [];
@@ -127,16 +134,6 @@ export function formatColumns(columns = [], prepend = [], keyField = "key") {
     let childrens = [];
 
     let arr = item.children || [];
-
-    if (type === "middle") {
-      middleDepth = middleDepth + 1;
-    }
-    if (type === "left") {
-      leftDepth = leftDepth + 1;
-    }
-    if (type === "right") {
-      rightDepth = rightDepth + 1;
-    }
 
     for (let i = 0; i < arr.length; i++) {
       const d = arr[i];
@@ -184,11 +181,8 @@ export function formatColumns(columns = [], prepend = [], keyField = "key") {
     const children = d.children || [];
 
     if (children.length > 0) {
-      leftDepth = 0;
       let leftChildrens = getChildren(d, "left");
-      middleDepth = 0;
       let middleChildrens = getChildren(d, "middle");
-      rightDepth = 0;
       let rightChildrens = getChildren(d, "right");
 
       let temp = {};
@@ -263,12 +257,13 @@ export function formatColumns(columns = [], prepend = [], keyField = "key") {
     }
   }
 
-  let maxDepth = Math.max.apply(null, [
-    leftDepth,
-    rightDepth,
-    middleDepth,
-    prepend_depth
-  ]);
+  let maxDepth = getDepth({ children: columns });
+  if (maxDepth > 0) {
+    maxDepth = maxDepth - 1;
+  }
+  if (prepend_depth > maxDepth) {
+    maxDepth = prepend_depth;
+  }
 
   return {
     middle,
@@ -516,7 +511,6 @@ export function hasFlexibleColumn(arr) {
 
   return bl;
 }
-
 
 export function isNumber(v) {
   if (v === undefined || v === null || isNaN(v - 0)) {
