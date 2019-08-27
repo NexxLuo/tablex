@@ -41,193 +41,52 @@ let fixedColumns = columns.map((column, columnIndex) => {
   return { ...column, resizable: true, fixed };
 });
 
-fixedColumns =[
-        {
-            dataIndex: "NoName",
-            key: "NoName",
-            minWidth: 80,
-            title: "序号名称"
-        },
-        {
-            dataIndex: "DtlName",
-            key: "DtlName",
-            minWidth: 80,
-            title: "设备名称"
-        },
-        {
-            dataIndex: "Model",
-            key: "Model",
-            minWidth: 80,
-            title: "设备规格"
-        },
-        {
-            dataIndex: "Specifications",
-            key: "Specifications",
-            minWidth: 80,
-            title: "设备型号"
-        },
-        {
-            dataIndex: "SetingMode",
-            key: "SetingMode",
-            minWidth: 80,
-            title: "配置方式"
-        },
-        {
-            dataIndex: "Depreciationmargin",
-            key: "Depreciationmargin",
-            minWidth: 150,
-            title: () => {
-                return (
-                    <div>
-                        已明确的自有设备调入
-                        <br />
-                        本项目前已计折旧额度
-                    </div>
-                );
-            }
-        },
-        {
-            title: "租赁(或折旧)费用",
-            key:"aaaa",
-            children: [
-                {
-                    title: "使用期限",
-                    key:"bbbbb",
-                    children: [
-                        {
-                            dataIndex: "UseStartTime",
-                            key: "UseStartTime",
-                            minWidth: 80,
-
-                            title: "开始时间"
-                        },
-                        {
-                            dataIndex: "UseEndTime",
-                            key: "UseEndTime",
-                            minWidth: 80,
-
-                            title: "结束时间"
-                        },
-                        {
-                            dataIndex: "UseDurationM",
-                            key: "UseDurationM",
-                            minWidth: 80,
-                            title: "使用时长"
-                        }
-                    ]
-                },
-                {
-                    title: "租赁(或折旧)费用",
-                    children: [
-                        {
-                            dataIndex: "LeasePrice",
-                            key: "LeasePrice",
-                            minWidth: 80,
-                            title: "单价(元/台.月)"
-                        },
-                        {
-                            dataIndex: "LeaseValency",
-                            key: "LeaseValency",
-                            minWidth: 80,
-                            title: "合价(元)"
-                        },
-                        {
-                            dataIndex: "Leaseavgindex", //租赁.单位分摊指标
-                            key: "Leaseavgindex",
-                            minWidth: 80,
-                            title: "单位分摊指标"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            title: "燃料动力费",
-            children: [
-                {
-                    title: "油费",
-                    children: [
-                        {
-                            dataIndex: "Unituseoil",
-                            key: "Unituseoil",
-                            minWidth: 80,
-                            title: "单位耗油量(kg)"
-                        },
-                        {
-                            dataIndex: "DieseloilPrice",
-                            key: "DieseloilPrice",
-                            minWidth: 80,
-                            title: "柴油单价(元/kg)"
-                        },
-                        {
-                            dataIndex: "Unituseolifee",
-                            key: "Unituseolifee",
-                            minWidth: 80,
-                            title: "单位耗油费"
-                        }
-                    ]
-                },
-                {
-                    title: "电费",
-                    children: [
-                        {
-                            dataIndex: "Unituseelectric",
-                            key: "Unituseelectric",
-                            minWidth: 80,
-                            title: "单位耗电量(KW.H)"
-                        },
-                        {
-                            dataIndex: "Electricityprice",
-                            key: "Electricityprice",
-                            minWidth: 80,
-                            title: "电价(元/KW.H)"
-                        },
-                        {
-                            dataIndex: "Unituseelectricfee",
-                            key: "Unituseelectricfee",
-                            minWidth: 80,
-                            title: "单位耗电费"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            title: "人工费",
-            children: [
-                {
-                    dataIndex: "PostName",
-                    key: "PostName",
-                    minWidth: 80,
-                    title: "岗位"
-                },
-                {
-                    dataIndex: "PersonNum",
-                    key: "PersonNum",
-                    minWidth: 80,
-                    title: "人数"
-                },
-                {
-                    dataIndex: "DutyLaborcost",
-                    key: "DutyLaborcost",
-                    minWidth: 80,
-                    title: "责任工费(人.月)"
-                },
-                {
-                    dataIndex: "Months",
-                    key: "Months",
-                    minWidth: 80,
-                    title: "月数"
-                },
-                {
-                    dataIndex: "Totallabourcosts",
-                    key: "Totallabourcosts",
-                    minWidth: 80,
-                    title: "合计人工费"
-                }
-            ]
-        }
-    ];
+fixedColumns = [
+  {
+    dataIndex: "column-1",
+    key: "column-1",
+    title: () => {
+      return "fn title";
+    },
+    titleRender: () => {
+      return <span>titleRender</span>;
+    },
+    align: "left",
+    halign: "center"
+  },
+  {
+    title: "appellation",
+    width: 150,
+    halign: "left",
+    children: [
+      {
+        dataIndex: "address",
+        title: "name"
+      },
+      {
+        title: "nick name",
+        width: 150,
+        children: [
+          {
+            dataIndex: "id",
+            title: "nick-1",
+            maxWidth: 300,
+            width: 150
+          },
+          {
+            dataIndex: "level",
+            title: "level"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    dataIndex: "age",
+    key: "column-4",
+    title: "age"
+  }
+];
 
 function createData(level, parentKey, maxLevel, index) {
   if (level > maxLevel) {
@@ -442,7 +301,7 @@ class Demo extends Component {
               }
             }}
             expandRowHeight={200}
-            headerRowHeight={[30, 40, 80]}
+            headerRowHeight={[30, 40, 60]}
             minHeight={500}
           />
         </div>
