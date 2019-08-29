@@ -27,7 +27,7 @@ const Checkbox = props => {
       onClick={e => {
         e.stopPropagation();
         if (typeof onChange === "function" && disabled != true) {
-          onChange(!checked, props.value);
+          onChange(!checked, props.value, { indeterminate: indeterminate });
         }
       }}
     >

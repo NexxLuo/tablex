@@ -335,11 +335,15 @@ class SelectionGrid extends Component {
     });
   }
 
-  onCheckAllChange = bl => {
-    if (bl === true) {
-      this.addAllChecked();
-    } else {
+  onCheckAllChange = (bl, value, { indeterminate }) => {
+    if (indeterminate === true && this.state.disabledSelectKeys.length > 0) {
       this.removeAllChecked();
+    } else {
+      if (bl === true) {
+        this.addAllChecked();
+      } else {
+        this.removeAllChecked();
+      }
     }
   };
 

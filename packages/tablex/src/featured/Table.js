@@ -908,12 +908,7 @@ FeaturedTable.defaultProps = {
   pagination: false,
   loading: false,
   striped: true,
-  minHeight: 200,
-  summary: {
-    style: {},
-    title: { text: "", column: "" },
-    data: []
-  }
+  minHeight: 200
 };
 
 FeaturedTable.propTypes = {
