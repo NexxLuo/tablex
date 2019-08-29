@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Table  } from "tablex";
+import { Table } from "tablex";
 
 const generateColumns = (count = 10, prefix = "column-", props) =>
   new Array(count).fill(0).map((column, columnIndex) => ({
@@ -28,8 +28,6 @@ const generateData = (columns, count = 20, prefix = "row-") =>
 const columns = generateColumns(10);
 const data = generateData(columns, 100);
 
- 
-
 class Demo extends Component {
   state = {
     data: [],
@@ -47,7 +45,7 @@ class Demo extends Component {
   onPageChange = (pageIndex, pageSize) => {
     this.setState({
       current: pageIndex,
-      pageSize,
+      pageSize
     });
   };
 

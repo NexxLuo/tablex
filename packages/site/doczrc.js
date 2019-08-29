@@ -36,5 +36,5 @@ export default {
       .add("babel-polyfill")
       .end();
   },
-  menu: ["Intro"]
+  menu: ["Intro","API","Basic","Selection","Editable","Advance","Preview"]
 };

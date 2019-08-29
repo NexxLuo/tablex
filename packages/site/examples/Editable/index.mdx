@@ -1,0 +1,130 @@
+---
+name: Editable
+---
+
+import { Playground, Props } from "docz";
+import Table, { flatten } from "tablex";
+import { Input, Checkbox } from "antd";
+
+# Usage
+
+```javascript
+import Table, { flatten, unflatten } from "tablex";
+```
+
+## edit and validate
+
+<Playground style={{ height: 400 }}>
+ {
+  class Demo extends React.Component {
+  generateData(columns, count = 20, prefix = "Row") {
+    return new Array(count).fill(0).map((row, rowIndex) => {
+      return columns.reduce(
+        (rowData, column, columnIndex) => {
+          if (column.dataIndex !== "id") {
+            rowData[column.dataIndex] = Math.floor(Math.random() * 100 + 1);
+          } else {
+            rowData[column.dataIndex] =
+              prefix + " " + rowIndex + " - Col " + columnIndex;
+          }
+
+          return rowData;
+        },
+        {
+          id: prefix + rowIndex,
+          parentId: null
+        }
+      );
+    });
+
+}
+
+constructor(props) {
+super(props);
+
+    const columns = [
+      {
+        dataIndex: "id",
+        title: "id",
+        key: "id",
+        width: 150,
+        align: "center"
+      },
+      {
+        dataIndex: "column-1",
+        title: "column-1",
+        width: 100,
+          validator: function(value, row) {
+          if (!value) {
+            return { valid: false, message: "请输入" };
+          }
+
+          return { valid: true, message: "false" };
+        },
+        editor: function(value, row, index, onchange, ref) {
+          return (
+            <Input
+              defaultValue={value}
+              ref={ref}
+              onChange={e => onchange({ ["column-1"]: e.target.value })}
+            />
+          );
+        }
+      },
+
+      {
+        dataIndex: "column-2",
+        title: "column-2",
+        width: 150,
+        align: "center"
+      },
+
+      {
+        dataIndex: "column-3",
+        title: "column-3",
+        align: "right"
+      },
+      {
+        dataIndex: "column-4",
+        title: "column-4",
+        width: 100,
+        align: "center"
+      }
+    ];
+
+    let data =  this.generateData(columns,10);
+
+    this.state = {
+      data: data,
+      columns: columns
+    };
+
+}
+
+onEditSave(changedRows, newData, type) {
+console.log("onEditSave:", newData);
+this.setState({
+data: newData
+});
+}
+
+render() {
+let { columns, data } = this.state;
+
+    return (
+      <Table
+        rowKey="id"
+        columns={columns}
+          validateTrigger="onChange"
+        data={data}
+        editable={true}
+         onEditSave={this.onEditSave.bind(this)}
+      />
+    );
+
+}
+}
+
+}
+
+</Playground>

@@ -162,6 +162,7 @@ export interface TableProps<T> {
 
   selectMode?: "multiple" | "single" | "none";
   checkStrictly?: boolean;
+  selectOnRowClick?: boolean;
   rowSelectClassName?: string;
   defaultSelectedRowKeys?: string[];
   selectedRowKeys?: string[];

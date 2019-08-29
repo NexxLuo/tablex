@@ -113,7 +113,7 @@ function createData(level, parentKey, maxLevel, index) {
     };
 
     if (i === 2) {
-      d.children = createData(l + 1, k, maxLevel, i);
+    //  d.children = createData(l + 1, k, maxLevel, i);
     }
 
     data.push(d);
@@ -130,7 +130,7 @@ function createTreeData() {
       "column-1": "Edward King " + i,
       age: 32,
       address: "London, Park Lane no. " + i,
-      children: createData(0, i, 2)
+  //    children: createData(0, i, 2)
     });
   }
 
@@ -152,7 +152,7 @@ class Demo extends Component {
   expandedRowRender = (record, index, extra) => {
     console.log("expandedRowRender:",record,index,extra)
     if (extra.frozen === "none") {
-      return <div>expandedRowRender{new Date().getTime()}</div>;
+      return 12313123;
     }
     return null;
   };

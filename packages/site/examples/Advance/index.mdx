@@ -1,0 +1,450 @@
+---
+name: Advance
+---
+
+import { Playground, Props } from "docz";
+import Table, { flatten } from "tablex";
+import { Input, Checkbox } from "antd";
+
+# Usage
+
+```javascript
+import Table, { flatten, unflatten } from "tablex";
+```
+
+## expandedRowRender
+
+<Playground style={{ height: 400 }}>
+ {
+  class Demo extends React.Component {
+  generateData(columns, count = 20, prefix = "Row") {
+    return new Array(count).fill(0).map((row, rowIndex) => {
+      return columns.reduce(
+        (rowData, column, columnIndex) => {
+          if (column.dataIndex !== "id") {
+            rowData[column.dataIndex] = Math.floor(Math.random() * 100 + 1);
+          } else {
+            rowData[column.dataIndex] ="id-"+rowIndex;
+          }
+
+          return rowData;
+        },
+        {
+          id: prefix + rowIndex,
+          parentId: null
+        }
+      );
+    });
+
+}
+
+constructor(props) {
+super(props);
+
+    const columns = [
+      {
+        dataIndex: "id",
+        title: "id",
+        key: "id",
+        width: 150,
+        align: "center"
+      },
+      {
+        dataIndex: "column-1",
+        title: "column-1",
+        width: 100
+      },
+
+      {
+        dataIndex: "column-2",
+        title: "column-2",
+        width: 150,
+        align: "center"
+      },
+
+      {
+        dataIndex: "column-3",
+        title: "column-3",
+        align: "right"
+      },
+      {
+        dataIndex: "column-4",
+        title: "column-4",
+        width: 100,
+        align: "center"
+      }
+    ];
+
+    let data =  this.generateData(columns,10);
+
+    this.state = {
+      data: data,
+      columns: columns
+    };
+
+}
+
+expandedRowRender(record, index, extra){
+if (extra.frozen === "none") {
+return "expandedRowRender"
+}
+return null;
+}
+
+    onExpandedRowsChange(arr){
+  this.setState({ expandedRowKeys: arr });
+
+};
+
+render() {
+let { columns, data } = this.state;
+
+    return (
+      <Table
+        rowKey="id"
+        columns={columns}
+        expandRowHeight={100}
+        expandedRowRender={this.expandedRowRender.bind(this)}
+        onExpandedRowsChange={this.onExpandedRowsChange.bind(this)}
+        data={data}
+      />
+    );
+
+}
+}
+
+}
+
+</Playground>
+
+
+## summary
+
+<Playground style={{ height: 600 }}>
+ {
+  class Demo extends React.Component {
+  generateData(columns, count = 20, prefix = "Row") {
+    return new Array(count).fill(0).map((row, rowIndex) => {
+      return columns.reduce(
+        (rowData, column, columnIndex) => {
+          if (column.dataIndex !== "id") {
+            rowData[column.dataIndex] = Math.floor(Math.random() * 100 + 1);
+          } else {
+            rowData[column.dataIndex] =
+              prefix + " " + rowIndex + " - Col " + columnIndex;
+          }
+
+          return rowData;
+        },
+        {
+          id: prefix + rowIndex,
+          parentId: null
+        }
+      );
+    });
+  }
+
+  constructor(props) {
+    super(props);
+
+    const columns = [
+      {
+        dataIndex: "id",
+        title: "id",
+        key: "id",
+        width: 150,
+        align: "center"
+      },
+      {
+        dataIndex: "column-1",
+        key: "column-1",
+        title: "column-1",
+        width: 100
+      },
+
+      {
+        dataIndex: "column-2",
+        key: "column-2",
+        title: "column-2",
+        width: 150,
+        align: "center"
+      },
+
+      {
+        dataIndex: "column-3",
+        key: "column-3",
+        title: "column-3",
+        align: "right"
+      },
+      {
+        dataIndex: "column-4",
+        key: "column-4",
+        title: "column-4",
+        width: 100,
+        align: "center"
+      }
+    ];
+
+    let data = this.generateData(columns, 50);
+
+    this.state = {
+      data: data,
+      columns: columns
+    };
+  }
+
+  render() {
+    let { columns, data } = this.state;
+
+    return (
+      <Table
+        rowKey="id"
+        columns={columns}
+        data={data}
+        selectMode="multiple"
+        orderNumber={true}
+        summary={{
+          style: { border: "none" },
+          title: { text: "合计:", column: "id" },
+          data: [
+            {
+              "column-1": "min",
+              "column-2": "max",
+              "column-3": "sum",
+              "column-4": "avg"
+            }
+          ],
+          render: (value, dataIndex, type, index) => {
+            return type + ":" + value;
+          }
+        }}
+      />
+    );
+  }
+}
+
+}
+
+</Playground>
+
+
+
+## frozenRender
+
+无法同summary共存，summary将会覆盖此配置
+
+<Playground style={{ height: 600 }}>
+ {
+  class Demo extends React.Component {
+  generateData(columns, count = 20, prefix = "Row") {
+    return new Array(count).fill(0).map((row, rowIndex) => {
+      return columns.reduce(
+        (rowData, column, columnIndex) => {
+          if (column.dataIndex !== "id") {
+            rowData[column.dataIndex] = Math.floor(Math.random() * 100 + 1);
+          } else {
+            rowData[column.dataIndex] =
+              prefix + " " + rowIndex + " - Col " + columnIndex;
+          }
+
+          return rowData;
+        },
+        {
+          id: prefix + rowIndex,
+          parentId: null
+        }
+      );
+    });
+
+}
+
+constructor(props) {
+super(props);
+
+    const columns = [
+      {
+        dataIndex: "id",
+        title: "id",
+        key: "id",
+        width: 150,
+        align: "center"
+      },
+      {
+        dataIndex: "column-1",
+        key: "column-1",
+        title: "column-1",
+        width: 100
+      },
+
+      {
+        dataIndex: "column-2",
+        key: "column-2",
+        title: "column-2",
+        width: 150,
+        align: "center"
+      },
+
+      {
+        dataIndex: "column-3",
+        key: "column-3",
+        title: "column-3",
+        align: "right"
+      },
+      {
+        dataIndex: "column-4",
+        key: "column-4",
+        title: "column-4",
+        width: 100,
+        align: "center"
+      }
+    ];
+
+    let data = this.generateData(columns, 50);
+
+    this.state = {
+      data: data,
+      columns: columns
+    };
+
+}
+
+render() {
+let { columns, data } = this.state;
+
+    return (
+      <Table
+        rowKey="id"
+        columns={columns}
+        data={data}
+        selectMode="single"
+        orderNumber={false}
+        frozenRender={{
+              rowHeight: 40,
+              rowKey: "id",
+              top:[data[0],data[1]],
+              bottom: [data[0],data[1]],
+              cellRender: (value, row, index, extra) => {
+                return value;
+              }
+            }}
+      />
+    );
+
+}
+}
+
+}
+
+</Playground>
+
+
+## rowSpan & colSpan
+
+<Playground style={{ height: 600 }}>
+ {
+  class Demo extends React.Component {
+  generateData(columns, count = 20, prefix = "Row") {
+    return new Array(count).fill(0).map((row, rowIndex) => {
+      return columns.reduce(
+        (rowData, column, columnIndex) => {
+          rowData[column.dataIndex] =
+            prefix + " " + rowIndex + " - Col " + columnIndex;
+          return rowData;
+        },
+        {
+          id: prefix + rowIndex,
+          parentId: null
+        }
+      );
+    });
+  }
+
+  constructor(props) {
+    super(props);
+
+    const columns = [
+      {
+        dataIndex: "column-1",
+        key: "column-1",
+        title: "number",
+        width: 100
+      },
+      {
+        dataIndex: "id",
+        title: "nick-1",
+        key: "column-21",
+        maxWidth: 300,
+        width: 150,
+        align: "center",
+        render: (value, row, index) => {
+          const obj = {
+            children: value,
+            props: {}
+          };
+          if (index === 5) {
+            obj.props.rowSpan = 5;
+            obj.children = (
+              <div
+                style={{
+                  width: 12,
+                  wordBreak: "break-all",
+                  whiteSpace: "pre-line",
+                  margin: "auto"
+                }}
+              >
+                行数据合并
+              </div>
+            );
+          }
+
+          if (index === 1) {
+            obj.props.colSpan = 2;
+            obj.children = <div>列数据合并</div>;
+          }
+
+          return obj;
+        }
+      },
+      {
+        dataIndex: "column-31",
+        key: "column-31",
+        title: "nick-2",
+        width: 150,
+        align: "center"
+      },
+
+      {
+        dataIndex: "age",
+        key: "column-4",
+        title: "age",
+        align: "right"
+      }
+    ];
+
+    let data = this.generateData(columns, 50);
+
+    this.state = {
+      data: data,
+      columns: columns
+    };
+  }
+
+  render() {
+    let { columns, data } = this.state;
+
+    return (
+      <Table
+        rowKey="id"
+        columns={columns}
+        data={data}
+        selectMode="multiple"
+        orderNumber={true}
+      />
+    );
+  }
+}
+
+
+}
+
+</Playground>
