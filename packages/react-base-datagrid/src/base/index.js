@@ -373,7 +373,7 @@ class BaseDataGrid extends React.Component {
             <div
               className="tablex-forzen-left-scroll"
               style={{
-                width: leftWidth + scrollbarY,
+                width: leftWidth + scrollbarY + 1,
                 height: "100%"
               }}
             >

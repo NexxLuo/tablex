@@ -9,7 +9,7 @@
 }
 
 .tablex-container.tablex-bordered {
-  border: 1px solid #eeeeee;
+  border: 1px solid #e8e8ee;
 }
 
 .tablex-container * {
@@ -50,15 +50,15 @@
   width: auto;
 }
 
-.tablex-bordered .tablex-table .tablex-table-row {
+.tablex-bordered .tablex-table-row .tablex-table-row-cell {
+  border-right: 1px solid #eeeeee;
+  background-color: #ffffff;
   border-bottom: 1px solid #eeeeee;
 }
 
-.tablex-bordered .tablex-table-row .tablex-table-row-cell {
-  border-right: 1px solid #eeeeee;
-}
-
-.tablex-table-body .tablex-table-row.tablex-table-row--hovered {
+.tablex-table-body
+  .tablex-table-row.tablex-table-row--hovered
+  .tablex-table-row-cell {
   background-color: #e6f7ff;
 }
 
@@ -84,9 +84,6 @@
   overflow: hidden;
   box-sizing: border-box;
   flex: 0 0 auto;
-}
-.tablex-bordered .tablex-table .tablex-table-head-container {
-  border-bottom: 1px solid #e8e8e8;
 }
 
 .tablex-table .tablex-table-head {
@@ -124,7 +121,13 @@
 }
 
 .tablex-bordered .tablex-table .tablex-table-head-cell {
-  border-right: 1px solid #e8e8e8;
+  border-right: 1px solid #e8e8ee;
+  border-bottom: 1px solid #e8e8ee;
+}
+
+.tablex-bordered .tablex-table .tablex-table-head-group-cell {
+  border-bottom: 1px solid #e8e8ee;
+  border-right: 1px solid #e8e8ee;
 }
 
 .tablex-table .tablex-table-head-group-inner,
@@ -140,11 +143,6 @@
 .tablex-table .tablex-table-head-group-cell {
   font-size: 14px;
   text-align: center;
-}
-
-.tablex-bordered .tablex-table .tablex-table-head-group-cell {
-  border-bottom: 1px solid #e8e8e8;
-  border-right: 1px solid #e8e8e8;
 }
 
 .tablex-table .tablex-table-head-container .resize-handle {
@@ -216,7 +214,11 @@
   border-right: none;
 }
 
-.tablex-container .tablex-forzen-right .tablex-table .tablex-table-row .tablex-table-row-cell:last-child{
+.tablex-container
+  .tablex-forzen-right
+  .tablex-table
+  .tablex-table-row
+  .tablex-table-row-cell:last-child {
   border-right: none;
 }
 
@@ -224,29 +226,10 @@
   .tablex-forzen-right
   .tablex-table-head
   > .tablex-table-head-cell:first-child,
-.tablex-container .tablex-forzen-right .tablex-table .tablex-table-row .tablex-table-row-cell:first-child{
-  border-left: 1px solid #eeeeee;
-}
-
-/*行拖动*/
-
-.tablex-row-dragging.tablex-table-row {
-  display: flex;
-  background-color: #ffffff;
-  box-shadow: 6px 0 6px -4px rgba(0, 0, 0, 0.15);
-}
-
-.tablex-row-dragging.tablex-table-row.tablex__row--even {
-  background-color: #fafbfc;
-  box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.2),
-    0 -5px 5px -5px rgba(0, 0, 0, 0.2);
-}
-
-.tablex-row-dragging.tablex-table-row {
-  border-top: 1px solid #eeeeee;
-  border-bottom: 1px solid #eeeeee;
-}
-
-.tablex-row-dragging.tablex-table-row .tablex-table-row-cell {
-  border-right: 1px solid #eeeeee;
+.tablex-container
+  .tablex-forzen-right
+  .tablex-table
+  .tablex-table-row
+  .tablex-table-row-cell:first-child {
+  border-left: 1px solid #e8e8ee;
 }

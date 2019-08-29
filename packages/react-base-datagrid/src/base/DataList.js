@@ -65,8 +65,12 @@ const TableCell = props => {
     row,
     rowKey,
     rowIndex,
+    getRowsHeight,
+    getColumnsWidth,
+    rowColSpan,
     dataIndex,
     columnKey,
+    columnIndex,
     width,
     minWidth,
     align,
@@ -77,6 +81,11 @@ const TableCell = props => {
   } = props;
 
   let value = row[dataIndex];
+
+  //if the column has been in colspan , don`t render it
+  if (rowColSpan.end > columnIndex) {
+    return null;
+  }
 
   let prepend = null;
   let prependFn = prependRender;
@@ -100,25 +109,78 @@ const TableCell = props => {
   }
 
   let cellRender = render;
+  let cellElement = value;
+
+  let rowColSpanStyles = {};
+
   if (typeof cellRender === "function") {
-    value = cellRender(value, row, rowIndex, cellExtra);
+    let renderValue = cellRender(value, row, rowIndex, cellExtra);
+    if (!React.isValidElement(renderValue) && renderValue instanceof Object) {
+      let { children = null, props = {} } = renderValue;
+      let { rowSpan, colSpan } = props;
+
+      cellElement = children;
+
+      if (typeof rowSpan !== "undefined") {
+        if (rowSpan === 0) {
+          cellElement = null;
+        } else {
+          let h = getRowsHeight(rowIndex, rowIndex + rowSpan);
+
+          rowColSpanStyles.height = h;
+          rowColSpanStyles.zIndex = 1;
+          //rowColSpanStyles.backgroundColor = "#ffffff";
+          cellElement = children;
+
+          if (h === 0) {
+            cellElement = null;
+          }
+        }
+      }
+
+      if (typeof colSpan !== "undefined") {
+        if (colSpan === 0) {
+          cellElement = null;
+        } else {
+          let colSpanEnd = columnIndex + colSpan;
+          let w = getColumnsWidth(columnIndex, colSpanEnd);
+          rowColSpan.end = colSpanEnd;
+
+          rowColSpanStyles.width = w;
+          rowColSpanStyles.zIndex = 1;
+          //rowColSpanStyles.backgroundColor = "#ffffff";
+          cellElement = children;
+
+          if (w === 0) {
+            cellElement = null;
+          }
+        }
+      }
+    } else {
+      cellElement = renderValue;
+    }
   }
 
   let style = getColumnWidthStyle({ width, minWidth });
-  let cellStyles = Object.assign({}, style, extraAttr.style || {});
+  let cellStyles = Object.assign(
+    {},
+    style,
+    rowColSpanStyles,
+    extraAttr.style || {}
+  );
 
   let alignStyles = {};
   align && (alignStyles.textAlign = align);
 
-  if (typeof value === "string" || typeof value === "number") {
-    value = <CellWithTitle value={value} />;
+  if (typeof cellElement === "string" || typeof cellElement === "number") {
+    cellElement = <CellWithTitle value={cellElement} />;
   }
 
   return (
     <div className="tablex-table-row-cell" {...extraAttr} style={cellStyles}>
       <div className="tablex-table-row-cell-inner" style={alignStyles}>
         {prepend}
-        {value}
+        {cellElement}
       </div>
     </div>
   );
@@ -129,6 +191,8 @@ const TableRow = memo(({ data, index, style }) => {
     data: rows,
     columns,
     rowKey,
+    getRowsHeight,
+    getColumnsWidth,
     onRow,
     rowClassName,
     rowComponent,
@@ -160,6 +224,10 @@ const TableRow = memo(({ data, index, style }) => {
     cls.push(str);
   }
 
+  let rowColSpan = {
+    end: 0
+  };
+
   let rowCells = columns.map((d, i) => {
     let columnKey = d.key || d.dataIndex || i;
     return (
@@ -171,6 +239,9 @@ const TableRow = memo(({ data, index, style }) => {
         rowIndex={index}
         columnIndex={i}
         cellRenderExtra={cellRenderExtra}
+        getRowsHeight={getRowsHeight}
+        getColumnsWidth={getColumnsWidth}
+        rowColSpan={rowColSpan}
         {...d}
       />
     );
@@ -280,6 +351,46 @@ class DataList extends Component {
     return h;
   };
 
+  getRowsHeight = (start, end) => {
+    let { data, rowHeight } = this.props;
+
+    let rowsHeight = 0;
+
+    if (typeof rowHeight === "function") {
+      let h = 0;
+      for (let i = start; i < end; i++) {
+        let row = data[i];
+        if (row) {
+          h = h + rowHeight(row, i);
+        } else {
+          break;
+        }
+      }
+      rowsHeight = h;
+    } else {
+      rowsHeight = (end - start) * rowHeight;
+    }
+
+    return rowsHeight;
+  };
+
+  getColumnsWidth = (start, end) => {
+    let { columns } = this.props;
+
+    let columnsWidth = 0;
+
+    for (let i = start; i < end; i++) {
+      let d = columns[i];
+      if (d) {
+        let cw = getColumnWidthStyle(columns[i]).width;
+        columnsWidth = cw + columnsWidth;
+      } else {
+        break;
+      }
+    }
+    return columnsWidth;
+  };
+
   getItemKey = (index, itemData) => {
     let { rowKey } = this.props;
 
@@ -329,6 +440,9 @@ class DataList extends Component {
       cellRenderExtra,
       placeholders
     );
+
+    itemData.getRowsHeight = this.getRowsHeight;
+    itemData.getColumnsWidth = this.getColumnsWidth;
 
     let itemCount = data.length;
 
