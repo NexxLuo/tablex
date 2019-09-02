@@ -6,6 +6,9 @@ import { Playground, Props } from "docz";
 import Table, { flatten } from "tablex";
 import { Input, Checkbox } from "antd";
 
+import Complex from "./complex";
+
+
 # Usage
 
 ```javascript
@@ -115,10 +118,11 @@ let { columns, data } = this.state;
       <Table
         rowKey="id"
         columns={columns}
-          validateTrigger="onChange"
+        validateTrigger="onChange"
         data={data}
         editable={true}
-         onEditSave={this.onEditSave.bind(this)}
+        editTools={['edit', 'add','delete']}
+        onEditSave={this.onEditSave.bind(this)}
       />
     );
 
@@ -128,3 +132,13 @@ let { columns, data } = this.state;
 }
 
 </Playground>
+
+
+## edit with 50K nested rows
+
+<Playground style={{ height: 600 }}>
+  <Complex />
+</Playground>
+
+
+

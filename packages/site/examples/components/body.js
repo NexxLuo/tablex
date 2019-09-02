@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Table } from "tablex";
+import "./styles.css";
 
 import { SortableContainer, SortableElement } from "react-sortable-hoc";
 
@@ -17,16 +18,7 @@ function DraggableTableRow(props) {
 }
 
 function DraggableTableBody(props) {
-  return (
-    <DraggableBody
-      {...props}
-      distance={10}
-      helperClass="tablex-row-dragging"
-      getContainer={() => {
-        return document.getElementById("tableScroll");
-      }}
-    />
-  );
+  return <DraggableBody {...props} />;
 }
 
 const DraggableTable = props => {
@@ -34,7 +26,13 @@ const DraggableTable = props => {
     <Table
       {...props}
       components={{
-        body: DraggableTableBody,
+        body: ({ className, children }) => {
+          return (
+            <DraggableTableBody className={className} {...props}>
+              {children}
+            </DraggableTableBody>
+          );
+        },
         row: DraggableTableRow
       }}
     />
@@ -72,174 +70,56 @@ const generateData = (columns, count = 20, prefix = "row-") =>
 const columns = generateColumns(10);
 const data = generateData(columns, 100);
 
-let fixedColumns = columns.map((column, columnIndex) => {
-  let fixed;
-  if (columnIndex < 2) fixed = "left";
-  if (columnIndex > 8) fixed = "right";
-
-  return { ...column, resizable: true, fixed };
-});
-
-fixedColumns = [
-  {
-    dataIndex: "column-1",
-    key: "column-1",
-    title: "number",
-    width: 200
-  },
-  {
-    title: "appellation",
-    width: 150,
-    key: "column-11",
-    children: [
-      {
-        dataIndex: "address",
-        title: "name",
-        key: "column-2",
-
-        width: 150
-      },
-      {
-        dataIndex: "id",
-        key: "column-3",
-        title: "nick name",
-        width: 150,
-        children: [
-          {
-            dataIndex: "id",
-            title: "nick-1",
-            key: "column-21",
-            maxWidth: 300,
-            width: 150
-          },
-          {
-            dataIndex: "column-31",
-            key: "column-31",
-            title: "nick-2",
-            width: 150
-          }
-        ]
-      }
-    ]
-  },
-  {
-    dataIndex: "age",
-    key: "column-4",
-    title: "age",
-    width: 150
-  }
-];
-
-function createData(level, parentKey, maxLevel, index) {
-  if (level > maxLevel) {
-    return;
-  }
-
-  let l = level;
-  let data = [];
-  for (let i = 0; i < 3; i++) {
-    let k = parentKey + "-" + level + "-" + i;
-    let d = {
-      id: k,
-      "column-1": "Edward King " + k,
-      age: 32,
-      address: "London, Park Lane no. " + i
-    };
-
-    if (i === 2) {
-      d.children = createData(l + 1, k, maxLevel, i);
-    }
-
-    data.push(d);
-  }
-  return data;
-}
-
-function createTreeData() {
-  let data = [];
-  for (let i = 0; i < 10; i++) {
-    data.push({
-      id: "" + i,
-      level: 0,
-      "column-1": "Edward King " + i,
-      age: 32,
-      address: "London, Park Lane no. " + i,
-      children: createData(0, i, 2)
-    });
-  }
-
-  return data;
-}
+const arrayMove = (array, from, to) => {
+  //array = array.slice();
+  array.splice(to < 0 ? array.length + to : to, 0, array.splice(from, 1)[0]);
+  return array;
+};
 
 class Demo extends Component {
-  state = {
-    data: []
-  };
+  constructor(props) {
+    super(props);
+    this.scrollRef = null;
+    this.state = {
+      data: []
+    };
+  }
 
   componentDidMount() {
     this.setState({
-      data: createTreeData()
+      data: data
     });
   }
 
-  loadChildrenData = record => {
-    return new Promise((resolve, reject) => {
-      let rows = this.state.data;
-
-      setTimeout(() => {
-        let childrens = [{ id: "123123123", "column-0": "children async" }];
-        // record.isLoading=false;
-        record.children = childrens;
-        //rows[0] = Object.assign({}, record, { children: childrens });
-
-        this.setState({
-          data: rows
-        });
-
-        resolve();
-      }, 1300);
-    });
-  };
-
-  scrollRef = null;
-  tableScrollRef = ins => {
+  tableScrollRef(ins) {
     this.scrollRef = ins;
     if (ins) {
       ins.id = "tableScroll";
     }
-  };
+  }
 
-  getContainer = a => {
-    return document.getElementById("tableScroll") || document.body;
-  };
-
-  shouldCancelStart = (a, b, c) => {
-    return true;
-  };
-
-  onSortEnd = a => {};
-
-  onSortOver = (a, e) => {};
+  onSortEnd({ newIndex, oldIndex }) {
+    this.setState(({ data }) => ({
+      data: arrayMove(data, oldIndex, newIndex)
+    }));
+  }
 
   render() {
     return (
       <DraggableTable
-        distance={10}
-        onSortEnd={this.onSortEnd}
-        helperClass="tablex-row-dragging"
-        getContainer={this.getContainer}
-        onSortOver={this.onSortOver}
-        scrollRef={this.tableScrollRef}
+        scrollRef={this.tableScrollRef.bind(this)}
         rowKey="id"
-        draggable={true}
         expandColumnKey="column-1"
-        columns={fixedColumns}
+        columns={columns}
         selectMode="none"
         data={this.state.data}
         orderNumber={true}
-        disabledSelectKeys={[]}
-        onSelectChange={(keys, rows) => {
-          console.log("onSelectChange:", rows);
+        lockAxis="y"
+        onSortEnd={this.onSortEnd.bind(this)}
+        distance={10}
+        helperClass="tablex-row-dragging"
+        getContainer={function() {
+          return document.getElementById("tableScroll");
         }}
       />
     );

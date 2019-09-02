@@ -37,10 +37,6 @@ Column.propTypes = {
   /** 列自定义渲染 */
   render: PropTypes.func,
   /** 编辑列验证  (value,row,rowIndex) => React.Element ;
-   * @param {*} value
-   * @param {object} row
-   * @param {number} rowIndex
-   * @returns {React.Element}
    */
   validator: PropTypes.func,
   /** 编辑列控件 (value:any,row:object,rowIndex:number,onchange:func,ref:func,validate:func) => React.Element ;
