@@ -4,7 +4,7 @@ import Table from "react-base-datagrid";
 
 import Pagination from "./pagination";
 import Spin from "antd/lib/spin";
-import ColumnDropMenu, { ColumnDropMenuButton } from "./ColumnDropMenu";
+import ColumnDropMenu from "./ColumnDropMenu";
 import {
   treeToFlatten as treeToList,
   treeFilter,
@@ -402,9 +402,7 @@ class FeaturedTable extends React.Component {
       {
         columnsConfig: newConfigs
       },
-      () => {
-        this.resetScrollbarSize();
-      }
+      this.resetScrollbarSize
     );
   };
 
@@ -514,11 +512,11 @@ class FeaturedTable extends React.Component {
   };
 
   saveConfig = configs => {
-    this.setState({ columnsConfig: configs });
+    this.setState({ columnsConfig: configs }, this.resetScrollbarSize);
   };
 
   resetConfig = () => {
-    this.setState({ columnsConfig: {} });
+    this.setState({ columnsConfig: {} }, this.resetScrollbarSize);
   };
 
   renderHeader = () => {
