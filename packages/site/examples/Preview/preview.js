@@ -236,6 +236,7 @@ class Demo extends Component {
         <div>
           <Table
             loading={this.state.loading}
+            tableId="preview_table"
             editable={true}
             rowKey="id"
             innerRef={this.innerRef}

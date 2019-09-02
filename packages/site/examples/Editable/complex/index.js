@@ -571,7 +571,7 @@ class Demo extends Component {
           selectMode="multiple"
           checkStrictly={false}
           data={this.state.treeData}
-          orderNumber={true}
+          orderNumber={{resizable:true}}
           onRow={this.onRow}
           validateTrigger="onChange"
           header={() => (
