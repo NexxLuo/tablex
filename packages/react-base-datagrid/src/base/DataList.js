@@ -112,12 +112,15 @@ const TableCell = props => {
   let cellElement = value;
 
   let rowColSpanStyles = {};
+  let propsStyles = {};
 
   if (typeof cellRender === "function") {
     let renderValue = cellRender(value, row, rowIndex, cellExtra);
     if (!React.isValidElement(renderValue) && renderValue instanceof Object) {
       let { children = null, props = {} } = renderValue;
-      let { rowSpan, colSpan } = props;
+      let { rowSpan, colSpan, style } = props;
+
+      propsStyles = style || {};
 
       cellElement = children;
 
@@ -148,7 +151,7 @@ const TableCell = props => {
 
           rowColSpanStyles.width = w;
           rowColSpanStyles.zIndex = 1;
-          //rowColSpanStyles.backgroundColor = "#ffffff";
+
           cellElement = children;
 
           if (w === 0) {
@@ -165,8 +168,9 @@ const TableCell = props => {
   let cellStyles = Object.assign(
     {},
     style,
-    rowColSpanStyles,
-    extraAttr.style || {}
+    extraAttr.style || {},
+    propsStyles,
+    rowColSpanStyles
   );
 
   let alignStyles = {};
