@@ -3,7 +3,7 @@ import ReactDom from "react-dom";
 import cloneDeep from "lodash/cloneDeep";
 import merge from "lodash/merge";
 import Table from "./Table";
-import { treeToFlatten as treeToList, treeFilter } from "./utils";
+import { treeToFlatten, treeToList, treeFilter } from "./utils";
 import Tooltip from "antd/lib/tooltip";
 import Button from "antd/lib/button";
 import message from "antd/lib/message";
@@ -13,6 +13,7 @@ import Dropdown from "antd/lib/dropdown";
 import Icon from "antd/lib/icon";
 import "antd/dist/antd.css";
 import orderBy from "lodash/orderBy";
+import { getTreeFromFlatData } from "../data-utils";
 
 function cloneData(source) {
   try {
@@ -23,12 +24,47 @@ function cloneData(source) {
   }
 }
 
-function testTime(v) {
-  if (v) {
-    return (new Date().getTime() - v.getTime()) / 1000;
-  } else {
-    return new Date();
+function deleteData(data, keys, rowKey) {
+  let dataList = treeToList(data, rowKey, true).list.slice();
+
+  let newDataList = [];
+
+  let deletedRows = [];
+  let deletedRowKeys = [];
+
+  let keysMap = {};
+
+  for (let i = 0; i < keys.length; i++) {
+    keysMap[keys[i]] = true;
   }
+
+  for (let i = 0; i < dataList.length; i++) {
+    let d = dataList[i];
+    if (d) {
+      let k = d[rowKey];
+      if (k in keysMap) {
+        deletedRowKeys.push(k);
+        deletedRows.push(Object.assign({}, d));
+      } else {
+        delete d.children;
+        newDataList.push(d);
+      }
+    }
+  }
+
+  let newData = getTreeFromFlatData({
+    flatData: newDataList,
+    getKey: node => node[rowKey],
+    getParentKey: node => node.__parentKey,
+    rootKey: ""
+  });
+
+  return {
+    newData,
+    newDataList,
+    deletedRows,
+    deletedRowKeys
+  };
 }
 
 /**
@@ -58,7 +94,8 @@ class EditableTable extends React.Component {
       editSaveLoading: false,
       deleteLoading: false,
       dataControled: false,
-      readOnly: false
+      readOnly: false,
+      selectedRowKeys: []
     };
   }
 
@@ -78,7 +115,7 @@ class EditableTable extends React.Component {
       };
 
       let columns = cloneDeep(nextProps.columns || []);
-      let columnList = treeToList(columns).list;
+      let columnList = treeToFlatten(columns).list;
       nextState.columns = columns;
       nextState.columnList = columnList;
 
@@ -87,14 +124,14 @@ class EditableTable extends React.Component {
       let data = nextProps.data || nextProps.dataSource || [];
 
       if (prevState.dataControled === true) {
-        let dataList = treeToList(data).list;
+        let dataList = treeToFlatten(data).list;
         nextState.dataList = dataList;
         nextState.data = data;
         nextState.sourceData = cloneData(data);
       } else {
         if (prevState.rawData !== data) {
           nextState.rawData = data;
-          let dataList = treeToList(data).list;
+          let dataList = treeToFlatten(data).list;
           nextState.dataList = dataList;
           nextState.data = data;
           nextState.sourceData = cloneData(data);
@@ -194,7 +231,7 @@ class EditableTable extends React.Component {
 
     // let dataList = data.concat(addedData);
 
-    let arr = treeToList(data).list;
+    let arr = treeToFlatten(data).list;
 
     let k = row[rowKey];
     let i = arr.findIndex(d => d[rowKey] === k);
@@ -460,7 +497,7 @@ class EditableTable extends React.Component {
       });
     }
 
-    let cols = treeToList(arr).leafs;
+    let cols = treeToFlatten(arr).leafs;
 
     if (isEditAll === true) {
       cols.forEach(d => {
@@ -502,13 +539,13 @@ class EditableTable extends React.Component {
 
             let c = (
               <span
-                style={ { verticalAlign: "middle" } }
-                className={ valid === false ? "has-error" : "" }
-                onClick={ e => this.onClick(e, row, d) }
-                onKeyDown={ e => this.onKeyDown(e, row, d) }
+                style={{ verticalAlign: "middle" }}
+                className={valid === false ? "has-error" : ""}
+                onClick={e => this.onClick(e, row, d)}
+                onKeyDown={e => this.onKeyDown(e, row, d)}
               >
-                <Tooltip placement="topLeft" title={ msg }>
-                  { ed }
+                <Tooltip placement="topLeft" title={msg}>
+                  {ed}
                 </Tooltip>
               </span>
             );
@@ -569,13 +606,13 @@ class EditableTable extends React.Component {
 
               let c = (
                 <span
-                  style={ { verticalAlign: "middle" } }
-                  className={ valid === false ? "has-error" : "" }
-                  onClick={ e => this.onClick(e, row, d) }
-                  onKeyDown={ e => this.onKeyDown(e, row, d) }
+                  style={{ verticalAlign: "middle" }}
+                  className={valid === false ? "has-error" : ""}
+                  onClick={e => this.onClick(e, row, d)}
+                  onKeyDown={e => this.onKeyDown(e, row, d)}
                 >
-                  <Tooltip placement="topLeft" title={ msg }>
-                    { ed }
+                  <Tooltip placement="topLeft" title={msg}>
+                    {ed}
                   </Tooltip>
                 </span>
               );
@@ -768,7 +805,7 @@ class EditableTable extends React.Component {
 
     let rows = [].concat(dataList);
 
-    let arr = treeToList(columns).leafs;
+    let arr = treeToFlatten(columns).leafs;
 
     if (keyCode === 38) {
       //top
@@ -960,35 +997,35 @@ class EditableTable extends React.Component {
   delete = () => {
     let bl = true;
 
-    let selectedKeys = this.selectedRowKeys;
+    let { selectedRowKeys = [], selectedRows = [] } = this.state;
 
     if (typeof this.props.onBeforeDelete === "function") {
-      bl = this.props.onBeforeDelete(selectedKeys);
+      bl = this.props.onBeforeDelete(selectedRowKeys, selectedRows);
     }
 
     if (bl === false) {
       return false;
     }
 
-    if (selectedKeys.length <= 0) {
+    if (selectedRowKeys.length <= 0) {
       message.warn("请选择要删除的数据");
     } else {
       this.editType = "delete";
 
       let { data, rowKey } = this.state;
 
-      let newData = [].concat(data);
-      let deletedRows = [];
+      let { newData, newDataList, deletedRows, deletedRowKeys } = deleteData(
+        data,
+        selectedRowKeys,
+        rowKey
+      );
 
-      for (let i = 0; i < selectedKeys.length; i++) {
-        let index = newData.findIndex(d => d[rowKey] === selectedKeys[i]);
-
-        deletedRows.push(Object.assign({}, newData[index]));
-
-        if (index > -1) {
-          newData.splice(index, 1);
-        }
-      }
+      let nextState = {
+        deleteLoading: false,
+        selectedRowKeys: [],
+        data: newData,
+        dataList: newDataList
+      };
 
       let onEditSave = this.props.onEditSave;
 
@@ -999,17 +1036,17 @@ class EditableTable extends React.Component {
 
         if (fn && typeof fn.then === "function") {
           fn.then(() => {
-            this.setState({ deleteLoading: false });
+            this.setState(nextState);
           });
         } else {
-          this.setState({ deleteLoading: false });
+          this.setState(nextState);
         }
       } else {
-        this.setState({ data: newData, deletedRows });
+        this.setState(nextState);
       }
 
       if (typeof this.props.onDelete === "function") {
-        this.props.onDelete();
+        this.props.onDelete(deletedRowKeys, deletedRows);
       }
     }
   };
@@ -1097,41 +1134,41 @@ class EditableTable extends React.Component {
 
     let okText = config.okText || "确定";
     let okIcon = config.okIcon || "";
-    okIcon = okIcon ? <Icon type={ okIcon } /> : null;
+    okIcon = okIcon ? <Icon type={okIcon} /> : null;
 
     let cancelText = config.cancelText || "取消";
     let cancelIcon = config.cancelIcon || "";
-    cancelIcon = cancelIcon ? <Icon type={ cancelIcon } /> : null;
+    cancelIcon = cancelIcon ? <Icon type={cancelIcon} /> : null;
 
     let addText = config.addText || "新增";
     let addIcon = config.addIcon || "";
-    addIcon = addIcon ? <Icon type={ addIcon } /> : null;
+    addIcon = addIcon ? <Icon type={addIcon} /> : null;
 
     let editText = config.editText || "编辑";
     let editIcon = config.editIcon || "";
-    editIcon = editIcon ? <Icon type={ editIcon } /> : null;
+    editIcon = editIcon ? <Icon type={editIcon} /> : null;
 
     let deleteText = config.deleteText || "删除";
     let deleteIcon = config.deleteIcon || "";
-    deleteIcon = deleteIcon ? <Icon type={ deleteIcon } /> : null;
+    deleteIcon = deleteIcon ? <Icon type={deleteIcon} /> : null;
 
     if (isEditing) {
       w = 160;
       buttons.push(
         <Button
-          key={ "_btnOk" }
-          loading={ this.state.editSaveLoading }
-          onClick={ this.completeEdit }
-          style={ { ...itemStyle } }
+          key={"_btnOk"}
+          loading={this.state.editSaveLoading}
+          onClick={this.completeEdit}
+          style={{ ...itemStyle }}
         >
-          { okIcon }
-          { okText }
+          {okIcon}
+          {okText}
         </Button>
       );
       buttons.push(
-        <Button key={ "_btnCancel" } onClick={ this.cancelEdit } style={ itemStyle }>
-          { cancelIcon }
-          { cancelText }
+        <Button key={"_btnCancel"} onClick={this.cancelEdit} style={itemStyle}>
+          {cancelIcon}
+          {cancelText}
         </Button>
       );
     } else {
@@ -1141,11 +1178,11 @@ class EditableTable extends React.Component {
         let styles = { ...itemStyle };
 
         const menu = (
-          <Menu onClick={ e => this.addRange(e.item.props.value) }>
-            <Menu.Item key="1" value={ 5 }>
+          <Menu onClick={e => this.addRange(e.item.props.value)}>
+            <Menu.Item key="1" value={5}>
               5 行
             </Menu.Item>
-            <Menu.Item key="2" value={ 10 }>
+            <Menu.Item key="2" value={10}>
               10 行
             </Menu.Item>
           </Menu>
@@ -1154,21 +1191,21 @@ class EditableTable extends React.Component {
         if (d === "addSingle") {
           buttons.push(
             <Button
-              key={ d + "_1" }
-              onClick={ () => this.addRange(1) }
-              style={ styles }
+              key={d + "_1"}
+              onClick={() => this.addRange(1)}
+              style={styles}
             >
-              { addIcon }
-              { addText }
+              {addIcon}
+              {addText}
             </Button>
           );
         }
 
         if (d === "add") {
           buttons.push(
-            <Dropdown key={ d + "_1" } overlay={ menu }>
-              <Button tool="add" style={ styles } onClick={ () => this.addRange() }>
-                { addIcon } { addText }
+            <Dropdown key={d + "_1"} overlay={menu}>
+              <Button tool="add" style={styles} onClick={() => this.addRange()}>
+                {addIcon} {addText}
                 <Icon type="down" />
               </Button>
             </Dropdown>
@@ -1177,9 +1214,9 @@ class EditableTable extends React.Component {
 
         if (d === "edit") {
           buttons.push(
-            <Button key={ d + "_1" } onClick={ this.edit } style={ styles }>
-              { editIcon }
-              { editText }
+            <Button key={d + "_1"} onClick={this.edit} style={styles}>
+              {editIcon}
+              {editText}
             </Button>
           );
         }
@@ -1187,21 +1224,21 @@ class EditableTable extends React.Component {
         if (d === "delete") {
           buttons.push(
             <Popconfirm
-              key={ d }
+              key={d}
               title="确定删除选中的数据吗？"
               okText="确定"
               cancelText="取消"
-              onConfirm={ this.delete }
+              onConfirm={this.delete}
             >
               <Button
-                style={ styles }
-                loading={ this.state.deleteLoading }
-                onClick={ e => {
+                style={styles}
+                loading={this.state.deleteLoading}
+                onClick={e => {
                   e.stopPropagation();
-                } }
+                }}
               >
-                { deleteIcon }
-                { deleteText }
+                {deleteIcon}
+                {deleteText}
               </Button>
             </Popconfirm>
           );
@@ -1209,25 +1246,25 @@ class EditableTable extends React.Component {
 
         if (typeof d === "function") {
           buttons.push(
-            <span style={ styles } key={ "_fnTools_" + i }>
-              { d() }
+            <span style={styles} key={"_fnTools_" + i}>
+              {d()}
             </span>
           );
         }
 
         if (typeof d === "object" && d !== null) {
           let toolIcon = d.icon;
-          toolIcon = toolIcon ? <Icon type={ toolIcon } /> : null;
+          toolIcon = toolIcon ? <Icon type={toolIcon} /> : null;
           let toolAttr = d.props || {};
           buttons.push(
             <Button
-              key={ "_objTools_" + i }
-              onClick={ d.handler }
-              style={ styles }
-              { ...toolAttr }
+              key={"_objTools_" + i}
+              onClick={d.handler}
+              style={styles}
+              {...toolAttr}
             >
-              { toolIcon }
-              { d.text }
+              {toolIcon}
+              {d.text}
             </Button>
           );
         }
@@ -1238,7 +1275,7 @@ class EditableTable extends React.Component {
       return null;
     }
 
-    return <Fragment>{ buttons }</Fragment>;
+    return <Fragment>{buttons}</Fragment>;
   };
 
   getProps = () => {
@@ -1263,13 +1300,13 @@ class EditableTable extends React.Component {
       if (tools !== null) {
         return (
           <div
-            style={ {
+            style={{
               backgroundColor: "#ffffff",
               marginRight: 5,
               ...styles
-            } }
+            }}
           >
-            { tools }
+            {tools}
           </div>
         );
       } else {
@@ -1325,6 +1362,7 @@ class EditableTable extends React.Component {
   };
 
   api = {
+    editRows: this.editRows,
     editAll: this.editAll,
     addRange: this.addRange,
     delete: this.delete,
@@ -1371,9 +1409,11 @@ class EditableTable extends React.Component {
     return toolBar;
   };
 
-  selectedRowKeys = [];
   onSelectChange = (selectedKeys, selectedRows, triggerKey) => {
-    this.selectedRowKeys = selectedKeys;
+    this.setState({
+      selectedRowKeys: selectedKeys.slice(),
+      selectedRows: selectedRows.slice()
+    });
     if (typeof this.props.onSelectChange === "function") {
       this.props.onSelectChange(selectedKeys, selectedRows, triggerKey);
     }
@@ -1390,6 +1430,7 @@ class EditableTable extends React.Component {
       data: arr,
       columns,
       onSelectChange: this.onSelectChange,
+      selectedRowKeys: this.state.selectedRowKeys,
       headerToolsBar: this.headerToolsBar,
       footerToolsBar: this.footerToolsBar,
       innerRef: this.innerTableRef
@@ -1399,7 +1440,7 @@ class EditableTable extends React.Component {
       newProps.selectMode = "none";
     }
 
-    return <Table { ...props } { ...newProps } />;
+    return <Table {...props} {...newProps} />;
   }
 }
 

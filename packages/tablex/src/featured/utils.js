@@ -54,7 +54,7 @@ export function getParentElement(element, selector) {
   return getParent(element, selector);
 }
 
-export function treeToList(arr, idField = "id") {
+export function treeToList(arr, idField = "id", withParentId = false) {
   let treeList = arr || [];
 
   //末级节点
@@ -66,8 +66,6 @@ export function treeToList(arr, idField = "id") {
   //所有节点
   let list = [];
 
-  let maxDepth = 0;
-
   for (let i = 0; i < treeList.length; i++) {
     const d = treeList[i];
 
@@ -78,6 +76,9 @@ export function treeToList(arr, idField = "id") {
     const childrens = d.children || [];
 
     d.__depth = 0;
+    if (withParentId === true) {
+      d["__parentKey"] = "";
+    }
 
     list.push(d);
     roots.push(d);
@@ -103,6 +104,10 @@ export function treeToList(arr, idField = "id") {
         width: item.width
       };
 
+      if (withParentId === true) {
+        d["__parentKey"] = item[idField];
+      }
+
       d.__parents = [].concat(parents).concat([item[idField]]);
 
       list.push(d);
@@ -115,13 +120,7 @@ export function treeToList(arr, idField = "id") {
     }
   }
 
-  if (leafs.length > 0) {
-    let sortedArr = [].concat(leafs);
-    sortedArr.sort((a, b) => b.__depth - a.__depth);
-    maxDepth = sortedArr[0].__depth;
-  }
-
-  return { list, leafs, roots, maxDepth };
+  return { list, leafs, roots };
 }
 
 export function treeToFlatten(arr) {
@@ -180,8 +179,7 @@ export function treeFilter(arr, fn) {
   for (let i = 0; i < treeList.length; i++) {
     const d = treeList[i];
 
-  
-    let bl = fn(d, i, 0,j);
+    let bl = fn(d, i, 0, j);
     j++;
 
     if (bl === true) {
@@ -200,9 +198,8 @@ export function treeFilter(arr, fn) {
 
     for (let i = 0; i < tempArr.length; i++) {
       const d = tempArr[i];
-  
 
-      let bl = fn(d, i, depth + 1,j);
+      let bl = fn(d, i, depth + 1, j);
 
       j++;
 
@@ -220,3 +217,4 @@ export function treeFilter(arr, fn) {
 
   return roots;
 }
+

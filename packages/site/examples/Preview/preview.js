@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Table } from "tablex";
-import { Checkbox } from "antd";
+import { Checkbox,Input } from "antd";
 
 const generateColumns = (count = 10, prefix = "column-", props) =>
   new Array(count).fill(0).map((column, columnIndex) => ({
@@ -52,7 +52,16 @@ fixedColumns = [
       return <span>titleRender</span>;
     },
     align: "left",
-    halign: "center"
+    halign: "center",
+    editor: function(value, row, index, onchange, ref) {
+      return (
+        <Input
+          defaultValue={value}
+          ref={ref}
+          onChange={e => onchange({ ["column-1"]: e.target.value })}
+        />
+      );
+    }
   },
   {
     title: "appellation",
@@ -82,9 +91,9 @@ fixedColumns = [
     ]
   },
   {
-    dataIndex: "age",
+    dataIndex: "id",
     key: "column-4",
-    title: "age"
+    title: "id"
   }
 ];
 
@@ -137,6 +146,8 @@ function createTreeData() {
 }
 
 class Demo extends Component {
+
+  tableRef=React.createRef();
   state = {
     data: [],
     loading: false,
@@ -177,6 +188,13 @@ class Demo extends Component {
       this.setState({ loading: false, data: createTreeData() });
     }, 1000);
   };
+
+  edit = () => {
+    if (this.tableRef.current) {
+      this.tableRef.current.api.editRows(["2"]);
+    }
+  };
+  
 
   onSelectChange = (a, b, c) => {
     //console.log("onSelectChange:", b);
@@ -232,12 +250,20 @@ class Demo extends Component {
           >
             get data
           </span>
+
+          <span
+            onClick={this.edit}
+            style={{ cursor: "pointer", marginLeft: 10 }}
+          >
+            edit
+          </span>
         </div>
         <div>
           <Table
             loading={this.state.loading}
             tableId="preview_table"
-            editable={true}
+            editable={false}
+            ref={this.tableRef}
             rowKey="id"
             innerRef={this.innerRef}
             columns={fixedColumns}

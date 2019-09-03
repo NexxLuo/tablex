@@ -97,6 +97,9 @@ super(props);
 
     let data =  this.generateData(columns,10);
 
+     data[1].children =  this.generateData(columns,3,"children-");
+
+
     this.state = {
       data: data,
       columns: columns
@@ -121,6 +124,8 @@ let { columns, data } = this.state;
         validateTrigger="onChange"
         data={data}
         editable={true}
+        selectMode={"multiple"}
+        checkStrictly={false}
         editTools={['edit', 'add','delete']}
         onEditSave={this.onEditSave.bind(this)}
       />

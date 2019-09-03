@@ -43,6 +43,7 @@ class SelectionGrid extends Component {
       flatData,
       treeProps,
       selectedRowKeys,
+      halfCheckedKeys,
       disabledSelectKeys,
       prependColumns = [],
       selectOnRowClick
@@ -88,6 +89,13 @@ class SelectionGrid extends Component {
 
       if ("selectedRowKeys" in nextProps) {
         nextState.selectedRowKeys = selectedRowKeys;
+        if (selectedRowKeys.length === 0) {
+          nextState.halfCheckedKeys = [];
+        }
+      }
+
+      if ("halfCheckedKeys" in nextProps) {
+        nextState.halfCheckedKeys = halfCheckedKeys;
       }
 
       if ("disabledSelectKeys" in nextProps) {
