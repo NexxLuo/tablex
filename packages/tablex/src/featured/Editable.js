@@ -25,7 +25,8 @@ function cloneData(source) {
 }
 
 function deleteData(data, keys, rowKey) {
-  let dataList = treeToList(data, rowKey, true).list.slice();
+  let { list, treeProps } = treeToList(data, rowKey);
+  let dataList = list.slice();
 
   let newDataList = [];
 
@@ -55,7 +56,10 @@ function deleteData(data, keys, rowKey) {
   let newData = getTreeFromFlatData({
     flatData: newDataList,
     getKey: node => node[rowKey],
-    getParentKey: node => node.__parentKey,
+    getParentKey: node => {
+      let p = treeProps[node[rowKey]] || {};
+      return p.parentKey || "";
+    },
     rootKey: ""
   });
 
@@ -697,7 +701,7 @@ class EditableTable extends React.Component {
 
   addRows = (arr = [], editting = true) => {
     let rowKey = this.props.rowKey;
-    let { addedData, editKeys } = this.state;
+    let {  editKeys } = this.state;
 
     let rowKeys = [];
     let newEditKeys = [];
@@ -994,10 +998,43 @@ class EditableTable extends React.Component {
     }
   };
 
-  delete = () => {
-    let bl = true;
+  deleteRows = keys => {
+    let { data, rowKey, selectedRowKeys } = this.state;
 
+    let { newData, newDataList, deletedRows, deletedRowKeys } = deleteData(
+      data,
+      keys,
+      rowKey
+    );
+
+    let nextSelectedRowKeys = [];
+
+    let keysMap = {};
+
+    for (let i = 0; i < deletedRowKeys.length; i++) {
+      keysMap[keys[i]] = true;
+    }
+
+    for (let i = 0; i < selectedRowKeys.length; i++) {
+      let k = selectedRowKeys[i];
+      if (keysMap[k] !== true) {
+        nextSelectedRowKeys.push(k);
+      }
+    }
+
+    this.setState({
+      selectedRowKeys: nextSelectedRowKeys,
+      data: newData,
+      dataList: newDataList
+    });
+
+    return deletedRows;
+  };
+
+  delete = () => {
     let { selectedRowKeys = [], selectedRows = [] } = this.state;
+
+    let bl = true;
 
     if (typeof this.props.onBeforeDelete === "function") {
       bl = this.props.onBeforeDelete(selectedRowKeys, selectedRows);
@@ -1052,7 +1089,7 @@ class EditableTable extends React.Component {
   };
 
   addRange = rowCount => {
-    let { rowTemplate, rowKey, isAppend, defaultAddCount } = this.props;
+    let { rowTemplate, rowKey,  defaultAddCount } = this.props;
 
     let bl = true;
 
@@ -1365,7 +1402,9 @@ class EditableTable extends React.Component {
     editRows: this.editRows,
     editAll: this.editAll,
     addRange: this.addRange,
+    addRows:this.addRows,
     delete: this.delete,
+    deleteRows=this.deleteRows,
     reset: this.reset,
     completeEdit: this.completeEdit,
     cancelEdit: this.cancelEdit,

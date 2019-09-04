@@ -54,73 +54,61 @@ export function getParentElement(element, selector) {
   return getParent(element, selector);
 }
 
-export function treeToList(arr, idField = "id", withParentId = false) {
-  let treeList = arr || [];
-
-  //末级节点
-  let leafs = [];
-
-  //根
-  let roots = [];
-
-  //所有节点
+export function treeToList(arr, idField = "id") {
+  let treeProps = {};
   let list = [];
 
-  for (let i = 0; i < treeList.length; i++) {
-    const d = treeList[i];
+  function setTree(key, prop) {
+    let p = treeProps[key] || {};
+    treeProps[key] = Object.assign(p, prop);
+  }
 
-    if (!d) {
-      continue;
-    }
+  let treeList = arr || [];
+
+  for (let i = 0, len = treeList.length; i < len; i++) {
+    const d = treeList[i];
+    let k = d[idField];
+    let index = i + 1;
+
+    list.push(d);
 
     const childrens = d.children || [];
 
-    d.__depth = 0;
-    if (withParentId === true) {
-      d["__parentKey"] = "";
-    }
-
-    list.push(d);
-    roots.push(d);
-
     if (childrens.length > 0) {
-      getChildren(d, 0, []);
-    } else {
-      leafs.push(d);
+      getChildren(d, 0);
     }
+
+    setTree(k, {
+      depth: 0,
+      parentKey: ""
+    });
   }
 
-  function getChildren(item, depth, parents) {
-    const tempArr = item.children || [];
+  function getChildren(item, depth) {
+    const childrens = item.children;
+    const pk = item[idField];
 
-    for (let i = 0; i < tempArr.length; i++) {
-      const d = tempArr[i];
-      const childrens = d.children || [];
+    let __depth = depth + 1;
 
-      d.__depth = depth + 1;
-      d.__parent = {
-        title: item.title,
-        key: item[idField],
-        width: item.width
-      };
+    for (let i = 0, len = childrens.length; i < len; i++) {
+      const d = childrens[i];
+      const k = d[idField];
 
-      if (withParentId === true) {
-        d["__parentKey"] = item[idField];
-      }
-
-      d.__parents = [].concat(parents).concat([item[idField]]);
-
+      const c_childrens = d.children || [];
       list.push(d);
 
-      if (childrens.length > 0) {
-        getChildren(d, d.__depth, [].concat(d.__parents));
-      } else {
-        leafs.push(d);
+      if (c_childrens.length > 0) {
+        getChildren(d, __depth);
       }
+
+      setTree(k, {
+        depth: __depth,
+        parentKey: pk
+      });
     }
   }
 
-  return { list, leafs, roots };
+  return { list, treeProps: treeProps };
 }
 
 export function treeToFlatten(arr) {
@@ -217,4 +205,3 @@ export function treeFilter(arr, fn) {
 
   return roots;
 }
-
