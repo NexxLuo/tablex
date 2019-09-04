@@ -701,7 +701,7 @@ class EditableTable extends React.Component {
 
   addRows = (arr = [], editting = true) => {
     let rowKey = this.props.rowKey;
-    let {  editKeys } = this.state;
+    let { editKeys } = this.state;
 
     let rowKeys = [];
     let newEditKeys = [];
@@ -1089,7 +1089,7 @@ class EditableTable extends React.Component {
   };
 
   addRange = rowCount => {
-    let { rowTemplate, rowKey,  defaultAddCount } = this.props;
+    let { rowTemplate, rowKey, defaultAddCount } = this.props;
 
     let bl = true;
 
@@ -1402,9 +1402,9 @@ class EditableTable extends React.Component {
     editRows: this.editRows,
     editAll: this.editAll,
     addRange: this.addRange,
-    addRows:this.addRows,
+    addRows: this.addRows,
     delete: this.delete,
-    deleteRows=this.deleteRows,
+    deleteRows: this.deleteRows,
     reset: this.reset,
     completeEdit: this.completeEdit,
     cancelEdit: this.cancelEdit,
