@@ -246,6 +246,12 @@ class BaseDataGrid extends React.Component {
     this.rightRef.current && this.rightRef.current.scrollToItem(index, align);
   }
 
+  scrollToRow(key, align) {
+    this.leftRef.current && this.leftRef.current.scrollToRow(key, align);
+    this.middleRef.current && this.middleRef.current.scrollToRow(key, align);
+    this.rightRef.current && this.rightRef.current.scrollToRow(key, align);
+  }
+
   rowRender = params => {
     let fn = this.props.rowRender;
 

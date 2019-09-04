@@ -71,6 +71,69 @@ function deleteData(data, keys, rowKey) {
   };
 }
 
+function insertData({ source, data, prepend, parentKey, rowKey }) {
+  let insertRows = data;
+  let insertRowKeys = [];
+  let insertTreeProps = {};
+
+  for (let i = 0; i < insertRows.length; i++) {
+    let d = insertRows[i];
+    let k = d[rowKey];
+
+    insertRowKeys.push(k);
+    insertTreeProps[k] = {
+      parentKey: parentKey
+    };
+  }
+
+  if (!parentKey) {
+    let o = {
+      insertedRowKeys: insertRowKeys,
+      insertedRows: insertRows
+    };
+
+    if (prepend === true) {
+      o.newData = insertRows.slice().concat(source);
+      o.newDataList = insertRows.slice().concat(source);
+    } else {
+      o.newData = source.slice().concat(insertRows);
+      o.newDataList = source.slice().concat(insertRows);
+    }
+
+    return o;
+  }
+
+  let { list, treeProps } = treeToList(source, rowKey);
+  let dataList = list.slice();
+
+  treeProps = Object.assign(treeProps, insertTreeProps);
+
+  let newDataList = [];
+
+  if (prepend === true) {
+    newDataList = insertRows.slice().concat(dataList);
+  } else {
+    newDataList = dataList.concat(insertRows);
+  }
+
+  let newData = getTreeFromFlatData({
+    flatData: newDataList,
+    getKey: node => node[rowKey],
+    getParentKey: node => {
+      let p = treeProps[node[rowKey]] || {};
+      return p.parentKey || "";
+    },
+    rootKey: ""
+  });
+
+  return {
+    newData,
+    newDataList,
+    insertedRowKeys: insertRowKeys,
+    insertedRows: insertRows
+  };
+}
+
 /**
  * 表格
  */
@@ -99,7 +162,8 @@ class EditableTable extends React.Component {
       deleteLoading: false,
       dataControled: false,
       readOnly: false,
-      selectedRowKeys: []
+      selectedRowKeys: [],
+      expandedRowKeys: []
     };
   }
 
@@ -117,6 +181,14 @@ class EditableTable extends React.Component {
         readOnly: nextProps.readOnly,
         rawColumns: nextProps.columns || []
       };
+
+      if ("selectedRowKeys" in nextProps) {
+        nextState.expandedRowKeys = nextProps.expandedRowKeys;
+      }
+
+      if ("selectedRowKeys" in nextProps) {
+        nextState.selectedRowKeys = nextProps.selectedRowKeys;
+      }
 
       let columns = cloneDeep(nextProps.columns || []);
       let columnList = treeToFlatten(columns).list;
@@ -174,6 +246,12 @@ class EditableTable extends React.Component {
   scrollToItem(index, align) {
     if (this.innerTable) {
       this.innerTable.scrollToItem(index, align);
+    }
+  }
+
+  scrollToRow(key, align) {
+    if (this.innerTable) {
+      this.innerTable.scrollToRow(key, align);
     }
   }
 
@@ -740,6 +818,51 @@ class EditableTable extends React.Component {
         editKeys: newEditKeys
       });
     }
+  };
+
+  insertData = ({
+    data = [],
+    parentKey = "",
+    editing = false,
+    prepend = false,
+    scrollTo = true
+  }) => {
+    let { data: source, rowKey, editKeys, expandedRowKeys } = this.state;
+
+    let { newData, newDataList, insertedRows, insertedRowKeys } = insertData({
+      source,
+      data,
+      prepend,
+      parentKey,
+      rowKey
+    });
+
+    let nextExpandedRowKeys = expandedRowKeys.slice();
+
+    if (parentKey && expandedRowKeys.indexOf(parentKey) === -1) {
+      nextExpandedRowKeys.push(parentKey);
+    }
+
+    let nextState = {
+      // isAddingRange: true,
+      // addedData: insertedRows,
+      data: newData,
+      expandedRowKeys: nextExpandedRowKeys,
+      dataList: newDataList
+    };
+
+    if (editing === true) {
+      nextState.editKeys = editKeys.concat(insertedRowKeys);
+      nextState.isEditing = true;
+    }
+
+    this.setState(nextState);
+
+    if (scrollTo === true) {
+      this.scrollToRow(insertedRowKeys[0]);
+    }
+
+    return insertedRows;
   };
 
   setRows = (arr = []) => {
@@ -1405,6 +1528,7 @@ class EditableTable extends React.Component {
     addRows: this.addRows,
     delete: this.delete,
     deleteRows: this.deleteRows,
+    insertData: this.insertData,
     reset: this.reset,
     completeEdit: this.completeEdit,
     cancelEdit: this.cancelEdit,
@@ -1458,6 +1582,15 @@ class EditableTable extends React.Component {
     }
   };
 
+  onExpandedRowsChange = keys => {
+    this.setState({
+      expandedRowKeys: keys.slice()
+    });
+    if (typeof this.props.onExpandedRowsChange === "function") {
+      this.props.onExpandedRowsChange(keys);
+    }
+  };
+
   render() {
     let columns = this.formatColumns();
 
@@ -1469,6 +1602,8 @@ class EditableTable extends React.Component {
       data: arr,
       columns,
       onSelectChange: this.onSelectChange,
+      onExpandedRowsChange: this.onExpandedRowsChange,
+      expandedRowKeys: this.state.expandedRowKeys,
       selectedRowKeys: this.state.selectedRowKeys,
       headerToolsBar: this.headerToolsBar,
       footerToolsBar: this.footerToolsBar,

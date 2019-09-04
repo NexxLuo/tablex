@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Table } from "tablex";
-import { Checkbox,Input } from "antd";
+import { Checkbox, Input } from "antd";
 
 const generateColumns = (count = 10, prefix = "column-", props) =>
   new Array(count).fill(0).map((column, columnIndex) => ({
@@ -53,6 +53,7 @@ fixedColumns = [
     },
     align: "left",
     halign: "center",
+    minWidth: 100,
     editor: function(value, row, index, onchange, ref) {
       return (
         <Input
@@ -146,8 +147,7 @@ function createTreeData() {
 }
 
 class Demo extends Component {
-
-  tableRef=React.createRef();
+  tableRef = React.createRef();
   state = {
     data: [],
     loading: false,
@@ -194,7 +194,17 @@ class Demo extends Component {
       this.tableRef.current.api.editRows(["2"]);
     }
   };
-  
+
+  add = () => {
+    if (this.tableRef.current) {
+      this.tableRef.current.api.insertData({
+        data: [{ id: "inserted_row_" + new Date().getTime() }],
+        parentKey: "3",
+        editing: true,
+        prepend: true
+      });
+    }
+  };
 
   onSelectChange = (a, b, c) => {
     //console.log("onSelectChange:", b);
@@ -257,12 +267,19 @@ class Demo extends Component {
           >
             edit
           </span>
+
+          <span
+            onClick={this.add}
+            style={{ cursor: "pointer", marginLeft: 10 }}
+          >
+            add
+          </span>
         </div>
         <div>
           <Table
             loading={this.state.loading}
             tableId="preview_table"
-            editable={false}
+            editable={true}
             ref={this.tableRef}
             rowKey="id"
             innerRef={this.innerRef}

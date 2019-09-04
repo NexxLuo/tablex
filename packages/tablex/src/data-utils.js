@@ -691,6 +691,89 @@ function getNodeDataAtTreeIndexOrNextIndex({
       treeIndex: insertedTreeIndex,
     };
   }
+
+
+  export function addNodesUnderParent({
+    treeData,
+    newNodes=[],
+    parentKey = null,
+    getNodeKey,
+    ignoreCollapsed = true,
+    expandParent = false,
+    addAsFirstChild = false,
+  }) {
+    if (parentKey === null) {
+      return {
+        treeData: [...(treeData || []), [...newNodes]],
+        treeIndex: (treeData || []).length,
+      };
+    }
+  
+    let insertedTreeIndex = null;
+    let hasBeenAdded = false;
+    const changedTreeData = map({
+      treeData,
+      getNodeKey,
+      ignoreCollapsed,
+      callback: ({ node, treeIndex, path }) => {
+        const key = path ? path[path.length - 1] : null;
+        // Return nodes that are not the parent as-is
+        if (hasBeenAdded || key !== parentKey) {
+          return node;
+        }
+        hasBeenAdded = true;
+  
+        const parentNode = {
+          ...node,
+        };
+  
+        if (expandParent) {
+          parentNode.expanded = true;
+        }
+  
+        // If no children exist yet, just add the single newNode
+        if (!parentNode.children) {
+          insertedTreeIndex = treeIndex + 1;
+          return {
+            ...parentNode,
+            children: newNodes,
+          };
+        }
+  
+        if (typeof parentNode.children === 'function') {
+          throw new Error('Cannot add to children defined by a function');
+        }
+  
+        let nextTreeIndex = treeIndex + 1;
+        for (let i = 0; i < parentNode.children.length; i += 1) {
+          nextTreeIndex +=
+            1 +
+            getDescendantCount({ node: parentNode.children[i], ignoreCollapsed });
+        }
+  
+        insertedTreeIndex = nextTreeIndex;
+  
+        const children = addAsFirstChild
+          ? [...newNodes, ...parentNode.children]
+          : [...parentNode.children, ...newNodes];
+  
+        return {
+          ...parentNode,
+          children,
+        };
+      },
+    });
+  
+    if (!hasBeenAdded) {
+      throw new Error('No node found with the given key.');
+    }
+  
+    return {
+      treeData: changedTreeData,
+      treeIndex: insertedTreeIndex,
+    };
+  }
+  
   
   function addNodeAtDepthAndIndex({
     targetDepth,

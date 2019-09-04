@@ -52,6 +52,12 @@ class Table extends React.Component {
     this.listRef.current && this.listRef.current.scrollToItem(index, align);
   };
 
+  scrollToRow = (key, align) => {
+    let { data, rowKey } = this.state;
+    let index = data.findIndex(d => d[rowKey] === key);
+    this.listRef.current && this.listRef.current.scrollToItem(index, align);
+  };
+
   resetAfterIndex(index, shouldForceUpdate) {
     this.listRef.current.resetAfterIndex(index, shouldForceUpdate);
   }
