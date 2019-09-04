@@ -143,8 +143,10 @@ class BaseDataGrid extends React.Component {
     if (ms) {
       let { scrollbarX, scrollbarY } = this.state;
 
-      let X = ms.offsetHeight - ms.clientHeight;
-      let Y = ms.offsetWidth - ms.clientWidth;
+      let X =
+        (ms.offsetHeight - ms.clientHeight) * (window.devicePixelRatio || 1);
+      let Y =
+        (ms.offsetWidth - ms.clientWidth) * (window.devicePixelRatio || 1);
 
       if (scrollbarX !== X || scrollbarY !== Y) {
         this.setState({
@@ -304,15 +306,13 @@ class BaseDataGrid extends React.Component {
 
     headStyle.marginRight = scrollbarY;
 
-    //scrollbarY = scrollbarY+1;
-
     let rightStyles = {
       width: rightWidth,
       overflow: "hidden"
     };
 
     if (scrollbarY >= 0) {
-      rightStyles.marginLeft = -(scrollbarY + 1);
+      rightStyles.marginLeft = -scrollbarY;
     }
 
     let frozens = {};
@@ -381,6 +381,7 @@ class BaseDataGrid extends React.Component {
                 containerHeight={height - scrollbarX}
                 columns={left}
                 style={{ overflowX: "hidden" }}
+                innerStyle={{ width: leftWidth }}
                 ref={this.leftRef}
                 onScroll={this.onLeftScroll}
                 rowRender={params =>

@@ -160,7 +160,8 @@ class Table extends React.Component {
       rowRender,
       cellRenderExtra,
       rowHeight,
-      frozenRender = {}
+      frozenRender = {},
+      innerStyle
     } = this.props;
 
     let height = containerHeight - headerHeight - 2;
@@ -187,6 +188,7 @@ class Table extends React.Component {
         height={height}
         rowHeight={rowHeight}
         style={styles}
+        innerStyle={innerStyle}
         listRef={this.listRef}
         onScroll={onScroll}
         outerRef={outerRef}

@@ -318,7 +318,7 @@ const TableRow = memo(({ data, index, style }) => {
 
 class DataList extends Component {
   innerElementType = ({ children, style }) => {
-    let columns = this.props.columns || [];
+    let { columns = [], innerStyle = {} } = this.props;
     let w = 0;
     columns.forEach(d => {
       let cw = getColumnWidthStyle(d).width;
@@ -330,7 +330,9 @@ class DataList extends Component {
     }
 
     return (
-      <div style={{ ...style, minWidth: w, position: "relative" }}>
+      <div
+        style={{ ...style, minWidth: w, position: "relative", ...innerStyle }}
+      >
         {children}
       </div>
     );
