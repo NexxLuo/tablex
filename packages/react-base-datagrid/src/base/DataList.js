@@ -95,7 +95,7 @@ const TableCell = props => {
 
   let extraAttr = {};
   if (typeof onCell === "function") {
-    extraAttr = onCell(row, rowIndex) || {};
+    extraAttr = onCell(row, rowIndex, { columnKey }) || {};
   }
 
   let cellExtra = {};
@@ -180,8 +180,13 @@ const TableCell = props => {
     cellElement = <CellWithTitle value={cellElement} />;
   }
 
+  let cls = ["tablex-table-row-cell"];
+  if (extraAttr.className) {
+    cls.push(extraAttr.className);
+  }
+
   return (
-    <div className="tablex-table-row-cell" {...extraAttr} style={cellStyles}>
+    <div {...extraAttr} className={cls.join(" ")} style={cellStyles}>
       <div className="tablex-table-row-cell-inner" style={alignStyles}>
         {prepend}
         {cellElement}
@@ -198,6 +203,7 @@ const TableRow = memo(({ data, index, style }) => {
     getRowsHeight,
     getColumnsWidth,
     onRow,
+    onCell,
     rowClassName,
     rowComponent,
     rowRender,
@@ -246,6 +252,7 @@ const TableRow = memo(({ data, index, style }) => {
         getRowsHeight={getRowsHeight}
         getColumnsWidth={getColumnsWidth}
         rowColSpan={rowColSpan}
+        onCell={onCell}
         {...d}
       />
     );
@@ -432,7 +439,8 @@ class DataList extends Component {
       listRef,
       rowRender,
       cellRenderExtra,
-      placeholders
+      placeholders,
+      onCell
     } = this.props;
 
     let itemData = createItemData(
@@ -449,6 +457,7 @@ class DataList extends Component {
 
     itemData.getRowsHeight = this.getRowsHeight;
     itemData.getColumnsWidth = this.getColumnsWidth;
+    itemData.onCell = onCell;
 
     let itemCount = data.length;
 

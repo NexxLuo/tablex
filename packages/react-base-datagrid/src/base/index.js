@@ -265,6 +265,7 @@ class BaseDataGrid extends React.Component {
       width,
       height,
       onRow,
+      onCell,
       rowClassName,
       className,
       onColumnResizeStop,
@@ -335,6 +336,7 @@ class BaseDataGrid extends React.Component {
       columnsDepth: maxDepth,
       data,
       onRow,
+      onCell,
       rowClassName,
       onColumnResizeStop,
       components,
@@ -512,7 +514,11 @@ BaseDataGrid.propTypes = {
    */
   columns: PropTypes.arrayOf(
     PropTypes.shape({
-      title: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+      title: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func,
+        PropTypes.element
+      ]),
       width: PropTypes.number,
       key: PropTypes.string.isRequired,
       dataIndex: PropTypes.string,
@@ -564,6 +570,9 @@ BaseDataGrid.propTypes = {
 
   /** 自定义行属性，可处理行事件 */
   onRow: PropTypes.func,
+
+  /** 自定义列属性，可处理列事件 */
+  onCell: PropTypes.func,
 
   /** 列宽拖动完成事件，(width, columnKey) */
   onColumnResizeStop: PropTypes.func,

@@ -162,6 +162,7 @@ class Table extends React.Component {
       headerHeight,
       rowClassName,
       onRow,
+      onCell,
       components,
       rowRender,
       cellRenderExtra,
@@ -201,6 +202,7 @@ class Table extends React.Component {
         rowComponent={TableComponents.row}
         rowClassName={rowClassName}
         onRow={onRow}
+        onCell={onCell}
         rowRender={rowRender}
         cellRenderExtra={cellRenderExtra}
       />
