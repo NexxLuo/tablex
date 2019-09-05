@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Table } from "tablex";
-import { Checkbox, Input } from "antd";
+import { Checkbox, Input, Button } from "antd";
 
 const generateColumns = (count = 10, prefix = "column-", props) =>
   new Array(count).fill(0).map((column, columnIndex) => ({
@@ -45,15 +45,20 @@ fixedColumns = [
   {
     dataIndex: "column-1",
     key: "column-1",
-    title: () => {
-      return "fn title";
-    },
+    title: <span>标签title</span>,
     titleRender: () => {
       return <span>titleRender</span>;
     },
     align: "left",
     halign: "center",
     minWidth: 100,
+    validator: function(value, row) {
+      if (!value) {
+        return { valid: false, message: "请输入" };
+      }
+
+      return { valid: true, message: "false" };
+    },
     editor: function(value, row, index, onchange, ref) {
       return (
         <Input
@@ -201,7 +206,8 @@ class Demo extends Component {
         data: [{ id: "inserted_row_" + new Date().getTime() }],
         parentKey: "3",
         editing: true,
-        prepend: true
+        prepend: false,
+        startIndex: 2
       });
     }
   };
@@ -247,41 +253,57 @@ class Demo extends Component {
     }
   };
 
+  onEditSave = (changedRows, newRows) => {
+    console.log("onEditSave changedRows:", changedRows);
+    console.log("onEditSave newRows:", newRows);
+
+    this.setState({ data: newRows });
+  };
+
   render() {
     return (
       <>
-        <div>
-          <span onClick={this.scrollToItem} style={{ cursor: "pointer" }}>
-            scroll to item
-          </span>
-          <span
-            onClick={this.getData}
-            style={{ cursor: "pointer", marginLeft: 10 }}
-          >
-            get data
-          </span>
-
-          <span
-            onClick={this.edit}
-            style={{ cursor: "pointer", marginLeft: 10 }}
-          >
-            edit
-          </span>
-
-          <span
-            onClick={this.add}
-            style={{ cursor: "pointer", marginLeft: 10 }}
-          >
-            add
-          </span>
-        </div>
-        <div>
+        <div style={{height:"100%"}}>
           <Table
+            header={() => {
+              return (
+                <div>
+                  <Button
+                    onClick={this.scrollToItem}
+                    style={{ cursor: "pointer" }}
+                  >
+                    scroll to item
+                  </Button>
+                  <Button
+                    onClick={this.getData}
+                    style={{ cursor: "pointer", marginLeft: 10 }}
+                  >
+                    get data
+                  </Button>
+                  <Button
+                    onClick={this.edit}
+                    style={{ cursor: "pointer", marginLeft: 10 }}
+                  >
+                    edit
+                  </Button>
+                  <Button
+                    onClick={this.add}
+                    style={{ cursor: "pointer", marginLeft: 10 }}
+                  >
+                    add
+                  </Button>
+                </div>
+              );
+            }}
             loading={this.state.loading}
             tableId="preview_table"
             editable={true}
+            isAppend={false}
+            allowSaveEmpty={true}
+            alwaysValidate={true}
             ref={this.tableRef}
             rowKey="id"
+            onEditSave={this.onEditSave}
             innerRef={this.innerRef}
             columns={fixedColumns}
             checkStrictly={true}
@@ -337,7 +359,7 @@ class Demo extends Component {
             footerExtra={() => {
               return <div style={{ padding: "14px 10px" }}>底部信息展示</div>;
             }}
-            rowHeight={(d, i) => {
+            rowHeight2={(d, i) => {
               if (i % 2 === 0) {
                 return 50;
               } else {
@@ -346,7 +368,6 @@ class Demo extends Component {
             }}
             expandRowHeight={200}
             headerRowHeight={[30, 40, 60]}
-            minHeight={500}
           />
         </div>
       </>

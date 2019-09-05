@@ -167,7 +167,7 @@ export function treeFilter(arr, fn) {
   for (let i = 0; i < treeList.length; i++) {
     const d = treeList[i];
 
-    let bl = fn(d, i, 0, j);
+    let bl = fn(d, i, { depth: 0, treeIndex: j, parent: null });
     j++;
 
     if (bl === true) {
@@ -187,7 +187,7 @@ export function treeFilter(arr, fn) {
     for (let i = 0; i < tempArr.length; i++) {
       const d = tempArr[i];
 
-      let bl = fn(d, i, depth + 1, j);
+      let bl = fn(d, i, { depth: depth + 1, treeIndex: j, parent: node });
 
       j++;
 
@@ -204,4 +204,178 @@ export function treeFilter(arr, fn) {
   }
 
   return roots;
+}
+
+
+export function getTreeFromFlatData({
+  flatData,
+  getKey = node => node.id,
+  getParentKey = node => node.parentId,
+  rootKey = '0',
+}) {
+  if (!flatData) {
+    return [];
+  }
+
+  const childrenToParents = {};
+  flatData.forEach(child => {
+    const parentKey = getParentKey(child);
+
+    if (parentKey in childrenToParents) {
+      childrenToParents[parentKey].push(child);
+    } else {
+      childrenToParents[parentKey] = [child];
+    }
+  });
+
+  if (!(rootKey in childrenToParents)) {
+    return [];
+  }
+
+  const trav = parent => {
+    const parentKey = getKey(parent);
+    if (parentKey in childrenToParents) {
+      return {
+        ...parent,
+        children: childrenToParents[parentKey].map(child => trav(child)),
+      };
+    }
+
+    return { ...parent };
+  };
+
+  return childrenToParents[rootKey].map(child => trav(child));
+}
+
+
+
+export function cloneData(source) {
+  try {
+    return JSON.parse(JSON.stringify(source));
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
+}
+
+export function deleteData(data, keys, rowKey) {
+  let { list, treeProps } = treeToList(data, rowKey);
+  let flatData = list.slice();
+
+  let newFlatData = [];
+
+  let deletedRows = [];
+  let deletedRowKeys = [];
+
+  let keysMap = {};
+
+  for (let i = 0; i < keys.length; i++) {
+    keysMap[keys[i]] = true;
+  }
+
+  for (let i = 0; i < flatData.length; i++) {
+    let d = flatData[i];
+    if (d) {
+      let k = d[rowKey];
+      if (k in keysMap) {
+        deletedRowKeys.push(k);
+        deletedRows.push(Object.assign({}, d));
+      } else {
+        delete d.children;
+        newFlatData.push(d);
+      }
+    }
+  }
+
+  let newData = getTreeFromFlatData({
+    flatData: newFlatData,
+    getKey: node => node[rowKey],
+    getParentKey: node => {
+      let p = treeProps[node[rowKey]] || {};
+      return p.parentKey || "";
+    },
+    rootKey: ""
+  });
+
+  return {
+    newData,
+    newFlatData,
+    deletedRows,
+    deletedRowKeys
+  };
+}
+
+export function insertData({ source, data, prepend, parentKey, rowKey, startIndex }) {
+  let insertRows = data;
+  let insertRowKeys = [];
+  let insertTreeProps = {};
+
+  for (let i = 0; i < insertRows.length; i++) {
+    let d = insertRows[i];
+    let k = d[rowKey];
+
+    insertRowKeys.push(k);
+    insertTreeProps[k] = {
+      parentKey: parentKey
+    };
+  }
+
+  if (!parentKey) {
+    let o = {
+      insertedRowKeys: insertRowKeys,
+      insertedRows: insertRows
+    };
+
+    if (startIndex > -1) {
+      let newData = source.slice();
+      let newFlatData = source.slice();
+
+      Array.prototype.splice.apply(newData, [startIndex, 0, ...insertRows]);
+      Array.prototype.splice.apply(newFlatData, [startIndex, 0, ...insertRows]);
+
+      o.newData = newData;
+      o.newFlatData = newFlatData;
+    } else {
+      if (prepend === true) {
+        o.newData = insertRows.slice().concat(source);
+        o.newFlatData = insertRows.slice().concat(source);
+      } else {
+        o.newData = source.slice().concat(insertRows);
+        o.newFlatData = source.slice().concat(insertRows);
+      }
+    }
+
+    return o;
+  }
+
+  let { list, treeProps } = treeToList(source, rowKey);
+  let flatData = list.slice();
+
+  treeProps = Object.assign(treeProps, insertTreeProps);
+
+  let newFlatData = [];
+
+  if (prepend === true) {
+    newFlatData = insertRows.slice().concat(flatData);
+  } else {
+    newFlatData = flatData.concat(insertRows);
+  }
+
+  //此处改变了数据引用
+  let newData = getTreeFromFlatData({
+    flatData: newFlatData,
+    getKey: node => node[rowKey],
+    getParentKey: node => {
+      let p = treeProps[node[rowKey]] || {};
+      return p.parentKey || "";
+    },
+    rootKey: ""
+  });
+
+  return {
+    newData,
+    newFlatData,
+    insertedRowKeys: insertRowKeys,
+    insertedRows: insertRows
+  };
 }

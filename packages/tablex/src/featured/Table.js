@@ -116,7 +116,7 @@ class FeaturedTable extends React.Component {
       let data = nextProps.data || nextProps.dataSource || [];
 
       //给列key、width设置缺省值
-      let columnsArr = treeFilter(columns, (d, i, depth, treeIndex) => {
+      let columnsArr = treeFilter(columns, (d, i, { depth, treeIndex }) => {
         if (!d.key) {
           d.key = depth + "-" + i + "-" + treeIndex;
         }
@@ -435,7 +435,7 @@ class FeaturedTable extends React.Component {
     let arr = [];
     let maxDepth = 0;
 
-    arr = treeFilter(cloneDeep(columns), (d, i, depth) => {
+    arr = treeFilter(cloneDeep(columns), (d, i, { depth }) => {
       let columnKey = d.key || d.dataIndex;
       let bl = true;
 
@@ -534,14 +534,17 @@ class FeaturedTable extends React.Component {
 
     if (headerEl !== null || toolsBar != null) {
       header = (
-        <div className="tablex__container__header">
+        <div className="tablex__container__header" style={{ height: 40 }}>
           {headerEl}
           {toolsBar}
         </div>
       );
     }
 
-    return header;
+    return {
+      header,
+      height: 40
+    };
   };
 
   renderFooter = () => {
@@ -836,7 +839,7 @@ class FeaturedTable extends React.Component {
     let columnMenuState = columnMenu || {};
 
     let { footer, height: footerHeight } = this.renderFooter();
-    let header = this.renderHeader();
+    let { header, height: headerHeight } = this.renderHeader();
 
     let extraHeight = 0;
 
@@ -845,7 +848,7 @@ class FeaturedTable extends React.Component {
       extraHeight += footerHeight;
     }
     if (header) {
-      extraHeight += 50;
+      extraHeight += headerHeight;
     }
 
     if (extraHeight > 0) {

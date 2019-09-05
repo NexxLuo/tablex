@@ -3,7 +3,13 @@ import ReactDom from "react-dom";
 import cloneDeep from "lodash/cloneDeep";
 import merge from "lodash/merge";
 import Table from "./Table";
-import { treeToFlatten, treeToList, treeFilter } from "./utils";
+import {
+  treeToFlatten,
+  treeFilter,
+  cloneData,
+  insertData,
+  deleteData
+} from "./utils";
 import Tooltip from "antd/lib/tooltip";
 import Button from "antd/lib/button";
 import message from "antd/lib/message";
@@ -13,126 +19,6 @@ import Dropdown from "antd/lib/dropdown";
 import Icon from "antd/lib/icon";
 import "antd/dist/antd.css";
 import orderBy from "lodash/orderBy";
-import { getTreeFromFlatData } from "../data-utils";
-
-function cloneData(source) {
-  try {
-    return JSON.parse(JSON.stringify(source));
-  } catch (e) {
-    console.error(e);
-    return [];
-  }
-}
-
-function deleteData(data, keys, rowKey) {
-  let { list, treeProps } = treeToList(data, rowKey);
-  let dataList = list.slice();
-
-  let newDataList = [];
-
-  let deletedRows = [];
-  let deletedRowKeys = [];
-
-  let keysMap = {};
-
-  for (let i = 0; i < keys.length; i++) {
-    keysMap[keys[i]] = true;
-  }
-
-  for (let i = 0; i < dataList.length; i++) {
-    let d = dataList[i];
-    if (d) {
-      let k = d[rowKey];
-      if (k in keysMap) {
-        deletedRowKeys.push(k);
-        deletedRows.push(Object.assign({}, d));
-      } else {
-        delete d.children;
-        newDataList.push(d);
-      }
-    }
-  }
-
-  let newData = getTreeFromFlatData({
-    flatData: newDataList,
-    getKey: node => node[rowKey],
-    getParentKey: node => {
-      let p = treeProps[node[rowKey]] || {};
-      return p.parentKey || "";
-    },
-    rootKey: ""
-  });
-
-  return {
-    newData,
-    newDataList,
-    deletedRows,
-    deletedRowKeys
-  };
-}
-
-function insertData({ source, data, prepend, parentKey, rowKey }) {
-  let insertRows = data;
-  let insertRowKeys = [];
-  let insertTreeProps = {};
-
-  for (let i = 0; i < insertRows.length; i++) {
-    let d = insertRows[i];
-    let k = d[rowKey];
-
-    insertRowKeys.push(k);
-    insertTreeProps[k] = {
-      parentKey: parentKey
-    };
-  }
-
-  if (!parentKey) {
-    let o = {
-      insertedRowKeys: insertRowKeys,
-      insertedRows: insertRows
-    };
-
-    if (prepend === true) {
-      o.newData = insertRows.slice().concat(source);
-      o.newDataList = insertRows.slice().concat(source);
-    } else {
-      o.newData = source.slice().concat(insertRows);
-      o.newDataList = source.slice().concat(insertRows);
-    }
-
-    return o;
-  }
-
-  let { list, treeProps } = treeToList(source, rowKey);
-  let dataList = list.slice();
-
-  treeProps = Object.assign(treeProps, insertTreeProps);
-
-  let newDataList = [];
-
-  if (prepend === true) {
-    newDataList = insertRows.slice().concat(dataList);
-  } else {
-    newDataList = dataList.concat(insertRows);
-  }
-
-  let newData = getTreeFromFlatData({
-    flatData: newDataList,
-    getKey: node => node[rowKey],
-    getParentKey: node => {
-      let p = treeProps[node[rowKey]] || {};
-      return p.parentKey || "";
-    },
-    rootKey: ""
-  });
-
-  return {
-    newData,
-    newDataList,
-    insertedRowKeys: insertRowKeys,
-    insertedRows: insertRows
-  };
-}
 
 /**
  * 表格
@@ -148,7 +34,7 @@ class EditableTable extends React.Component {
       columns: [],
       columnList: [],
       data: [],
-      dataList: [],
+      flatData: [],
       sourceData: [],
       rawData: [],
       changedRows: [],
@@ -157,6 +43,7 @@ class EditableTable extends React.Component {
       isAddingRange: false,
       addedData: [],
       isEditing: false,
+      isAppend: false,
       editKeys: [],
       editSaveLoading: false,
       deleteLoading: false,
@@ -179,7 +66,8 @@ class EditableTable extends React.Component {
         prevProps: nextProps,
         dataControled: nextProps.dataControled || false,
         readOnly: nextProps.readOnly,
-        rawColumns: nextProps.columns || []
+        rawColumns: nextProps.columns || [],
+        isAppend: nextProps.isAppend
       };
 
       if ("selectedRowKeys" in nextProps) {
@@ -200,15 +88,15 @@ class EditableTable extends React.Component {
       let data = nextProps.data || nextProps.dataSource || [];
 
       if (prevState.dataControled === true) {
-        let dataList = treeToFlatten(data).list;
-        nextState.dataList = dataList;
+        let flatData = treeToFlatten(data).list;
+        nextState.flatData = flatData;
         nextState.data = data;
         nextState.sourceData = cloneData(data);
       } else {
         if (prevState.rawData !== data) {
           nextState.rawData = data;
-          let dataList = treeToFlatten(data).list;
-          nextState.dataList = dataList;
+          let flatData = treeToFlatten(data).list;
+          nextState.flatData = flatData;
           nextState.data = data;
           nextState.sourceData = cloneData(data);
         }
@@ -307,39 +195,29 @@ class EditableTable extends React.Component {
   };
 
   editChange = (newValues = {}, row, index) => {
-    let { data, addedData } = this.state;
+    let { addedData, flatData } = this.state;
 
     let rowKey = this.props.rowKey;
 
-    // let dataList = data.concat(addedData);
+    let allData = flatData;
 
-    let arr = treeToFlatten(data).list;
-
-    let k = row[rowKey];
-    let i = arr.findIndex(d => d[rowKey] === k);
+    let i = allData.findIndex(d => d[rowKey] === row[rowKey]);
 
     if (i > -1) {
-      let changedRow = {};
-
       Object.keys(newValues).forEach(k => {
-        arr[i][k] = newValues[k];
-        changedRow = Object.assign({}, arr[i]);
-        changedRow[k] = newValues[k];
-        //row[k] = newValues[k];
+        row[k] = newValues[k];
+        allData[i][k] = newValues[k];
       });
 
-      //this.setState({});
-
-      this.addToChanged(arr[i]);
+      this.addToChanged(allData[i]);
     }
 
-    let j = addedData.findIndex(d => d[rowKey] === k);
+    let j = addedData.findIndex(d => d[rowKey] === row[rowKey]);
 
     if (j > -1) {
       Object.keys(newValues).forEach(k => {
         addedData[j][k] = newValues[k];
       });
-
       this.addToChanged(addedData[j]);
     }
   };
@@ -502,10 +380,10 @@ class EditableTable extends React.Component {
   //验证当前所有数据行
   validateAll = async () => {
     let bl = true;
-    let { data, addedData, editKeys, isEditAll } = this.state;
+    let { editKeys, isEditAll, flatData } = this.state;
     let rowKey = this.props.rowKey;
 
-    let allData = data.concat(addedData);
+    let allData = flatData;
 
     let arr = [];
 
@@ -518,7 +396,7 @@ class EditableTable extends React.Component {
     }
 
     bl = await this.validateAsync(arr);
-    // this.forceUpdate();
+
     return bl;
   };
 
@@ -779,7 +657,7 @@ class EditableTable extends React.Component {
 
   addRows = (arr = [], editting = true) => {
     let rowKey = this.props.rowKey;
-    let { editKeys } = this.state;
+    let { editKeys, flatData, data } = this.state;
 
     let rowKeys = [];
     let newEditKeys = [];
@@ -805,19 +683,19 @@ class EditableTable extends React.Component {
     newEditKeys = editKeys.concat(rowKeys);
     newAddedData = [].concat(rows);
 
-    if (editting === false) {
-      this.setState({
-        isAddingRange: true,
-        addedData: newAddedData
-      });
-    } else {
-      this.setState({
-        isAddingRange: true,
-        isEditing: true,
-        addedData: newAddedData,
-        editKeys: newEditKeys
-      });
+    let nextState = {
+      isAddingRange: true,
+      addedData: newAddedData,
+      data: data.slice().concat(newAddedData),
+      flatData: flatData.slice().concat(newAddedData)
+    };
+
+    if (editting === true) {
+      nextState.isEditing = true;
+      nextState.editKeys = newEditKeys;
     }
+
+    this.setState(nextState);
   };
 
   insertData = ({
@@ -825,16 +703,24 @@ class EditableTable extends React.Component {
     parentKey = "",
     editing = false,
     prepend = false,
-    scrollTo = true
+    scrollTo = true,
+    startIndex = -1
   }) => {
-    let { data: source, rowKey, editKeys, expandedRowKeys } = this.state;
+    let {
+      data: source,
+      rowKey,
+      editKeys,
+      expandedRowKeys,
+      addedData
+    } = this.state;
 
-    let { newData, newDataList, insertedRows, insertedRowKeys } = insertData({
+    let { newData, newFlatData, insertedRows, insertedRowKeys } = insertData({
       source,
       data,
       prepend,
       parentKey,
-      rowKey
+      rowKey,
+      startIndex
     });
 
     let nextExpandedRowKeys = expandedRowKeys.slice();
@@ -844,25 +730,26 @@ class EditableTable extends React.Component {
     }
 
     let nextState = {
-      // isAddingRange: true,
-      // addedData: insertedRows,
-      data: newData,
+      isAddingRange: true,
+      addedData: addedData.slice().concat(insertedRows),
       expandedRowKeys: nextExpandedRowKeys,
-      dataList: newDataList
+      data: newData,
+      flatData: newFlatData
     };
 
     if (editing === true) {
+      this.editType = "add";
       nextState.editKeys = editKeys.concat(insertedRowKeys);
       nextState.isEditing = true;
     }
 
-    this.setState(nextState);
+    this.setState(nextState, () => {
+      if (scrollTo === true) {
+        this.scrollToRow(insertedRowKeys[0], "smart");
+      }
+    });
 
-    if (scrollTo === true) {
-      this.scrollToRow(insertedRowKeys[0]);
-    }
-
-    return insertedRows;
+    return { data: newData, inserted: insertedRows };
   };
 
   setRows = (arr = []) => {
@@ -887,9 +774,10 @@ class EditableTable extends React.Component {
     };
 
     if (this.changedRows.length > 0) {
-      let data = cloneData(this.state.sourceData);
-      nextState.data = data;
     }
+
+    let data = cloneData(this.state.sourceData);
+    nextState.data = data;
 
     this.changedRows = [];
     this.rowsValidation = [];
@@ -1014,7 +902,7 @@ class EditableTable extends React.Component {
     this.focusInput(nextEditor);
   };
 
-  onClick = (e, row, column) => {
+  onClick = e => {
     this.isMouseFocus = true;
     e.stopPropagation();
   };
@@ -1023,25 +911,40 @@ class EditableTable extends React.Component {
     let changedRows = this.getChangedRows();
 
     let editType = this.editType;
-    let { data, addedData } = this.state;
+    let { data, addedData, rowKey } = this.state;
     let { allowSaveEmpty, alwaysValidate } = this.props;
 
-    let newRows = [].concat(data);
+    let newRows = data.slice();
     if (editType === "add") {
       if (allowSaveEmpty === true) {
-        let addedRows = addedData.map(d => {
-          let r = Object.assign({}, d);
-          delete r.__isAddedRow;
-          return r;
-        });
-        newRows = data.concat(addedRows);
+        changedRows = addedData.slice();
       } else {
-        newRows = data.concat(changedRows);
+        //排除 新增的且未更改的数据
+        //需要排除的key
+        let excludesKeyMap = {};
+
+        let changedRowsKeyMap = {};
+        for (let i = 0; i < changedRows.length; i++) {
+          let k = changedRows[i][rowKey];
+          changedRowsKeyMap[k] = true;
+        }
+
+        for (let i = 0; i < addedData.length; i++) {
+          let k = addedData[i][rowKey];
+
+          if (changedRowsKeyMap[k] !== true) {
+            excludesKeyMap[k] = true;
+          }
+        }
+
+        let newTreeData = treeFilter(
+          data.slice(),
+          d => excludesKeyMap[d[rowKey]] !== true
+        );
+
+        newRows = newTreeData;
+        //
       }
-    } else if (editType === "edit") {
-      newRows = data;
-    } else if (editType === "delete") {
-      newRows = data;
     }
 
     let bl = true;
@@ -1057,11 +960,9 @@ class EditableTable extends React.Component {
       return;
     }
 
-    if (allowSaveEmpty !== true) {
-      if (changedRows.length <= 0) {
-        this.cancelEdit();
-        return;
-      }
+    if (changedRows.length <= 0) {
+      this.cancelEdit();
+      return;
     }
 
     let onEditSave = this.props.onEditSave;
@@ -1124,7 +1025,7 @@ class EditableTable extends React.Component {
   deleteRows = keys => {
     let { data, rowKey, selectedRowKeys } = this.state;
 
-    let { newData, newDataList, deletedRows, deletedRowKeys } = deleteData(
+    let { newData, newFlatData, deletedRows, deletedRowKeys } = deleteData(
       data,
       keys,
       rowKey
@@ -1148,7 +1049,7 @@ class EditableTable extends React.Component {
     this.setState({
       selectedRowKeys: nextSelectedRowKeys,
       data: newData,
-      dataList: newDataList
+      flatData: newFlatData
     });
 
     return deletedRows;
@@ -1174,7 +1075,7 @@ class EditableTable extends React.Component {
 
       let { data, rowKey } = this.state;
 
-      let { newData, newDataList, deletedRows, deletedRowKeys } = deleteData(
+      let { newData, newFlatData, deletedRows, deletedRowKeys } = deleteData(
         data,
         selectedRowKeys,
         rowKey
@@ -1184,7 +1085,7 @@ class EditableTable extends React.Component {
         deleteLoading: false,
         selectedRowKeys: [],
         data: newData,
-        dataList: newDataList
+        flatData: newFlatData
       };
 
       let onEditSave = this.props.onEditSave;
@@ -1228,9 +1129,7 @@ class EditableTable extends React.Component {
 
     let addCount = rowCount || defaultAddCount;
 
-    let data = this.state.data || [];
-
-    let newData = [];
+    let { data, flatData } = this.state;
 
     let addedData = [];
     let keys = [];
@@ -1251,17 +1150,14 @@ class EditableTable extends React.Component {
       addedData.push(row);
     }
 
-    // if (isAppend === true) {
-    //     newData = data.concat(addedData)
-    // } else {
-    //     newData = addedData;
-    // }
+    let newData = data.slice().concat(addedData);
 
     this.changedRows = [];
 
     this.setState({
       addedData,
-      data: data,
+      data: newData,
+      flatData: flatData.slice().concat(addedData),
       editKeys: keys,
       isEditing: true,
       isEditAll: false,
@@ -1478,25 +1374,15 @@ class EditableTable extends React.Component {
   };
 
   getDataRows = () => {
-    let { data, addedData, isAdding, isAddingRange, dataList } = this.state;
+    let { data, addedData, isAdding, isAddingRange, isAppend } = this.state;
 
     let arr = data;
 
-    let { isAppend, rowKey } = this.props;
-
-    let addedRows = [];
-
-    addedData.forEach(d => {
-      if (dataList.findIndex(c => c[rowKey] === d[rowKey]) <= -1) {
-        let r = d;
-        r.__isAddedRow = true;
-        addedRows.push(r);
-      }
-    });
+    let addedRows = addedData;
 
     if (isAdding === true || isAddingRange === true) {
       if (isAppend === true) {
-        arr = [].concat(data).concat(addedRows);
+        arr = [].concat(data);
       } else {
         arr = addedRows;
       }
