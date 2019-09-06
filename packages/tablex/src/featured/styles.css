@@ -122,10 +122,7 @@
   background-color: #fafbfc;
 }
 
-.tablex-table-row
-  .tablex-table-row-cell
-  .tablex-editor-noborder
-  .tablex-row-cell-editor {
+.tablex-table-row .tablex-table-row-cell .tablex-row-cell-editor {
   display: inline-block;
   vertical-align: middle;
   width: 100%;
