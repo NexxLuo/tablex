@@ -113,6 +113,7 @@ const TableCell = props => {
 
   let rowColSpanStyles = {};
   let propsStyles = {};
+  let hasRowSpan = false;
 
   if (typeof cellRender === "function") {
     let renderValue = cellRender(value, row, rowIndex, cellExtra);
@@ -134,6 +135,7 @@ const TableCell = props => {
           rowColSpanStyles.zIndex = 1;
           //rowColSpanStyles.backgroundColor = "#ffffff";
           cellElement = children;
+          hasRowSpan = true;
 
           if (h === 0) {
             cellElement = null;
@@ -183,6 +185,10 @@ const TableCell = props => {
   let cls = ["tablex-table-row-cell"];
   if (extraAttr.className) {
     cls.push(extraAttr.className);
+  }
+
+  if (hasRowSpan === true) {
+    cls.push("tablex-table-row-cell-rowspan");
   }
 
   return (

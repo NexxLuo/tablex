@@ -575,7 +575,7 @@ class Demo extends Component {
           onRow={this.onRow}
           validateTrigger="onChange"
           header={() => (
-            <div style={{ padding: "10px 0" }}>
+            <div>
               <Button onClick={this.getData}>获取数据</Button>
               <Button onClick={this.expandAll} style={{ margin: "0 5px" }}>
                 展开所有

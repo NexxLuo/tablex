@@ -48,17 +48,26 @@
 .tablex-table .tablex-table-row {
   display: flex;
   width: auto;
+  border-bottom: 1px solid #eeeeee;
+  background-color: #ffffff;
 }
 
 .tablex-bordered .tablex-table-row .tablex-table-row-cell {
   border-right: 1px solid #eeeeee;
+}
+
+.tablex-table .tablex-table-row .tablex-table-row-cell-rowspan {
   background-color: #ffffff;
   border-bottom: 1px solid #eeeeee;
 }
 
+.tablex-table-body .tablex-table-row.tablex-table-row--hovered {
+  background-color: #e6f7ff;
+}
+
 .tablex-table-body
   .tablex-table-row.tablex-table-row--hovered
-  .tablex-table-row-cell {
+  .tablex-table-row-cell-rowspan {
   background-color: #e6f7ff;
 }
 

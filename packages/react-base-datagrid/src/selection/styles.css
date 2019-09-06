@@ -1,6 +1,7 @@
-.tablex__row--selected.tablex__row:hover .tablex-table-row-cell,
-.tablex__row--selected.tablex__row--hovered .tablex-table-row-cell,
-.tablex__row--selected .tablex-table-row-cell {
+.tablex-table .tablex-table-row.tablex__row--selected,
+.tablex-table
+  .tablex-table-row.tablex__row--selected
+  .tablex-table-row-cell-rowspan {
   background-color: #d2e3ef !important;
 }
 

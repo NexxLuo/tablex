@@ -117,7 +117,8 @@
   letter-spacing: 1px;
 }
 
-.tablex__striped .tablex__row--even .tablex-table-row-cell {
+.tablex__striped .tablex__row--even,
+.tablex__striped .tablex__row--even .tablex-table-row-cell-rowspan {
   background-color: #fafbfc;
 }
 
