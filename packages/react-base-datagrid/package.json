@@ -36,7 +36,6 @@
     "react-dom": "^16.8.6"
   },
   "dependencies": {
-    "lodash": "^4.17.11",
     "memoize-one": "^5.0.4",
     "prop-types": "^15.7.2",
     "react-resize-detector": "^4.2.0",

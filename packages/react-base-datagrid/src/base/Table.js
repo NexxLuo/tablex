@@ -2,7 +2,6 @@ import React from "react";
 import TableHead from "./Head";
 import "./styles.css";
 import { getFlattenColumns } from "./utils";
-import cloneDeep from "lodash/cloneDeep";
 import DataList from "./DataList";
 import FrozenList from "./FrozenList";
 
@@ -29,7 +28,7 @@ class Table extends React.Component {
       let { data, columns, rowKey, showHeader } = nextProps;
 
       let { roots: columnsRoots, leafs: columnsLeafs } = getFlattenColumns(
-        cloneDeep(columns)
+        columns
       );
 
       let nextState = {
