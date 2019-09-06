@@ -51,7 +51,7 @@ fixedColumns = [
     },
     align: "left",
     halign: "center",
-    minWidth: 100,
+    minWidth: 300,
     validator: function(value, row) {
       if (!value) {
         return { valid: false, message: "请输入" };
@@ -212,6 +212,12 @@ class Demo extends Component {
     }
   };
 
+  delete = () => {
+    if (this.tableRef.current) {
+      this.tableRef.current.api.delete();
+    }
+  };
+
   onSelectChange = (a, b, c) => {
     //console.log("onSelectChange:", b);
   };
@@ -263,7 +269,7 @@ class Demo extends Component {
   render() {
     return (
       <>
-        <div style={{height:"100%"}}>
+        <div style={{ height: "100%" }}>
           <Table
             header={() => {
               return (
@@ -292,10 +298,17 @@ class Demo extends Component {
                   >
                     add
                   </Button>
+                  <Button
+                    onClick={this.delete}
+                    style={{ cursor: "pointer", marginLeft: 10 }}
+                  >
+                    delete
+                  </Button>
                 </div>
               );
             }}
             loading={this.state.loading}
+            editTools={["edit", "add", "delete"]}
             tableId="preview_table"
             editable={true}
             isAppend={false}

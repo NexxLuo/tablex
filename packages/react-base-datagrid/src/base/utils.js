@@ -139,6 +139,8 @@ export function formatColumns(columns = [], prepend = [], keyField = "key") {
       const d = arr[i];
       const children = d.children || [];
 
+      let columnWidth = d.width || d.minWidth || DEFAULT_COLUMN_WIDTH;
+
       if (children.length > 0) {
         let typeChildrens = getChildren(d, type);
 
@@ -158,15 +160,15 @@ export function formatColumns(columns = [], prepend = [], keyField = "key") {
         if (type === "middle") {
           if (d.fixed !== "left" && d.fixed !== "right") {
             childrens.push(d);
-            middleWidth += d.width || DEFAULT_COLUMN_WIDTH;
+            middleWidth += columnWidth;
           }
         } else {
           if (d.fixed === type) {
             childrens.push(d);
             if (type === "left") {
-              leftWidth += d.width || DEFAULT_COLUMN_WIDTH;
+              leftWidth += columnWidth;
             } else if (type === "right") {
-              rightWidth += d.width || DEFAULT_COLUMN_WIDTH;
+              rightWidth += columnWidth;
             }
           }
         }
@@ -179,6 +181,8 @@ export function formatColumns(columns = [], prepend = [], keyField = "key") {
   for (let i = 0; i < arr.length; i++) {
     const d = arr[i];
     const children = d.children || [];
+
+    let columnWidth = d.width || d.minWidth || DEFAULT_COLUMN_WIDTH;
 
     if (children.length > 0) {
       let leftChildrens = getChildren(d, "left");
@@ -218,13 +222,13 @@ export function formatColumns(columns = [], prepend = [], keyField = "key") {
       }
     } else {
       if (d.fixed === "left") {
-        leftWidth += d.width || DEFAULT_COLUMN_WIDTH;
+        leftWidth += columnWidth;
         arrayPush(left, d, keyField);
       } else if (d.fixed === "right") {
-        rightWidth += d.width || DEFAULT_COLUMN_WIDTH;
+        rightWidth += columnWidth;
         arrayPush(right, d, keyField);
       } else {
-        middleWidth += d.width || DEFAULT_COLUMN_WIDTH;
+        middleWidth += columnWidth;
         arrayPush(middle, d, keyField);
       }
     }
@@ -466,10 +470,10 @@ export function getColumnWidthStyle({ width, minWidth }) {
   let styles = {};
   const DEFAULT_COLUMN_WIDTH = 100;
 
-  if (!hasColumnWidth({ width, minWidth })) {
+  if (!hasColumnWidth({ width })) {
     styles.flexGrow = 1;
     styles.flexShrink = 1;
-    styles.width = DEFAULT_COLUMN_WIDTH;
+    styles.width = minWidth || DEFAULT_COLUMN_WIDTH;
   } else {
     styles.width = width || minWidth || 0;
   }
@@ -484,7 +488,7 @@ export function hasFlexibleColumn(arr) {
 
   for (let i = 0; i < roots.length; i++) {
     const d = roots[i];
-    if (!hasColumnWidth(d)) {
+    if (!hasColumnWidth({ width: d.width })) {
       bl = true;
       break;
     }
@@ -499,7 +503,7 @@ export function hasFlexibleColumn(arr) {
     for (let i = 0; i < tempArr.length; i++) {
       const d = tempArr[i];
       const childrens = d.children || [];
-      if (!hasColumnWidth(d)) {
+      if (!hasColumnWidth({ width: d.width })) {
         bl = true;
         break;
       }

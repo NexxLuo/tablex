@@ -68,7 +68,6 @@ export function treeToList(arr, idField = "id") {
   for (let i = 0, len = treeList.length; i < len; i++) {
     const d = treeList[i];
     let k = d[idField];
-    let index = i + 1;
 
     list.push(d);
 
@@ -206,12 +205,11 @@ export function treeFilter(arr, fn) {
   return roots;
 }
 
-
 export function getTreeFromFlatData({
   flatData,
   getKey = node => node.id,
   getParentKey = node => node.parentId,
-  rootKey = '0',
+  rootKey = "0"
 }) {
   if (!flatData) {
     return [];
@@ -237,7 +235,7 @@ export function getTreeFromFlatData({
     if (parentKey in childrenToParents) {
       return {
         ...parent,
-        children: childrenToParents[parentKey].map(child => trav(child)),
+        children: childrenToParents[parentKey].map(child => trav(child))
       };
     }
 
@@ -246,8 +244,6 @@ export function getTreeFromFlatData({
 
   return childrenToParents[rootKey].map(child => trav(child));
 }
-
-
 
 export function cloneData(source) {
   try {
@@ -287,6 +283,7 @@ export function deleteData(data, keys, rowKey) {
     }
   }
 
+  //此处改变了数据引用
   let newData = getTreeFromFlatData({
     flatData: newFlatData,
     getKey: node => node[rowKey],
@@ -296,18 +293,36 @@ export function deleteData(data, keys, rowKey) {
     },
     rootKey: ""
   });
+  //
+
+  //此处，保证返回的数据均属于同一个引用
+  let newDataToFlat = [];
+
+  treeFilter(newData, function(d) {
+    newDataToFlat.push(d);
+    return true;
+  });
+  //
 
   return {
     newData,
-    newFlatData,
+    newFlatData: newDataToFlat,
     deletedRows,
     deletedRowKeys
   };
 }
 
-export function insertData({ source, data, prepend, parentKey, rowKey, startIndex }) {
+export function insertData({
+  source,
+  data,
+  prepend,
+  parentKey,
+  rowKey,
+  startIndex
+}) {
   let insertRows = data;
   let insertRowKeys = [];
+  let insertRowsKeyMap = {};
   let insertTreeProps = {};
 
   for (let i = 0; i < insertRows.length; i++) {
@@ -315,6 +330,7 @@ export function insertData({ source, data, prepend, parentKey, rowKey, startInde
     let k = d[rowKey];
 
     insertRowKeys.push(k);
+    insertRowsKeyMap[k] = true;
     insertTreeProps[k] = {
       parentKey: parentKey
     };
@@ -371,11 +387,28 @@ export function insertData({ source, data, prepend, parentKey, rowKey, startInde
     },
     rootKey: ""
   });
+  //
+
+  //此处，保证返回的数据均属于同一个引用
+  let newDataToFlat = [];
+  let newDataInserted = [];
+  let newDataInsertedKeys = [];
+
+  treeFilter(newData, function(d) {
+    newDataToFlat.push(d);
+    let k = d[rowKey];
+    if (insertRowsKeyMap[k] === true) {
+      newDataInserted.push(d);
+      newDataInsertedKeys.push(k);
+    }
+    return true;
+  });
+  //
 
   return {
     newData,
-    newFlatData,
-    insertedRowKeys: insertRowKeys,
-    insertedRows: insertRows
+    newFlatData: newDataToFlat,
+    insertedRowKeys: newDataInsertedKeys,
+    insertedRows: newDataInserted
   };
 }

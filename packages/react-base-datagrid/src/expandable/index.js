@@ -365,7 +365,11 @@ class TreeGrid extends Component {
     if (typeof fn === "function") {
       if (rowData.__type === "__expandedRowRender") {
         let { root, rootIndex } = this.getTreeNode(rowData[rowKey]);
-        return fn(root, rootIndex, params);
+        return (
+          <div className="tablex-row-expandedRowRender">
+            {fn(root, rootIndex, params)}
+          </div>
+        );
       }
     }
 

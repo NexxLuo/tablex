@@ -70,7 +70,7 @@ class EditableTable extends React.Component {
         isAppend: nextProps.isAppend
       };
 
-      if ("selectedRowKeys" in nextProps) {
+      if ("expandedRowKeys" in nextProps) {
         nextState.expandedRowKeys = nextProps.expandedRowKeys;
       }
 
@@ -499,7 +499,7 @@ class EditableTable extends React.Component {
 
             let c = (
               <span
-                style={{ verticalAlign: "middle" }}
+                style={{ verticalAlign: "middle", display: "inline-block" }}
                 className={valid === false ? "has-error" : ""}
                 onClick={e => this.onClick(e, row, d)}
                 onKeyDown={e => this.onKeyDown(e, row, d)}
@@ -566,7 +566,7 @@ class EditableTable extends React.Component {
 
               let c = (
                 <span
-                  style={{ verticalAlign: "middle" }}
+                  style={{ verticalAlign: "middle", display: "inline-block" }}
                   className={valid === false ? "has-error" : ""}
                   onClick={e => this.onClick(e, row, d)}
                   onKeyDown={e => this.onKeyDown(e, row, d)}
@@ -731,7 +731,7 @@ class EditableTable extends React.Component {
 
     let nextState = {
       isAddingRange: true,
-      addedData: addedData.slice().concat(insertedRows),
+      addedData: addedData.slice().concat(insertedRows), //此处需注意，addedData与newData是不同的引用
       expandedRowKeys: nextExpandedRowKeys,
       data: newData,
       flatData: newFlatData
@@ -1022,22 +1022,18 @@ class EditableTable extends React.Component {
     }
   };
 
-  deleteRows = keys => {
-    let { data, rowKey, selectedRowKeys } = this.state;
+  clearRowsState = (rowKeys = []) => {
+    let { data, rowKey, selectedRowKeys, editKeys, addedData } = this.state;
 
-    let { newData, newFlatData, deletedRows, deletedRowKeys } = deleteData(
-      data,
-      keys,
-      rowKey
-    );
-
-    let nextSelectedRowKeys = [];
-
+    //删除的行key
     let keysMap = {};
 
-    for (let i = 0; i < deletedRowKeys.length; i++) {
-      keysMap[keys[i]] = true;
+    for (let i = 0; i < rowKeys.length; i++) {
+      keysMap[rowKeys[i]] = true;
     }
+
+    //删除选中状态
+    let nextSelectedRowKeys = [];
 
     for (let i = 0; i < selectedRowKeys.length; i++) {
       let k = selectedRowKeys[i];
@@ -1046,8 +1042,58 @@ class EditableTable extends React.Component {
       }
     }
 
+    //删除编辑状态
+    let nextEditKeys = [];
+
+    for (let i = 0; i < editKeys.length; i++) {
+      let k = editKeys[i];
+      if (keysMap[k] !== true) {
+        nextEditKeys.push(k);
+      }
+    }
+
+    //删除新增状态
+    let nextAddedData = [];
+
+    for (let i = 0; i < addedData.length; i++) {
+      let k = addedData[i][rowKey];
+      if (keysMap[k] !== true) {
+        nextAddedData.push(addedData[i]);
+      }
+    }
+
+    return {
+      selectedRowKeys: nextSelectedRowKeys,
+      editKeys: nextEditKeys,
+      addedData: nextAddedData
+    };
+  };
+
+  deleteRows = rowKeys => {
+    let { data, rowKey, selectedRowKeys } = this.state;
+
+    let keys = rowKeys;
+
+    if (typeof rowKeys === "undefined") {
+      keys = selectedRowKeys;
+    }
+
+    let { newData, newFlatData, deletedRows, deletedRowKeys } = deleteData(
+      data,
+      keys,
+      rowKey
+    );
+
+    let {
+      selectedRowKeys: nextSelectedRowKeys,
+      editKeys: nextEditKeys,
+      addedData: nextAddedData
+    } = this.clearRowsState(deletedRowKeys);
+
     this.setState({
       selectedRowKeys: nextSelectedRowKeys,
+      editKeys: nextEditKeys,
+      addedData: nextAddedData,
       data: newData,
       flatData: newFlatData
     });
@@ -1056,7 +1102,7 @@ class EditableTable extends React.Component {
   };
 
   delete = () => {
-    let { selectedRowKeys = [], selectedRows = [] } = this.state;
+    let { data, rowKey, selectedRowKeys = [], selectedRows = [] } = this.state;
 
     let bl = true;
 
@@ -1073,17 +1119,22 @@ class EditableTable extends React.Component {
     } else {
       this.editType = "delete";
 
-      let { data, rowKey } = this.state;
-
       let { newData, newFlatData, deletedRows, deletedRowKeys } = deleteData(
         data,
         selectedRowKeys,
         rowKey
       );
 
+      let {
+        editKeys: nextEditKeys,
+        addedData: nextAddedData
+      } = this.clearRowsState(deletedRowKeys);
+
       let nextState = {
         deleteLoading: false,
+        addedData: nextAddedData,
         selectedRowKeys: [],
+        editKeys: nextEditKeys,
         data: newData,
         flatData: newFlatData
       };
@@ -1382,7 +1433,7 @@ class EditableTable extends React.Component {
 
     if (isAdding === true || isAddingRange === true) {
       if (isAppend === true) {
-        arr = [].concat(data);
+        arr = data;
       } else {
         arr = addedRows;
       }

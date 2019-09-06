@@ -377,6 +377,7 @@ class SettingModal extends React.Component {
       onOk: this.onOk,
       onCancel: this.onCancel,
       width: "720px",
+      zIndex: 99999,
       bodyStyle: {
         minHeight: "300px",
         maxHeight: "500px",

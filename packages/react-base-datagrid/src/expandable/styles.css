@@ -4,6 +4,11 @@
   height: 20px;
 }
 
+.tablex-bordered .tablex-table-row .tablex-row-expandedRowRender {
+  border-bottom: 1px solid #eeeeee;
+  min-width: 100%;
+}
+
 .tablex-row-expand-icon {
   display: inline-block;
   width: 16px;

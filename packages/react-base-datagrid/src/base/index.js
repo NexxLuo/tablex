@@ -319,7 +319,7 @@ class BaseDataGrid extends React.Component {
     };
 
     if (scrollbarY >= 0) {
-      rightStyles.marginLeft = -scrollbarY;
+      rightStyles.marginLeft = -scrollbarY - 1;
     }
 
     let frozens = {};
