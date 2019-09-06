@@ -125,7 +125,7 @@ Pager.defaultProps = {
   current: 1,
   pageSize: 10,
   total: 0,
-  pageSizeOptions: ["10", "20", "30", "40"],
+  pageSizeOptions: ["10", "20", "30", "50", "100", "200"],
   onPageChange: () => {}
 };
 
