@@ -861,8 +861,16 @@ class FeaturedTable extends React.Component {
       wrapperStyles.minHeight = props.minHeight + extraHeight;
     }
 
+    let classNames = ["tablex__container"];
+
+    if (props.className) {
+      classNames.push(props.className);
+    }
+
+    classNames = classNames.join(" ");
+    
     return (
-      <div className="tablex__container" style={wrapperStyles}>
+      <div className={classNames} style={wrapperStyles}>
         {header}
         <div className="tablex__container__body" style={bodyStyles}>
           <Table {...props} {...newProps} />

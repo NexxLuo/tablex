@@ -32,7 +32,8 @@ Table.defaultProps = {
   validateDelay: 300,
   allowSaveEmpty: false,
   dataControled: false,
-  alwaysValidate: false
+  alwaysValidate: false,
+  editorNoBorder: false
 };
 
 Table.propTypes = {
@@ -50,6 +51,9 @@ Table.propTypes = {
   isAppend: PropTypes.bool,
   /** 新增行时的默认条数 */
   defaultAddCount: PropTypes.number,
+
+  /** 是否显示编辑时的input边框 */
+  editorNoBorder: PropTypes.bool,
 
   /** 编辑确定事件 (changedRows,newRows,editType)=>void
    * @param {Array} changedRows-改变的数据行

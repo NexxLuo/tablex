@@ -499,8 +499,11 @@ class EditableTable extends React.Component {
 
             let c = (
               <span
-                style={{ verticalAlign: "middle", display: "inline-block" }}
-                className={valid === false ? "has-error" : ""}
+                className={
+                  valid === false
+                    ? "tablex-row-cell-editor has-error"
+                    : "tablex-row-cell-editor"
+                }
                 onClick={e => this.onClick(e, row, d)}
                 onKeyDown={e => this.onKeyDown(e, row, d)}
               >
@@ -566,8 +569,11 @@ class EditableTable extends React.Component {
 
               let c = (
                 <span
-                  style={{ verticalAlign: "middle", display: "inline-block" }}
-                  className={valid === false ? "has-error" : ""}
+                  className={
+                    valid === false
+                      ? "tablex-row-cell-editor has-error"
+                      : "tablex-row-cell-editor"
+                  }
                   onClick={e => this.onClick(e, row, d)}
                   onKeyDown={e => this.onKeyDown(e, row, d)}
                 >
@@ -1550,6 +1556,18 @@ class EditableTable extends React.Component {
     if (props.readOnly === true) {
       newProps.selectMode = "none";
     }
+
+    let classNames = [];
+
+    if (props.className) {
+      classNames.push(props.className);
+    }
+
+    if (props.editorNoBorder === true) {
+      classNames.push("tablex-editor-noborder");
+    }
+
+    newProps.className = classNames.join(" ");
 
     return <Table {...props} {...newProps} />;
   }
