@@ -1,0 +1,42 @@
+{
+  "name": "table-examples",
+  "version": "1.0.0",
+  "description": "table virtualized tree-table ",
+  "author": "nexx",
+  "scripts": {
+    "start": "docz dev",
+    "dev": "docz dev",
+    "build": "docz build",
+    "docdb": "set DOCZ_BASE=/components/table&& docz build"
+  },
+  "files": [
+    "lib",
+    "es",
+    "types"
+  ],
+  "keywords": [
+    "table",
+    "virtualized",
+    "tree-table",
+    "data-table",
+    "data-list",
+    "list"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "antd": "^3.20.3",
+    "lodash": "^4.17.11",
+    "prop-types": "^15.7.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-sortable-hoc": "^1.9.1",
+    "tablex": "^1.6.1"
+  },
+  "devDependencies": {
+    "docz": "^1.2.0",
+    "docz-plugin-css": "^0.11.0",
+    "docz-theme-default": "^1.2.0",
+    "gh-pages": "^2.0.1",
+    "react-hot-loader": "^4.12.10"
+  }
+}
