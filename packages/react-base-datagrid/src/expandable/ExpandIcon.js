@@ -25,22 +25,27 @@ const ExpandIcon = ({
   rowIndex,
   style
 }) => {
+  let cls = ["tablex-row-expand-icon"];
+  if (expanded === true) {
+    cls.push("tablex-row-expand-icon-expanded");
+  } else {
+    cls.push("tablex-row-expand-icon-collapsed");
+  }
   return (
-    <span className="tablex-row-expand" style={style}>
+    <React.Fragment>
       {loading === true ? (
-        <Loading />
+        <Loading style={style} />
       ) : (
         <span
-          className="tablex-row-expand-icon"
+          className={cls.join(" ")}
           onClick={e => {
             e.stopPropagation();
             onChange(!expanded, rowKey, rowIndex);
           }}
-        >
-          {expanded === true ? "-" : "+"}
-        </span>
+          style={style}
+        ></span>
       )}
-    </span>
+    </React.Fragment>
   );
 };
 

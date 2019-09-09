@@ -1,7 +1,10 @@
 .tablex-row-expand {
-  display: inline-block;
+  display: inline-flex;
   width: 20px;
   height: 20px;
+  padding: 0 0 0 5px;
+  align-items: center;
+  flex: none;
 }
 
 .tablex-bordered .tablex-table-row .tablex-row-expandedRowRender {
@@ -9,18 +12,24 @@
 }
 
 .tablex-row-expand-icon {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 16px;
   height: 16px;
   text-align: center;
-  line-height: 14px;
   border: 1px solid #e8e8e8;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
   background: #fff;
   cursor: pointer;
+}
+
+.tablex-row-expand-icon.tablex-row-expand-icon-expanded::after {
+  content: "-";
+}
+
+.tablex-row-expand-icon.tablex-row-expand-icon-collapsed::after {
+  content: "+";
 }
 
 @keyframes loadingCircle {

@@ -320,8 +320,8 @@ class TreeGrid extends Component {
         let isExpanded = this.isExpanded(k);
         let hasChildren = this.hasChildren(row);
         let style = { marginLeft: depth * 20 };
-        return (
-          <span>
+        return isTree ? (
+          <div className="tablex-row-expand" style={style}>
             {hasChildren ? (
               <ExpandIcon
                 loading={isLoading}
@@ -329,13 +329,10 @@ class TreeGrid extends Component {
                 rowKey={k}
                 rowIndex={index}
                 onChange={this.onExpand}
-                style={style}
               />
-            ) : isTree ? (
-              <div className="tablex-row-expand" style={style} />
             ) : null}
-          </span>
-        );
+          </div>
+        ) : null;
       };
     }
 
