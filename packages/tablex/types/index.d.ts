@@ -149,6 +149,7 @@ export interface TableProps<T> {
 
   minHeight?: number;
   columnDropMenu?: boolean;
+  contextMenu?: (row: any) => React.ReactNode;
   orderNumber?: false | null | ColumnProps<T>;
   pagination?: PaginationProps | false | null;
   loading?: boolean;

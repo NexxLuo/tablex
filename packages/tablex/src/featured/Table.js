@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Table from "react-base-datagrid";
-
+import ContextMenu from "./ContextMenu";
 import Pagination from "./pagination";
 import Spin from "antd/lib/spin";
 import ColumnDropMenu from "./ColumnDropMenu";
@@ -84,6 +84,7 @@ let summaryMath = {
  */
 class FeaturedTable extends React.Component {
   dropdown_button_ref = React.createRef();
+  contextmenu_ref = React.createRef();
 
   constructor(props) {
     super(props);
@@ -795,6 +796,38 @@ class FeaturedTable extends React.Component {
     return frozenRender;
   };
 
+  showContextMenu = ({ left, top, data }) => {
+    this.contextmenu_ref.current.show({ left, top, data });
+  };
+
+  onRow = (rowData, rowIndex, extra) => {
+    let fn = this.props.onRow;
+
+    let o = {};
+    if (typeof fn === "function") {
+      o = fn(rowData, rowIndex, extra) || {};
+    }
+
+    return {
+      ...o,
+      onContextMenu: e => {
+        let bl = true;
+        if (typeof o.onContextMenu === "function") {
+          bl = o.onContextMenu(e);
+        }
+        if (bl !== false) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.showContextMenu({
+            left: e.clientX,
+            top: e.clientY,
+            data: rowData
+          });
+        }
+      }
+    };
+  };
+
   render() {
     let props = this.props;
 
@@ -818,6 +851,10 @@ class FeaturedTable extends React.Component {
       onColumnResizeStop: this.onColumnResize,
       innerRef: this.innerRef
     };
+
+    if (typeof props.contextMenu === "function") {
+      newProps.onRow = this.onRow;
+    }
 
     if (props.summary) {
       newProps.frozenRender = this.getSummary();
@@ -868,7 +905,7 @@ class FeaturedTable extends React.Component {
     }
 
     classNames = classNames.join(" ");
-    
+
     return (
       <div className={classNames} style={wrapperStyles}>
         {header}
@@ -905,6 +942,11 @@ class FeaturedTable extends React.Component {
             />
           </Popover>
         ) : null}
+
+        <ContextMenu
+          ref={this.contextmenu_ref}
+          content={props.contextMenu}
+        ></ContextMenu>
       </div>
     );
   }
@@ -929,6 +971,9 @@ FeaturedTable.propTypes = {
 
   /** 是否显示序号 */
   orderNumber: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+
+  /** 行右键菜单渲染 */
+  contextMenu: PropTypes.func,
 
   /** 分页 */
   pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
