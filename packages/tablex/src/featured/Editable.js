@@ -42,6 +42,7 @@ class EditableTable extends React.Component {
       isAdding: false,
       isAddingRange: false,
       addedData: [],
+      deletedData: [],
       isEditing: false,
       isAppend: false,
       editKeys: [],
@@ -646,6 +647,7 @@ class EditableTable extends React.Component {
   };
 
   editRows = keys => {
+    this.editType = "edit";
     this.setState({ isEditAll: false, editKeys: keys, isEditing: true });
   };
 
@@ -917,7 +919,7 @@ class EditableTable extends React.Component {
     let changedRows = this.getChangedRows();
 
     let editType = this.editType;
-    let { data, addedData, rowKey } = this.state;
+    let { data, addedData, deletedData, rowKey } = this.state;
     let { allowSaveEmpty, alwaysValidate } = this.props;
 
     let newRows = data.slice();
@@ -948,22 +950,26 @@ class EditableTable extends React.Component {
           d => excludesKeyMap[d[rowKey]] !== true
         );
 
-        newRows = newTreeData;
+        newRows = newTreeData.slice();
         //
       }
+    } else if (editType === "delete") {
+      changedRows = deletedData.slice();
     }
 
     let bl = true;
 
-    if (alwaysValidate === true) {
-      bl = await this.validateAll();
-    } else {
-      bl = await this.validate();
-    }
+    if (editType && editType !== "delete") {
+      if (alwaysValidate === true) {
+        bl = await this.validateAll();
+      } else {
+        bl = await this.validate();
+      }
 
-    if (bl === false) {
-      message.error("信息录入不正确，请检查");
-      return;
+      if (bl === false) {
+        message.error("信息录入不正确，请检查");
+        return;
+      }
     }
 
     if (changedRows.length <= 0) {
@@ -999,8 +1005,11 @@ class EditableTable extends React.Component {
     }
   };
 
-  //"edit"：编辑 ； "add"：新增 "delete"： 删除
+  /**
+   * "edit"：编辑 ； "add"：新增 "delete"： 删除
+   */
   editType = "";
+
   edit = () => {
     let arr = this.state.data || [];
 
@@ -1028,8 +1037,8 @@ class EditableTable extends React.Component {
     }
   };
 
-  clearRowsState = (rowKeys = []) => {
-    let { data, rowKey, selectedRowKeys, editKeys, addedData } = this.state;
+  deleteRowsState = (rowKeys = []) => {
+    let { rowKey, selectedRowKeys, editKeys, addedData } = this.state;
 
     //删除的行key
     let keysMap = {};
@@ -1068,6 +1077,18 @@ class EditableTable extends React.Component {
       }
     }
 
+    //删除变更行
+    let changedRows = this.changedRows;
+    let nextChangedRows = [];
+    for (let i = 0; i < changedRows.length; i++) {
+      let k = changedRows[i][rowKey];
+      if (keysMap[k] !== true) {
+        nextChangedRows.push(changedRows[i]);
+      }
+    }
+
+    this.changedRows = nextChangedRows;
+
     return {
       selectedRowKeys: nextSelectedRowKeys,
       editKeys: nextEditKeys,
@@ -1075,7 +1096,7 @@ class EditableTable extends React.Component {
     };
   };
 
-  deleteRows = rowKeys => {
+  deleteData = rowKeys => {
     let { data, rowKey, selectedRowKeys } = this.state;
 
     let keys = rowKeys;
@@ -1090,16 +1111,19 @@ class EditableTable extends React.Component {
       rowKey
     );
 
+    this.editType = "delete";
+
     let {
       selectedRowKeys: nextSelectedRowKeys,
       editKeys: nextEditKeys,
       addedData: nextAddedData
-    } = this.clearRowsState(deletedRowKeys);
+    } = this.deleteRowsState(deletedRowKeys);
 
     this.setState({
       selectedRowKeys: nextSelectedRowKeys,
       editKeys: nextEditKeys,
       addedData: nextAddedData,
+      deletedData: deletedRows,
       data: newData,
       flatData: newFlatData
     });
@@ -1134,11 +1158,12 @@ class EditableTable extends React.Component {
       let {
         editKeys: nextEditKeys,
         addedData: nextAddedData
-      } = this.clearRowsState(deletedRowKeys);
+      } = this.deleteRowsState(deletedRowKeys);
 
       let nextState = {
         deleteLoading: false,
         addedData: nextAddedData,
+        deletedData: deletedRows,
         selectedRowKeys: [],
         editKeys: nextEditKeys,
         data: newData,
@@ -1465,16 +1490,23 @@ class EditableTable extends React.Component {
   };
 
   api = {
-    editRows: this.editRows,
-    editAll: this.editAll,
     addRange: this.addRange,
     addRows: this.addRows,
     delete: this.delete,
-    deleteRows: this.deleteRows,
+
+    /** 编辑指定行 */
+    editRows: this.editRows,
+    /** 编辑所有 */
+    editAll: this.editAll,
+    /** 删除数据 */
+    deleteData: this.deleteData,
+    /** 插入数据 */
     insertData: this.insertData,
-    reset: this.reset,
+    /** 完成编辑 */
     completeEdit: this.completeEdit,
+    /** 取消编辑 */
     cancelEdit: this.cancelEdit,
+    reset: this.reset,
     isEditing: this.isEditing,
     validateChanged: this.validate,
     validateAll: this.validateAll,

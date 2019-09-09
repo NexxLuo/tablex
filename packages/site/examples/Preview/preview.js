@@ -311,7 +311,7 @@ class Demo extends Component {
             editTools={["edit", "add", "delete"]}
             tableId="preview_table"
             editable={true}
-            isAppend={false}
+            isAppend={true}
             allowSaveEmpty={true}
             alwaysValidate={true}
             ref={this.tableRef}
