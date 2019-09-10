@@ -339,8 +339,8 @@ let { columns, data } = this.state;
 ## 自定义编辑
 
 <Playground style={{ height: 600 }}>
-  {
-    class Demo extends React.Component {
+{
+  class Demo extends React.Component {
   constructor(props) {
     super(props);
 
@@ -379,7 +379,12 @@ let { columns, data } = this.state;
             <Input
               defaultValue={value}
               ref={ref}
-              onChange={e => onchange({ ["column-1"]: e.target.value })}
+              onChange={e =>
+                onchange([
+                  { "column-1": e.target.value, id: row.id },
+                  { id: "3", address: e.target.value }
+                ])
+              }
             />
           );
         }
@@ -405,7 +410,7 @@ let { columns, data } = this.state;
                 <Input
                   defaultValue={value}
                   ref={ref}
-                  onChange={e => onchange({ ["address"]: e.target.value })}
+                  onChange={e => onchange({ address: e.target.value })}
                 />
               );
             }
@@ -491,7 +496,7 @@ let { columns, data } = this.state;
   }
 
   beginEdit(row) {
-    let arr=[];
+    let arr = [];
     arr.push(row.id);
     this.tableRef.current.api.editRows(arr);
   }
@@ -505,16 +510,29 @@ let { columns, data } = this.state;
   }
 
   insertData() {
-      let arr=[];
+    let arr = [];
     arr.push({ id: "inserted-row-" + new Date().getTime() });
 
     this.tableRef.current.api.insertData({
-      data:arr,
+      data: arr,
       parentKey: "3",
       editing: true,
       prepend: false,
       startIndex: 2
     });
+  }
+
+  modifyData() {
+    let arr = [];
+    arr.push({ id: "inserted-row-" + new Date().getTime() });
+
+    this.tableRef.current.api.modifyData([
+      {
+        id: "3",
+        "column-1": "modifyData-" + new Date().getTime(),
+        level: 3
+      }
+    ]);
   }
 
   delete() {
@@ -529,61 +547,72 @@ let { columns, data } = this.state;
 
   render() {
     return (
-        <div style={{ height: "100%" }}>
-          <Table
-            header={() => {
-              return (
-                <div>
-                  <Button
-                    onClick={this.completeEdit.bind(this)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    complete edit
-                  </Button>
+      <div style={{ height: "100%" }}>
+        <Table
+          header={() => {
+            return (
+              <div>
+                <Button
+                  onClick={this.completeEdit.bind(this)}
+                  style={{ cursor: "pointer" }}
+                >
+                  complete edit
+                </Button>
 
-                  <Button
-                    onClick={this.cancelEdit.bind(this)}
-                    style={{ cursor: "pointer", marginLeft: 10 }}
-                  >
-                    cancel edit
-                  </Button>
+                <Button
+                  onClick={this.cancelEdit.bind(this)}
+                  style={{ cursor: "pointer", marginLeft: 10 }}
+                >
+                  cancel edit
+                </Button>
 
-                  <Button
-                    onClick={this.insertData.bind(this)}
-                    style={{ cursor: "pointer", marginLeft: 10 }}
-                  >
-                    insert data
-                  </Button>
-                  <Button
-                    onClick={this.delete.bind(this)}
-                    style={{ cursor: "pointer", marginLeft: 10 }}
-                  >
-                    delete
-                  </Button>
-                </div>
-              );
-            }}
-            editable={false}
-            isAppend={true}
-            allowSaveEmpty={true}
-            alwaysValidate={true}
-            ref={this.tableRef}
-            rowKey="id"
-            onEditSave={this.onEditSave.bind(this)}
-            columns={this.columns}
-            selectMode="multiple"
-            checkStrictly={false}
-            data={this.state.data}
-            selectOnRowClick={false}
-          />
-        </div>
+                <Button
+                  onClick={this.insertData.bind(this)}
+                  style={{ cursor: "pointer", marginLeft: 10 }}
+                >
+                  insert data
+                </Button>
+
+                <Button
+                  onClick={this.modifyData.bind(this)}
+                  style={{ cursor: "pointer", marginLeft: 10 }}
+                >
+                  modify data
+                </Button>
+
+                <Button
+                  onClick={this.delete.bind(this)}
+                  style={{ cursor: "pointer", marginLeft: 10 }}
+                >
+                  delete
+                </Button>
+              </div>
+            );
+          }}
+          editable={false}
+          isAppend={false}
+          allowSaveEmpty={true}
+          alwaysValidate={true}
+          ref={this.tableRef}
+          rowKey="id"
+          onEditSave={this.onEditSave.bind(this)}
+          columns={this.columns}
+          selectMode="multiple"
+          checkStrictly={false}
+          data={this.state.data}
+          validateTrigger="onChange"
+          selectOnRowClick={false}
+        />
+      </div>
     );
   }
 }
-  }
+}
 </Playground>
 
 ### 相关api
+
+> Table提供了一组针对数据编辑的api，可以使用这些方法快捷的编辑数据
 
 ```javascript
  api= {
@@ -607,10 +636,21 @@ let { columns, data } = this.state;
         scrollTo = true, //插入数据后，是否自动滚动到对应行
         startIndex = -1  //无parentKey时有效，控制数据插入到根级的第几行
     })=>{},
-    /** 完成编辑 */
+    /** 
+     * 修改数据 
+     * rows 需要修改的数据（平级），数据中必须包含rowKey
+     * */
+    modifyData:(rows=[{rowKey,...}])=>{},
+    /** 
+     * 完成编辑，并提交数据更改
+     * 每次调用此方法，都将会触发onEditSave，可以在onEditSave事件中统一对数据进行保存操作
+     * */
     completeEdit: ()=>{},
-    /** 取消编辑 */
-    cancelEdit:()=>{},
+    /** 
+     * 取消编辑 
+     * 调用此方法后，上次未提交的数据更改将被放弃
+     * */
+    cancelEdit:()=>{}
  }
 
 ```

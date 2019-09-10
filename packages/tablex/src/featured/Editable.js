@@ -176,7 +176,6 @@ class EditableTable extends React.Component {
   addToChanged = newRow => {
     let rowKey = this.props.rowKey;
     let changedRows = this.changedRows;
-    let validateTrigger = this.props.validateTrigger;
 
     let i = changedRows.findIndex(d => d[rowKey] === newRow[rowKey]);
 
@@ -187,39 +186,24 @@ class EditableTable extends React.Component {
     }
 
     this.changedRows = changedRows;
-
-    // 当change时立即验证行
-    if (validateTrigger === "onChange") {
-      this.validateRow(newRow);
-      this.updateComponent();
-    }
   };
 
-  editChange = (newValues = {}, row, index) => {
-    let { addedData, flatData } = this.state;
+  editChange = (data = {}, row) => {
+    let newValues = [];
 
-    let rowKey = this.props.rowKey;
-
-    let allData = flatData;
-
-    let i = allData.findIndex(d => d[rowKey] === row[rowKey]);
-
-    if (i > -1) {
-      Object.keys(newValues).forEach(k => {
-        row[k] = newValues[k];
-        allData[i][k] = newValues[k];
-      });
-
-      this.addToChanged(allData[i]);
+    if (data instanceof Array) {
+      newValues = data;
+    } else {
+      let r = Object.assign({}, row, data);
+      newValues = [r];
     }
 
-    let j = addedData.findIndex(d => d[rowKey] === row[rowKey]);
+    this.modifyData(newValues, true);
 
-    if (j > -1) {
-      Object.keys(newValues).forEach(k => {
-        addedData[j][k] = newValues[k];
-      });
-      this.addToChanged(addedData[j]);
+    // 当change时立即验证行
+    if (this.props.validateTrigger === "onChange") {
+      this.validateRows(newValues);
+      this.updateComponent();
     }
   };
 
@@ -315,6 +299,12 @@ class EditableTable extends React.Component {
     }
 
     return bl;
+  };
+
+  validateRows = (rows = []) => {
+    for (let i = 0; i < rows.length; i++) {
+      this.validateRow(rows[i]);
+    }
   };
 
   //异步验证数据行
@@ -465,27 +455,10 @@ class EditableTable extends React.Component {
         let editor = d.editor;
 
         if (typeof editor === "function") {
-          let renderFn = d.render;
-
           d.render = (value, row, index) => {
-            let renderProps = null;
-            let newRenderProps = {};
-
-            if (typeof renderFn === "function") {
-              renderProps = renderFn(value, row, index);
-            }
-
-            if (
-              renderProps &&
-              renderProps.props &&
-              renderProps.props.colSpan === 0
-            ) {
-              return renderProps;
-            }
-
             let { valid, msg } = this.getValidate(row, d.dataIndex) || {};
 
-            let ed = editor(
+            let rendered = editor(
               value,
               row,
               index,
@@ -498,12 +471,23 @@ class EditableTable extends React.Component {
               this.validate
             );
 
+            let ed = null;
+
+            let newRenderProps = {};
+
+            if (React.isValidElement(rendered)) {
+              ed = rendered;
+            } else if (rendered) {
+              ed = rendered.children;
+              newRenderProps.props = rendered.props;
+            }
+
             let c = (
               <span
                 className={
                   valid === false
                     ? "tablex-row-cell-editor has-error"
-                    : "tablex-row-cell-editor"
+                    : "tablex-row-cell-editor no-error"
                 }
                 onClick={e => this.onClick(e, row, d)}
                 onKeyDown={e => this.onKeyDown(e, row, d)}
@@ -516,11 +500,7 @@ class EditableTable extends React.Component {
 
             newRenderProps.children = c;
 
-            if (renderProps && renderProps.props) {
-              newRenderProps.props = renderProps.props;
-            }
-
-            return c;
+            return newRenderProps;
           };
         }
       });
@@ -1489,6 +1469,56 @@ class EditableTable extends React.Component {
     }
   };
 
+  modifyData = (rows = [], silent = false) => {
+    let { addedData, data } = this.state;
+
+    let rowKey = this.props.rowKey;
+
+    let rowsMap = {};
+    let addedRowsMap = {};
+
+    treeFilter(data, d => {
+      let k = d[rowKey];
+      rowsMap[k] = d;
+      return true;
+    });
+
+    for (let i = 0; i < addedData.length; i++) {
+      let row = addedData[i];
+      let k = row[rowKey];
+      addedRowsMap[k] = row;
+    }
+
+    for (let i = 0; i < rows.length; i++) {
+      const d = rows[i];
+      let key = d[rowKey];
+
+      let row = rowsMap[key];
+      if (row) {
+        Object.keys(d).forEach(k => {
+          if (k !== rowKey) {
+            row[k] = d[k];
+          }
+        });
+        this.addToChanged(row);
+      }
+
+      let addedRow = addedRowsMap[key];
+      if (addedRow) {
+        Object.keys(d).forEach(k => {
+          if (k !== rowKey) {
+            addedRow[k] = d[k];
+          }
+        });
+        this.addToChanged(addedRow);
+      }
+    }
+
+    if (silent === false) {
+      this.forceUpdate();
+    }
+  };
+
   api = {
     addRange: this.addRange,
     addRows: this.addRows,
@@ -1502,6 +1532,8 @@ class EditableTable extends React.Component {
     deleteData: this.deleteData,
     /** 插入数据 */
     insertData: this.insertData,
+    /** 修改数据 */
+    modifyData: this.modifyData,
     /** 完成编辑 */
     completeEdit: this.completeEdit,
     /** 取消编辑 */

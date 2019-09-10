@@ -60,13 +60,38 @@ fixedColumns = [
       return { valid: true, message: "false" };
     },
     editor: function(value, row, index, onchange, ref) {
-      return (
+      let el = (
         <Input
           defaultValue={value}
           ref={ref}
-          onChange={e => onchange({ ["column-1"]: e.target.value })}
+          onChange={e => onchange({ "column-1": e.target.value })}
         />
       );
+
+      const obj = {
+        children: el,
+        props: {}
+      };
+
+      if (index === 1) {
+        obj.props.colSpan = 2;
+        obj.children = el;
+      }
+
+      return obj;
+    },
+    render: (value, row, index) => {
+      const obj = {
+        children: value,
+        props: {}
+      };
+
+      if (index === 1) {
+        obj.props.colSpan = 2;
+        obj.children = <div>{value}</div>;
+      }
+
+      return obj;
     }
   },
   {
