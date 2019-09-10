@@ -7,6 +7,8 @@ import "./index.css";
 
 const { Search } = Input;
 
+let BaseUrl = process.env.DOCZ_BASE || "";
+
 function requestGet(url, options) {
   let xhr = new XMLHttpRequest();
   xhr.open("GET", url, true);
@@ -169,7 +171,7 @@ class Demo extends Component {
     this.setState({ loading: true });
 
     let c = 0;
-    requestGet("/public/data.json", {
+    requestGet(BaseUrl + "/public/data.json", {
       onSuccess: data => {
         data = _.uniqBy(data, d => {
           return d.code;
@@ -274,7 +276,7 @@ class Demo extends Component {
   onRow = row => {
     return {
       onContextMenu: e => {
-        console.log("onContextMenu")
+        console.log("onContextMenu");
         e.preventDefault();
         e.stopPropagation();
         this.showContextMenu({ left: e.clientX, top: e.clientY, data: row });
@@ -549,16 +551,11 @@ class Demo extends Component {
     return "";
   };
 
+  contentMenu = row => {
+    console.log("contentMenu:", row);
 
-  contentMenu=(row)=>{
-
-
-    console.log("contentMenu:",row);
-
-    return <div>
-      contentMenu
-    </div>
-  }
+    return <div>contentMenu</div>;
+  };
 
   render() {
     let menuItemStyle = { height: "auto", lineHeight: "normal" };
@@ -583,7 +580,7 @@ class Demo extends Component {
           selectMode="multiple"
           checkStrictly={false}
           data={this.state.treeData}
-          orderNumber={{resizable:true}}
+          orderNumber={{ resizable: true }}
           onRow={this.onRow}
           validateTrigger="onChange"
           header={() => (
