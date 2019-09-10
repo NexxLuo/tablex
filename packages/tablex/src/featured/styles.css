@@ -225,7 +225,8 @@
   border-color: #a9a6a6;
 }
 
-.tablex-editor-noborder .tablex-row-cell-editor .ant-input {
+.tablex-editor-noborder .tablex-row-cell-editor.no-error .ant-input,
+.tablex-editor-noborder .tablex-row-cell-editor.no-error .table-custom-editor {
   border: none;
   box-shadow: none;
   outline: none;
@@ -233,7 +234,7 @@
   width: 100%;
 }
 
-.tablex-editor-noborder .tablex-row-cell-editor .ant-input-number {
+.tablex-editor-noborder .tablex-row-cell-editor.no-error .ant-input-number {
   border: none;
   box-shadow: none;
   outline: none;
@@ -241,24 +242,24 @@
   width: 100%;
 }
 .tablex-editor-noborder
-  .tablex-row-cell-editor
+  .tablex-row-cell-editor.no-error
   .ant-input-number
   .ant-input-number-input-wrap {
   width: 100%;
 }
 
 .tablex-editor-noborder
-  .tablex-row-cell-editor
+  .tablex-row-cell-editor.no-error
   .ant-input-number
   .ant-input-number-input {
   width: calc(100% - 24px);
 }
 
-.tablex-editor-noborder .tablex-row-cell-editor .ant-select {
+.tablex-editor-noborder .tablex-row-cell-editor.no-error .ant-select {
   width: 100%;
 }
 
-.tablex-editor-noborder .tablex-row-cell-editor .ant-select-selection {
+.tablex-editor-noborder .tablex-row-cell-editor.no-error .ant-select-selection {
   border: none;
   box-shadow: none;
   outline: none;
@@ -267,28 +268,28 @@
 }
 
 .tablex-editor-noborder
-  .tablex-row-cell-editor
+  .tablex-row-cell-editor.no-error
   .ant-select-selection
   .ant-select-arrow {
   visibility: hidden;
 }
 
 .tablex-editor-noborder
-  .tablex-row-cell-editor
+  .tablex-row-cell-editor.no-error
   .ant-select-selection:hover
   .ant-select-arrow {
   visibility: visible;
 }
 
 .tablex-editor-noborder
-  .tablex-row-cell-editor
+  .tablex-row-cell-editor.no-error
   .ant-calendar-picker
   .ant-calendar-picker-icon {
   visibility: hidden;
 }
 
 .tablex-editor-noborder
-  .tablex-row-cell-editor
+  .tablex-row-cell-editor.no-error
   .ant-calendar-picker:hover
   .ant-calendar-picker-icon {
   visibility: visible;
