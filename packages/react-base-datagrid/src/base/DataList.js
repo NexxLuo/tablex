@@ -271,14 +271,12 @@ const TableRow = memo(({ data, index, style }) => {
     virtualStyles.top = style.top + placeholderTop;
   }
 
+  delete virtualStyles.width;
+
   let rowProps = {
     className: cls.join(" "),
     "data-rowindex": index,
-    style: {
-      ...virtualStyles,
-      width: "auto",
-      minWidth: "100%"
-    },
+    style: virtualStyles,
     children: rowCells
   };
 
