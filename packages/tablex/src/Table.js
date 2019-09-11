@@ -1,16 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Table from "react-base-datagrid";
-import ContextMenu from "./ContextMenu";
-import Pagination from "./pagination";
+import BaseTable from "react-base-datagrid";
+import ContextMenu from "./components/ContextMenu";
+import Pagination from "./components/pagination";
+import ColumnDropMenu from "./components/ColumnDropMenu";
+import Setting, { getConfigs, setConfigs } from "./components/setting";
+import SortIcon from "./components/SortIndicator";
+import EmptyIcon from "./components/EmptyIcon";
 import Spin from "antd/lib/spin";
-import ColumnDropMenu from "./ColumnDropMenu";
 import {
   treeToFlatten as treeToList,
   treeFilter,
   getParentElement
 } from "./utils";
-import Setting, { getConfigs, setConfigs } from "./setting";
 import orderBy from "lodash/orderBy";
 import Popover from "antd/lib/popover";
 import cloneDeep from "lodash/cloneDeep";
@@ -18,8 +20,6 @@ import maxBy from "lodash/maxBy";
 import minBy from "lodash/minBy";
 import sumBy from "lodash/sumBy";
 
-import SortIcon from "./SortIndicator";
-import EmptyIcon from "./EmptyIcon";
 
 const DEFAULT_COLUMN_WIDTH = 100;
 
@@ -82,7 +82,7 @@ let summaryMath = {
 /**
  * 表格
  */
-class FeaturedTable extends React.Component {
+class Table extends React.Component {
   dropdown_button_ref = React.createRef();
   contextmenu_ref = React.createRef();
 
@@ -910,7 +910,7 @@ class FeaturedTable extends React.Component {
       <div className={classNames} style={wrapperStyles}>
         {header}
         <div className="tablex__container__body" style={bodyStyles}>
-          <Table {...props} {...newProps} />
+          <BaseTable {...props} {...newProps} />
         </div>
         {footer}
 
@@ -952,7 +952,7 @@ class FeaturedTable extends React.Component {
   }
 }
 
-FeaturedTable.defaultProps = {
+Table.defaultProps = {
   orderNumber: true,
   settable: true,
   columnDropMenu: true,
@@ -962,7 +962,7 @@ FeaturedTable.defaultProps = {
   minHeight: 200
 };
 
-FeaturedTable.propTypes = {
+Table.propTypes = {
   /** 表格区域最小高度 */
   minHeight: PropTypes.number,
 
@@ -1043,4 +1043,4 @@ FeaturedTable.propTypes = {
   }
 };
 
-export default FeaturedTable;
+export default Table;
