@@ -430,6 +430,55 @@ class EditableTable extends React.Component {
     return null;
   };
 
+  renderEditor = (value, row, index, column) => {
+    let fn = column.editor;
+    let { valid, msg } = this.getValidate(row, column.dataIndex) || {};
+
+    let rendered = fn(
+      value,
+      row,
+      index,
+      values => {
+        this.editChange(values, row, index);
+      },
+      ins => {
+        this.setEditorIns(row, column, ins);
+      },
+      this.validate
+    );
+
+    let ed = null;
+
+    let newRenderProps = {};
+
+    if (React.isValidElement(rendered)) {
+      ed = rendered;
+    } else if (rendered) {
+      ed = rendered.children;
+      newRenderProps.props = rendered.props;
+    }
+
+    let c = (
+      <span
+        className={
+          valid === false
+            ? "tablex-row-cell-editor has-error"
+            : "tablex-row-cell-editor no-error"
+        }
+        onClick={e => this.onClick(e, row, column)}
+        onKeyDown={e => this.onKeyDown(e, row, column)}
+      >
+        <Tooltip placement="topLeft" title={msg}>
+          {ed}
+        </Tooltip>
+      </span>
+    );
+
+    newRenderProps.children = c;
+
+    return newRenderProps;
+  };
+
   formatColumns = () => {
     let { columns, editKeys, isEditAll, isEditing } = this.state;
 
@@ -456,51 +505,7 @@ class EditableTable extends React.Component {
 
         if (typeof editor === "function") {
           d.render = (value, row, index) => {
-            let { valid, msg } = this.getValidate(row, d.dataIndex) || {};
-
-            let rendered = editor(
-              value,
-              row,
-              index,
-              values => {
-                this.editChange(values, row, index);
-              },
-              ins => {
-                this.setEditorIns(row, d, ins);
-              },
-              this.validate
-            );
-
-            let ed = null;
-
-            let newRenderProps = {};
-
-            if (React.isValidElement(rendered)) {
-              ed = rendered;
-            } else if (rendered) {
-              ed = rendered.children;
-              newRenderProps.props = rendered.props;
-            }
-
-            let c = (
-              <span
-                className={
-                  valid === false
-                    ? "tablex-row-cell-editor has-error"
-                    : "tablex-row-cell-editor no-error"
-                }
-                onClick={e => this.onClick(e, row, d)}
-                onKeyDown={e => this.onKeyDown(e, row, d)}
-              >
-                <Tooltip placement="topLeft" title={msg}>
-                  {ed}
-                </Tooltip>
-              </span>
-            );
-
-            newRenderProps.children = c;
-
-            return newRenderProps;
+            return this.renderEditor(value, row, index, d);
           };
         }
       });
@@ -514,63 +519,10 @@ class EditableTable extends React.Component {
 
         if (typeof editor === "function") {
           let renderFn = d.render;
-
           d.render = (value, row, index) => {
-            let renderProps = null;
-            let newRenderProps = {};
-
-            if (typeof renderFn === "function") {
-              renderProps = renderFn(value, row, index);
-            }
-
-            if (
-              renderProps &&
-              renderProps.props &&
-              renderProps.props.colSpan === 0
-            ) {
-              return renderProps;
-            }
-
             let bl = editKeys.findIndex(k => k === row[rowKey]) > -1;
-
             if (bl) {
-              let { valid, msg } = this.getValidate(row, d.dataIndex) || {};
-
-              let ed = editor(
-                value,
-                row,
-                index,
-                values => {
-                  this.editChange(values, row, index);
-                },
-                ins => {
-                  this.setEditorIns(row, d, ins);
-                }
-              );
-
-              let c = (
-                <span
-                  className={
-                    valid === false
-                      ? "tablex-row-cell-editor has-error"
-                      : "tablex-row-cell-editor"
-                  }
-                  onClick={e => this.onClick(e, row, d)}
-                  onKeyDown={e => this.onKeyDown(e, row, d)}
-                >
-                  <Tooltip placement="topLeft" title={msg}>
-                    {ed}
-                  </Tooltip>
-                </span>
-              );
-
-              newRenderProps.children = c;
-
-              if (renderProps && renderProps.props) {
-                newRenderProps.props = renderProps.props;
-              }
-
-              return c;
+              return this.renderEditor(value, row, index, d);
             } else {
               if (typeof renderFn === "function") {
                 return renderFn(value, row, index);
