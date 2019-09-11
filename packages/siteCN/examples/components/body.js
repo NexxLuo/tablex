@@ -1,5 +1,8 @@
 import React, { Component } from "react";
+import ReactDom from "react-dom";
 import { Table } from "tablex";
+import { Input, Button } from "antd";
+
 import "./styles.css";
 
 import { SortableContainer, SortableElement } from "react-sortable-hoc";
@@ -8,17 +11,13 @@ const DraggableRow = SortableElement(props => {
   return <div {...props} />;
 });
 
-const DraggableBody = SortableContainer(({ className, children }) => {
+const DraggableContainer = SortableContainer(({ className, children }) => {
   return <div className={className}>{children}</div>;
 });
 
 function DraggableTableRow(props) {
   let { rowData, rowIndex, rowProps } = props;
   return <DraggableRow {...rowProps} index={rowIndex} data-key={rowData.id} />;
-}
-
-function DraggableTableBody(props) {
-  return <DraggableBody {...props} />;
 }
 
 const DraggableTable = props => {
@@ -28,9 +27,9 @@ const DraggableTable = props => {
       components={{
         body: ({ className, children }) => {
           return (
-            <DraggableTableBody className={className} {...props}>
+            <DraggableContainer className={className} {...props}>
               {children}
-            </DraggableTableBody>
+            </DraggableContainer>
           );
         },
         row: DraggableTableRow
@@ -38,15 +37,6 @@ const DraggableTable = props => {
     />
   );
 };
-
-const generateColumns = (count = 10, prefix = "column-", props) =>
-  new Array(count).fill(0).map((column, columnIndex) => ({
-    ...props,
-    key: `${prefix}${columnIndex}`,
-    dataIndex: `${prefix}${columnIndex}`,
-    title: `Column ${columnIndex}`,
-    width: 150
-  }));
 
 const generateData = (columns, count = 20, prefix = "row-") =>
   new Array(count).fill(0).map((row, rowIndex) => {
@@ -67,11 +57,8 @@ const generateData = (columns, count = 20, prefix = "row-") =>
     );
   });
 
-const columns = generateColumns(10);
-const data = generateData(columns, 100);
-
 const arrayMove = (array, from, to) => {
-  //array = array.slice();
+  array = array.slice();
   array.splice(to < 0 ? array.length + to : to, 0, array.splice(from, 1)[0]);
   return array;
 };
@@ -79,23 +66,62 @@ const arrayMove = (array, from, to) => {
 class Demo extends Component {
   constructor(props) {
     super(props);
-    this.scrollRef = null;
     this.state = {
       data: []
     };
   }
 
   componentDidMount() {
-    this.setState({
-      data: data
-    });
-  }
+    let columns = [
+      {
+        dataIndex: "column-1",
+        key: "column-1",
+        title: "column-1",
+        validator: function(value, row) {
+          if (!value) {
+            return { valid: false, message: "请输入" };
+          }
 
-  tableScrollRef(ins) {
-    this.scrollRef = ins;
-    if (ins) {
-      ins.id = "tableScroll";
-    }
+          return { valid: true, message: "false" };
+        },
+        editor: function(value, row, index, onchange, ref) {
+          return (
+            <Input
+              defaultValue={value}
+              ref={ref}
+              onChange={e =>
+                onchange([
+                  { "column-1": e.target.value, id: row.id },
+                  { id: "3", address: e.target.value }
+                ])
+              }
+            />
+          );
+        }
+      },
+      {
+        width: 150,
+        dataIndex: "column-2",
+        title: "column-2"
+      },
+      {
+        width: 150,
+        dataIndex: "column-3",
+        title: "column-3"
+      },
+      {
+        width: 150,
+        dataIndex: "column-4",
+        title: "column-4"
+      }
+    ];
+
+    const data = generateData(columns, 100);
+
+    this.setState({
+      data: data,
+      columns: columns
+    });
   }
 
   onSortEnd({ newIndex, oldIndex }) {
@@ -104,23 +130,27 @@ class Demo extends Component {
     }));
   }
 
+  getContainer() {
+    let el = ReactDom.findDOMNode(this);
+    return el.querySelector(".tablex-table-body>div");
+  }
+
   render() {
     return (
       <DraggableTable
-        scrollRef={this.tableScrollRef.bind(this)}
         rowKey="id"
         expandColumnKey="column-1"
-        columns={columns}
+        editable={true}
+        columns={this.state.columns}
         selectMode="none"
         data={this.state.data}
         orderNumber={true}
         lockAxis="y"
         onSortEnd={this.onSortEnd.bind(this)}
+        validateTrigger="onChange"
         distance={10}
         helperClass="tablex-row-dragging"
-        getContainer={function() {
-          return document.getElementById("tableScroll");
-        }}
+        getContainer={this.getContainer.bind(this)}
       />
     );
   }
