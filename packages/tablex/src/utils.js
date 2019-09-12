@@ -74,20 +74,23 @@ export function treeToList(arr, idField = "id") {
     const childrens = d.children || [];
 
     if (childrens.length > 0) {
-      getChildren(d, 0);
+      getChildren(d, 0, []);
     }
 
     setTree(k, {
       depth: 0,
-      parentKey: ""
+      parentKey: "",
+      path: []
     });
   }
 
-  function getChildren(item, depth) {
+  function getChildren(item, depth, path) {
     const childrens = item.children;
     const pk = item[idField];
 
     let __depth = depth + 1;
+    let __path = path.slice();
+    __path.push(pk);
 
     for (let i = 0, len = childrens.length; i < len; i++) {
       const d = childrens[i];
@@ -97,12 +100,13 @@ export function treeToList(arr, idField = "id") {
       list.push(d);
 
       if (c_childrens.length > 0) {
-        getChildren(d, __depth);
+        getChildren(d, __depth, __path);
       }
 
       setTree(k, {
         depth: __depth,
-        parentKey: pk
+        parentKey: pk,
+        path: __path
       });
     }
   }
@@ -176,6 +180,10 @@ export function treeFilter(arr, fn) {
 
       roots.push(d);
     }
+
+    if (bl === false) {
+      break;
+    }
   }
 
   function getChildren(node, depth) {
@@ -192,10 +200,14 @@ export function treeFilter(arr, fn) {
 
       if (bl === true) {
         if (d.children && d.children.length > 0) {
-          d.children = getChildren(d, i, depth + 1);
+          d.children = getChildren(d, depth + 1);
         }
 
         nextChildrens.push(d);
+      }
+
+      if (bl === false) {
+        break;
       }
     }
 
@@ -209,7 +221,7 @@ export function getTreeFromFlatData({
   flatData,
   getKey = node => node.id,
   getParentKey = node => node.parentId,
-  rootKey = "0"
+  rootKey = ""
 }) {
   if (!flatData) {
     return [];
@@ -243,6 +255,148 @@ export function getTreeFromFlatData({
   };
 
   return childrenToParents[rootKey].map(child => trav(child));
+}
+
+/**
+ * Find nodes matching a search query in the tree,
+ *
+ * @param {!function} getNodeKey - Function to get the key from the nodeData and tree index
+ * @param {!Object[]} treeData - Tree data
+ * @param {?string|number} searchQuery - Function returning a boolean to indicate whether the node is a match or not
+ * @param {!function} searchMethod - Function returning a boolean to indicate whether the node is a match or not
+ * @param {?number} searchFocusOffset - The offset of the match to focus on
+ *                                      (e.g., 0 focuses on the first match, 1 on the second)
+ * @param {boolean=} expandAllMatchPaths - If true, expands the paths to any matched node
+ * @param {boolean=} expandFocusMatchPaths - If true, expands the path to the focused node
+ *
+ * @return {Object[]} matches - An array of objects containing the matching `node`s, their `path`s and `treeIndex`s
+ * @return {Object[]} treeData - The original tree data with all relevant nodes expanded.
+ *                               If expandAllMatchPaths and expandFocusMatchPaths are both false,
+ *                               it will be the same as the original tree data.
+ */
+export function treeFind({
+  getNodeKey,
+  treeData,
+  searchQuery,
+  searchMethod,
+  searchFocusOffset,
+  expandAllMatchPaths = false,
+  expandFocusMatchPaths = true
+}) {
+  let matchCount = 0;
+  const trav = ({ isPseudoRoot = false, node, currentIndex, path = [] }) => {
+    let matches = [];
+    let isSelfMatch = false;
+    let hasFocusMatch = false;
+    // The pseudo-root is not considered in the path
+    const selfPath = isPseudoRoot
+      ? []
+      : [...path, getNodeKey({ node, treeIndex: currentIndex })];
+    const extraInfo = isPseudoRoot
+      ? null
+      : {
+          path: selfPath,
+          treeIndex: currentIndex
+        };
+
+    // Nodes with with children that aren't lazy
+    const hasChildren =
+      node.children &&
+      typeof node.children !== "function" &&
+      node.children.length > 0;
+
+    // Examine the current node to see if it is a match
+    if (!isPseudoRoot && searchMethod({ ...extraInfo, node, searchQuery })) {
+      if (matchCount === searchFocusOffset) {
+        hasFocusMatch = true;
+      }
+
+      // Keep track of the number of matching nodes, so we know when the searchFocusOffset
+      //  is reached
+      matchCount += 1;
+
+      // We cannot add this node to the matches right away, as it may be changed
+      //  during the search of the descendants. The entire node is used in
+      //  comparisons between nodes inside the `matches` and `treeData` results
+      //  of this method (`find`)
+      isSelfMatch = true;
+    }
+
+    let childIndex = currentIndex;
+    const newNode = { ...node };
+    if (hasChildren) {
+      // Get all descendants
+      newNode.children = newNode.children.map(child => {
+        const mapResult = trav({
+          node: child,
+          currentIndex: childIndex + 1,
+          path: selfPath
+        });
+
+        // Ignore hidden nodes by only advancing the index counter to the returned treeIndex
+        // if the child is expanded.
+        //
+        // The child could have been expanded from the start,
+        // or expanded due to a matching node being found in its descendants
+        if (mapResult.node.expanded) {
+          childIndex = mapResult.treeIndex;
+        } else {
+          childIndex += 1;
+        }
+
+        if (mapResult.matches.length > 0 || mapResult.hasFocusMatch) {
+          matches = [...matches, ...mapResult.matches];
+          if (mapResult.hasFocusMatch) {
+            hasFocusMatch = true;
+          }
+
+          // Expand the current node if it has descendants matching the search
+          // and the settings are set to do so.
+          if (
+            (expandAllMatchPaths && mapResult.matches.length > 0) ||
+            ((expandAllMatchPaths || expandFocusMatchPaths) &&
+              mapResult.hasFocusMatch)
+          ) {
+            newNode.expanded = true;
+          }
+        }
+
+        return mapResult.node;
+      });
+    }
+
+    // Cannot assign a treeIndex to hidden nodes
+    if (!isPseudoRoot && !newNode.expanded) {
+      matches = matches.map(match => ({
+        ...match,
+        treeIndex: null
+      }));
+    }
+
+    // Add this node to the matches if it fits the search criteria.
+    // This is performed at the last minute so newNode can be sent in its final form.
+    if (isSelfMatch) {
+      matches = [{ ...extraInfo, node: newNode }, ...matches];
+    }
+
+    return {
+      node: matches.length > 0 ? newNode : node,
+      matches,
+      hasFocusMatch,
+      treeIndex: childIndex
+    };
+  };
+
+  const result = trav({
+    node: { children: treeData },
+    isPseudoRoot: true,
+    currentIndex: -1
+  });
+
+  return {
+    matches: result.matches,
+    treeData: result.node.children
+  };
 }
 
 export function cloneData(source) {

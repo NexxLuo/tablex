@@ -6,7 +6,9 @@ import merge from "lodash/merge";
 import Table from "./Table";
 import {
   treeToFlatten,
+  treeToList,
   treeFilter,
+  getTreeFromFlatData,
   cloneData,
   insertData,
   deleteData
@@ -21,7 +23,6 @@ import Icon from "antd/lib/icon";
 import "antd/dist/antd.css";
 import orderBy from "lodash/orderBy";
 import "./styles.css";
-
 
 /**
  * 表格
@@ -54,7 +55,8 @@ class EditableTable extends React.Component {
       dataControled: false,
       readOnly: false,
       selectedRowKeys: [],
-      expandedRowKeys: []
+      expandedRowKeys: [],
+      focusedRowKeys: []
     };
   }
 
@@ -138,6 +140,10 @@ class EditableTable extends React.Component {
   scrollToItem(index, align) {
     if (this.innerTable) {
       this.innerTable.scrollToItem(index, align);
+    }
+
+    if (index < 0) {
+      this.setState({ focusedRowKeys: [] });
     }
   }
 
@@ -1474,6 +1480,153 @@ class EditableTable extends React.Component {
     }
   };
 
+  filterData = fn => {
+    let { rowKey, rawData: treeData } = this.state;
+
+    let { list: flatData, treeProps } = treeToList(treeData, rowKey);
+
+    let matches = [];
+    let matchesMap = {};
+
+    let matchedParentKeys = {};
+    let matchedParents = [];
+
+    let flatDataMap = {};
+
+    for (let i = 0; i < flatData.length; i++) {
+      let d = flatData[i];
+
+      let k = d[rowKey];
+      if (fn(d) === true) {
+        matches.push(d);
+        matchesMap[k] = true;
+
+        let nodeProps = treeProps[k];
+        let paths = nodeProps.path || [];
+
+        paths.forEach(p => {
+          if (p !== k) {
+            matchedParentKeys[p] = true;
+          }
+        });
+      }
+
+      flatDataMap[k] = d;
+    }
+
+    Object.keys(matchedParentKeys).forEach(k => {
+      if (matchesMap[k] !== true) {
+        matchedParents.push(flatDataMap[k]);
+      }
+    });
+
+    let list = matches.concat(matchedParents);
+
+    let newTreeData = getTreeFromFlatData({
+      flatData: list,
+      getKey: n => n[rowKey],
+      getParentKey: n => {
+        let k = n[rowKey];
+        return treeProps[k].parentKey;
+      },
+      rootKey: ""
+    });
+
+    this.setState({ data: newTreeData, flatData: list });
+
+    return newTreeData;
+  };
+
+  findData = (fn, { startIndex = 0, focused = true }) => {
+    let { flatData: data, rowKey } = this.state;
+
+    let found = null;
+
+    for (let i = startIndex, len = data.length; i < len; i++) {
+      let d = data[i];
+      let bl = fn(d);
+      if (bl === true) {
+        found = { row: d, index: i };
+        break;
+      }
+    }
+
+    if (focused === true && found.index > -1) {
+      this.scrollToItem(found.index, "center");
+      this.setState({ focusedRowKeys: [found.row[rowKey]] });
+    }
+
+    return found;
+  };
+
+  collapseAll = (node, silent = false) => {
+    if (node) {
+      let { rowKey, expandedRowKeys: keys } = this.state;
+      let nextKeys = keys.slice();
+      let keysMap = {};
+
+      for (let i = 0; i < keys.length; i++) {
+        keysMap[keys[i]] = true;
+      }
+
+      treeFilter([node], d => {
+        let k = d[rowKey];
+        let isExist = keysMap[k] === true;
+        if (!isExist) {
+          nextKeys.push(k);
+        }
+        return true;
+      });
+
+      this.onExpandedRowsChange(nextKeys);
+      return nextKeys;
+
+    } else {
+      if (silent === false) {
+        this.onExpandedRowsChange([]);
+      }
+      return [];
+    }
+  };
+
+  expandAll = (node, silent = false) => {
+    let { data, rowKey } = this.state;
+
+    let nexExpandedRowKeys = [];
+
+    treeFilter(data, d => {
+      nexExpandedRowKeys.push(d[rowKey]);
+      return true;
+    });
+
+    if (silent === false) {
+      this.onExpandedRowsChange(nexExpandedRowKeys);
+    }
+
+    return nexExpandedRowKeys;
+  };
+
+  expandTo = (toDepth = 0, silent = false) => {
+    let { data, rowKey } = this.state;
+
+    let nexExpandedRowKeys = [];
+    let keyMap = {};
+
+    treeFilter(data, (d, i, { depth }) => {
+      if (depth <= toDepth) {
+        keyMap[d[rowKey]] = depth;
+        nexExpandedRowKeys.push(d[rowKey]);
+      }
+      return true;
+    });
+
+    if (silent === false) {
+      this.onExpandedRowsChange(nexExpandedRowKeys);
+    }
+
+    return nexExpandedRowKeys;
+  };
+
   api = {
     addRange: this.addRange,
     addRows: this.addRows,
@@ -1553,6 +1706,21 @@ class EditableTable extends React.Component {
     }
   };
 
+  rowClassName = (row, index) => {
+    let { focusedRowKeys, rowKey } = this.state;
+    let arr = [];
+
+    if (typeof this.props.rowClassName === "function") {
+      let cls = this.props.rowClassName(row, index);
+      cls && arr.push(cls);
+    }
+
+    if (focusedRowKeys.indexOf(row[rowKey]) > -1) {
+      arr.push("tablex-row-focused");
+    }
+
+    return arr.join(" ");
+  };
   render() {
     let columns = this.formatColumns();
 
@@ -1569,7 +1737,8 @@ class EditableTable extends React.Component {
       selectedRowKeys: this.state.selectedRowKeys,
       headerToolsBar: this.headerToolsBar,
       footerToolsBar: this.footerToolsBar,
-      innerRef: this.innerTableRef
+      innerRef: this.innerTableRef,
+      rowClassName: this.rowClassName
     };
 
     if (props.readOnly === true) {
@@ -1591,7 +1760,6 @@ class EditableTable extends React.Component {
     return <Table {...props} {...newProps} />;
   }
 }
-
 
 EditableTable.defaultProps = {
   editable: false,

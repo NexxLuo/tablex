@@ -227,50 +227,15 @@ class Demo extends Component {
     }
   };
 
-  expandTo = (depth = 2) => {
-    let keys = [];
-
-    let pl = 2;
-
-    this.state.flatData.forEach(d => {
-      let len = d.id.length;
-      if (len <= depth * pl) {
-        keys.push(d.id);
-      }
-    });
-
-    this.setState({ expandedRowKeys: keys });
+  expandTo = (depth = 1) => {
+    this.refs.tb.expandTo(depth);
   };
 
   expandAll = () => {
-    let keys = this.state.flatData.map(d => {
-      return d.id;
-    });
-
-    this.setState({ expandedRowKeys: keys });
+    this.refs.tb.expandAll();
   };
   collapseAll = () => {
-    this.setState({ expandedRowKeys: [] });
-  };
-
-  contentMenuRow = null;
-  showContextMenu = ({ left, top, data }) => {
-    this.contentMenuRow = data;
-    let el = document.getElementById("contextMenu");
-    if (el) {
-      el.style.top = top + "px";
-      el.style.left = left + "px";
-      el.style.display = "block";
-      el.focus();
-    }
-  };
-
-  hideContextMenu = () => {
-    this.contentMenuRow = null;
-    let el = document.getElementById("contextMenu");
-    if (el) {
-      el.style.display = "none";
-    }
+    this.refs.tb.collapseAll();
   };
 
   onRow = row => {
@@ -279,7 +244,6 @@ class Demo extends Component {
         console.log("onContextMenu");
         e.preventDefault();
         e.stopPropagation();
-        this.showContextMenu({ left: e.clientX, top: e.clientY, data: row });
       }
     };
   };
@@ -431,10 +395,17 @@ class Demo extends Component {
   };
 
   expandToggle = rowData => {
-    this.toggleSelectOrExpand(rowData, 0);
+
+    let f = this.refs.tb.collapseAll(rowData);
+
+    console.log("f:",f);
+  
+  //  this.toggleSelectOrExpand(rowData, 0);
   };
 
-  onMenuClick = ({ key }) => {
+  onMenuClick = ({ key, item }) => {
+    console.log("key:", item.props.row);
+
     let actions = {
       del: this.deleteRow,
       copy: this.copy,
@@ -447,7 +418,7 @@ class Demo extends Component {
 
     let fn = actions[key];
     if (typeof fn === "function") {
-      fn(this.contentMenuRow);
+      fn(item.props.row);
     }
   };
 
@@ -459,11 +430,10 @@ class Demo extends Component {
   };
 
   onSearch = v => {
-    let { flatData } = this.state;
-
     if (!v) {
       this.searchIndex = 0;
       this.searchedKey = "";
+      this.scrollToItem(-1);
       this.forceUpdate();
       return;
     }
@@ -474,18 +444,17 @@ class Demo extends Component {
     let searchedIndex = -1;
     let searchedKey = "";
 
-    for (let i = this.searchIndex + 1, len = flatData.length; i < len; i++) {
-      let name = flatData[i].name;
+    let f = this.refs.tb.findData(d => d.name.indexOf(v) > -1, {
+      startIndex: this.searchIndex,
+      focused: true
+    });
 
-      if (name.indexOf(v) > -1) {
-        searchedIndex = i;
-        searchedKey = flatData[i].id;
-        break;
-      }
+    if (f) {
+      searchedIndex = f.index;
+      searchedKey = f.row.id;
     }
 
     if (searchedIndex > -1) {
-      this.scrollToItem(searchedIndex);
       this.searchIndex = searchedIndex + 1;
       this.searchedKey = searchedKey;
     } else {
@@ -503,63 +472,50 @@ class Demo extends Component {
       return;
     }
 
-    let { matches } = find({
-      getNodeKey: ({ node }) => {
-        return node[rowKey];
-      },
-      treeData: rawTreeData.slice(),
-      searchQuery: v,
-      searchMethod: ({ node }) => {
-        return node.name.indexOf(v) > -1;
-      },
-      searchFocusOffset: 0
+    let data = this.refs.tb.filterData(d => {
+      return d.name.indexOf(v) > -1;
     });
 
-    let flatDataMap = {};
-
-    for (let i = 0; i < rawFlatData.length; i++) {
-      const d = rawFlatData[i];
-      flatDataMap[d[rowKey]] = d;
-    }
-
-    let list = [];
-
-    for (let i = 0; i < matches.length; i++) {
-      const d = matches[i];
-      let paths = d.path || [];
-
-      for (let j = 0; j < paths.length; j++) {
-        let p = flatDataMap[paths[j]];
-        if (p) {
-          list.push(p);
-        }
-      }
-    }
-
-    list = _.uniqBy(list, d => {
-      return d[rowKey];
-    });
-
-    this.setTreeData(list, this.expandAll);
-  };
-
-  rowClassName = (row, index) => {
-    if (row.id === this.searchedKey) {
-      return "row-searched";
-    }
-
-    return "";
+    this.expandAll();
   };
 
   contentMenu = row => {
-    console.log("contentMenu:", row);
+    let menuItemProps = {
+      style: { height: "auto", lineHeight: "normal" },
+      row
+    };
 
-    return <div>contentMenu</div>;
+    return (
+      <Menu selectable={false} onClick={this.onMenuClick}>
+        <Menu.Item key="del" {...menuItemProps}>
+          删除行
+        </Menu.Item>
+        <Menu.Item key="copy" {...menuItemProps}>
+          复制行
+        </Menu.Item>
+        <Menu.Item key="cut" {...menuItemProps}>
+          剪切行
+        </Menu.Item>
+        <Menu.Item key="pasteChildren" {...menuItemProps}>
+          粘贴行(下级)
+        </Menu.Item>
+        <Menu.Item key="selectAll" {...menuItemProps}>
+          全选/全否
+        </Menu.Item>
+        <Menu.Item key="expandToggle" {...menuItemProps}>
+          展开/收缩
+        </Menu.Item>
+        <Menu.Item key="export" {...menuItemProps}>
+          导出
+        </Menu.Item>
+        <Menu.Item key="print" {...menuItemProps}>
+          打印
+        </Menu.Item>
+      </Menu>
+    );
   };
 
   render() {
-    let menuItemStyle = { height: "auto", lineHeight: "normal" };
-
     return (
       <div style={{ height: "100%" }}>
         <Table
@@ -581,7 +537,7 @@ class Demo extends Component {
           checkStrictly={false}
           data={this.state.treeData}
           orderNumber={{ resizable: true }}
-          onRow={this.onRow}
+          contextMenu={this.contentMenu}
           validateTrigger="onChange"
           header={() => (
             <div>
@@ -590,7 +546,7 @@ class Demo extends Component {
                 展开所有
               </Button>
               <Button
-                onClick={() => this.expandTo(2)}
+                onClick={() => this.expandTo(1)}
                 style={{ margin: "0 5px" }}
               >
                 展开至第二级
@@ -611,44 +567,6 @@ class Demo extends Component {
             </div>
           )}
         />
-        <Menu
-          style={{
-            display: "none",
-            position: "fixed",
-            border: "1px solid #ccc",
-            boxShadow: "2px 2px 5px 2px rgba(0, 0, 0, 0.15)"
-          }}
-          tabIndex="1"
-          id="contextMenu"
-          onBlur={this.hideContextMenu}
-          onClick={this.onMenuClick}
-          selectable={false}
-        >
-          <Menu.Item key="del" style={menuItemStyle}>
-            删除行
-          </Menu.Item>
-          <Menu.Item key="copy" style={menuItemStyle}>
-            复制行
-          </Menu.Item>
-          <Menu.Item key="cut" style={menuItemStyle}>
-            剪切行
-          </Menu.Item>
-          <Menu.Item key="pasteChildren" style={menuItemStyle}>
-            粘贴行(下级)
-          </Menu.Item>
-          <Menu.Item key="selectAll" style={menuItemStyle}>
-            全选/全否
-          </Menu.Item>
-          <Menu.Item key="expandToggle" style={menuItemStyle}>
-            展开/收缩
-          </Menu.Item>
-          <Menu.Item key="export" style={menuItemStyle}>
-            导出
-          </Menu.Item>
-          <Menu.Item key="print" style={menuItemStyle}>
-            打印
-          </Menu.Item>
-        </Menu>
       </div>
     );
   }

@@ -118,6 +118,11 @@
   letter-spacing: 1px;
 }
 
+.tablex-table .tablex-table-body .tablex-table-row.tablex-row-focused {
+  box-shadow: 0 0px 5px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
 .tablex__striped .tablex__row--even,
 .tablex__striped .tablex__row--even .tablex-table-row-cell-rowspan {
   background-color: #fafbfc;
