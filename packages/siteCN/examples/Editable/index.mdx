@@ -18,6 +18,8 @@ import Table, { flatten, unflatten } from "sy-framework/lib/widget/table";
 
 ## 基本编辑及验证
 
+> 编辑有追加模式、非追加模式两种，通过isAppend=true|false 控制，追加模式不会更改当前表格视图的显示数据，否则将会清空当前表格数据视图（不影响数据）
+
 <Playground style={{ height: 400 }}>
  {
   class Demo extends React.Component {
@@ -139,6 +141,8 @@ let { columns, data } = this.state;
 </Playground>
 
 ## 编辑器无边框
+
+> 此模式，只对antd内置的input、datepicker、inputnumber、select生效。若想自定义，可通过自定义样式进行覆盖
 
 <Playground style={{ height: 600 }}>
  {
@@ -332,6 +336,628 @@ let { columns, data } = this.state;
 }
 
 }
+
+</Playground>
+
+
+
+## 只读模式
+
+> 只读模式将不显示编辑栏及复选框，也无法进行行选择
+
+<Playground style={{height:400}} >
+{
+class Demo extends React.PureComponent {
+
+constructor(props) {
+super(props);
+
+    this.state = {
+        data: [
+            {
+                id: "1",
+                name: "张三",
+                age: 20,
+                idcard: "512878211145551112",
+                remark: "我是张三"
+            },
+            {
+                id: "2",
+                name: "李四",
+                age: 20,
+                idcard: "512878211145551112",
+                remark: "我是李四"
+            }
+        ]
+    }
+
+
+    this.columns = [
+        {
+            dataIndex: "id",
+            title: "编号",
+            width: 200,
+            validator: (value, row) => {
+                            if (!value) {
+                                return { valid: false, message: "" }
+                            }
+                            return { valid: true, message: "" }
+                        },
+                            editor: (value, row, index, onchange, ref) => {
+
+                return <Input defaultValue={ value } ref={ ref } onChange={ (e) => {
+                    let newValue = e.target.value;
+                    onchange({ number: newValue });
+
+                } }></Input>
+            }
+
+        },
+        {
+            width: 150,
+           dataIndex: "name",
+            title: "姓名",
+            width: 150,
+
+validator: (value, row) => {
+
+                if (!value) {
+                    return { valid: false, message: "" }
+                }
+
+                return { valid: true, message: "" }
+            },
+            editor: (value, row, index, onchange, ref) => {
+
+                return <Input defaultValue={ value } ref={ ref } onChange={ (e) => {
+                    let newValue = e.target.value;
+                    onchange({ name: newValue });
+
+                } }></Input>
+            }
+        },
+        {
+            dataIndex: "age",
+            title: "年龄",
+            width: 150,
+
+            editor: (value, row, index, onchange, ref) => {
+
+                return <Input defaultValue={ value } ref={ ref } onChange={ (e) => onchange({ age: e.target.value, idcard: e.target.value }) }></Input>
+            }
+
+        },
+        {
+            dataIndex: "idcard",
+            title: "身份证",
+            width: 150,
+
+            editor: (value, row, index, onchange, ref) => {
+
+                return <Input value={ value } ref={ ref } onChange={ (e) => onchange({ idcard: e.target.value }) }></Input>
+            }
+
+        },
+        {
+            dataIndex: "tel",
+            title: "电话号码",
+            width: 150,
+
+            editor: (value, row, index, onchange, ref) => {
+
+                return <Input defaultValue={ value } ref={ ref } onChange={ (e) => onchange({ tel: e.target.value }) }></Input>
+            }
+
+        },
+        {
+            dataIndex: "remark",
+            title: "备注",
+            editor: (value, row, index, onchange, ref) => {
+                return <Input value={ value } ref={ ref } disabled={ true } ></Input>
+            }
+
+        }
+    ]
+
+}
+
+    onEditSave(changedRows, newData, type) {
+
+        this.setState({
+            data: newData
+        })
+    }
+
+
+
+
+
+    render() {
+
+        let { data, count } = this.state;
+
+        return  <Table
+                    editTools={["edit", "add","delete"]}
+                    ref="etable"
+                    columns={ this.columns }
+                    dataSource={ data }
+                    defaultAddCount={ 1 }
+                    onEditSave={ this.onEditSave.bind(this) }
+                    isAppend={ true }
+                    alwaysValidate={ true }
+                    validateTrigger="onChange"
+                    readOnly={true}
+                    selectMode="multiple"
+                    rowKey="id">
+                </Table>
+    }
+
+}}
+
+</Playground>
+
+## 数据联动
+
+> 外部数据同表格数据相互联动
+
+<Playground >
+{
+class Demo extends React.PureComponent {
+
+constructor(props) {
+super(props);
+
+    this.state = {
+        count: 0,
+        data: [
+            {
+                id: "1",
+                name: "张三",
+                age: 20,
+                idcard: "512878211145551112",
+                remark: "我是张三"
+            },
+            {
+                id: "2",
+                name: "李四",
+                age: 20,
+                idcard: "512878211145551112",
+                remark: "我是李四"
+            }
+        ]
+    }
+
+
+    this.columns = [
+        {
+            dataIndex: "id",
+            title: "编号",
+            width: 200
+
+        },
+        {
+            dataIndex: "name",
+            title: "姓名",
+            width: 150,
+            validator: (value, row) => {
+
+                if (!value) {
+                    return { valid: false, message: "" }
+                }
+
+                return { valid: true, message: "" }
+            },
+            editor: (value, row, index, onchange, ref) => {
+
+                return <Input value={ value } ref={ ref } onChange={ (e) => {
+
+                    let newValue = e.target.value;
+
+                    row.name = newValue;
+
+                    this.setState({
+                        count: newValue
+                    }, () => {
+                        onchange({ name: newValue, remark: "我是" + newValue })
+                    })
+
+                } }></Input>
+            }
+
+        },
+        {
+            dataIndex: "age",
+            title: "年龄",
+            width: 150,
+            validator: (value, row) => {
+
+                if (!value) {
+                    return { valid: false, message: "" }
+                }
+
+                return { valid: true, message: "" }
+            },
+            editor: (value, row, index, onchange, ref) => {
+
+                return <Input defaultValue={ value } ref={ ref } onChange={ (e) => onchange({ age: e.target.value, idcard: e.target.value }) }></Input>
+            }
+
+        },
+        {
+            dataIndex: "idcard",
+            title: "身份证",
+            width: 150,
+            validator: (value, row) => {
+
+                if (!value) {
+                    return { valid: false, message: "" }
+                }
+
+                return { valid: true, message: "" }
+            },
+            editor: (value, row, index, onchange, ref) => {
+
+                return <Input value={ value } ref={ ref } onChange={ (e) => onchange({ idcard: e.target.value }) }></Input>
+            }
+
+        },
+        {
+            dataIndex: "tel",
+            title: "电话号码",
+            width: 150,
+            validator: (value, row) => {
+
+                if (!value) {
+                    return { valid: false, message: "" }
+                }
+
+                return { valid: true, message: "" }
+            },
+            editor: (value, row, index, onchange, ref) => {
+
+                return <Input defaultValue={ value } ref={ ref } onChange={ (e) => onchange({ tel: e.target.value }) }></Input>
+            }
+
+        },
+        {
+            dataIndex: "remark",
+            title: "备注",
+            editor: (value, row, index, onchange, ref) => {
+                return <Input value={ value } ref={ ref } disabled={ true } ></Input>
+            }
+
+        }
+    ]
+
+}
+
+    onChange (e){
+
+        let value = e.target.value;
+
+        let { data, count } = this.state;
+
+        let newData=[...data];
+
+         newData.forEach(d => {
+                d.name = value
+            });
+
+
+        this.setState({
+            count: value,
+            data:newData
+        })
+
+
+    }
+
+    onEditSave(changedRows, newData, type) {
+
+        this.setState({
+            data: newData
+        })
+    }
+
+
+
+    complete() {
+        this.refs["etable"].completeEdit();
+    }
+
+
+    render() {
+
+        let { data, count } = this.state;
+
+        return <div >
+            <Input value={ count } onChange={ this.onChange.bind(this) } style={ { margin: "10px 0" } }></Input>
+            <Button onClick={ this.complete.bind(this) } style={ { margin: "10px 0" } } >完成</Button>
+            <div style={ { height: 400 } }>
+                <Table
+                    ref="etable"
+                    columns={ this.columns }
+                    dataSource={ data }
+                    editable={true}
+                    defaultAddCount={ 1 }
+                    onEditSave={ this.onEditSave.bind(this) }
+                    isAppend={ true }
+                    alwaysValidate={ true }
+                    validateTrigger="onChange"
+                    rowKey="id">
+                </Table>
+            </div>
+
+        </div>
+    }
+
+}}
+
+</Playground>
+
+## 新增多行
+
+<Playground style={{height:400}} >
+{
+class Demo extends React.PureComponent {
+
+constructor(props) {
+super(props);
+
+    this.state = {
+        data: [
+            {
+                id: "1",
+                name: "张三",
+                age: 20,
+                idcard: "512878211145551112",
+                remark: "我是张三"
+            },
+            {
+                id: "2",
+                name: "李四",
+                age: 20,
+                idcard: "512878211145551112",
+                remark: "我是李四"
+            }
+        ]
+    }
+
+
+    this.columns = [
+        {
+            dataIndex: "id",
+            title: "编号",
+            width: 200
+
+        },
+        {
+            dataIndex: "name",
+            title: "姓名",
+            width: 150,
+            editor: (value, row, index, onchange, ref) => {
+
+                return <Input defaultValue={ value } ref={ ref } onChange={ (e) => {
+                    let newValue = e.target.value;
+                    onchange({ name: newValue, remark: "我是" + newValue });
+                } }></Input>
+            }
+
+        },
+        {
+            dataIndex: "age",
+            title: "年龄",
+            width: 150,
+            editor: (value, row, index, onchange, ref) => {
+
+                return <Input defaultValue={ value } ref={ ref } onChange={ (e) => onchange({ age: e.target.value, idcard: e.target.value }) }></Input>
+            }
+
+        },
+        {
+            dataIndex: "idcard",
+            title: "身份证",
+            width: 150,
+            editor: (value, row, index, onchange, ref) => {
+                return <Input value={ value } ref={ ref } onChange={ (e) => onchange({ idcard: e.target.value }) }></Input>
+            }
+
+        },
+        {
+            dataIndex: "tel",
+            title: "电话号码",
+            width: 150,
+            editor: (value, row, index, onchange, ref) => {
+                return <Input defaultValue={ value } ref={ ref } onChange={ (e) => onchange({ tel: e.target.value }) }></Input>
+            }
+
+        },
+        {
+            dataIndex: "remark",
+            title: "备注",
+            editor: (value, row, index, onchange, ref) => {
+                return <Input value={ value } ref={ ref } disabled={ true } ></Input>
+            }
+
+        }
+    ]
+
+}
+
+    onEditSave(changedRows, newData, type) {
+
+        this.setState({
+            data: newData
+        })
+    }
+
+onEditCancel(){
+console.log("onEditCancel")
+}
+
+    render() {
+
+        let { data, count } = this.state;
+
+        return  <Table
+                    ref="etable"
+                    columns={ this.columns }
+                    dataSource={ data }
+                    editable={true}
+                    defaultAddCount={ 5 }
+                    onEditSave={ this.onEditSave.bind(this) }
+                    onCancel={this.onEditCancel}
+                    isAppend={ true }
+                    allowSaveEmpty={false}
+                    alwaysValidate={ true }
+                    validateTrigger="onChange"
+                    rowKey="id">
+                </Table>
+    }
+
+}}
+
+</Playground>
+
+## 自定义工具栏
+
+<Playground style={{height:400}} >
+{
+class Demo extends React.PureComponent {
+
+constructor(props) {
+super(props);
+
+    this.state = {
+        data: [
+            {
+                id: "1",
+                name: "张三",
+                age: 20,
+                idcard: "512878211145551112",
+                remark: "我是张三"
+            },
+            {
+                id: "2",
+                name: "李四",
+                age: 20,
+                idcard: "512878211145551112",
+                remark: "我是李四"
+            }
+        ]
+    }
+
+
+    this.columns = [
+        {
+            dataIndex: "id",
+            title: "编号",
+            width: 200
+
+        },
+        {
+            dataIndex: "name",
+            title: "姓名",
+            width: 150,
+            editor: (value, row, index, onchange, ref) => {
+
+                return <Input defaultValue={ value } ref={ ref } onChange={ (e) => {
+                    let newValue = e.target.value;
+                    onchange({ name: newValue, remark: "我是" + newValue });
+
+                } }></Input>
+            }
+
+        },
+        {
+            dataIndex: "age",
+            title: "年龄",
+            width: 150,
+
+            editor: (value, row, index, onchange, ref) => {
+
+                return <Input defaultValue={ value } ref={ ref } onChange={ (e) => onchange({ age: e.target.value, idcard: e.target.value }) }></Input>
+            }
+
+        },
+        {
+            dataIndex: "idcard",
+            title: "身份证",
+            width: 150,
+
+            editor: (value, row, index, onchange, ref) => {
+
+                return <Input value={ value } ref={ ref } onChange={ (e) => onchange({ idcard: e.target.value }) }></Input>
+            }
+
+        },
+        {
+            dataIndex: "tel",
+            title: "电话号码",
+            width: 150,
+
+            editor: (value, row, index, onchange, ref) => {
+
+                return <Input defaultValue={ value } ref={ ref } onChange={ (e) => onchange({ tel: e.target.value }) }></Input>
+            }
+
+        },
+        {
+            dataIndex: "remark",
+            title: "备注",
+            editor: (value, row, index, onchange, ref) => {
+                return <Input value={ value } ref={ ref } disabled={ true } ></Input>
+            }
+
+        }
+    ]
+
+}
+
+    onEditSave(changedRows, newData, type) {
+
+        this.setState({
+            data: newData
+        })
+    }
+
+
+
+    customTools() {
+      return <Button>tools传递函数</Button>
+
+    }
+
+
+
+    render() {
+
+        let { data, count } = this.state;
+
+        let tools=["add","edit","delete",
+        {icon:"message",text:"查看消息",handler:()=>{alert("点击了自定义按钮")}},
+        this.customTools
+        ]
+
+
+        return  <Table
+                    ref="etable"
+                    columns={ this.columns }
+                    dataSource={ data }
+                    editable={true}
+                    defaultAddCount={ 1 }
+                    onEditSave={ this.onEditSave.bind(this) }
+                    isAppend={ true }
+                    alwaysValidate={ true }
+                    validateTrigger="onChange"
+                    editTools={tools}
+                    editToolsConfig={{position:"top",editText: "自定义编辑按钮及图标", editIcon: "message"}}
+                    rowKey="id">
+
+</Table>
+}
+
+}}
 
 </Playground>
 
