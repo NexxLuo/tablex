@@ -13,9 +13,9 @@ function requestGet(url, options) {
   let xhr = new XMLHttpRequest();
   xhr.open("GET", url, true);
 
-  xhr.onreadystatechange = function() {};
+  xhr.onreadystatechange = function () { };
 
-  xhr.onload = function() {
+  xhr.onload = function () {
     if (xhr.status == 200) {
       if (typeof options.onSuccess === "function") {
         var res = {};
@@ -160,9 +160,6 @@ class Demo extends Component {
   state = {
     loading: false,
     treeData: [],
-    rawTreeData: [],
-    flatData: [],
-    rawFlatData: [],
     expandedRowKeys: [],
     selectedRowKeys: []
   };
@@ -210,16 +207,12 @@ class Demo extends Component {
 
         this.setState({
           loading: false,
-          treeData: treeData,
-          rawTreeData: treeData.slice(),
-          flatData: data,
-          rawFlatData: data.slice()
+          treeData: treeData 
         });
       }
     });
   };
 
-  componentDidMount() {}
 
   scrollToItem = index => {
     if (this.refs.tb) {
@@ -238,42 +231,12 @@ class Demo extends Component {
     this.refs.tb.collapseAll();
   };
 
-  onRow = row => {
-    return {
-      onContextMenu: e => {
-        console.log("onContextMenu");
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    };
-  };
-
-  setTreeData = (data, callback) => {
-    let bd = new Date();
-    console.log("tree data flattening :", data.length);
-    let treeData = unflatten(data, "id", "pid");
-    console.log(
-      "tree data flatten finished :",
-      (new Date().getTime() - bd.getTime()) / 1000
-    );
-
-    this.setState(
-      { treeData: treeData, flatData: data, loading: false },
-      callback
-    );
-  };
 
   rowKey = "id";
   deleteRow = row => {
     let rowKey = this.rowKey;
     let key = row[rowKey];
-    let { flatData } = this.state;
-
-    let i = flatData.findIndex(d => d[rowKey] === key);
-    if (i > -1) {
-      flatData.splice(i, 1);
-    }
-    this.setTreeData(flatData);
+    this.refs.tb.api.deleteData([key]);
   };
 
   copiedRow = null;
@@ -305,34 +268,17 @@ class Demo extends Component {
 
     if (copiedRow) {
       let sourceRow = JSON.parse(copiedRow);
+      sourceRow[rowKey] = "copied_row_" + sourceRow[rowKey];
 
-      let { list, roots } = flatten([sourceRow]);
-
-      let sourceRowList = [];
-
-      for (let i = 0; i < list.length; i++) {
-        let d = Object.assign({}, list[i]);
-        if (this.isCut !== true) {
-          d[rowKey] = d[rowKey] + "_copiedRow";
-          d["pid"] = targetRow[rowKey];
-        }
-        sourceRowList.push(d);
-      }
-
-      let { flatData } = this.state;
-
-      if (this.isCut === true) {
-        let i = flatData.findIndex(d => d[rowKey] === sourceRow[rowKey]);
-        if (i > -1) {
-          flatData.splice(i, 1);
-        }
-      }
-
-      flatData = flatData.concat(sourceRowList);
+      this.refs.tb.api.insertData({
+        data: [sourceRow],
+        parentKey: targetRow[rowKey],
+        editing: true,
+        scrollTo: false
+      });
 
       this.isCut = false;
       this.copiedRow = null;
-      this.setTreeData(flatData);
     }
   };
 
@@ -342,65 +288,13 @@ class Demo extends Component {
     this.isCut = true;
   };
 
-  toggleSelectOrExpand = (rowData, type = 0) => {
-    let stateName = ["expandedRowKeys", "selectedRowKeys"][type];
-
-    let bd = new Date();
-    console.log("toggleSelectOrExpand " + stateName + " :");
-
-    let rowKey = this.rowKey;
-    let key = rowData[rowKey];
-    let keys = this.state[stateName];
-
-    let nextKeys = [];
-
-    let keysMap = {};
-
-    for (let i = 0; i < keys.length; i++) {
-      keysMap[keys[i]] = true;
-    }
-
-    let { list } = flatten([rowData]);
-
-    let isExist = keysMap[key] === true;
-
-    for (let i = 0; i < list.length; i++) {
-      const k = list[i][rowKey];
-
-      if (isExist) {
-        keysMap[k] = false;
-      } else {
-        if (keysMap[k] !== true) {
-          keysMap[k] = true;
-        }
-      }
-    }
-
-    for (const d in keysMap) {
-      if (keysMap[d] === true) {
-        nextKeys.push(d);
-      }
-    }
-
-    console.log(
-      "toggleSelectOrExpand " + stateName + ":",
-      (new Date().getTime() - bd.getTime()) / 1000
-    );
-
-    this.setState({ [stateName]: nextKeys });
-  };
 
   selectAll = rowData => {
-    this.toggleSelectOrExpand(rowData, 1);
+    this.refs.tb.selectToggle(rowData);
   };
 
   expandToggle = rowData => {
-
-    let f = this.refs.tb.collapseAll(rowData);
-
-    console.log("f:",f);
-  
-  //  this.toggleSelectOrExpand(rowData, 0);
+    this.refs.tb.expandToggle(rowData);
   };
 
   onMenuClick = ({ key, item }) => {
@@ -464,15 +358,13 @@ class Demo extends Component {
   };
 
   onFilter = v => {
-    let rowKey = this.rowKey;
-    let { rawTreeData, rawFlatData } = this.state;
-
+    let { treeData } = this.state;
     if (!v) {
-      this.setTreeData(rawFlatData.slice(), this.collapseAll);
+      this.setState({ treeData: treeData.slice() }, this.collapseAll);
       return;
     }
 
-    let data = this.refs.tb.filterData(d => {
+    this.refs.tb.filterData(d => {
       return d.name.indexOf(v) > -1;
     });
 
@@ -539,6 +431,7 @@ class Demo extends Component {
           orderNumber={{ resizable: true }}
           contextMenu={this.contentMenu}
           validateTrigger="onChange"
+          isAppend={true}
           header={() => (
             <div>
               <Button onClick={this.getData}>获取数据</Button>
