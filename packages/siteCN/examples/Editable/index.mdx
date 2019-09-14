@@ -964,6 +964,8 @@ super(props);
 
 ## 自定义编辑
 
+> 使用表格内置的API
+
 <Playground style={{ height: 600 }}>
 {
   class Demo extends React.Component {
@@ -1236,52 +1238,10 @@ super(props);
 }
 </Playground>
 
-### 相关api
-
-> Table提供了一组针对数据编辑的api，可以使用这些方法快捷的编辑数据
-
-```javascript
- api= {
-    /** 编辑指定行
-     * @rowKeys 数据行key集合
-     */
-    editRows:(rowKeys=[])=>{},
-    /** 编辑所有 */
-    editAll: ()=>{},
-    /** 
-     * 删除数据 
-     * @rowKeys 数据行key集合，不传入时，默认删除当前选中的行
-     * */
-    deleteData:()=>{},
-    /** 插入数据 */
-    insertData: ({ 
-        data = [],//需要插入的行数据集合
-        parentKey = "",//所属父级，默认根级
-        editing = false, //插入后，是否需要处于编辑状态
-        prepend = false, //parentKey有效时可用，可以控制插入的数据在父级的首行还是末行
-        scrollTo = true, //插入数据后，是否自动滚动到对应行
-        startIndex = -1  //无parentKey时有效，控制数据插入到根级的第几行
-    })=>{},
-    /** 
-     * 修改数据 
-     * rows 需要修改的数据（平级），数据中必须包含rowKey
-     * */
-    modifyData:(rows=[{rowKey,...}])=>{},
-    /** 
-     * 完成编辑，并提交数据更改
-     * 每次调用此方法，都将会触发onEditSave，可以在onEditSave事件中统一对数据进行保存操作
-     * */
-    completeEdit: ()=>{},
-    /** 
-     * 取消编辑 
-     * 调用此方法后，上次未提交的数据更改将被放弃
-     * */
-    cancelEdit:()=>{}
- }
-
-```
-
+ 
 ## 大数据量树形数据编辑
+
+> 使用表格内置的API
 
 <Playground style={{ height: 600 }}>
   <Complex />

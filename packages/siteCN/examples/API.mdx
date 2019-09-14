@@ -6,7 +6,7 @@ name: API方法
 
 > Table提供了一些API，可对表格进行快捷操作。通过获取Table的ref进行方法调用，如：tableRef.api.expandAll()
  
-## 编辑相关
+## 编辑
  
 ```javascript
 api= {
@@ -80,7 +80,12 @@ api= {
         addedData, //添加的行数据
         currData //当前表格状态显示的数据
       };
-    }}
+    }},
+
+    /** 滚动到指定索引的行 */
+    scrollToItem: (index,align:"auto"|"center"|"start"|"end")=>{},
+    /** 滚动到指定rowKey的行 */
+    scrollToRow: (rowKey,align:"auto"|"center"|"start"|"end")=>{}
 
  }
 ```

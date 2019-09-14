@@ -159,9 +159,7 @@ class Demo extends Component {
 
   state = {
     loading: false,
-    treeData: [],
-    expandedRowKeys: [],
-    selectedRowKeys: []
+    treeData: []
   };
 
   getData = () => {
@@ -415,15 +413,6 @@ class Demo extends Component {
           editable={true}
           ref="tb"
           loading={this.state.loading}
-          rowClassName={this.rowClassName}
-          expandedRowKeys={this.state.expandedRowKeys}
-          onExpandedRowsChange={keys => {
-            this.setState({ expandedRowKeys: keys });
-          }}
-          selectedRowKeys={this.state.selectedRowKeys}
-          onSelectChange={keys => {
-            this.setState({ selectedRowKeys: keys });
-          }}
           columns={this.columns}
           selectMode="multiple"
           checkStrictly={false}

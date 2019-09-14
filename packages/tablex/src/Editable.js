@@ -1797,7 +1797,12 @@ class EditableTable extends React.Component {
         addedData: this.state.addedData, //添加的行数据
         currData: this.getDataRows() //当前表格状态显示的数据
       };
-    }
+    },
+
+    /** 滚动到指定行 */
+    scrollToItem: this.scrollToItem,
+    /** 滚动到指定行 */
+    scrollToRow: this.scrollToRow
   };
 
   headerToolsBar = () => {
