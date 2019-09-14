@@ -7,8 +7,15 @@
     "start": "docz dev",
     "dev": "docz dev",
     "build": "docz build",
-    "docdb": "set DOCZ_BASE=/components/table&& docz build"
+    "docdb": "set DOCZ_BASE=/components/table&& docz build",
+    "docb": "set DOCZ_BASE=/tablex&& docz build ",
+    "docd": "gh-pages -d ./.docz/dist"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NexxLuo/tablex"
+  },
+  "homepage": "https://nexxluo.github.io/tablex",
   "files": [
     "lib",
     "es",
