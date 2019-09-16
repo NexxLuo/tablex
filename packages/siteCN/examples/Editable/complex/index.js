@@ -1,9 +1,7 @@
 import React, { Component } from "react";
-import { Table, unflatten, flatten } from "tablex";
+import { Table, unflatten } from "tablex";
 import { Button, Input, Menu, InputNumber } from "antd";
-import { find } from "./tree-data-utils";
 import _ from "lodash";
-import "./index.css";
 
 const { Search } = Input;
 
@@ -13,9 +11,9 @@ function requestGet(url, options) {
   let xhr = new XMLHttpRequest();
   xhr.open("GET", url, true);
 
-  xhr.onreadystatechange = function () { };
+  xhr.onreadystatechange = function() {};
 
-  xhr.onload = function () {
+  xhr.onload = function() {
     if (xhr.status == 200) {
       if (typeof options.onSuccess === "function") {
         var res = {};
@@ -205,12 +203,11 @@ class Demo extends Component {
 
         this.setState({
           loading: false,
-          treeData: treeData 
+          treeData: treeData
         });
       }
     });
   };
-
 
   scrollToItem = index => {
     if (this.refs.tb) {
@@ -228,7 +225,6 @@ class Demo extends Component {
   collapseAll = () => {
     this.refs.tb.collapseAll();
   };
-
 
   rowKey = "id";
   deleteRow = row => {
@@ -285,7 +281,6 @@ class Demo extends Component {
     this.copy(row);
     this.isCut = true;
   };
-
 
   selectAll = rowData => {
     this.refs.tb.selectToggle(rowData);
