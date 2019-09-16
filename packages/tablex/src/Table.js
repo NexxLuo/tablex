@@ -20,7 +20,6 @@ import maxBy from "lodash/maxBy";
 import minBy from "lodash/minBy";
 import sumBy from "lodash/sumBy";
 
-
 const DEFAULT_COLUMN_WIDTH = 100;
 
 function orderNumberCellRender(value, rowData, index) {
@@ -119,7 +118,7 @@ class Table extends React.Component {
       //给列key、width设置缺省值
       let columnsArr = treeFilter(columns, (d, i, { depth, treeIndex }) => {
         if (!d.key) {
-          d.key = depth + "-" + i + "-" + treeIndex;
+          d.key = d.dataIndex || depth + "-" + i + "-" + treeIndex;
         }
 
         if (depth > 0) {
