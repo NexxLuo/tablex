@@ -456,13 +456,11 @@ class EditableTable extends React.Component {
       this.validate
     );
 
-    let ed = null;
+    let ed = rendered;
 
     let newRenderProps = {};
 
-    if (React.isValidElement(rendered)) {
-      ed = rendered;
-    } else if (rendered) {
+    if (rendered instanceof Object && !React.isValidElement(rendered)) {
       ed = rendered.children;
       newRenderProps.props = rendered.props;
     }
@@ -983,7 +981,6 @@ class EditableTable extends React.Component {
     };
   };
 
-
   delete = () => {
     let { data, rowKey, selectedRowKeys = [], selectedRows = [] } = this.state;
 
@@ -1342,17 +1339,13 @@ class EditableTable extends React.Component {
     }
   };
 
-
-
-
   toggleSelectOrExpand = (node, type = 0) => {
     let { rowKey } = this.state;
     let keysName = ["expandedRowKeys", "selectedRowKeys"][type];
 
-    let keys = this.state[keysName]
+    let keys = this.state[keysName];
 
     if (node) {
-
       let triggerKey = node[rowKey];
 
       let isExist = keys.indexOf(triggerKey) > -1;
@@ -1364,7 +1357,6 @@ class EditableTable extends React.Component {
       for (let i = 0; i < keys.length; i++) {
         keysMap[keys[i]] = true;
       }
-
 
       treeFilter([node], d => {
         let k = d[rowKey];
@@ -1379,13 +1371,11 @@ class EditableTable extends React.Component {
               }
             } else {
               keysMap[k] = true;
-
             }
           }
         }
         return true;
       });
-
 
       for (const d in keysMap) {
         if (keysMap[d] === true) {
@@ -1395,9 +1385,7 @@ class EditableTable extends React.Component {
 
       return { nextKeys, triggerKey };
     }
-
-  }
-
+  };
 
   insertData = ({
     data = [],
@@ -1424,7 +1412,6 @@ class EditableTable extends React.Component {
       startIndex
     });
 
-
     let nextExpandedRowKeys = expandedRowKeys.slice();
 
     if (parentKey && expandedRowKeys.indexOf(parentKey) === -1) {
@@ -1432,7 +1419,6 @@ class EditableTable extends React.Component {
     }
 
     let nextState = {
-
       addedData: addedData.slice().concat(insertedRows), //此处需注意，addedData与newData是不同的引用
       expandedRowKeys: nextExpandedRowKeys,
       data: newData,
@@ -1454,7 +1440,6 @@ class EditableTable extends React.Component {
 
     return { data: newData, inserted: insertedRows };
   };
-
 
   deleteData = rowKeys => {
     let { data, rowKey, selectedRowKeys } = this.state;
@@ -1490,7 +1475,6 @@ class EditableTable extends React.Component {
 
     return deletedRows;
   };
-
 
   modifyData = (rows = [], silent = false) => {
     let { addedData, data } = this.state;
@@ -1676,11 +1660,9 @@ class EditableTable extends React.Component {
       this.onExpandedRowsChange(nextKeys);
     }
     return nextKeys;
-  }
+  };
 
-
-  selectAll = (silent) => {
-
+  selectAll = silent => {
     let { data, rowKey } = this.state;
 
     let nextKeys = [];
@@ -1695,17 +1677,14 @@ class EditableTable extends React.Component {
     }
 
     return nextKeys;
+  };
 
-
-  }
-
-  unSelectAll = (silent) => {
+  unSelectAll = silent => {
     if (silent === false) {
       this.onSelectChange([], [], null);
     }
     return [];
-  }
-
+  };
 
   selectToggle = (node, silent = false) => {
     let { nextKeys, triggerKey } = this.toggleSelectOrExpand(node, 1);
@@ -1721,7 +1700,7 @@ class EditableTable extends React.Component {
 
       let { data, rowKey } = this.state;
 
-      treeFilter(data, (d) => {
+      treeFilter(data, d => {
         let k = d[rowKey];
 
         if (keysMap[k] === true) {
@@ -1733,16 +1712,14 @@ class EditableTable extends React.Component {
         }
 
         return true;
-      })
+      });
 
       this.onSelectChange(nextKeys, nextRows, triggerKey);
     }
     return nextKeys;
-  }
-
+  };
 
   api = {
-
     /** 添加n行数据 */
     addRange: this.addRange,
     addRows: this.addRows,
@@ -1763,7 +1740,6 @@ class EditableTable extends React.Component {
     /** 取消编辑 */
     cancelEdit: this.cancelEdit,
 
-
     /** 查找数据行 */
     findData: this.findData,
     /** 筛选数据 */
@@ -1782,8 +1758,6 @@ class EditableTable extends React.Component {
     unSelectAll: this.unSelectAll,
     /** 切换节点选中状态 */
     selectToggle: this.selectToggle,
-
-
 
     reset: this.reset,
     isEditing: this.isEditing,
