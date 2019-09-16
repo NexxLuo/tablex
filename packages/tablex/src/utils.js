@@ -168,9 +168,9 @@ export function treeFilter(arr, fn) {
   let j = 0;
 
   for (let i = 0; i < treeList.length; i++) {
-    const d = Object.assign({}, treeList[i]);
+    const d = treeList[i];
 
-    let bl = fn(treeList[i], i, { depth: 0, treeIndex: j, parent: null });
+    let bl = fn(d, i, { depth: 0, treeIndex: j, parent: null });
     j++;
 
     if (bl === true) {
@@ -182,7 +182,7 @@ export function treeFilter(arr, fn) {
     }
 
     if (bl === false) {
-      break;
+      //break;
     }
   }
 
@@ -192,9 +192,9 @@ export function treeFilter(arr, fn) {
     const nextChildrens = [];
 
     for (let i = 0; i < tempArr.length; i++) {
-      const d = Object.assign({}, tempArr[i]);
+      const d = tempArr[i];
 
-      let bl = fn(tempArr[i], i, { depth: depth + 1, treeIndex: j, parent: node });
+      let bl = fn(d, i, { depth: depth + 1, treeIndex: j, parent: node });
 
       j++;
 
@@ -207,7 +207,7 @@ export function treeFilter(arr, fn) {
       }
 
       if (bl === false) {
-        break;
+        //break;
       }
     }
 
@@ -295,9 +295,9 @@ export function treeFind({
     const extraInfo = isPseudoRoot
       ? null
       : {
-        path: selfPath,
-        treeIndex: currentIndex
-      };
+          path: selfPath,
+          treeIndex: currentIndex
+        };
 
     // Nodes with with children that aren't lazy
     const hasChildren =
@@ -452,7 +452,7 @@ export function deleteData(data, keys, rowKey) {
   //此处，保证返回的数据均属于同一个引用
   let newDataToFlat = [];
 
-  treeFilter(newData, function (d) {
+  treeFilter(newData, function(d) {
     newDataToFlat.push(d);
     return true;
   });
@@ -548,7 +548,7 @@ export function insertData({
   let newDataInserted = [];
   let newDataInsertedKeys = [];
 
-  treeFilter(newData, function (d) {
+  treeFilter(newData, function(d) {
     newDataToFlat.push(d);
     let k = d[rowKey];
     if (insertRowsKeyMap[k] === true) {
