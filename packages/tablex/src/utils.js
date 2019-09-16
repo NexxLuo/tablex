@@ -180,10 +180,6 @@ export function treeFilter(arr, fn) {
 
       roots.push(d);
     }
-
-    if (bl === false) {
-      //break;
-    }
   }
 
   function getChildren(node, depth) {
@@ -204,10 +200,6 @@ export function treeFilter(arr, fn) {
         }
 
         nextChildrens.push(d);
-      }
-
-      if (bl === false) {
-        //break;
       }
     }
 
