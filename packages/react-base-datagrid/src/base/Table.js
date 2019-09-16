@@ -158,21 +158,13 @@ class Table extends React.Component {
 
   renderBody() {
     let {
-      style,
-      onScroll,
-      outerRef,
       containerHeight,
       headerHeight,
-      rowClassName,
-      onRow,
-      onCell,
       components,
-      rowRender,
-      cellRenderExtra,
-      rowHeight,
-      frozenRender = {},
-      innerStyle
+      frozenRender = {}
     } = this.props;
+
+    let props = this.props;
 
     let height = containerHeight - headerHeight - 2;
 
@@ -184,30 +176,16 @@ class Table extends React.Component {
 
     let placeholders = this.getPlaceholders();
 
-    let styles = Object.assign({}, style);
-
-    // styles.paddingTop = placeholders.top;
-    // styles.paddingBottom = placeholders.bottom;
-
     let innerElement = (
       <DataList
+        {...props}
         data={data}
         columns={columnsLeafs}
-        placeholders={placeholders}
         rowKey={rowKey}
+        placeholders={placeholders}
         height={height}
-        rowHeight={rowHeight}
-        style={styles}
-        innerStyle={innerStyle}
         listRef={this.listRef}
-        onScroll={onScroll}
-        outerRef={outerRef}
         rowComponent={TableComponents.row}
-        rowClassName={rowClassName}
-        onRow={onRow}
-        onCell={onCell}
-        rowRender={rowRender}
-        cellRenderExtra={cellRenderExtra}
       />
     );
 

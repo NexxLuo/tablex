@@ -264,20 +264,14 @@ class BaseDataGrid extends React.Component {
     let {
       width,
       height,
-      onRow,
-      onCell,
-      rowClassName,
       className,
-      onColumnResizeStop,
       overlayRenderer,
-      components,
       showHeader,
       bordered,
-      cellRenderExtra,
-      rowHeight,
-      frozenRender,
       headerRowHeight
     } = this.props;
+
+    let props = this.props;
 
     let { data, rowKey, scrollbarX, scrollbarY, formattedColumns } = this.state;
 
@@ -331,20 +325,12 @@ class BaseDataGrid extends React.Component {
     }
 
     let attrs = {
-      rowHeight,
-      rowKey,
-      columnsDepth: maxDepth,
+      ...props,
       data,
-      onRow,
-      onCell,
-      rowClassName,
-      onColumnResizeStop,
-      components,
-      showHeader,
-      cellRenderExtra,
+      rowKey,
       scrollbarX,
       scrollbarY,
-      frozenRender,
+      columnsDepth: maxDepth,
       headerHeight,
       headerRowHeight: headerHeights
     };

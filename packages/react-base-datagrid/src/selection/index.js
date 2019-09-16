@@ -519,12 +519,12 @@ class SelectionGrid extends Component {
     return cls.join(" ");
   };
 
-  onRow = (rowData, rowIndex, extra) => {
+  onRow = (rowData, rowIndex, rowProps, rowExtra) => {
     let fn = this.props.onRow;
 
     let o = {};
     if (typeof fn === "function") {
-      o = fn(rowData, rowIndex, extra) || {};
+      o = fn(rowData, rowIndex, rowProps, rowExtra) || {};
     }
 
     return {

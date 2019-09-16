@@ -3,29 +3,11 @@ import memoize from "memoize-one";
 import { VariableSizeList as List, areEqual } from "react-window";
 import { getColumnWidthStyle } from "./utils";
 
-const createItemData = memoize(
-  (
-    data,
-    columns,
-    rowKey,
-    onRow,
-    rowClassName,
-    rowComponent,
-    rowRender,
-    cellRenderExtra,
-    placeholders
-  ) => ({
-    data,
-    columns,
-    rowKey,
-    onRow,
-    rowClassName,
-    rowComponent,
-    rowRender,
-    cellRenderExtra,
-    placeholders
-  })
-);
+const createItemData = memoize((data, columns, rowKey) => ({
+  data,
+  columns,
+  rowKey
+}));
 
 class CellWithTitle extends Component {
   elRef = React.createRef();
@@ -93,11 +75,6 @@ const TableCell = props => {
     prepend = prependFn(value, row, rowIndex);
   }
 
-  let extraAttr = {};
-  if (typeof onCell === "function") {
-    extraAttr = onCell(row, rowIndex, { columnKey }) || {};
-  }
-
   let cellExtra = {};
   if (typeof cellRenderExtra === "function") {
     cellExtra = cellRenderExtra({
@@ -106,6 +83,13 @@ const TableCell = props => {
       rowIndex: rowIndex,
       columnKey: columnKey
     });
+  }
+
+  let extraAttr = {};
+  if (typeof onCell === "function") {
+    extraAttr =
+      onCell(row, rowIndex, Object.assign({ columnKey }, cellExtra || {})) ||
+      {};
   }
 
   let cellRender = render;
@@ -213,6 +197,7 @@ const TableRow = memo(({ data, index, style }) => {
     rowClassName,
     rowComponent,
     rowRender,
+    rowRenderExtra,
     cellRenderExtra,
     placeholders
   } = data;
@@ -265,7 +250,6 @@ const TableRow = memo(({ data, index, style }) => {
   });
 
   /** must be given to row element */
-
   let virtualStyles = Object.assign({}, style);
   if (placeholderTop > 0) {
     virtualStyles.top = style.top + placeholderTop;
@@ -280,6 +264,15 @@ const TableRow = memo(({ data, index, style }) => {
     children: rowCells
   };
 
+  let rowExtra = {};
+  if (typeof rowRenderExtra === "function") {
+    rowExtra = rowRenderExtra({
+      rowData: row,
+      rowKey: k,
+      rowIndex: index
+    });
+  }
+
   let extraAttr = {};
 
   /** rowRender used to create row inner element */
@@ -287,18 +280,19 @@ const TableRow = memo(({ data, index, style }) => {
     let r = rowRender({
       rowData: row,
       rowIndex: index,
-      children: rowCells
+      children: rowCells,
+      extra: rowExtra
     });
     if (typeof r !== "undefined") {
       rowProps.children = r;
     } else {
       if (typeof onRow === "function") {
-        extraAttr = onRow(row, index, rowProps);
+        extraAttr = onRow(row, index, rowProps, rowExtra);
       }
     }
   } else {
     if (typeof onRow === "function") {
-      extraAttr = onRow(row, index, rowProps);
+      extraAttr = onRow(row, index, rowProps, rowExtra);
     }
   }
 
@@ -442,26 +436,26 @@ class DataList extends Component {
       onScroll,
       listRef,
       rowRender,
+      rowRenderExtra,
       cellRenderExtra,
       placeholders,
       onCell
     } = this.props;
 
-    let itemData = createItemData(
-      data,
-      columns,
-      rowKey,
-      onRow,
-      rowClassName,
-      rowComponent,
-      rowRender,
-      cellRenderExtra,
-      placeholders
-    );
+    let itemData = createItemData(data, columns, rowKey);
+
+    itemData.placeholders = placeholders;
+
+    itemData.onRow = onRow;
+    itemData.rowClassName = rowClassName;
+    itemData.rowComponent = rowComponent;
+    itemData.rowRender = rowRender;
+    itemData.cellRenderExtra = cellRenderExtra;
 
     itemData.getRowsHeight = this.getRowsHeight;
     itemData.getColumnsWidth = this.getColumnsWidth;
     itemData.onCell = onCell;
+    itemData.rowRenderExtra = rowRenderExtra;
 
     let itemCount = data.length;
 
@@ -469,7 +463,7 @@ class DataList extends Component {
       itemCount = itemCount + 1;
     }
 
-    let attrs = {
+    let props = {
       style,
       height: height,
       itemSize: this.getItemSize,
@@ -477,11 +471,11 @@ class DataList extends Component {
       itemKey: this.getItemKey
     };
 
-    attrs.innerElementType = this.innerElementType;
+    props.innerElementType = this.innerElementType;
 
     return (
       <List
-        {...attrs}
+        {...props}
         itemCount={itemCount}
         onScroll={onScroll}
         itemData={itemData}
