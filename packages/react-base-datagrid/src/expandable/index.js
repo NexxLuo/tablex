@@ -49,6 +49,7 @@ class TreeGrid extends Component {
       data: [],
       flatData: [],
       rawData: [],
+      dataMap: {},
       columns: [],
       rowKey: "",
 
@@ -88,10 +89,15 @@ class TreeGrid extends Component {
       };
 
       if (data !== prevState.rawData) {
-        let { treeProps, list } = getTreeProps(nextData, rowKey);
+        let dataMap = {};
+        let { treeProps, list } = getTreeProps(nextData, rowKey, function(d) {
+          dataMap[d[rowKey]] = d;
+        });
+
         nextState.treeProps = treeProps;
         nextState.flatData = list;
         nextState.rawData = data;
+        nextState.dataMap = dataMap;
       }
 
       if ("expandedRowKeys" in nextProps) {
@@ -280,15 +286,30 @@ class TreeGrid extends Component {
   };
 
   getTreeNode = key => {
-    let { treeProps, data, rowKey } = this.state;
-    let p = (treeProps || {})[key] || {};
-    let depth = p.depth || 0;
-    let parents = p.parents || [];
-    let rootKey = parents[0];
-    let rootIndex = data.findIndex(d => d[rowKey] === rootKey);
-    let root = data[rootIndex];
+    let { treeProps, dataMap } = this.state;
+    let nodeInfo = (treeProps || {})[key];
 
-    return { depth, root, rootIndex, parents, orders: p.orders };
+    if (!nodeInfo) {
+      return {};
+    }
+
+    let { index, treeIndex, depth, parents, orders } = nodeInfo;
+
+    let rootKey = parents[0];
+
+    let root = dataMap[rootKey];
+    let rootInfo = (treeProps || {})[rootKey] || {};
+    let rootIndex = rootInfo.index;
+
+    return {
+      depth,
+      root,
+      rootIndex,
+      parents,
+      orders,
+      treeIndex,
+      index
+    };
   };
 
   formatColumns = () => {
@@ -353,7 +374,7 @@ class TreeGrid extends Component {
   }
 
   rowRender = params => {
-    let { rowKey, rawData } = this.state;
+    let { rowKey } = this.state;
 
     let { rowData, rowIndex } = params;
     let fn = this.props.expandedRowRender;
@@ -375,7 +396,7 @@ class TreeGrid extends Component {
     }
   };
 
-  cellRenderExtra = ({ rowKey }) => {
+  nodeInfo = ({ rowKey }) => {
     let p = this.getTreeNode(rowKey);
     return p;
   };
@@ -413,7 +434,8 @@ class TreeGrid extends Component {
       flatData: flatData,
       treeProps,
       rowRender: this.rowRender,
-      cellRenderExtra: this.cellRenderExtra,
+      cellRenderExtra: this.nodeInfo,
+      rowRenderExtra: this.nodeInfo,
       innerRef: this.innerRef,
       disabledSelectKeys
     };
