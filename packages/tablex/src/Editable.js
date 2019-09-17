@@ -591,7 +591,7 @@ class EditableTable extends React.Component {
   };
 
   getChangedRows = () => {
-    return this.changedRows;
+    return this.changedRows.slice();
   };
 
   getRows = () => {
@@ -801,45 +801,54 @@ class EditableTable extends React.Component {
   };
 
   completeEdit = async callBack => {
+    //始终为平级数据
+    // 需要排除掉的数据：  删除的数据
     let changedRows = this.getChangedRows();
 
     let editType = this.editType;
     let { data, addedData, deletedData, rowKey } = this.state;
     let { allowSaveEmpty, alwaysValidate } = this.props;
 
+    //始终为树形数据
     let newRows = data.slice();
+
     if (editType === "add") {
+      //改变的数据行key
+      let changedRowsKeyMap = {};
+      for (let i = 0; i < changedRows.length; i++) {
+        let k = changedRows[i][rowKey];
+        changedRowsKeyMap[k] = true;
+      }
+
+      //新增的但未更改的数据
+      let unChangedAddedData = [];
+      let unChangedAddedDataKeyMap = {};
+
+      for (let i = 0; i < addedData.length; i++) {
+        let k = addedData[i][rowKey];
+        if (changedRowsKeyMap[k] !== true) {
+          unChangedAddedDataKeyMap[k] = true;
+          unChangedAddedData.push(addedData[i]);
+        }
+      }
+
       if (allowSaveEmpty === true) {
-        changedRows = addedData.slice();
+        //合并新增、更改的数据
+        changedRows = changedRows.concat(unChangedAddedData);
       } else {
-        //排除 新增的且未更改的数据
-        //需要排除的key
-        let excludesKeyMap = {};
-
-        let changedRowsKeyMap = {};
-        for (let i = 0; i < changedRows.length; i++) {
-          let k = changedRows[i][rowKey];
-          changedRowsKeyMap[k] = true;
-        }
-
-        for (let i = 0; i < addedData.length; i++) {
-          let k = addedData[i][rowKey];
-
-          if (changedRowsKeyMap[k] !== true) {
-            excludesKeyMap[k] = true;
-          }
-        }
-
+        //排除 新增的但未更改的数据
         let newTreeData = treeFilter(
           data.slice(),
-          d => excludesKeyMap[d[rowKey]] !== true
+          d => !(unChangedAddedDataKeyMap[d[rowKey]] === true)
         );
-
         newRows = newTreeData.slice();
         //
       }
     } else if (editType === "delete") {
-      changedRows = deletedData.slice();
+      //如果不存在更改的行，才返回删除的数据
+      if (changedRows.length === 0) {
+        changedRows = deletedData.slice();
+      }
     }
 
     let bl = true;
@@ -857,7 +866,7 @@ class EditableTable extends React.Component {
       }
     }
 
-    if (changedRows.length <= 0) {
+    if (allowSaveEmpty !== true && changedRows.length <= 0) {
       this.cancelEdit();
       return;
     }
@@ -981,6 +990,30 @@ class EditableTable extends React.Component {
     };
   };
 
+  deleteChangedRows = rowKeys => {
+    let changedRows = this.changedRows || [];
+
+    let rowKey = this.state.rowKey;
+
+    let keysMap = {};
+
+    for (let i = 0; i < rowKeys.length; i++) {
+      let k = rowKeys[i];
+      keysMap[k] = true;
+    }
+
+    let nextChangedRows = [];
+    for (let i = 0; i < changedRows.length; i++) {
+      let d = changedRows[i];
+      let k = d[rowKey];
+      if (keysMap[k] !== true) {
+        nextChangedRows.push(d);
+      }
+    }
+
+    this.changedRows = nextChangedRows;
+  };
+
   delete = () => {
     let { data, rowKey, selectedRowKeys = [], selectedRows = [] } = this.state;
 
@@ -1004,6 +1037,8 @@ class EditableTable extends React.Component {
         selectedRowKeys,
         rowKey
       );
+
+      this.deleteChangedRows(deletedRowKeys);
 
       let {
         editKeys: nextEditKeys,
@@ -1455,6 +1490,8 @@ class EditableTable extends React.Component {
       keys,
       rowKey
     );
+
+    this.deleteChangedRows(deletedRowKeys);
 
     this.editType = "delete";
 
