@@ -4,15 +4,13 @@ name: 进阶用法
 
 import { Playground, Props } from "docz";
 import Table, { flatten } from "tablex";
-import { Input, Checkbox,Menu } from "antd";
+import { Input, Checkbox, Menu, Button } from "antd";
 
 # 用法示例
 
 ```javascript
 import Table, { flatten, unflatten } from "sy-framework/lib/widget/table";
 ```
-
-
 
 ## 异步加载子级
 
@@ -38,10 +36,11 @@ import Table, { flatten, unflatten } from "sy-framework/lib/widget/table";
         }
       );
     });
-  }
 
-  constructor(props) {
-    super(props);
+}
+
+constructor(props) {
+super(props);
 
     const columns = [
       {
@@ -91,10 +90,10 @@ import Table, { flatten, unflatten } from "sy-framework/lib/widget/table";
       data: data,
       columns: columns
     };
-  }
 
+}
 
-  loadChildrenData(row){
+loadChildrenData(row){
 
     if (row.children && row.children.length > 0) {
       return;
@@ -112,11 +111,10 @@ import Table, { flatten, unflatten } from "sy-framework/lib/widget/table";
 
     })
 
-  }
+}
 
-
-  render() {
-    let { columns, data } = this.state;
+render() {
+let { columns, data } = this.state;
 
     return (
       <Table
@@ -128,13 +126,13 @@ import Table, { flatten, unflatten } from "sy-framework/lib/widget/table";
         loadChildrenData={ this.loadChildrenData.bind(this) }
       />
     );
-  }
+
+}
 }
 
 }
 
 </Playground>
-
 
 ## 自定义展开行渲染
 
@@ -216,7 +214,8 @@ return null;
 }
 
     onExpandedRowsChange(arr){
-  this.setState({ expandedRowKeys: arr });
+
+this.setState({ expandedRowKeys: arr });
 
 };
 
@@ -240,7 +239,6 @@ let { columns, data } = this.state;
 }
 
 </Playground>
-
 
 ## 数据汇总
 
@@ -266,10 +264,11 @@ let { columns, data } = this.state;
         }
       );
     });
-  }
 
-  constructor(props) {
-    super(props);
+}
+
+constructor(props) {
+super(props);
 
     const columns = [
       {
@@ -315,10 +314,11 @@ let { columns, data } = this.state;
       data: data,
       columns: columns
     };
-  }
 
-  render() {
-    let { columns, data } = this.state;
+}
+
+render() {
+let { columns, data } = this.state;
 
     return (
       <Table
@@ -344,18 +344,17 @@ let { columns, data } = this.state;
         }}
       />
     );
-  }
+
+}
 }
 
 }
 
 </Playground>
 
-
-
 ## 固定数据行
 
-无法同summary共存，summary将会覆盖此配置
+无法同 summary 共存，summary 将会覆盖此配置
 
 <Playground style={{ height: 600 }}>
  {
@@ -461,7 +460,6 @@ let { columns, data } = this.state;
 
 </Playground>
 
-
 ## 行、列合并
 
 <Playground style={{ height: 600 }}>
@@ -483,8 +481,8 @@ let { columns, data } = this.state;
     });
   }
 
-  constructor(props) {
-    super(props);
+constructor(props) {
+super(props);
 
     const columns = [
       {
@@ -551,10 +549,11 @@ let { columns, data } = this.state;
       data: data,
       columns: columns
     };
-  }
 
-  render() {
-    let { columns, data } = this.state;
+}
+
+render() {
+let { columns, data } = this.state;
 
     return (
       <Table
@@ -565,16 +564,13 @@ let { columns, data } = this.state;
         orderNumber={true}
       />
     );
-  }
-}
 
+}
+}
 
 }
 
 </Playground>
-
-
-
 
 ## 通过合并列实现数据分组样式
 
@@ -597,8 +593,8 @@ let { columns, data } = this.state;
     });
   }
 
-  constructor(props) {
-    super(props);
+constructor(props) {
+super(props);
 
     const columns = [
       {
@@ -654,10 +650,11 @@ let { columns, data } = this.state;
       data: data,
       columns: columns
     };
-  }
 
-  render() {
-    let { columns, data } = this.state;
+}
+
+render() {
+let { columns, data } = this.state;
 
     return (
       <Table
@@ -673,15 +670,13 @@ let { columns, data } = this.state;
         } }
       />
     );
-  }
-}
 
+}
+}
 
 }
 
 </Playground>
-
-
 
 ## 右键菜单
 
@@ -707,10 +702,11 @@ let { columns, data } = this.state;
         }
       );
     });
-  }
 
-  constructor(props) {
-    super(props);
+}
+
+constructor(props) {
+super(props);
 
     const columns = [
       {
@@ -756,16 +752,15 @@ let { columns, data } = this.state;
       data: data,
       columns: columns
     };
-  }
 
+}
 
-  
-  onMenuClick({ key, item }) {
-    console.log(key, item.props.row);
-  };
+onMenuClick({ key, item }) {
+console.log(key, item.props.row);
+};
 
-  contextMenu(row){
-    let menuItemStyle = { height: "auto", lineHeight: "normal" };
+contextMenu(row){
+let menuItemStyle = { height: "auto", lineHeight: "normal" };
 
     return (
       <div>
@@ -797,10 +792,11 @@ let { columns, data } = this.state;
         </Menu>
       </div>
     );
-  };
 
-  render() {
-    let { columns, data } = this.state;
+};
+
+render() {
+let { columns, data } = this.state;
 
     return (
       <Table
@@ -812,7 +808,146 @@ let { columns, data } = this.state;
          contextMenu={this.contextMenu.bind(this)}
       />
     );
-  }
+
+}
+}
+
+}
+
+</Playground>
+
+## 动态控制列属性
+
+<Playground style={{ height: 600 }}>
+ {
+  class Demo extends React.Component {
+  generateData(columns, count = 20, prefix = "Row") {
+    return new Array(count).fill(0).map((row, rowIndex) => {
+      return columns.reduce(
+        (rowData, column, columnIndex) => {
+          if (column.dataIndex !== "id") {
+            rowData[column.dataIndex] = Math.floor(Math.random() * 100 + 1);
+          } else {
+            rowData[column.dataIndex] =
+              prefix + " " + rowIndex + " - Col " + columnIndex;
+          }
+
+          return rowData;
+        },
+        {
+          id: prefix + rowIndex,
+          parentId: null
+        }
+      );
+    });
+
+}
+
+constructor(props) {
+super(props);
+
+    let data = this.generateData([], 50);
+
+    this.state = {
+      data: data
+    };
+
+}
+
+getColumns(){
+
+let {hideColumn,columnWidth,columnFixed}=this.state;
+
+    let columns = [
+      {
+        dataIndex: "id",
+        title: "id",
+        key: "id",
+        width: 150,
+        hidden:!!hideColumn,
+        align: "center"
+      },
+      {
+        dataIndex: "column-1",
+        key: "column-1",
+        title: "column-1",
+        width: columnWidth?columnWidth:100
+      },
+
+      {
+        dataIndex: "column-2",
+        key: "column-2",
+        title: "column-2",
+        width: 150,
+        align: "center",
+        fixed:columnFixed?columnFixed:false
+      },
+
+      {
+        dataIndex: "column-3",
+        key: "column-3",
+        title: "column-3",
+        align: "right"
+      },
+      {
+        dataIndex: "column-4",
+        key: "column-4",
+        title: "column-4",
+        width: 100,
+        align: "center"
+      }
+    ];
+
+    return columns;
+
+}
+
+hideColumn() {
+this.setState({hideColumn:!this.state.hideColumn});
+};
+
+setColumnWidth(){
+let w=Math.ceil(Math.random(9)*100)+100;
+this.setState({columnWidth:w});
+}
+
+setColumnFixed(){
+
+let fixed=this.state.columnFixed|| false;
+let newFixed=false;
+
+if(fixed==="left"){
+newFixed="right"
+}else if(fixed==="right"){
+newFixed=false
+}else{
+newFixed="left"
+}
+this.setState({columnFixed:newFixed});
+}
+
+render() {
+let { data } = this.state;
+let columns=this.getColumns();
+
+    return (
+      <Table
+        rowKey="id"
+        columns={columns}
+        data={data}
+        selectMode="multiple"
+        orderNumber={true}
+       header={()=>{
+         return <div>
+           <Button onClick={this.hideColumn.bind(this)}>显示/隐藏列</Button>
+            <Button onClick={this.setColumnWidth.bind(this)} style={{marginLeft:5}} >控制列宽</Button>
+            <Button onClick={this.setColumnFixed.bind(this)} style={{marginLeft:5}} >控制列固定</Button>
+         </div>
+       }}
+      />
+    );
+
+}
 }
 
 }
