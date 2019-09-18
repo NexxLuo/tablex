@@ -188,18 +188,20 @@ class TreeGrid extends Component {
       rowKey
     );
 
-    this.setState({
+    let nextState = {
       expandedRowKeys: nextExpandedKeys,
       data: expandedData
-    });
+    };
 
     if (typeof this.props.onExpandedRowsChange === "function") {
       this.props.onExpandedRowsChange(nextExpandedKeys);
     }
 
-    if (typeof this.props.loadChildrenData === "function") {
-      this.loadChildrenData(key);
-    }
+    this.setState(nextState, () => {
+      if (typeof this.props.loadChildrenData === "function") {
+        this.loadChildrenData(key);
+      }
+    });
   };
 
   /**
@@ -235,8 +237,8 @@ class TreeGrid extends Component {
   /**
    * 设置行的子级加载状态
    */
-  setLoadingChildren = (key, bl, callback) => {
-    let { loadingKeys, rawData } = this.state;
+  setLoadingChildren = (key, bl, callback, reduceState) => {
+    let { loadingKeys } = this.state;
 
     let i = loadingKeys.indexOf(key);
 
@@ -252,31 +254,46 @@ class TreeGrid extends Component {
       }
     }
 
-    return this.setState(
-      { loadingKeys: nextKeys, rawData: rawData.slice() },
-      callback
-    );
+    return this.setState({ loadingKeys: nextKeys, ...reduceState }, callback);
   };
 
   /**
    * 异步加载子级数据
    */
   loadChildrenData = key => {
-    let { data, rowKey } = this.state;
+    let { data, rowKey, rawData, expandedRowKeys } = this.state;
 
     let row = data.find(d => d[rowKey] === key);
 
     let res = this.props.loadChildrenData(row);
 
     if (res && res.constructor.name === "Promise") {
-      this.setLoadingChildren(key, true);
+      this.setLoadingChildren(key, true, undefined);
 
       res.then(childrens => {
+        let rebuildTreeState = {};
         if (childrens) {
           row.children = childrens;
+          let dataMap = {};
+          let { treeProps, list } = getTreeProps(rawData, rowKey, function(d) {
+            dataMap[d[rowKey]] = d;
+          });
+
+          let { data: expandedData } = getDataListWithExpanded(
+            rawData,
+            expandedRowKeys,
+            rowKey
+          );
+
+          rebuildTreeState = {
+            data: expandedData,
+            flatData: list,
+            treeProps,
+            dataMap
+          };
         }
 
-        this.setLoadingChildren(key, false);
+        this.setLoadingChildren(key, false, undefined, rebuildTreeState);
       });
 
       res.catch(e => {
@@ -335,7 +352,7 @@ class TreeGrid extends Component {
     if (expandColumn) {
       expandColumn.prependRender = (value, row, index) => {
         let k = row[rowKey];
-        let { depth } = this.getTreeNode(k);
+        let { depth = 0 } = this.getTreeNode(k);
 
         let isLoading = this.isLoadingChildren(k);
         let isExpanded = this.isExpanded(k);
