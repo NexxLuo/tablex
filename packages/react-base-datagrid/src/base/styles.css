@@ -81,6 +81,7 @@
   box-sizing: border-box;
   align-items: center;
   position: relative;
+  overflow: hidden;
 }
 
 .tablex-table-row-cell .tablex-table-row-cell-inner {
@@ -122,6 +123,7 @@
 .tablex-table .tablex-table-head-group .tablex-table-head-group-cell {
   display: flex;
   align-items: center;
+  overflow: hidden;
 }
 
 .tablex-table .tablex-table-head-cell {
@@ -132,6 +134,7 @@
   position: relative;
   align-items: center;
   flex: 0 0 auto;
+  overflow: hidden;
 }
 
 .tablex-bordered .tablex-table .tablex-table-head-cell {
