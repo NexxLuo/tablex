@@ -156,7 +156,7 @@ function createData(level, parentKey, maxLevel, index) {
 
 function createTreeData() {
   let data = [];
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 50; i++) {
     let childrens = createData(0, i, 2);
     let d = {
       id: "" + i,
@@ -178,6 +178,8 @@ function createTreeData() {
 
 class Demo extends Component {
   tableRef = React.createRef();
+  tableRef2 = React.createRef();
+
   state = {
     data: [],
     loading: false,
@@ -291,10 +293,21 @@ class Demo extends Component {
     this.setState({ data: newRows });
   };
 
+  scrollToItem1=()=>{
+    this.tableRef.current.scrollToItem(12,"smart")
+  }
+
+  scrollToItem2=()=>{
+    this.tableRef2.current.scrollToItem(12,"smart")
+  }
+
   render() {
     return (
       <>
-        <div style={{ height: "600px" }}>
+        <Button onClick={this.scrollToItem1} >scrollToItem</Button>
+
+        <div style={{ height: "600px",marginTop:10 }}>
+          
           <Table
             loading={this.state.loading}
             editTools={["edit", "add", "delete"]}
@@ -303,10 +316,9 @@ class Demo extends Component {
             isAppend={true}
             allowSaveEmpty={true}
             alwaysValidate={true}
-            ref={this.tableRef}
             rowKey="id"
             onEditSave={this.onEditSave}
-            innerRef={this.innerRef}
+            ref={this.tableRef}
             columns={fixedColumns}
             checkStrictly={true}
             selectMode="multiple"
@@ -373,6 +385,7 @@ class Demo extends Component {
           />
         </div>
 
+        <Button onClick={this.scrollToItem2} style={{marginTop:10}}>scrollToItem</Button>
 
         <div style={{ height: "600px",marginTop:10 }}>
           <Table
@@ -384,7 +397,7 @@ class Demo extends Component {
             isAppend={true}
             allowSaveEmpty={true}
             alwaysValidate={true}
-            ref={this.tableRef}
+            ref={this.tableRef2}
             rowKey="id"
             onEditSave={this.onEditSave}
             innerRef={this.innerRef}
