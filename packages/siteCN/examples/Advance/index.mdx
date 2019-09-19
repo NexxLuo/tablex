@@ -503,7 +503,7 @@ super(props);
             props: {}
           };
           if (index === 6) {
-            obj.props.rowSpan = 5;
+            obj.props.rowSpan = 15;
             obj.children = (
               <div
                 style={{
@@ -558,6 +558,8 @@ let { columns, data } = this.state;
       <Table
         rowKey="id"
         columns={columns}
+        overscanCount={120}
+        virtual={false}
         data={data}
         selectMode="multiple"
         orderNumber={true}

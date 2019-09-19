@@ -142,6 +142,123 @@ let { columns, data } = this.state;
 
 </Playground>
 
+
+
+## 基本编辑及验证
+
+> 编辑有追加模式、非追加模式两种，通过isAppend=true|false 控制，追加模式不会更改当前表格视图的显示数据，否则将会清空当前表格数据视图（不影响数据）
+
+<Playground style={{ height: 400 }}>
+ {
+  class Demo extends React.Component {
+
+constructor(props) {
+super(props);
+
+    const columns = [
+      {
+        dataIndex: "id",
+        title: "id",
+        key: "id",
+        width: 150
+      },
+      {
+        dataIndex: "column-1",
+        title: "column-1",
+        width: 100,
+          validator: function(value, row) {
+            console.log("validator:",row.id,value)
+          if (!value) {
+            return { valid: false, message: "请输入" };
+          }
+
+          return { valid: true, message: "false" };
+        },
+        editor: function(value, row, index, onchange, ref) {
+          return (
+            <Input
+              defaultValue={value}
+              ref={ref}
+              onChange={e =>{
+               onchange({ "column-1": e.target.value });       
+              } }
+            />
+          );
+        }
+      },
+
+      {
+        dataIndex: "column-2",
+        title: "column-2",
+        width: 150,
+        align: "center"
+      },
+
+      {
+        dataIndex: "column-3",
+        title: "column-3",
+        align: "right"
+      },
+      {
+        dataIndex: "column-4",
+        title: "column-4",
+        width: 100,
+        align: "center"
+      }
+    ];
+
+
+    this.state = {
+      data: [],
+      columns: columns
+    };
+
+}
+
+onEditSave(changedRows, newData, type) {
+console.log("onEditSave changedRows:", changedRows);
+console.log("onEditSave newData:", newData);
+
+this.setState({
+data: newData
+});
+}
+
+onBeforeAdd(){
+  console.log("onBeforeAdd:",this.state.data)
+  this.setState({
+data:  this.state.data.slice()
+});
+}
+
+render() {
+let { columns, data } = this.state;
+
+    return (
+      <Table
+        rowKey="id"
+        columns={columns}
+        validateTrigger="onChange"
+        data={data}
+        isAppend={true}
+        editable={true}
+        onBeforeAdd2={this.onBeforeAdd.bind(this)}
+        allowSaveEmpty={true}
+        alwaysValidate={true}
+        selectMode={"multiple"}
+        checkStrictly={false}
+        editTools={['edit', 'add','delete']}
+        onEditSave={this.onEditSave.bind(this)}
+      />
+    );
+
+}
+}
+
+}
+
+</Playground>
+
 ## 编辑器无边框
 
 > 此模式，只对antd内置的input、datepicker、inputnumber、select生效。若想自定义，可通过自定义样式进行覆盖

@@ -294,9 +294,90 @@ class Demo extends Component {
   render() {
     return (
       <>
-        <div style={{ height: "100%" }}>
+        <div style={{ height: "600px" }}>
           <Table
             loading={this.state.loading}
+            editTools={["edit", "add", "delete"]}
+            tableId="preview_table"
+            editable={true}
+            isAppend={true}
+            allowSaveEmpty={true}
+            alwaysValidate={true}
+            ref={this.tableRef}
+            rowKey="id"
+            onEditSave={this.onEditSave}
+            innerRef={this.innerRef}
+            columns={fixedColumns}
+            checkStrictly={true}
+            selectMode="multiple"
+            selectOnRowClick={false}
+            defaultExpandedRowKeys={["0"]}
+            data={this.state.data}
+            onExpand={(b, r) => {
+              //  console.log("onExpand:", r);
+            }}
+            onExpandedRowsChange={this.onExpandedRowsChange}
+            onSelectChange={this.onSelectChange}
+            rowClassName={() => {
+              // console.log("rowClassName");
+            }}
+            orderNumber={this.orderNumber}
+            selectionColumn={this.selectionColumn}
+            summary={{
+              style: { border: "none" },
+              title: { text: "合计:", column: "__checkbox_column" },
+              data: [
+                {
+                  age: "sum",
+                  level: "min"
+                }
+              ],
+              render: (value, dataIndex, type, index) => {
+                return type + ":" + value;
+              }
+            }}
+            frozenRender={{
+              rowHeight: 40,
+              rowKey: "id",
+              bottom: [this.state.data[0]],
+              cellRender: (value, row, index, extra) => {
+                console.log("cellRender:", extra);
+                return value;
+              }
+            }}
+            onRow2={(row, index, extra) => {
+              if (index === 4) {
+                return {
+                  style: { position: "sticky", top: 0, zIndex: 2 }
+                };
+              } else {
+                if (index < 4) {
+                  return {
+                    style: { top: extra.style.top + 50 }
+                  };
+                }
+              }
+            }}
+            footerExtra={() => {
+              return <div style={{ padding: "14px 10px" }}>底部信息展示</div>;
+            }}
+            rowHeight2={(d, i) => {
+              if (i % 2 === 0) {
+                return 50;
+              } else {
+                return 30;
+              }
+            }}
+            expandRowHeight={200}
+            headerRowHeight={[30, 40, 60]}
+          />
+        </div>
+
+
+        <div style={{ height: "600px",marginTop:10 }}>
+          <Table
+            loading={this.state.loading}
+            virtual={false}
             editTools={["edit", "add", "delete"]}
             tableId="preview_table"
             editable={true}
