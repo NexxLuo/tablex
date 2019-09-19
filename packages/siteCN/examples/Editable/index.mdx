@@ -60,6 +60,7 @@ super(props);
         title: "column-1",
         width: 100,
           validator: function(value, row) {
+            console.log("validator:",row.id,value)
           if (!value) {
             return { valid: false, message: "请输入" };
           }
@@ -126,6 +127,7 @@ let { columns, data } = this.state;
         validateTrigger="onChange"
         data={data}
         editable={true}
+        alwaysValidate={true}
         selectMode={"multiple"}
         checkStrictly={false}
         editTools={['edit', 'add','delete']}

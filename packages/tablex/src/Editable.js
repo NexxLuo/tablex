@@ -207,12 +207,16 @@ class EditableTable extends React.Component {
       newValues = [r];
     }
 
-    this.modifyData(newValues, true);
+    let modifiedData = this.modifyData(newValues, true);
 
     // 当change时立即验证行
     if (this.props.validateTrigger === "onChange") {
-      this.validateRows(newValues);
-      this.updateComponent();
+      if (this.props.alwaysValidate === true) {
+        this.validateAll();
+      } else {
+        this.validateRows(modifiedData);
+        this.updateComponent();
+      }
     }
   };
 
@@ -669,8 +673,11 @@ class EditableTable extends React.Component {
     if (this.changedRows.length > 0) {
     }
 
-    let data = cloneData(this.state.sourceData);
+    let { sourceData } = this.state;
+
+    let data = cloneData(sourceData);
     nextState.data = data;
+    nextState.flatData = treeToFlatten(data).list;
 
     this.changedRows = [];
     this.rowsValidation = [];
@@ -1521,6 +1528,9 @@ class EditableTable extends React.Component {
     let rowsMap = {};
     let addedRowsMap = {};
 
+    let modifiedDataKeyMap = {};
+    let modifiedData = [];
+
     treeFilter(data, d => {
       let k = d[rowKey];
       rowsMap[k] = d;
@@ -1545,6 +1555,7 @@ class EditableTable extends React.Component {
           }
         });
         this.addToChanged(row);
+        modifiedDataKeyMap[key] = row;
       }
 
       let addedRow = addedRowsMap[key];
@@ -1555,12 +1566,25 @@ class EditableTable extends React.Component {
           }
         });
         this.addToChanged(addedRow);
+        modifiedDataKeyMap[key] = addedRow;
       }
     }
 
     if (silent === false) {
       this.forceUpdate();
     }
+
+    for (const k in modifiedDataKeyMap) {
+      if (modifiedDataKeyMap.hasOwnProperty(k)) {
+        modifiedData.push(modifiedDataKeyMap[k]);
+      }
+    }
+
+    Object.keys(modifiedDataKeyMap).forEach(k => {
+      modifiedData.push(k);
+    });
+
+    return modifiedData;
   };
 
   filterData = (fn, silent = false) => {
