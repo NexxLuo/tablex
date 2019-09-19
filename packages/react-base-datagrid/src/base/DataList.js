@@ -1,7 +1,8 @@
 import React, { Component, memo } from "react";
 import memoize from "memoize-one";
-import { VariableSizeList as List, areEqual } from "react-window";
+import { VariableSizeList as VirtualList, areEqual } from "react-window";
 import { getColumnWidthStyle } from "./utils";
+import ItemList from "./ItemList";
 
 const createItemData = memoize((data, columns, rowKey) => ({
   data,
@@ -439,7 +440,8 @@ class DataList extends Component {
       rowRenderExtra,
       cellRenderExtra,
       placeholders,
-      onCell
+      onCell,
+      overscanCount = 2
     } = this.props;
 
     let itemData = createItemData(data, columns, rowKey);
@@ -467,24 +469,22 @@ class DataList extends Component {
       style,
       height: height,
       itemSize: this.getItemSize,
-      overscanRowCount: 2,
-      itemKey: this.getItemKey
+      overscanCount,
+      itemKey: this.getItemKey,
+
+      innerElementType: this.innerElementType,
+      itemCount: itemCount,
+      onScroll: onScroll,
+      itemData: itemData,
+      ref: listRef,
+      outerRef: outerRef
     };
 
-    props.innerElementType = this.innerElementType;
+    if (this.props.virtual === false) {
+      return <ItemList {...props}>{TableRow}</ItemList>;
+    }
 
-    return (
-      <List
-        {...props}
-        itemCount={itemCount}
-        onScroll={onScroll}
-        itemData={itemData}
-        ref={listRef}
-        outerRef={outerRef}
-      >
-        {TableRow}
-      </List>
-    );
+    return <VirtualList {...props}>{TableRow}</VirtualList>;
   }
 }
 
