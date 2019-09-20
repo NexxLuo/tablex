@@ -1888,10 +1888,6 @@ class EditableTable extends React.Component {
           nextRows.push(d);
         }
 
-        if (nextRows.length >= nextKeys.length) {
-          return false;
-        }
-
         return true;
       });
 
