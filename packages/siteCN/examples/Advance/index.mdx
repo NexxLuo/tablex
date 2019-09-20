@@ -542,7 +542,7 @@ super(props);
       }
     ];
 
-    let data = this.generateData(columns, 50);
+    let data = this.generateData(columns, 2000);
 
     this.state = {
       data: data,
@@ -558,8 +558,8 @@ let { columns, data } = this.state;
       <Table
         rowKey="id"
         columns={columns}
-        overscanCount={120}
-        virtual={false}
+        overscanCount={2}
+        virtual={true}
         data={data}
         selectMode="multiple"
         orderNumber={true}

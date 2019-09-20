@@ -86,8 +86,8 @@ fixedColumns = [
         props: {}
       };
 
-      if (index === 1) {
-        obj.props.colSpan = 2;
+      if (index % 5 === 0) {
+        obj.props.rowSpan = 3;
         obj.children = <div>{value}</div>;
       }
 
@@ -157,7 +157,7 @@ function createData(level, parentKey, maxLevel, index) {
 function createTreeData() {
   let data = [];
   for (let i = 0; i < 50; i++) {
-    let childrens = createData(0, i, 2);
+    // let childrens = createData(0, i, 2);
     let d = {
       id: "" + i,
       level: 0,
@@ -167,7 +167,7 @@ function createTreeData() {
     };
 
     if (i % 3 === 0) {
-      d.children = childrens;
+      // d.children = childrens;
     }
 
     data.push(d);
@@ -293,21 +293,20 @@ class Demo extends Component {
     this.setState({ data: newRows });
   };
 
-  scrollToItem1=()=>{
-    this.tableRef.current.scrollToItem(12,"smart")
-  }
+  scrollToItem1 = () => {
+    this.tableRef.current.scrollToItem(12, "smart");
+  };
 
-  scrollToItem2=()=>{
-    this.tableRef2.current.scrollToItem(12,"smart")
-  }
+  scrollToItem2 = () => {
+    this.tableRef2.current.scrollToItem(12, "smart");
+  };
 
   render() {
     return (
       <>
-        <Button onClick={this.scrollToItem1} >scrollToItem</Button>
+        <Button onClick={this.scrollToItem1}>scrollToItem</Button>
 
-        <div style={{ height: "600px",marginTop:10 }}>
-          
+        <div style={{ height: "800px", marginTop: 10 }}>
           <Table
             loading={this.state.loading}
             editTools={["edit", "add", "delete"]}
@@ -385,9 +384,11 @@ class Demo extends Component {
           />
         </div>
 
-        <Button onClick={this.scrollToItem2} style={{marginTop:10}}>scrollToItem</Button>
+        <Button onClick={this.scrollToItem2} style={{ marginTop: 10 }}>
+          scrollToItem
+        </Button>
 
-        <div style={{ height: "600px",marginTop:10 }}>
+        <div style={{ height: "600px", marginTop: 10 }}>
           <Table
             loading={this.state.loading}
             virtual={false}

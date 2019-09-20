@@ -50,7 +50,8 @@ const TableCell = props => {
     rowIndex,
     getRowsHeight,
     getColumnsWidth,
-    rowColSpan,
+    columnColSpan,
+    columnRowSpan,
     dataIndex,
     columnKey,
     columnIndex,
@@ -60,14 +61,22 @@ const TableCell = props => {
     prependRender,
     render,
     onCell,
-    cellRenderExtra
+    cellRenderExtra,
+    columnStyle,
+    rowHeight
   } = props;
 
   let value = row[dataIndex];
 
-  //if the column has been in colspan , don`t render it
-  if (rowColSpan.end > columnIndex) {
+  if (columnColSpan.end > columnIndex) {
     return null;
+  }
+  let isInRowSpan = false;
+
+  if (rowIndex > columnRowSpan.start && columnRowSpan.end > rowIndex) {
+    if (columnRowSpan.columnKey === columnKey) {
+      isInRowSpan = true;
+    }
   }
 
   let prepend = null;
@@ -114,14 +123,19 @@ const TableCell = props => {
         if (rowSpan === 0) {
           cellElement = null;
         } else {
-          let h = getRowsHeight(rowIndex, rowIndex + rowSpan);
-
+          let rowSpanEnd = rowIndex + rowSpan;
+          let h = getRowsHeight(rowIndex, rowSpanEnd);
+          columnRowSpan.start = rowIndex;
+          columnRowSpan.end = rowSpanEnd;
+          columnRowSpan.columnKey = columnKey;
+          columnRowSpan.rowSpanStyle = {
+            top: -h + rowHeight,
+            zIndex: 1
+          };
           rowColSpanStyles.height = h;
-          rowColSpanStyles.zIndex = 1;
-          //rowColSpanStyles.backgroundColor = "#ffffff";
+          rowColSpanStyles.zIndex = 2;
           cellElement = children;
           hasRowSpan = true;
-
           if (h === 0) {
             cellElement = null;
           }
@@ -134,10 +148,10 @@ const TableCell = props => {
         } else {
           let colSpanEnd = columnIndex + colSpan;
           let w = getColumnsWidth(columnIndex, colSpanEnd);
-          rowColSpan.end = colSpanEnd;
+          columnColSpan.end = colSpanEnd;
 
           rowColSpanStyles.width = w;
-          rowColSpanStyles.zIndex = 1;
+          rowColSpanStyles.zIndex = 2;
 
           cellElement = children;
 
@@ -157,7 +171,8 @@ const TableCell = props => {
     style,
     extraAttr.style || {},
     propsStyles,
-    rowColSpanStyles
+    rowColSpanStyles,
+    columnStyle
   );
 
   let alignStyles = {};
@@ -176,6 +191,12 @@ const TableCell = props => {
     cls.push("tablex-table-row-cell-rowspan");
   }
 
+  if (isInRowSpan === true) {
+    return (
+      <div {...extraAttr} className={cls.join(" ")} style={cellStyles}></div>
+    );
+  }
+
   return (
     <div {...extraAttr} className={cls.join(" ")} style={cellStyles}>
       {prepend}
@@ -186,7 +207,7 @@ const TableCell = props => {
   );
 };
 
-const TableRow = memo(({ data, index, style }) => {
+const TableRow = memo(({ data, index, style, isRowSpan }) => {
   let {
     data: rows,
     columns,
@@ -200,7 +221,8 @@ const TableRow = memo(({ data, index, style }) => {
     rowRender,
     rowRenderExtra,
     cellRenderExtra,
-    placeholders
+    placeholders,
+    columnRowSpan
   } = data;
   let row = rows[index];
 
@@ -226,12 +248,19 @@ const TableRow = memo(({ data, index, style }) => {
     cls.push(str);
   }
 
-  let rowColSpan = {
+  let columnColSpan = {
     end: 0
   };
 
   let rowCells = columns.map((d, i) => {
     let columnKey = d.key || d.dataIndex || i;
+
+    let columnStyle = {};
+
+    if (isRowSpan === true && columnRowSpan.columnKey === columnKey) {
+      columnStyle = columnRowSpan.rowSpanStyle;
+    }
+
     return (
       <TableCell
         key={columnKey}
@@ -239,11 +268,14 @@ const TableRow = memo(({ data, index, style }) => {
         columnKey={columnKey}
         row={row}
         rowIndex={index}
+        rowHeight={style.height}
         columnIndex={i}
+        columnStyle={columnStyle}
         cellRenderExtra={cellRenderExtra}
         getRowsHeight={getRowsHeight}
         getColumnsWidth={getColumnsWidth}
-        rowColSpan={rowColSpan}
+        columnColSpan={columnColSpan}
+        columnRowSpan={columnRowSpan}
         onCell={onCell}
         {...d}
       />
@@ -321,6 +353,29 @@ const TableRow = memo(({ data, index, style }) => {
 
   return rowElement;
 }, areEqual);
+
+class ItemRenderer extends React.PureComponent {
+  render() {
+    let { data, index: rowIndex } = this.props;
+
+    let { columnRowSpan } = data;
+
+    if (columnRowSpan.end - 1 === rowIndex) {
+      return (
+        <React.Fragment>
+          <TableRow
+            {...this.props}
+            index={columnRowSpan.start}
+            isRowSpan={true}
+          ></TableRow>
+          <TableRow {...this.props}></TableRow>
+        </React.Fragment>
+      );
+    }
+
+    return <TableRow {...this.props}></TableRow>;
+  }
+}
 
 class DataList extends Component {
   innerElementType = ({ children, style }) => {
@@ -458,6 +513,11 @@ class DataList extends Component {
     itemData.getColumnsWidth = this.getColumnsWidth;
     itemData.onCell = onCell;
     itemData.rowRenderExtra = rowRenderExtra;
+    itemData.columnRowSpan = {
+      start: 0,
+      end: 0,
+      elements: []
+    };
 
     let itemCount = data.length;
 
@@ -484,7 +544,7 @@ class DataList extends Component {
       return <ItemList {...props}>{TableRow}</ItemList>;
     }
 
-    return <VirtualList {...props}>{TableRow}</VirtualList>;
+    return <VirtualList {...props}>{ItemRenderer}</VirtualList>;
   }
 }
 

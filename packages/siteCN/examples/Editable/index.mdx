@@ -1267,6 +1267,8 @@ super(props);
       prepend: false,
       startIndex: 2
     });
+
+    this.tableRef.current.api.editAll();
   }
 
   modifyData() {
@@ -1286,7 +1288,7 @@ super(props);
     this.tableRef.current.api.deleteData();
   }
 
-  onEditSave(changedRows, newRows, editType) {
+  onEditSave(newRows,changedRows,  editType) {
     console.log("onEditSave changedRows:", changedRows);
     console.log("onEditSave newRows:", newRows);
     this.setState({ data: newRows });
@@ -1336,18 +1338,20 @@ super(props);
               </div>
             );
           }}
-          editable={false}
+          editable={true}
           isAppend={true}
           allowSaveEmpty={true}
+   
           alwaysValidate={true}
+          validateTrigger="onChange"
+
           ref={this.tableRef}
           rowKey="id"
-          onEditSave={this.onEditSave.bind(this)}
+          onComplete={this.onEditSave.bind(this)}
           columns={this.columns}
           selectMode="multiple"
           checkStrictly={false}
           data={this.state.data}
-          validateTrigger="onChange"
           selectOnRowClick={false}
         />
       </div>
