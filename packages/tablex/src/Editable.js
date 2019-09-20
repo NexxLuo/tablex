@@ -551,6 +551,7 @@ class EditableTable extends React.Component {
   };
 
   editAll = () => {
+    this.editType = "edit";
     this.setState({ isEditAll: true, isEditing: true, editKeys: [] });
   };
 
@@ -559,6 +560,7 @@ class EditableTable extends React.Component {
 
     this.changedRows = [];
     this.rowsValidation = [];
+    this.editType = "";
 
     let nextState = {
       editSaveLoading: false,
@@ -670,9 +672,7 @@ class EditableTable extends React.Component {
       addedData: []
     };
 
-    if (this.changedRows.length > 0) {
-    }
-
+    this.editType = "";
     let { sourceData } = this.state;
 
     let data = cloneData(sourceData);
@@ -808,6 +808,124 @@ class EditableTable extends React.Component {
   };
 
   completeEdit = async callBack => {
+    //修改的数据,平级数据
+    let changedRows = this.getChangedRows();
+    //添加的数据,平级数据
+    let addedData = this.state.addedData;
+    //删除的数据,平级数据
+    let deletedData = this.state.deletedData;
+
+    //当前表格的数据，树形数据
+    let data = this.state.data;
+
+    let newRows = data.slice();
+
+    let { rowKey } = this.state;
+    let { allowSaveEmpty, alwaysValidate } = this.props;
+
+    //最终表格产生更改的数据
+    let changedState = {
+      inserted: [],
+      changed: [],
+      deleted: []
+    };
+
+    //改变的数据行key
+    let changedRowsKeyMap = {};
+    for (let i = 0; i < changedRows.length; i++) {
+      let k = changedRows[i][rowKey];
+      changedRowsKeyMap[k] = true;
+    }
+
+    //删除的数据行key
+    let deletedDataKeyMap = {};
+    for (let i = 0; i < deletedData.length; i++) {
+      let k = deletedData[i][rowKey];
+      deletedDataKeyMap[k] = true;
+    }
+
+    //新增的数据行key
+    let addedDataKeyMap = {};
+    for (let i = 0; i < addedData.length; i++) {
+      let k = addedData[i][rowKey];
+      addedDataKeyMap[k] = true;
+    }
+
+    //修改的数据，排除掉新增、删除的数据
+    changedState.changed = changedRows.filter(d => {
+      let bl = true;
+      let k = d[rowKey];
+      if (addedDataKeyMap[k] === true || deletedDataKeyMap[k] === true) {
+        bl = false;
+      }
+      return bl;
+    });
+
+    //新增的数据，排除掉删除的数据
+    changedState.inserted = addedData.filter(d => {
+      let bl = true;
+      let k = d[rowKey];
+      if (deletedDataKeyMap[k] === true) {
+        bl = false;
+      }
+
+      //排除掉未修改的数据
+      if (allowSaveEmpty !== true) {
+        if (changedRowsKeyMap[k] !== true) {
+          bl = false;
+        }
+      }
+      return bl;
+    });
+
+    //删除的数据，排除掉新增的数据
+    changedState.deleted = deletedData.filter(d => {
+      let bl = true;
+      let k = d[rowKey];
+      if (addedDataKeyMap[k] === true) {
+        bl = false;
+      }
+      return bl;
+    });
+
+    let bl = true;
+
+    let hasModifyedData = false;
+
+    if (
+      changedState.changed.length > 0 ||
+      changedState.inserted.length > 0 ||
+      changedState.deleted.length > 0
+    ) {
+      hasModifyedData = true;
+    }
+
+    if (alwaysValidate === true) {
+      bl = await this.validateAll();
+    } else {
+      bl = await this.validate();
+    }
+
+    if (bl === false) {
+      message.error("信息录入不正确，请检查");
+      return;
+    }
+
+    if (allowSaveEmpty !== true && hasModifyedData === false) {
+      this.cancelEdit();
+      return;
+    }
+
+    let fn = this.props.onComplete;
+
+    if (typeof fn === "function") {
+      fn(newRows, changedState);
+    }
+
+    this.endEdit(callBack);
+  };
+
+  editSave = async callBack => {
     //始终为平级数据
     // 需要排除掉的数据：  删除的数据
     let changedRows = this.getChangedRows();
@@ -1188,7 +1306,7 @@ class EditableTable extends React.Component {
         <Button
           key={"_btnOk"}
           loading={this.state.editSaveLoading}
-          onClick={this.completeEdit}
+          onClick={this.editSave}
           style={{ ...itemStyle }}
         >
           {okIcon}
@@ -1530,6 +1648,8 @@ class EditableTable extends React.Component {
 
     let modifiedDataKeyMap = {};
     let modifiedData = [];
+
+    this.editType = "edit";
 
     treeFilter(data, d => {
       let k = d[rowKey];
