@@ -551,7 +551,6 @@ class EditableTable extends React.Component {
   };
 
   editAll = () => {
-    this.editType = "edit";
     this.setState({ isEditAll: true, isEditing: true, editKeys: [] });
   };
 
@@ -807,7 +806,7 @@ class EditableTable extends React.Component {
     e.stopPropagation();
   };
 
-  completeEdit = async callBack => {
+  getModifiedData = () => {
     //修改的数据,平级数据
     let changedRows = this.getChangedRows();
     //添加的数据,平级数据
@@ -815,16 +814,15 @@ class EditableTable extends React.Component {
     //删除的数据,平级数据
     let deletedData = this.state.deletedData;
 
-    //当前表格的数据，树形数据
-    let data = this.state.data;
-
-    let newRows = data.slice();
-
     let { rowKey } = this.state;
-    let { allowSaveEmpty, alwaysValidate } = this.props;
+    let { allowSaveEmpty } = this.props;
+
+    //当前表格数据,树形数据
+    let data = this.state.data;
 
     //最终表格产生更改的数据
     let changedState = {
+      newData: data.slice(),
       inserted: [],
       changed: [],
       deleted: []
@@ -846,9 +844,19 @@ class EditableTable extends React.Component {
 
     //新增的数据行key
     let addedDataKeyMap = {};
+
+    //新增的但未更改的数据
+    let unChangedAddedData = [];
+    let unChangedAddedDataKeyMap = {};
+
     for (let i = 0; i < addedData.length; i++) {
       let k = addedData[i][rowKey];
       addedDataKeyMap[k] = true;
+
+      if (changedRowsKeyMap[k] !== true) {
+        unChangedAddedDataKeyMap[k] = true;
+        unChangedAddedData.push(addedData[i]);
+      }
     }
 
     //修改的数据，排除掉新增、删除的数据
@@ -888,6 +896,27 @@ class EditableTable extends React.Component {
       return bl;
     });
 
+    //排除 新增的但未更改的数据
+    if (allowSaveEmpty === true) {
+    } else {
+      //排除 新增的但未更改的数据
+      let newTreeData = treeFilter(
+        data.slice(),
+        d => !(unChangedAddedDataKeyMap[d[rowKey]] === true)
+      );
+      changedState.newData = newTreeData.slice();
+      //
+    }
+
+    return changedState;
+  };
+
+  completeEdit = async callBack => {
+    let { allowSaveEmpty, alwaysValidate } = this.props;
+
+    //最终表格产生更改的数据
+    let changedState = this.getModifiedData();
+
     let bl = true;
 
     let hasModifyedData = false;
@@ -899,6 +928,8 @@ class EditableTable extends React.Component {
     ) {
       hasModifyedData = true;
     }
+
+    let newRows = changedState.newData;
 
     if (alwaysValidate === true) {
       bl = await this.validateAll();
@@ -926,54 +957,27 @@ class EditableTable extends React.Component {
   };
 
   editSave = async callBack => {
-    //始终为平级数据
-    // 需要排除掉的数据：  删除的数据
-    let changedRows = this.getChangedRows();
-
     let editType = this.editType;
-    let { data, addedData, deletedData, rowKey } = this.state;
+
+    if (!editType) {
+      console.error("未检测到编辑状态");
+      return;
+    }
+
     let { allowSaveEmpty, alwaysValidate } = this.props;
 
-    //始终为树形数据
-    let newRows = data.slice();
+    let {
+      inserted,
+      deleted,
+      changed,
+      newData: newRows
+    } = this.getModifiedData();
 
+    let changedRows = changed;
     if (editType === "add") {
-      //改变的数据行key
-      let changedRowsKeyMap = {};
-      for (let i = 0; i < changedRows.length; i++) {
-        let k = changedRows[i][rowKey];
-        changedRowsKeyMap[k] = true;
-      }
-
-      //新增的但未更改的数据
-      let unChangedAddedData = [];
-      let unChangedAddedDataKeyMap = {};
-
-      for (let i = 0; i < addedData.length; i++) {
-        let k = addedData[i][rowKey];
-        if (changedRowsKeyMap[k] !== true) {
-          unChangedAddedDataKeyMap[k] = true;
-          unChangedAddedData.push(addedData[i]);
-        }
-      }
-
-      if (allowSaveEmpty === true) {
-        //合并新增、更改的数据
-        changedRows = changedRows.concat(unChangedAddedData);
-      } else {
-        //排除 新增的但未更改的数据
-        let newTreeData = treeFilter(
-          data.slice(),
-          d => !(unChangedAddedDataKeyMap[d[rowKey]] === true)
-        );
-        newRows = newTreeData.slice();
-        //
-      }
+      changedRows = changed.concat(inserted);
     } else if (editType === "delete") {
-      //如果不存在更改的行，才返回删除的数据
-      if (changedRows.length === 0) {
-        changedRows = deletedData.slice();
-      }
+      changedRows = deleted;
     }
 
     let bl = true;
@@ -1586,7 +1590,6 @@ class EditableTable extends React.Component {
     };
 
     if (editing === true) {
-      this.editType = "add";
       nextState.editKeys = editKeys.concat(insertedRowKeys);
       nextState.isEditing = true;
       nextState.isAddingRange = true;
@@ -1618,8 +1621,6 @@ class EditableTable extends React.Component {
 
     this.deleteChangedRows(deletedRowKeys);
 
-    this.editType = "delete";
-
     let {
       selectedRowKeys: nextSelectedRowKeys,
       editKeys: nextEditKeys,
@@ -1648,8 +1649,6 @@ class EditableTable extends React.Component {
 
     let modifiedDataKeyMap = {};
     let modifiedData = [];
-
-    this.editType = "edit";
 
     treeFilter(data, d => {
       let k = d[rowKey];
@@ -1897,10 +1896,14 @@ class EditableTable extends React.Component {
   };
 
   api = {
-    /** 添加n行数据 */
+    /** 添加n行数据-同默认按钮动作 */
     addRange: this.addRange,
+    /** 添加数据行-同默认按钮动作 */
     addRows: this.addRows,
+    /** 删除选中数据-同默认按钮动作 */
     delete: this.delete,
+    /** 编辑所有数据-同默认按钮动作 */
+    edit: this.edit,
 
     /** 编辑指定行 */
     editRows: this.editRows,
@@ -1916,6 +1919,8 @@ class EditableTable extends React.Component {
     completeEdit: this.completeEdit,
     /** 取消编辑 */
     cancelEdit: this.cancelEdit,
+    /** 获取存在修改状态的所有数据 */
+    getModifiedData: this.getModifiedData,
 
     /** 查找数据行 */
     findData: this.findData,
