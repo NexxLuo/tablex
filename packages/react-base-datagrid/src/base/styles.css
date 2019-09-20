@@ -250,3 +250,13 @@
   .tablex-table-row-cell:first-child {
   border-left: 1px solid #e8e8ee;
 }
+
+
+
+.tablex-table-rows-frozen{
+  position: absolute;
+  border-top: 1px solid #eeeeee;
+  left: 0;
+  background-color: #fff;
+  z-index: 2;
+}

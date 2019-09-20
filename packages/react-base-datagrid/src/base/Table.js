@@ -229,11 +229,7 @@ class Table extends React.Component {
 
     let styles = {
       height: height,
-      position: "absolute",
-      borderTop: "1px solid #eeeeee",
-      left: 0,
-      backgroundColor: "#fff",
-      right: scrollbarY
+      right: scrollbarY,
     };
 
     let currRef = null;
@@ -247,7 +243,7 @@ class Table extends React.Component {
     }
 
     return (
-      <div className="tablex-table-body-rows-frozen" style={styles}>
+      <div className="tablex-table-rows-frozen" style={styles}>
         <FrozenList
           style={{ overflow: "hidden" }}
           ref={currRef}
