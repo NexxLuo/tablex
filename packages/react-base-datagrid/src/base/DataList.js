@@ -378,6 +378,11 @@ class ItemRenderer extends React.PureComponent {
 }
 
 class DataList extends Component {
+  constructor(props) {
+    super(props);
+    this.columnRowSpan = { start: 0, end: 0, columnKey: "", rowSpanStyle: {} };
+  }
+
   innerElementType = ({ children, style }) => {
     let { columns = [], innerStyle = {} } = this.props;
     let w = 0;
@@ -508,16 +513,12 @@ class DataList extends Component {
     itemData.rowComponent = rowComponent;
     itemData.rowRender = rowRender;
     itemData.cellRenderExtra = cellRenderExtra;
+    itemData.columnRowSpan = this.columnRowSpan;
 
     itemData.getRowsHeight = this.getRowsHeight;
     itemData.getColumnsWidth = this.getColumnsWidth;
     itemData.onCell = onCell;
     itemData.rowRenderExtra = rowRenderExtra;
-    itemData.columnRowSpan = {
-      start: 0,
-      end: 0,
-      elements: []
-    };
 
     let itemCount = data.length;
 
