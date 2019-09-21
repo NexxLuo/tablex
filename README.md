@@ -60,7 +60,7 @@ class Demo extends Component {
 
  ## Breaking Changes
 
- 1. api.completeEdit 不再触发onEditSave事件，改而出发onComplete事件，这是为了实现可连续同时编辑、新增、删除操作而不得不产生的更改，因为当处于此种场景时，原onEditSave事件，无法确定当前的状态是编辑、新增还是删除（因为它们可同时存在）。
+ 1. api.completeEdit 不再触发onEditSave事件，改而触发onComplete事件，这是为了实现可连续同时编辑、新增、删除操作而不得不产生的更改，因为当处于此种场景时，原onEditSave事件，无法确定当前的状态是编辑、新增还是删除（因为它们可同时存在）。
     onComplete事件定义如下 ：onComplete:function({newData,inserted,deleted,changed})
 
  2. api.editRows、api.editAll、api.deleteData、api.insertData、api.modifyData 不再标识对应的编辑状态（原有操作亦无法正确标识），这将会导致使用以上api方法时，默认的保存按钮事件(onEditSave)将无法获取到正确的数据。你应该使用completeEdit、onComplete代替。
