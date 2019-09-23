@@ -822,7 +822,7 @@ class EditableTable extends React.Component {
 
     //最终表格产生更改的数据
     let changedState = {
-      newData: data.slice(),
+      data: data.slice(),
       inserted: [],
       changed: [],
       deleted: []
@@ -904,7 +904,7 @@ class EditableTable extends React.Component {
         data.slice(),
         d => !(unChangedAddedDataKeyMap[d[rowKey]] === true)
       );
-      changedState.newData = newTreeData.slice();
+      changedState.data = newTreeData.slice();
       //
     }
 
@@ -929,8 +929,6 @@ class EditableTable extends React.Component {
       hasModifyedData = true;
     }
 
-    let newRows = changedState.newData;
-
     if (alwaysValidate === true) {
       bl = await this.validateAll();
     } else {
@@ -950,7 +948,7 @@ class EditableTable extends React.Component {
     let fn = this.props.onComplete;
 
     if (typeof fn === "function") {
-      fn(newRows, changedState);
+      fn(changedState);
     }
 
     this.endEdit(callBack);
@@ -966,12 +964,7 @@ class EditableTable extends React.Component {
 
     let { allowSaveEmpty, alwaysValidate } = this.props;
 
-    let {
-      inserted,
-      deleted,
-      changed,
-      newData: newRows
-    } = this.getModifiedData();
+    let { inserted, deleted, changed, data: newRows } = this.getModifiedData();
 
     let changedRows = changed;
     if (editType === "add") {
@@ -1272,7 +1265,6 @@ class EditableTable extends React.Component {
 
     let tools = this.props.editTools || [];
     let config = this.props.editToolsConfig || {};
-    let isTop = config.position === "top";
 
     if (tools.length <= 0) {
       return null;
@@ -1919,8 +1911,8 @@ class EditableTable extends React.Component {
     completeEdit: this.completeEdit,
     /** 取消编辑 */
     cancelEdit: this.cancelEdit,
-    /** 获取存在修改状态的所有数据 */
-    getModifiedData: this.getModifiedData,
+    /** 获取表格所有状态下的数据 */
+    getDataState: this.getModifiedData,
 
     /** 查找数据行 */
     findData: this.findData,
