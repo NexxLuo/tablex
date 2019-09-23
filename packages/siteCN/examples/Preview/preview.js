@@ -33,15 +33,7 @@ const generateData = (columns, count = 20, prefix = "row-") =>
 const columns = generateColumns(10);
 const data = generateData(columns, 100);
 
-let fixedColumns = columns.map((column, columnIndex) => {
-  let fixed;
-  if (columnIndex < 2) fixed = "left";
-  if (columnIndex > 8) fixed = "right";
-
-  return { ...column, resizable: true, fixed };
-});
-
-fixedColumns = [
+let fixedColumns = [
   {
     dataIndex: "column-1",
     key: "column-1",
@@ -86,9 +78,9 @@ fixedColumns = [
         props: {}
       };
 
-      if (index % 5 === 0) {
-        obj.props.rowSpan = 3;
-        obj.children = <div>{value}</div>;
+      if (index % 20 === 0) {
+        obj.props.rowSpan = 13;
+        obj.children = value;
       }
 
       return obj;
@@ -101,7 +93,20 @@ fixedColumns = [
     children: [
       {
         dataIndex: "address",
-        title: "name"
+        title: "name",
+        render: (value, row, index) => {
+          const obj = {
+            children: value,
+            props: {}
+          };
+    
+          if (index % 5 === 0) {
+            obj.props.rowSpan = 3;
+            obj.children = value;
+          }
+    
+          return obj;
+        }
       },
       {
         title: "nick name",
@@ -316,6 +321,7 @@ class Demo extends Component {
             editable={true}
             isAppend={true}
             allowSaveEmpty={true}
+            overscanCount={100}
             alwaysValidate={true}
             rowKey="id"
             onEditSave={this.onEditSave}
@@ -323,7 +329,7 @@ class Demo extends Component {
             columns={fixedColumns}
             checkStrictly={true}
             selectMode="multiple"
-            selectOnRowClick={false}
+            selectOnRowClick={true}
             defaultExpandedRowKeys={["0"]}
             data={this.state.data}
             onExpand={(b, r) => {
@@ -389,7 +395,7 @@ class Demo extends Component {
         <Button onClick={this.scrollToItem2} style={{ marginTop: 10 }}>
           scrollToItem
         </Button>
-
+        {/* 
         <div style={{ height: "600px", marginTop: 10 }}>
           <Table
             loading={this.state.loading}
@@ -468,7 +474,7 @@ class Demo extends Component {
             expandRowHeight={200}
             headerRowHeight={[30, 40, 60]}
           />
-        </div>
+        </div> */}
       </>
     );
   }
