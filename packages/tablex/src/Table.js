@@ -101,6 +101,7 @@ class Table extends React.Component {
       rawData: [],
       columns: [],
       columnDropMenu: false,
+      sortable: false,
       columnsConfig: configs.columnsConfig || null,
       sortedColumns: null,
       columnMenu: null
@@ -111,7 +112,12 @@ class Table extends React.Component {
     let nextState = {};
 
     if (prevState.prevProps !== nextProps) {
-      let { columns, prependColumns = [], columnDropMenu } = nextProps;
+      let {
+        columns,
+        prependColumns = [],
+        columnDropMenu,
+        sortable
+      } = nextProps;
 
       let data = nextProps.data || nextProps.dataSource || [];
 
@@ -134,6 +140,7 @@ class Table extends React.Component {
         rawData: data,
         rawColumns: columnsArr,
         columnDropMenu,
+        sortable,
         prevProps: nextProps
       };
 
@@ -428,7 +435,7 @@ class Table extends React.Component {
   };
 
   formatColumns = columns => {
-    let { columnsConfig, columnDropMenu, sortedColumns } = this.state;
+    let { columnsConfig, columnDropMenu, sortedColumns, sortable } = this.state;
 
     let configs = columnsConfig || {};
 
@@ -461,8 +468,13 @@ class Table extends React.Component {
       let columnKey = d.key || d.dataIndex;
       let config = configs[columnKey] || configs[columnKey] || {};
       let dropMenu = columnDropMenu;
-      if (d.dropMenu === false) {
-        dropMenu = false;
+      if (typeof d.dropMenu === "dropMenu") {
+        dropMenu = d.dropMenu;
+      }
+
+      let allowSort = sortable;
+      if (typeof d.sortable === "boolean") {
+        allowSort = d.sortable;
       }
 
       let sort = (sortedColumns || {})[d.dataIndex];
@@ -484,14 +496,19 @@ class Table extends React.Component {
         needSortColumn = true;
       }
 
+      let titleCellAttr = {};
+
+      if (allowSort) {
+        titleCellAttr.onClick = () => {
+          this.onTitleClick(d);
+        };
+      }
+
       d.headCellRender = ({ title }) => {
         return (
-          <div
-            className="tablex__head__cell__title"
-            onClick={() => this.onTitleClick(d)}
-          >
+          <div className="tablex__head__cell__title" {...titleCellAttr}>
             {title}
-            <SortIcon order={sort} />
+            {allowSort ? <SortIcon order={sort} /> : null}
             {dropMenu === true ? (
               <span
                 className="tablex__head__cell__title__dropdown"
@@ -953,6 +970,7 @@ class Table extends React.Component {
 
 Table.defaultProps = {
   orderNumber: true,
+  sortable: true,
   settable: true,
   columnDropMenu: true,
   pagination: false,
@@ -979,6 +997,9 @@ Table.propTypes = {
 
   /** 是否启用列标题配置项菜单 */
   columnDropMenu: PropTypes.bool,
+
+  /** 是否可进行列排序 */
+  sortable: PropTypes.bool,
 
   /** 是否可进行属性配置 */
   settable: PropTypes.bool,

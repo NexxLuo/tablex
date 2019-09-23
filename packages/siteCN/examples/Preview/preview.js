@@ -111,7 +111,8 @@ fixedColumns = [
             dataIndex: "id",
             title: "nick-1",
             maxWidth: 300,
-            width: 150
+            width: 150,
+            sortable: true
           },
           {
             dataIndex: "level",
@@ -311,6 +312,7 @@ class Demo extends Component {
             loading={this.state.loading}
             editTools={["edit", "add", "delete"]}
             tableId="preview_table"
+            sortable={false}
             editable={true}
             isAppend={true}
             allowSaveEmpty={true}
