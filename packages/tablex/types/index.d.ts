@@ -199,11 +199,7 @@ export interface TableProps<T> {
   editToolsConfig?: EditToolsConfig;
   isAppend?: boolean;
   defaultAddCount?: number;
-  onEditSave?: (
-    changedRows: object[],
-    newRows: object[],
-    editType: "add" | "edit" | "delete"
-  ) => Promise<T> | void;
+
   allowSaveEmpty?: boolean;
   validateTrigger: ["onChange" | "onBlur" | "onSave"];
   onBeforeAdd?: () => boolean;
@@ -216,6 +212,17 @@ export interface TableProps<T> {
   onDelete?: () => void;
   alwaysValidate?: boolean;
   dataControled?: boolean;
+  onEditSave?: (
+    changedRows: object[],
+    newRows: object[],
+    editType: "add" | "edit" | "delete"
+  ) => Promise<T> | void;
+  onComplete?: (modifiedData: {
+    changed: any[];
+    inserted: any[];
+    deleted: any[];
+    data: any[];
+  }) => void;
 }
 
 export default class Table<T> extends React.Component<TableProps<T>, any> {}

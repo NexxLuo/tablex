@@ -46,12 +46,6 @@ Editable.propTypes = {
   /** 新增行时的默认条数 */
   defaultAddCount: PropTypes.number,
 
-  /** 编辑确定事件 (changedRows,newRows,editType)=>void
-   * @param {Array} changedRows-改变的数据行
-   * @param {Array} newRows-改变后最新的数据
-   * @param {string} editType-编辑类型;"edit":编辑;"add":新增;"delete":删除
-   */
-  onEditSave: PropTypes.func,
   /** 当没有改变行数据时，是否仍然执行onEditSave */
   allowSaveEmpty: PropTypes.bool,
   /** 验证时机 */
@@ -88,7 +82,18 @@ Editable.propTypes = {
   /** 无论是否存在输入变化，是否始终验证 */
   alwaysValidate: PropTypes.bool,
   /** 数据是否完全受控，如若受控，请在onEditSave、onCancel中自行更新数据源 */
-  dataControled: PropTypes.bool
+  dataControled: PropTypes.bool,
+
+  /** 内置编辑按钮保存事件 (changedRows,newRows,editType)=>void
+   * @param {Array} changedRows-改变的数据行
+   * @param {Array} newRows-改变后最新的数据
+   * @param {string} editType-编辑类型;"edit":编辑;"add":新增;"delete":删除
+   */
+  onEditSave: PropTypes.func,
+  /** api.completeEdit 触发此事件
+   * @param {changed:[],inserted:[],deleted:[],data:[]} --包含修改、新增、删除的数据，以及最新的表格数据data
+   */
+  onComplete: PropTypes.func
 };
 
 export default Editable;
