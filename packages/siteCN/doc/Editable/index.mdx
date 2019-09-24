@@ -1265,7 +1265,7 @@ super(props);
       startIndex: 2
     });
 
-    this.tableRef.current.api.editAll();
+    //this.tableRef.current.api.editAll();
   }
 
   modifyData() {
@@ -1283,6 +1283,10 @@ super(props);
 
   delete() {
     this.tableRef.current.api.deleteData();
+  }
+
+  editAll() {
+    this.tableRef.current.api.editAll();
   }
 
   onEditComplete(modified) {
@@ -1330,6 +1334,13 @@ super(props);
                   style={{ cursor: "pointer", marginLeft: 10 }}
                 >
                   delete
+                </Button>
+
+                 <Button
+                  onClick={this.editAll.bind(this)}
+                  style={{ cursor: "pointer", marginLeft: 10 }}
+                >
+                  edit all
                 </Button>
               </div>
             );
