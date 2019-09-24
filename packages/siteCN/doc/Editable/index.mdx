@@ -59,8 +59,7 @@ super(props);
         dataIndex: "column-1",
         title: "column-1",
         width: 100,
-          validator2: function(value, row) {
-            console.log("validator:",row.id,value)
+          validator: function(value, row) {
           if (!value) {
             return { valid: false, message: "请输入" };
           }
@@ -1347,7 +1346,7 @@ super(props);
           }}
           editable={true}
           isAppend={true}
-          allowSaveEmpty={true}
+          allowSaveEmpty={false}
    
           alwaysValidate={true}
           validateTrigger="onChange"

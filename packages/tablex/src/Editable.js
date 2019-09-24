@@ -929,6 +929,11 @@ class EditableTable extends React.Component {
       hasModifyedData = true;
     }
 
+    if (allowSaveEmpty !== true && hasModifyedData === false) {
+      this.cancelEdit();
+      return;
+    }
+
     if (alwaysValidate === true) {
       bl = await this.validateAll();
     } else {
@@ -937,11 +942,6 @@ class EditableTable extends React.Component {
 
     if (bl === false) {
       message.error("信息录入不正确，请检查");
-      return;
-    }
-
-    if (allowSaveEmpty !== true && hasModifyedData === false) {
-      this.cancelEdit();
       return;
     }
 
