@@ -447,11 +447,13 @@ class DataList extends Component {
   getRowsHeight = (start, end) => {
     let { data, rowHeight } = this.props;
 
+    let endIndex = end > data.length ? data.length : end;
+
     let rowsHeight = 0;
 
     if (typeof rowHeight === "function") {
       let h = 0;
-      for (let i = start; i < end; i++) {
+      for (let i = start; i < endIndex; i++) {
         let row = data[i];
         if (row) {
           h = h + rowHeight(row, i);
@@ -461,7 +463,7 @@ class DataList extends Component {
       }
       rowsHeight = h;
     } else {
-      rowsHeight = (end - start) * rowHeight;
+      rowsHeight = (endIndex - start) * rowHeight;
     }
 
     return rowsHeight;
