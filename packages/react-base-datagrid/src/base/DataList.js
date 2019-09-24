@@ -71,13 +71,6 @@ const TableCell = props => {
   if (columnColSpan.end > columnIndex) {
     return null;
   }
-  let isInRowSpan = false;
-
-  if (rowIndex > columnRowSpan.start && columnRowSpan.end > rowIndex) {
-    if (columnRowSpan.columnKey === columnKey) {
-      isInRowSpan = true;
-    }
-  }
 
   let prepend = null;
   let prependFn = prependRender;
@@ -125,13 +118,33 @@ const TableCell = props => {
         } else {
           let rowSpanEnd = rowIndex + rowSpan;
           let h = getRowsHeight(rowIndex, rowSpanEnd);
-          columnRowSpan.start = rowIndex;
-          columnRowSpan.end = rowSpanEnd;
-          columnRowSpan.columnKey = columnKey;
-          columnRowSpan.rowSpanStyle = {
-            top: -h + rowHeight,
-            zIndex: 1
-          };
+
+          if (columnRowSpan[columnKey]) {
+            columnRowSpan[columnKey][rowKey] = {
+              start: rowIndex,
+              end: rowSpanEnd,
+              height: h,
+              rowHeight
+            };
+          } else {
+            columnRowSpan[columnKey] = {
+              [rowKey]: {
+                start: rowIndex,
+                end: rowSpanEnd,
+                height: h,
+                rowHeight
+              }
+            };
+          }
+
+          // columnRowSpan.start = rowIndex;
+          // columnRowSpan.end = rowSpanEnd;
+          // columnRowSpan.columnKey = columnKey;
+          // columnRowSpan.rowSpanStyle = {
+          //   top: -h + rowHeight,
+          //   zIndex: 1
+          // };
+
           rowColSpanStyles.height = h;
           rowColSpanStyles.zIndex = 2;
           cellElement = children;
@@ -191,11 +204,19 @@ const TableCell = props => {
     cls.push("tablex-table-row-cell-rowspan");
   }
 
-  if (isInRowSpan === true) {
-    return (
-      <div {...extraAttr} className={cls.join(" ")} style={cellStyles}></div>
-    );
-  }
+  // let isInRowSpan = false;
+
+  // if (rowIndex > columnRowSpan.start && columnRowSpan.end > rowIndex) {
+  //   if (columnRowSpan.columnKey === columnKey) {
+  //     isInRowSpan = true;
+  //   }
+  // }
+
+  // if (isInRowSpan === true) {
+  //   return (
+  //     <div {...extraAttr} className={cls.join(" ")} style={cellStyles}></div>
+  //   );
+  // }
 
   return (
     <div {...extraAttr} className={cls.join(" ")} style={cellStyles}>
@@ -380,7 +401,7 @@ class ItemRenderer extends React.PureComponent {
 class DataList extends Component {
   constructor(props) {
     super(props);
-    this.columnRowSpan = { start: 0, end: 0, columnKey: "", rowSpanStyle: {} };
+    this.columnRowSpan = {}; //{rowKey:{columnKey:{ start: 0, end: 0, colspan:2,rowspan:2,width,height, columnKey: "", rowSpanStyle: {}}}}
   }
 
   innerElementType = ({ children, style }) => {
@@ -545,7 +566,7 @@ class DataList extends Component {
       return <ItemList {...props}>{TableRow}</ItemList>;
     }
 
-    return <VirtualList {...props}>{ItemRenderer}</VirtualList>;
+    return <VirtualList {...props}>{TableRow}</VirtualList>;
   }
 }
 
