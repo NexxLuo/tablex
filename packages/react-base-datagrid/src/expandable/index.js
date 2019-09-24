@@ -57,7 +57,8 @@ class TreeGrid extends Component {
       expandColumnKey: "",
       expandedRowKeys: expandedKeys,
       loadingKeys: [],
-      disabledSelectKeys: []
+      disabledSelectKeys: [],
+      indentSize: 20
     };
   }
 
@@ -69,7 +70,8 @@ class TreeGrid extends Component {
       expandColumnKey,
       expandedRowRender,
       expandedRowKeys,
-      disabledSelectKeys
+      disabledSelectKeys,
+      indentSize
     } = nextProps;
 
     //如果存在自定义展开行渲染，需要进行数据源处理
@@ -85,7 +87,8 @@ class TreeGrid extends Component {
         columns: columns,
         prevProps: nextProps,
         expandColumnKey,
-        disabledSelectKeys: disabledSelectKeys || []
+        disabledSelectKeys: disabledSelectKeys || [],
+        indentSize
       };
 
       if (data !== prevState.rawData) {
@@ -330,7 +333,7 @@ class TreeGrid extends Component {
   };
 
   formatColumns = () => {
-    let { columns, rowKey, expandColumnKey } = this.state;
+    let { columns, rowKey, expandColumnKey, indentSize } = this.state;
     let isTree = this.isTree();
 
     let expandColumn = null;
@@ -357,7 +360,7 @@ class TreeGrid extends Component {
         let isLoading = this.isLoadingChildren(k);
         let isExpanded = this.isExpanded(k);
         let hasChildren = this.hasChildren(row);
-        let style = { marginLeft: depth * 20 };
+        let style = { marginLeft: depth * indentSize };
         return isTree ? (
           <div className="tablex-row-expand" style={style}>
             {hasChildren ? (
@@ -471,7 +474,8 @@ TreeGrid.defaultProps = {
   rowKey: "key",
   expandColumnKey: "",
   expandRowHeight: 100,
-  defaultExpandedRowKeys: []
+  defaultExpandedRowKeys: [],
+  indentSize: 20
 };
 
 TreeGrid.propTypes = {
@@ -487,6 +491,9 @@ TreeGrid.propTypes = {
   /** 数据行主键字段
    */
   rowKey: PropTypes.string.isRequired,
+
+  /** 每层的缩进宽度 */
+  indentSize: PropTypes.number,
 
   /** 展开行渲染 */
   expandedRowRender: PropTypes.func,

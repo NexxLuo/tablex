@@ -7,16 +7,13 @@
   flex: none;
 }
 
-.tablex-bordered .tablex-table-row .tablex-row-expandedRowRender {
-  min-width: 100%;
-}
-
 .tablex-row-expand-icon {
-  display: inline-flex;
+  display: inline-block;
   align-items: center;
   justify-content: center;
   width: 16px;
   height: 16px;
+  line-height: 13px;
   text-align: center;
   border: 1px solid #e8e8e8;
   user-select: none;
@@ -30,6 +27,10 @@
 
 .tablex-row-expand-icon.tablex-row-expand-icon-collapsed::after {
   content: "+";
+}
+
+.tablex-bordered .tablex-table-row .tablex-row-expandedRowRender {
+  min-width: 100%;
 }
 
 @keyframes loadingCircle {

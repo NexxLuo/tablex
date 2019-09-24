@@ -192,6 +192,7 @@ export interface TableProps<T> {
   onExpandedRowsChange?: (expandedRowKeys: string[] | number[]) => void;
   onExpand?: (expanded: boolean, record: T) => void;
   loadChildrenData?: (record: object) => Promise<T> | void;
+  indentSize?: number;
 
   editable?: boolean;
   readOnly?: boolean;
