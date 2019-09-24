@@ -46,8 +46,12 @@ Editable.propTypes = {
   /** 新增行时的默认条数 */
   defaultAddCount: PropTypes.number,
 
-  /** 当没有改变行数据时，是否仍然执行onEditSave */
+  /** 当为false时，新增的行数据如果没有产生输入更改，将被忽略 */
   allowSaveEmpty: PropTypes.bool,
+
+  /** true：每次都验证所有数据行，false：只验证产生更改的行 */
+  alwaysValidate: PropTypes.bool,
+
   /** 验证时机 */
   validateTrigger: PropTypes.oneOf(["onChange", "onBlur", "onSave"]),
 
@@ -79,8 +83,7 @@ Editable.propTypes = {
   onBeforeDelete: PropTypes.func,
   /** 删除按钮事件 */
   onDelete: PropTypes.func,
-  /** 无论是否存在输入变化，是否始终验证 */
-  alwaysValidate: PropTypes.bool,
+
   /** 数据是否完全受控，如若受控，请在onEditSave、onCancel中自行更新数据源 */
   dataControled: PropTypes.bool,
 
