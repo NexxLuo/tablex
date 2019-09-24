@@ -24,8 +24,8 @@ Column.propTypes = {
   halign: PropTypes.oneOf(["left", "right", "center"]),
   /** 最小列宽 */
   minWidth: PropTypes.number,
-  /** 列宽 */
-  width: PropTypes.number.isRequired,
+  /** 列宽,假设不设置宽度，列宽将会自动占满剩余宽度 */
+  width: PropTypes.number,
   /** 列唯一key，如若不设置，将会以dataIndex作为唯一key */
   key: PropTypes.string.isRequired,
   /** 列数据字段 */
@@ -54,7 +54,6 @@ Column.propTypes = {
 
   /** 列是否显示列属性下拉菜单 */
   dropMenu: PropTypes.bool
-
 };
 
 export default Column;
