@@ -2,10 +2,29 @@
 name: API方法
 ---
 
+import { Playground, Props } from "docz";
+import { CompleteEditFlow } from "./API";
+
+
 # API
 
 > Table提供了一些API，可对表格进行快捷操作。通过获取Table的ref进行方法调用，如：tableRef.api.expandAll()
  
+
+## 树形、平级数据转换
+
+```javascript
+
+import { flatten, unflatten } from "sy-framework/lib/widget/table";
+
+//树形数据转换为平级数据，treeData为包含children字段的数组
+let flattenData = flatten(treeData);
+
+//平级数据转树形数据，id、parentId为flatData中标识父关系的字段名称
+let treeData = unflatten(flatData,"id","parentId");
+
+```
+
 ## 编辑
  
 ```javascript
@@ -47,7 +66,12 @@ api= {
     cancelEdit:()=>{}
  }
 ```
- 
+
+### api.completeEdit执行流程
+
+<CompleteEditFlow />
+
+
  
 ## 其他
  
