@@ -45,8 +45,6 @@ class EditableTable extends React.Component {
       isEditAll: false,
       isAdding: false,
       isAddingRange: false,
-      addedData: [],
-      deletedData: [],
       isEditing: false,
       isAppend: false,
       editKeys: [],
@@ -374,7 +372,7 @@ class EditableTable extends React.Component {
   //验证改变的数据行
   validate = async () => {
     let bl = true;
-    let arr = this.changedRows;
+    let arr = this.getChangedRows();
 
     bl = await this.validateAsync(arr);
 
@@ -560,6 +558,8 @@ class EditableTable extends React.Component {
     this.changedRows = [];
     this.rowsValidation = [];
     this.editType = "";
+    this.deletedData = [];
+    this.insertedData = [];
 
     let nextState = {
       editSaveLoading: false,
@@ -568,8 +568,6 @@ class EditableTable extends React.Component {
       isAddingRange: false,
       isEditing: false,
       editKeys: [],
-      changedRows: [],
-      addedData: [],
       sourceData: cloneData(this.state.data)
     };
 
@@ -580,6 +578,30 @@ class EditableTable extends React.Component {
     } else {
       this.setState(nextState);
     }
+  };
+
+  reset = () => {
+    let nextState = {
+      editSaveLoading: false,
+      isEditAll: false,
+      isAdding: false,
+      isAddingRange: false,
+      isEditing: false,
+      editKeys: []
+    };
+
+    let { sourceData } = this.state;
+
+    let data = cloneData(sourceData);
+    nextState.data = data;
+    nextState.flatData = treeToFlatten(data).list;
+
+    this.editType = "";
+    this.changedRows = [];
+    this.insertedData = [];
+    this.deletedData = [];
+    this.rowsValidation = [];
+    this.setState(nextState);
   };
 
   //取消编辑
@@ -596,7 +618,57 @@ class EditableTable extends React.Component {
   };
 
   getChangedRows = () => {
-    return this.changedRows.slice();
+    let arr = this.changedRows.slice();
+
+    //排除掉删除的数据
+    let deletedData = this.deletedData;
+    let { rowKey } = this.state;
+
+    //删除的数据行key
+    let deletedDataKeyMap = {};
+    for (let i = 0; i < deletedData.length; i++) {
+      let k = deletedData[i][rowKey];
+      deletedDataKeyMap[k] = true;
+    }
+
+    //排除掉删除的数据
+    let data = arr.filter(d => {
+      let bl = true;
+      let k = d[rowKey];
+      if (deletedDataKeyMap[k] === true) {
+        bl = false;
+      }
+      return bl;
+    });
+
+    return data;
+  };
+
+  getInsertedData = () => {
+    let arr = this.insertedData.slice();
+
+    //排除掉删除的数据
+    let deletedData = this.deletedData;
+    let { rowKey } = this.state;
+
+    //删除的数据行key
+    let deletedDataKeyMap = {};
+    for (let i = 0; i < deletedData.length; i++) {
+      let k = deletedData[i][rowKey];
+      deletedDataKeyMap[k] = true;
+    }
+
+    //排除掉删除的数据
+    let data = arr.filter(d => {
+      let bl = true;
+      let k = d[rowKey];
+      if (deletedDataKeyMap[k] === true) {
+        bl = false;
+      }
+      return bl;
+    });
+
+    return data;
   };
 
   getRows = () => {
@@ -634,10 +706,10 @@ class EditableTable extends React.Component {
 
     newEditKeys = editKeys.concat(rowKeys);
     newAddedData = [].concat(rows);
+    this.insertedData = newAddedData;
 
     let nextState = {
       isAddingRange: true,
-      addedData: newAddedData,
       data: data.slice().concat(newAddedData),
       flatData: flatData.slice().concat(newAddedData)
     };
@@ -658,29 +730,6 @@ class EditableTable extends React.Component {
       isEditAll: false,
       changedRows: []
     });
-  };
-
-  reset = () => {
-    let nextState = {
-      isEditAll: false,
-      isAdding: false,
-      isAddingRange: false,
-      isEditing: false,
-      editKeys: [],
-      changedRows: [],
-      addedData: []
-    };
-
-    this.editType = "";
-    let { sourceData } = this.state;
-
-    let data = cloneData(sourceData);
-    nextState.data = data;
-    nextState.flatData = treeToFlatten(data).list;
-
-    this.changedRows = [];
-    this.rowsValidation = [];
-    this.setState(nextState);
   };
 
   focusInput = editor => {
@@ -808,11 +857,11 @@ class EditableTable extends React.Component {
 
   getModifiedData = () => {
     //修改的数据,平级数据
-    let changedRows = this.getChangedRows();
+    let changedRows = this.changedRows;
     //添加的数据,平级数据
-    let addedData = this.state.addedData;
+    let insertedData = this.insertedData;
     //删除的数据,平级数据
-    let deletedData = this.state.deletedData;
+    let deletedData = this.deletedData;
 
     let { rowKey } = this.state;
     let { allowSaveEmpty } = this.props;
@@ -849,13 +898,13 @@ class EditableTable extends React.Component {
     let unChangedAddedData = [];
     let unChangedAddedDataKeyMap = {};
 
-    for (let i = 0; i < addedData.length; i++) {
-      let k = addedData[i][rowKey];
+    for (let i = 0; i < insertedData.length; i++) {
+      let k = insertedData[i][rowKey];
       addedDataKeyMap[k] = true;
 
       if (changedRowsKeyMap[k] !== true) {
         unChangedAddedDataKeyMap[k] = true;
-        unChangedAddedData.push(addedData[i]);
+        unChangedAddedData.push(insertedData[i]);
       }
     }
 
@@ -870,7 +919,7 @@ class EditableTable extends React.Component {
     });
 
     //新增的数据，排除掉删除的数据
-    changedState.inserted = addedData.filter(d => {
+    changedState.inserted = insertedData.filter(d => {
       let bl = true;
       let k = d[rowKey];
       if (deletedDataKeyMap[k] === true) {
@@ -1054,7 +1103,8 @@ class EditableTable extends React.Component {
   };
 
   deleteRowsState = (rowKeys = []) => {
-    let { rowKey, selectedRowKeys, editKeys, addedData } = this.state;
+    let { rowKey, selectedRowKeys, editKeys } = this.state;
+    let insertedData = this.insertedData;
 
     //删除的行key
     let keysMap = {};
@@ -1083,57 +1133,10 @@ class EditableTable extends React.Component {
       }
     }
 
-    //删除新增状态
-    let nextAddedData = [];
-
-    for (let i = 0; i < addedData.length; i++) {
-      let k = addedData[i][rowKey];
-      if (keysMap[k] !== true) {
-        nextAddedData.push(addedData[i]);
-      }
-    }
-
-    //删除变更行
-    let changedRows = this.changedRows;
-    let nextChangedRows = [];
-    for (let i = 0; i < changedRows.length; i++) {
-      let k = changedRows[i][rowKey];
-      if (keysMap[k] !== true) {
-        nextChangedRows.push(changedRows[i]);
-      }
-    }
-
-    this.changedRows = nextChangedRows;
-
     return {
       selectedRowKeys: nextSelectedRowKeys,
-      editKeys: nextEditKeys,
-      addedData: nextAddedData
+      editKeys: nextEditKeys
     };
-  };
-
-  deleteChangedRows = rowKeys => {
-    let changedRows = this.changedRows || [];
-
-    let rowKey = this.state.rowKey;
-
-    let keysMap = {};
-
-    for (let i = 0; i < rowKeys.length; i++) {
-      let k = rowKeys[i];
-      keysMap[k] = true;
-    }
-
-    let nextChangedRows = [];
-    for (let i = 0; i < changedRows.length; i++) {
-      let d = changedRows[i];
-      let k = d[rowKey];
-      if (keysMap[k] !== true) {
-        nextChangedRows.push(d);
-      }
-    }
-
-    this.changedRows = nextChangedRows;
   };
 
   delete = () => {
@@ -1159,18 +1162,12 @@ class EditableTable extends React.Component {
         selectedRowKeys,
         rowKey
       );
+      this.deletedData = deletedRows;
 
-      this.deleteChangedRows(deletedRowKeys);
-
-      let {
-        editKeys: nextEditKeys,
-        addedData: nextAddedData
-      } = this.deleteRowsState(deletedRowKeys);
+      let { editKeys: nextEditKeys } = this.deleteRowsState(deletedRowKeys);
 
       let nextState = {
         deleteLoading: false,
-        addedData: nextAddedData,
-        deletedData: deletedRows,
         selectedRowKeys: [],
         editKeys: nextEditKeys,
         data: newData,
@@ -1220,7 +1217,7 @@ class EditableTable extends React.Component {
 
     let { data, flatData } = this.state;
 
-    let addedData = [];
+    let insertedData = [];
     let keys = [];
 
     for (let i = 0; i < addCount; i++) {
@@ -1236,17 +1233,17 @@ class EditableTable extends React.Component {
       }
 
       keys.push(row[rowKey]);
-      addedData.push(row);
+      insertedData.push(row);
     }
 
-    let newData = data.slice().concat(addedData);
+    let newData = data.slice().concat(insertedData);
 
     this.changedRows = [];
+    this.insertedData = insertedData;
 
     this.setState({
-      addedData,
       data: newData,
-      flatData: flatData.slice().concat(addedData),
+      flatData: flatData.slice().concat(insertedData),
       editKeys: keys,
       isEditing: true,
       isEditAll: false,
@@ -1256,13 +1253,11 @@ class EditableTable extends React.Component {
     });
 
     if (typeof this.props.onAdd === "function") {
-      this.props.onAdd(addedData, newData, "add");
+      this.props.onAdd(insertedData, newData, "add");
     }
   };
 
   editTools = () => {
-    let w = 0;
-
     let tools = this.props.editTools || [];
     let config = this.props.editToolsConfig || {};
 
@@ -1297,7 +1292,6 @@ class EditableTable extends React.Component {
     deleteIcon = deleteIcon ? <Icon type={deleteIcon} /> : null;
 
     if (isEditing) {
-      w = 160;
       buttons.push(
         <Button
           key={"_btnOk"}
@@ -1317,8 +1311,6 @@ class EditableTable extends React.Component {
       );
     } else {
       tools.forEach((d, i) => {
-        w += 80;
-
         let styles = { ...itemStyle };
 
         const menu = (
@@ -1462,17 +1454,17 @@ class EditableTable extends React.Component {
   };
 
   getDataRows = () => {
-    let { data, addedData, isAdding, isAddingRange, isAppend } = this.state;
-
+    let { data, isAdding, isAddingRange, isAppend } = this.state;
+    let insertedData = this.insertedData;
     let arr = data;
 
-    let addedRows = addedData;
+    let insertedRows = insertedData;
 
     if (isAdding === true || isAddingRange === true) {
       if (isAppend === true) {
         arr = data;
       } else {
-        arr = addedRows;
+        arr = insertedRows;
       }
     }
 
@@ -1543,6 +1535,7 @@ class EditableTable extends React.Component {
     }
   };
 
+  insertedData = [];
   insertData = ({
     data = [],
     parentKey = "",
@@ -1551,13 +1544,9 @@ class EditableTable extends React.Component {
     scrollTo = true,
     startIndex = -1
   }) => {
-    let {
-      data: source,
-      rowKey,
-      editKeys,
-      expandedRowKeys,
-      addedData
-    } = this.state;
+    let { data: source, rowKey, editKeys, expandedRowKeys } = this.state;
+
+    let insertedData = this.insertedData;
 
     let { newData, newFlatData, insertedRows, insertedRowKeys } = insertData({
       source,
@@ -1575,11 +1564,12 @@ class EditableTable extends React.Component {
     }
 
     let nextState = {
-      addedData: addedData.slice().concat(insertedRows), //此处需注意，addedData与newData是不同的引用
       expandedRowKeys: nextExpandedRowKeys,
       data: newData,
       flatData: newFlatData
     };
+
+    this.insertedData = insertedData.slice().concat(insertedRows);
 
     if (editing === true) {
       nextState.editKeys = editKeys.concat(insertedRowKeys);
@@ -1593,9 +1583,14 @@ class EditableTable extends React.Component {
       }
     });
 
-    return { data: newData, inserted: insertedRows };
+    return {
+      data: newData,
+      inserted: insertedRows,
+      insertedKeys: insertedRowKeys
+    };
   };
 
+  deletedData = [];
   deleteData = rowKeys => {
     let { data, rowKey, selectedRowKeys } = this.state;
 
@@ -1610,29 +1605,27 @@ class EditableTable extends React.Component {
       keys,
       rowKey
     );
-
-    this.deleteChangedRows(deletedRowKeys);
+    this.deletedData = deletedRows;
 
     let {
       selectedRowKeys: nextSelectedRowKeys,
-      editKeys: nextEditKeys,
-      addedData: nextAddedData
+      editKeys: nextEditKeys
     } = this.deleteRowsState(deletedRowKeys);
 
     this.setState({
       selectedRowKeys: nextSelectedRowKeys,
       editKeys: nextEditKeys,
-      addedData: nextAddedData,
-      deletedData: deletedRows,
       data: newData,
       flatData: newFlatData
     });
 
-    return deletedRows;
+    return { deleted: deletedRows, deletedKeys: deletedRowKeys, data: newData };
   };
 
   modifyData = (rows = [], silent = false) => {
-    let { addedData, data } = this.state;
+    let { data } = this.state;
+
+    let insertedData = this.insertedData;
 
     let rowKey = this.props.rowKey;
 
@@ -1648,8 +1641,8 @@ class EditableTable extends React.Component {
       return true;
     });
 
-    for (let i = 0; i < addedData.length; i++) {
-      let row = addedData[i];
+    for (let i = 0; i < insertedData.length; i++) {
+      let row = insertedData[i];
       let k = row[rowKey];
       addedRowsMap[k] = row;
     }
@@ -1942,7 +1935,7 @@ class EditableTable extends React.Component {
       return {
         data: this.state.data, //当前表格的源数据
         changedData: this.getChangedRows(), //改变的行数据
-        addedData: this.state.addedData, //添加的行数据
+        addedData: this.getInsertedData(), //添加的行数据
         currData: this.getDataRows() //当前表格状态显示的数据
       };
     },
