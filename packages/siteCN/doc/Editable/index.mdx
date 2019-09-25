@@ -1352,15 +1352,15 @@ super(props);
           }}
           editable={true}
           isAppend={true}
-          allowSaveEmpty={false}
+          allowSaveEmpty={true}
    
-          alwaysValidate={true}
+          alwaysValidate={false}
           validateTrigger="onChange"
 
           ref={this.tableRef}
           rowKey="id"
           onComplete={this.onEditComplete.bind(this)}
-          onComplete={this.onEditSave.bind(this)}
+          onEditSave={this.onEditSave.bind(this)}
           columns={this.columns}
           selectMode="multiple"
           checkStrictly={false}
