@@ -17,7 +17,6 @@ Table.defaultProps = {
   striped: true,
   bordered: true,
   rowHeight: 40,
-  indentSize: 20,
   virtual: true
 };
 
@@ -25,12 +24,6 @@ Table.propTypes = {
   /** 数据行主键字段
    */
   rowKey: PropTypes.string.isRequired,
-
-  /** 树形数据，每层的缩进宽度 */
-  indentSize: PropTypes.number,
-
-  /** 是否启用虚拟加载 */
-  virtual: PropTypes.bool,
 
   /**
    * 表格数据
@@ -40,14 +33,14 @@ Table.propTypes = {
   /** 表格列 */
   columns: PropTypes.array,
 
-  /** 额外前置添加的列 */
-  prependColumns: PropTypes.array,
-
   /** 行高 */
   rowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
 
   /** table最小高度，虚拟加载的表格依赖外部区域的高度，如果未探测到外部高度，将使用此高度 */
   minHeight: PropTypes.number,
+
+  /** 是否启用虚拟加载 */
+  virtual: PropTypes.bool,
 
   /** 自定义行样式 */
   rowClassName: PropTypes.func,

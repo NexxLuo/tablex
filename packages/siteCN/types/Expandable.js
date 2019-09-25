@@ -13,17 +13,11 @@ Expandable.defaultProps = {
 };
 
 Expandable.propTypes = {
-  /** 展开行渲染 */
-  expandedRowRender: PropTypes.func,
-
-  /** 展开行高度 */
-  expandRowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
+  /** 树形数据，每层的缩进宽度 */
+  indentSize: PropTypes.number,
 
   /** 展开按钮所在的列 */
   expandColumnKey: PropTypes.string,
-
-  /** 每层展开子级的缩进宽度 */
-  indentSize: PropTypes.number,
 
   /** 默认展开的行 */
   defaultExpandedRowKeys: PropTypes.array,
@@ -45,7 +39,13 @@ Expandable.propTypes = {
    * 展开时加载children的方法
    * (row:object) => Promise
    * */
-  loadChildrenData: PropTypes.func
+  loadChildrenData: PropTypes.func,
+
+  /** 展开行渲染 */
+  expandedRowRender: PropTypes.func,
+
+  /** 展开行高度 */
+  expandRowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.func])
 };
 
 export default Expandable;
