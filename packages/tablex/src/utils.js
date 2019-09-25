@@ -416,12 +416,12 @@ export function deleteData(data, keys, rowKey) {
   }
 
   for (let i = 0; i < flatData.length; i++) {
-    let d = flatData[i];
+    let d = Object.assign({}, flatData[i]);
     if (d) {
       let k = d[rowKey];
       if (k in keysMap) {
         deletedRowKeys.push(k);
-        deletedRows.push(Object.assign({}, d));
+        deletedRows.push(d);
       } else {
         delete d.children;
         newFlatData.push(d);

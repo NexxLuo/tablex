@@ -1281,7 +1281,8 @@ super(props);
   }
 
   delete() {
-    this.tableRef.current.api.deleteData();
+    let deleted = this.tableRef.current.api.deleteData();
+    console.log("deleted:",deleted);
   }
 
   editAll() {
