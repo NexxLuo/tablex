@@ -469,7 +469,8 @@ BaseDataGrid.defaultProps = {
   rowKey: "key",
   showHeader: true,
   hoverable: true,
-  bordered: true
+  bordered: true,
+  virtual: true
 };
 
 BaseDataGrid.propTypes = {
@@ -481,6 +482,9 @@ BaseDataGrid.propTypes = {
 
   /** 鼠标hover样式 */
   hoverable: PropTypes.bool,
+
+  /** 是否启用虚拟加载 */
+  virtual: PropTypes.bool,
 
   /** 行高 */
   rowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),

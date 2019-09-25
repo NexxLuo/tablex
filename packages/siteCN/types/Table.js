@@ -16,7 +16,9 @@ Table.defaultProps = {
   showHeader: true,
   striped: true,
   bordered: true,
-  rowHeight: 40
+  rowHeight: 40,
+  indentSize: 20,
+  virtual: true
 };
 
 Table.propTypes = {
@@ -24,6 +26,11 @@ Table.propTypes = {
    */
   rowKey: PropTypes.string.isRequired,
 
+  /** 树形数据，每层的缩进宽度 */
+  indentSize: PropTypes.number,
+
+  /** 是否启用虚拟加载 */
+  virtual: PropTypes.bool,
 
   /**
    * 表格数据
