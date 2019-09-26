@@ -13,8 +13,8 @@ const ItemTypes = {
 };
 
 const DraggableRow = memo(
-  ({ id, moveCard, className, style, index, children, data }) => {
-    let [{ prevKey }, setState] = useState({ prevKey: "" });
+  ({ id, moveCard, className, style, index, children, data, getContainer }) => {
+    let [{ isUnder }, setState] = useState({ isUnder: false });
     const ref = useRef(null);
     const [{ isDragging, offset, height }, connectDrag] = useDrag({
       item: { id, type: ItemTypes.CARD },
@@ -25,63 +25,69 @@ const DraggableRow = memo(
           height: style.height
         };
         return result;
+      },
+      end(item, monitor){
+
+        console.log("end:",data)
+
       }
     });
     const [{ isActive }, connectDrop] = useDrop({
       accept: ItemTypes.CARD,
       collect: monitor => {
-        console.log("moitor:", monitor.getSourceClientOffset());
+      //  console.log("moitor:", monitor.getSourceClientOffset());
         const result = {
           isActive: monitor.canDrop() && monitor.isOver()
         };
 
         return result;
       },
+      drop(item, monitor){
+        console.log("drop:",data)
+      },
       hover(item, monitor) {
         let { id: draggedId } = item;
         // console.log("hover:",monitor.getInitialClientOffset()) //开始拖动的初始位置
         // console.log("hover:",monitor.getSourceClientOffset()) //当前drageSource元素拖到的位置
         // console.log("hover:",monitor.getDifferenceFromInitialOffset()) //当前相对于初始拖动的差值
-
-        //console.log("hover:",monitor.getInitialSourceClientOffset()) //dragSource初始位置 278 558
+        //console.log("hover:",monitor.getInitialSourceClientOffset()) //dragSource初始位置
         // console.log("hover:",monitor.getClientOffset()) //上一次的拖动位置
 
-        let y = monitor.getSourceClientOffset().y;
-
-        let el = ref.current;
-
-        if (el) {
-          const hover_y = el.getBoundingClientRect().y;
-
-          let o = hover_y > y + height / 2;
-
-          if (o) {
-            el.style.borderBottom = "1px solid red";
-          }else{
-            el.style.borderBottom = "1px solid #eeeeee";
-
-          }
-
-        console.log("hover:", y, o, height);
-
-        }
-
-
-        //setState({ prevKey: id });
         if (draggedId !== id) {
-          //  moveCard(draggedId, id);
+          let y = monitor.getClientOffset().y;
+
+          let el = ref.current;
+
+          if (el) {
+            const hover_y = el.getBoundingClientRect().y;
+
+            let o = y > hover_y + height / 2;
+
+            if (o) {
+              let container = getContainer();
+              if (container) {
+                let arr = container.querySelectorAll(".dragg-under") || [];
+                arr.forEach(e => {
+                  e.classList.remove("dragg-under");
+                });
+              }
+
+              el.classList.add("dragg-under");
+            }
+
+          //  console.log("hover:", y, hover_y, o, height);
+          }
         }
       }
     });
     connectDrag(ref);
     connectDrop(ref);
-    const opacity = isDragging ? 0 : 1;
-    //console.log("isActive:", prevKey);
 
     let cls = [className];
     if (isActive) {
       cls.push("dragg-hover");
     }
+
     return (
       <div ref={ref} className={cls.join(" ")} style={{ ...style }}>
         {children}
@@ -150,10 +156,11 @@ const DraggableRow2 = ({ id, className, style, index, children, data }) => {
 };
 
 function DraggableTableRow(props) {
-  let { rowData, rowIndex, rowProps } = props;
+  let { rowData, rowIndex, rowProps, getContainer } = props;
   return (
     <DraggableRow
       {...rowProps}
+      getContainer={getContainer}
       data={rowData}
       index={rowIndex}
       data-key={rowData.id}
@@ -254,9 +261,15 @@ class Demo extends Component {
     }));
   }
 
-  getContainer() {
+  getContainer = () => {
     let el = ReactDom.findDOMNode(this);
     return el.querySelector(".tablex-table-body>div");
+  };
+
+  onRow() {
+    return {
+      getContainer: this.getContainer
+    };
   }
 
   render() {
@@ -270,6 +283,7 @@ class Demo extends Component {
           selectMode="none"
           data={this.state.data}
           orderNumber={true}
+          onRow={this.onRow.bind(this)}
           components={{
             row: DraggableTableRow
           }}

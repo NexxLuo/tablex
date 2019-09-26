@@ -19,3 +19,7 @@
 .dragg-hover{
   background-color: yellow!important;
 }
+
+.dragg-under{
+  border-bottom:1px solid rgb(158, 149, 149)!important;
+}
