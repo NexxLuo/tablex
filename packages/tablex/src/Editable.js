@@ -1751,7 +1751,7 @@ class EditableTable extends React.Component {
       }
     }
 
-    if (focused === true && found.index > -1) {
+    if (focused === true && found && found.index > -1) {
       this.scrollToItem(found.index, "center");
       this.setState({ focusedRowKeys: [found.row[rowKey]] });
     }
