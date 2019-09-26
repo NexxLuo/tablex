@@ -14,3 +14,8 @@
   align-items: center;
   position: relative;
 }
+
+
+.dragg-hover{
+  background-color: yellow!important;
+}

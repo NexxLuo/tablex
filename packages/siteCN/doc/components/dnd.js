@@ -1,4 +1,5 @@
-import React, { Component, useRef } from "react";
+import React, { memo, useMemo, useRef, Component, useState } from "react";
+
 import ReactDom from "react-dom";
 import { Table } from "tablex";
 import { Input, Button } from "antd";
@@ -7,13 +8,94 @@ import HTML5Backend from "react-dnd-html5-backend";
 
 import "./styles.css";
 
- 
-const DraggableRow = ({ id, className, style, index, children, data }) => {
+const ItemTypes = {
+  CARD: "card"
+};
+
+const DraggableRow = memo(
+  ({ id, moveCard, className, style, index, children, data }) => {
+    let [{ prevKey }, setState] = useState({ prevKey: "" });
+    const ref = useRef(null);
+    const [{ isDragging, offset, height }, connectDrag] = useDrag({
+      item: { id, type: ItemTypes.CARD },
+      collect: monitor => {
+        const result = {
+          isDragging: monitor.isDragging(),
+          offset: monitor.getInitialSourceClientOffset(),
+          height: style.height
+        };
+        return result;
+      }
+    });
+    const [{ isActive }, connectDrop] = useDrop({
+      accept: ItemTypes.CARD,
+      collect: monitor => {
+        console.log("moitor:", monitor.getSourceClientOffset());
+        const result = {
+          isActive: monitor.canDrop() && monitor.isOver()
+        };
+
+        return result;
+      },
+      hover(item, monitor) {
+        let { id: draggedId } = item;
+        // console.log("hover:",monitor.getInitialClientOffset()) //开始拖动的初始位置
+        // console.log("hover:",monitor.getSourceClientOffset()) //当前drageSource元素拖到的位置
+        // console.log("hover:",monitor.getDifferenceFromInitialOffset()) //当前相对于初始拖动的差值
+
+        //console.log("hover:",monitor.getInitialSourceClientOffset()) //dragSource初始位置 278 558
+        // console.log("hover:",monitor.getClientOffset()) //上一次的拖动位置
+
+        let y = monitor.getSourceClientOffset().y;
+
+        let el = ref.current;
+
+        if (el) {
+          const hover_y = el.getBoundingClientRect().y;
+
+          let o = hover_y > y + height / 2;
+
+          if (o) {
+            el.style.borderBottom = "1px solid red";
+          }else{
+            el.style.borderBottom = "1px solid #eeeeee";
+
+          }
+
+        console.log("hover:", y, o, height);
+
+        }
+
+
+        //setState({ prevKey: id });
+        if (draggedId !== id) {
+          //  moveCard(draggedId, id);
+        }
+      }
+    });
+    connectDrag(ref);
+    connectDrop(ref);
+    const opacity = isDragging ? 0 : 1;
+    //console.log("isActive:", prevKey);
+
+    let cls = [className];
+    if (isActive) {
+      cls.push("dragg-hover");
+    }
+    return (
+      <div ref={ref} className={cls.join(" ")} style={{ ...style }}>
+        {children}
+      </div>
+    );
+  }
+);
+
+const DraggableRow2 = ({ id, className, style, index, children, data }) => {
   const ref = useRef(null);
   const [, drop] = useDrop({
     accept: "card",
     hover(item, monitor) {
-        console.log("hover:",item.data,data)
+      console.log("hover:", item.data, data);
       if (!ref.current) {
         return;
       }
@@ -53,7 +135,7 @@ const DraggableRow = ({ id, className, style, index, children, data }) => {
     }
   });
   const [{ isDragging }, drag] = useDrag({
-    item: { type: "card", id:data.id,data:data, index },
+    item: { type: "card", id: data.id, data: data, index },
     collect: monitor => ({
       isDragging: monitor.isDragging()
     })
@@ -66,14 +148,20 @@ const DraggableRow = ({ id, className, style, index, children, data }) => {
     </div>
   );
 };
- 
 
 function DraggableTableRow(props) {
   let { rowData, rowIndex, rowProps } = props;
-  return <DraggableRow {...rowProps} data={rowData} index={rowIndex} data-key={rowData.id} />;
+  return (
+    <DraggableRow
+      {...rowProps}
+      data={rowData}
+      index={rowIndex}
+      data-key={rowData.id}
+      id={rowData.id}
+    />
+  );
 }
 
- 
 const generateData = (columns, count = 20, prefix = "row-") =>
   new Array(count).fill(0).map((row, rowIndex) => {
     return columns.reduce(
