@@ -26,24 +26,22 @@ const DraggableRow = memo(
         };
         return result;
       },
-      end(item, monitor){
-
-        console.log("end:",data)
-
+      end(item, monitor) {
+        console.log("end:", data);
       }
     });
     const [{ isActive }, connectDrop] = useDrop({
       accept: ItemTypes.CARD,
       collect: monitor => {
-      //  console.log("moitor:", monitor.getSourceClientOffset());
+        //  console.log("moitor:", monitor.getSourceClientOffset());
         const result = {
           isActive: monitor.canDrop() && monitor.isOver()
         };
 
         return result;
       },
-      drop(item, monitor){
-        console.log("drop:",data)
+      drop(item, monitor) {
+        console.log("drop:", data);
       },
       hover(item, monitor) {
         let { id: draggedId } = item;
@@ -63,19 +61,19 @@ const DraggableRow = memo(
 
             let o = y > hover_y + height / 2;
 
-            if (o) {
-              let container = getContainer();
-              if (container) {
-                let arr = container.querySelectorAll(".dragg-under") || [];
-                arr.forEach(e => {
-                  e.classList.remove("dragg-under");
-                });
-              }
+            let container = getContainer();
+            if (container) {
+              let arr = container.querySelectorAll(".dragg-under") || [];
+              arr.forEach(e => {
+                e.classList.remove("dragg-under");
+              });
+            }
 
+            if (o) {
               el.classList.add("dragg-under");
             }
 
-          //  console.log("hover:", y, hover_y, o, height);
+            //  console.log("hover:", y, hover_y, o, height);
           }
         }
       }
