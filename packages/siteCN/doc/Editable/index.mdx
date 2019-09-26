@@ -333,7 +333,7 @@ super(props);
             <InputNumber
               defaultValue={value}
               ref={ref}
-              onChange={e => onchange({ ["column-2"]: e.target.value })}
+              onChange={e => onchange({ ["column-2"]: e })}
             />
           );
         }
@@ -355,7 +355,7 @@ super(props);
             <Select
               defaultValue={value}
               ref={ref}
-              onChange={e => onchange({ ["column-3"]: e.target.value })}
+              onChange={e => onchange({ ["column-3"]: e })}
             />
           );
         }
@@ -377,7 +377,7 @@ super(props);
             <DatePicker
               placeholder=""
               ref={ref}
-              onChange={e => onchange({ ["column-4"]: e.target.value })}
+              onChange={e => onchange({ ["column-4"]: e})}
             />
           );
         }
@@ -425,7 +425,7 @@ data: newData
 }
 
 componentDidMount() {
-this.refs.tableRef.api.editAll()
+this.refs.tableRef.api.edit()
 }
 
 render() {

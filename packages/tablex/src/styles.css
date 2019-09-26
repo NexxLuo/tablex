@@ -128,12 +128,7 @@
   background-color: #fafbfc;
 }
 
-.tablex-table-row .tablex-table-row-cell .tablex-row-cell-editor {
-  display: inline-block;
-  vertical-align: middle;
-  width: 100%;
-}
-
+ 
 .tablex__setting__modal__item__dragging {
   box-shadow: 0 0px 5px 0px rgba(0, 0, 0, 0.2);
 }
@@ -230,75 +225,6 @@
   border-color: #a9a6a6;
 }
 
-.tablex-editor-noborder .tablex-row-cell-editor.no-error .ant-input,
-.tablex-editor-noborder .tablex-row-cell-editor.no-error .table-custom-editor {
-  border: none;
-  box-shadow: none;
-  outline: none;
-  background-color: transparent;
-  width: 100%;
-}
-
-.tablex-editor-noborder .tablex-row-cell-editor.no-error .ant-input-number {
-  border: none;
-  box-shadow: none;
-  outline: none;
-  background-color: transparent;
-  width: 100%;
-}
-.tablex-editor-noborder
-  .tablex-row-cell-editor.no-error
-  .ant-input-number
-  .ant-input-number-input-wrap {
-  width: 100%;
-}
-
-.tablex-editor-noborder
-  .tablex-row-cell-editor.no-error
-  .ant-input-number
-  .ant-input-number-input {
-  width: calc(100% - 24px);
-}
-
-.tablex-editor-noborder .tablex-row-cell-editor.no-error .ant-select {
-  width: 100%;
-}
-
-.tablex-editor-noborder .tablex-row-cell-editor.no-error .ant-select-selection {
-  border: none;
-  box-shadow: none;
-  outline: none;
-  background-color: transparent;
-  width: 100%;
-}
-
-.tablex-editor-noborder
-  .tablex-row-cell-editor.no-error
-  .ant-select-selection
-  .ant-select-arrow {
-  visibility: hidden;
-}
-
-.tablex-editor-noborder
-  .tablex-row-cell-editor.no-error
-  .ant-select-selection:hover
-  .ant-select-arrow {
-  visibility: visible;
-}
-
-.tablex-editor-noborder
-  .tablex-row-cell-editor.no-error
-  .ant-calendar-picker
-  .ant-calendar-picker-icon {
-  visibility: hidden;
-}
-
-.tablex-editor-noborder
-  .tablex-row-cell-editor.no-error
-  .ant-calendar-picker:hover
-  .ant-calendar-picker-icon {
-  visibility: visible;
-}
 
 .tablex-row-contextmenu {
   position: fixed;

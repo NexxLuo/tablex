@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import cloneDeep from "lodash/cloneDeep";
 import merge from "lodash/merge";
 import Table from "./Table";
+import Editor from "./components/Editor";
 import {
   treeToFlatten,
   treeToList,
@@ -13,7 +14,6 @@ import {
   insertData,
   deleteData
 } from "./utils";
-import Tooltip from "antd/lib/tooltip";
 import Button from "antd/lib/button";
 import message from "antd/lib/message";
 import Popconfirm from "antd/lib/popconfirm";
@@ -443,7 +443,9 @@ class EditableTable extends React.Component {
 
   renderEditor = (value, row, index, column) => {
     let fn = column.editor;
-    let { valid, msg } = this.getValidate(row, column.dataIndex) || {};
+    let rowKey = row[this.state.rowKey];
+    let columnKey = column.dataIndex;
+    let { valid, msg } = this.getValidate(row, columnKey) || {};
 
     let rendered = fn(
       value,
@@ -468,19 +470,16 @@ class EditableTable extends React.Component {
     }
 
     let c = (
-      <span
-        className={
-          valid === false
-            ? "tablex-row-cell-editor has-error"
-            : "tablex-row-cell-editor no-error"
-        }
-        onClick={e => this.onClick(e, row, column)}
-        onKeyDown={e => this.onKeyDown(e, row, column)}
+      <Editor
+        valid={valid}
+        message={msg}
+        onClick={this.onClick}
+        rowKey={rowKey}
+        columnKey={columnKey}
+        onKeyDown={this.onKeyDown}
       >
-        <Tooltip placement="topLeft" title={msg}>
-          {ed}
-        </Tooltip>
-      </span>
+        {ed}
+      </Editor>
     );
 
     newRenderProps.children = c;
@@ -754,14 +753,10 @@ class EditableTable extends React.Component {
     }
   };
 
-  getNextEditor = (keyCode, row, column) => {
+  getNextEditor = (keyCode, rowKey, columnKey) => {
     let nextEditor = null;
 
     let key = this.props.rowKey;
-
-    let rowKey = row[key];
-
-    let columnKey = column.dataIndex;
 
     let { columns } = this.state;
     let dataList = this.getDataList();
@@ -817,16 +812,8 @@ class EditableTable extends React.Component {
     return nextEditor;
   };
 
-  onKeyDown = (e, row, column) => {
-    // e.preventDefault();
-    //e.stopPropagation();
-
-    let key = this.props.rowKey;
-
-    let rowKey = row[key];
-    let columnKey = column.dataIndex;
-
-    let nextEditor = this.getNextEditor(e.keyCode, row, column);
+  onKeyDown = (e, rowKey, columnKey) => {
+    let nextEditor = this.getNextEditor(e.keyCode, rowKey, columnKey);
 
     let currEditor = this.getEditorIns(rowKey, columnKey);
 
