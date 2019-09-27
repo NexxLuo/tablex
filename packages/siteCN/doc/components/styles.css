@@ -15,11 +15,32 @@
   position: relative;
 }
 
-
-.dragg-hover{
-  background-color: yellow!important;
+.tablex-table-row {
+  position: relative;
 }
 
-.dragg-under{
-  border-bottom:1px solid rgb(158, 149, 149)!important;
+.tablex-table-row.dragging {
+  opacity: 0.7;
+}
+
+.tablex-table-row.drag-hover {
+  background-color: rgb(173, 216, 230) !important;
+}
+
+.tablex-table-row.drag-under {
+  /* box-shadow: 0 0px 5px 0px rgba(54,194,246, 0.2); */
+  border-bottom: 2px dashed rgb(54, 194, 246) !important;
+}
+.tablex-table-row .drag-handler {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 20px;
+  width: 20px;
+  color: #7F8C8D;
+  text-align: center;
+  z-index: 2;
+  bottom: 0;
+  margin: auto;
+  cursor: move;
 }
