@@ -1,0 +1,46 @@
+.tablex-table-row.tablex-row-dragging {
+    display: flex;
+    width: auto;
+    min-width: auto;
+    background-color: #ffffff;
+    box-shadow: 0 0px 5px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+  }
+  
+  .tablex-table-row.tablex-row-dragging .tablex-table-row-cell {
+    display: flex;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    align-items: center;
+    position: relative;
+  }
+  
+  .tablex-table-row {
+    position: relative;
+  }
+  
+  .tablex-table-row.dragging {
+    opacity: 0.4;
+  }
+  
+  .tablex-table-row.drag-inner {
+    background-color: rgb(173, 216, 230) !important;
+  }
+  
+  .tablex-table-row.drag-under {
+    border-bottom: 2px solid rgb(54, 194, 246) !important;
+  }
+  .tablex-table-row .drag-handler {
+    left: 0;
+    top: 0;
+    height: 20px;
+    font-size: 16px;
+    width: 20px;
+    color: #7F8C8D;
+    text-align: center;
+    z-index: 2;
+    bottom: 0;
+    margin: auto;
+    cursor: move;
+  }
+  
