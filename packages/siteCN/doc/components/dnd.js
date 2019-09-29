@@ -1,4 +1,11 @@
-import React, { memo, useMemo, useRef, Component, useState } from "react";
+import React, {
+  memo,
+  useMemo,
+  useRef,
+  Component,
+  useState,
+  useEffect
+} from "react";
 
 import ReactDom from "react-dom";
 import { Table } from "tablex";
@@ -10,15 +17,15 @@ import "./styles.css";
 const DragIcon = () => {
   return (
     <svg
-      viewBox="64 64 896 896"
-      focusable="false"
-      data-icon="drag"
-      width="1em"
-      height="1em"
-      fill="currentColor"
-      aria-hidden="true"
+      style={{
+        display: "inline-block",
+        width: "1em",
+        height: "1em",
+        fill: "currentColor"
+      }}
+      viewBox="0 0 1024 1024"
     >
-      <path d="M909.3 506.3L781.7 405.6a7.23 7.23 0 0 0-11.7 5.7V476H548V254h64.8c6 0 9.4-7 5.7-11.7L517.7 114.7a7.14 7.14 0 0 0-11.3 0L405.6 242.3a7.23 7.23 0 0 0 5.7 11.7H476v222H254v-64.8c0-6-7-9.4-11.7-5.7L114.7 506.3a7.14 7.14 0 0 0 0 11.3l127.5 100.8c4.7 3.7 11.7.4 11.7-5.7V548h222v222h-64.8c-6 0-9.4 7-5.7 11.7l100.8 127.5c2.9 3.7 8.5 3.7 11.3 0l100.8-127.5c3.7-4.7.4-11.7-5.7-11.7H548V548h222v64.8c0 6 7 9.4 11.7 5.7l127.5-100.8a7.3 7.3 0 0 0 .1-11.4z"></path>
+      <path d="M469.333333 256a85.333333 85.333333 0 1 1-85.333333-85.333333 85.333333 85.333333 0 0 1 85.333333 85.333333z m-85.333333 170.666667a85.333333 85.333333 0 1 0 85.333333 85.333333 85.333333 85.333333 0 0 0-85.333333-85.333333z m0 256a85.333333 85.333333 0 1 0 85.333333 85.333333 85.333333 85.333333 0 0 0-85.333333-85.333333z m256-341.333334a85.333333 85.333333 0 1 0-85.333333-85.333333 85.333333 85.333333 0 0 0 85.333333 85.333333z m0 85.333334a85.333333 85.333333 0 1 0 85.333333 85.333333 85.333333 85.333333 0 0 0-85.333333-85.333333z m0 256a85.333333 85.333333 0 1 0 85.333333 85.333333 85.333333 85.333333 0 0 0-85.333333-85.333333z"></path>
     </svg>
   );
 };
@@ -49,6 +56,15 @@ const DraggableRow = memo(
       }
     }
 
+    function addClass(sel, name) {
+      let container = getContainer();
+      if (container) {
+        (container.querySelectorAll(sel) || []).forEach(e => {
+          e.classList.add(name);
+        });
+      }
+    }
+
     const [{ isDragging, height }, connectDrag, preview] = useDrag({
       item: {
         key: itemKey,
@@ -63,6 +79,13 @@ const DraggableRow = memo(
           height: style.height
         };
         return result;
+      },
+      begin(){
+        let t=document.createElement("div");
+        t.className="drag_preview";
+        t.innerText="drag_preview";
+        t.style="position: absolute;z-index: 10;background-color: red;height: 20px;width: 100%;top:0"
+        document.body.appendChild(t)
       },
       end() {
         removeClass("drag-under");
@@ -119,9 +142,12 @@ const DraggableRow = memo(
             dragToInner = false;
 
             if (o) {
-              el.classList.add("drag-under");
+              // el.classList.add("drag-under");
+              addClass(".tablex-table-row-" + index, "drag-under");
             } else {
-              el.classList.add("drag-hover");
+              //el.classList.add("drag-hover");
+              addClass(".tablex-table-row-" + index, "drag-hover");
+
               dragToInner = true;
             }
 
@@ -130,10 +156,21 @@ const DraggableRow = memo(
         }
       }
     });
-    connectDrag(ref_drag);
-    connectDrop(ref);
-    preview(ref, { captureDraggingState: true });
 
+    let drag_el = null;
+
+    connectDrag(drag_el);
+    connectDrop(ref);
+
+    useEffect(() => {
+      if (ref.current) {
+        drag_el = ref.current.querySelector(".drag-handler");
+      }
+      connectDrag(drag_el);
+
+   
+    });
+    preview(document.body.querySelector(".drag_preview"), { captureDraggingState: true });
     let cls = [className];
 
     if (isDragging) {
@@ -142,7 +179,6 @@ const DraggableRow = memo(
 
     return (
       <div ref={ref} className={cls.join(" ")} style={style}>
-        <span ref={ref_drag} className="drag-handler"><DragIcon></DragIcon></span>
         {children}
       </div>
     );
@@ -324,7 +360,7 @@ class Demo extends Component {
 
   getContainer = () => {
     let el = ReactDom.findDOMNode(this);
-    return el.querySelector(".tablex-table-body>div");
+    return el.querySelector(".tablex-container");
   };
 
   onRow(row, index, rowProps, rowExtra) {
@@ -340,6 +376,21 @@ class Demo extends Component {
         <Table
           rowKey="id"
           expandColumnKey="column-1"
+          prependColumns={[
+            {
+              key: "test",
+              title: "",
+              width: 30,
+              align:"center",
+              render: () => {
+                return (
+                  <span className="drag-handler" style={{ color: "#7F8C8D" }}>
+                    <DragIcon></DragIcon>
+                  </span>
+                );
+              }
+            }
+          ]}
           editable={true}
           virtual={!!this.props.virtual}
           columns={this.state.columns}
