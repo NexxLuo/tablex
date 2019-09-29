@@ -14,33 +14,4 @@
   align-items: center;
   position: relative;
 }
-
-.tablex-table-row {
-  position: relative;
-}
-
-.tablex-table-row.dragging {
-  opacity: 0.4;
-}
-
-.tablex-table-row.drag-hover {
-  background-color: rgb(173, 216, 230) !important;
-}
-
-.tablex-table-row.drag-under {
-  border-bottom: 2px solid rgb(54, 194, 246) !important;
-}
-.tablex-table-row .drag-handler {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 20px;
-  font-size: 16px;
-  width: 20px;
-  color: #7F8C8D;
-  text-align: center;
-  z-index: 2;
-  bottom: 0;
-  margin: auto;
-  cursor: move;
-}
+ 

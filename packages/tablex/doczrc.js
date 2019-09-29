@@ -28,6 +28,8 @@ export default {
       filepath => /[w-]*.(js|jsx|ts|tsx)$/.test(filepath) //default is /\/[A-Z]\w*\.(js|jsx|ts|tsx)
     );
   },
+
+  
   /** 左侧菜单排序 */
   menu: ["Intro"]
 };
