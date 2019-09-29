@@ -334,6 +334,7 @@ const TableRow = memo(({ data, index, style, isRowSpan }) => {
     let r = rowRender({
       rowData: row,
       rowIndex: index,
+      rowKey: k,
       children: rowCells,
       extra: rowExtra
     });
@@ -358,6 +359,7 @@ const TableRow = memo(({ data, index, style, isRowSpan }) => {
 
     let componentProps = {
       ...extraAttr,
+      rowKey: k,
       rowData: row,
       rowIndex: index,
       rowProps

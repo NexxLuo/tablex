@@ -177,7 +177,7 @@ class Table extends React.Component {
         }
       }
 
-      nextState.prependColumns = extraColumns.concat(prependColumns);
+      nextState.prependColumns = prependColumns.concat(extraColumns);
     }
 
     if ("pagination" in nextProps) {

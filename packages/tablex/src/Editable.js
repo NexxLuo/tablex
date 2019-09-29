@@ -994,7 +994,7 @@ class EditableTable extends React.Component {
     let editType = this.editType;
 
     if (!editType) {
-      console.error("未检测到编辑状态");
+      console.error("未检测到编辑状态,如果使用了api.xxx进行编辑，请使用completeEdit、onComplete替代...");
       return;
     }
 
@@ -1744,10 +1744,12 @@ class EditableTable extends React.Component {
 
     for (let i = startIndex, len = data.length; i < len; i++) {
       let d = data[i];
-      let bl = fn(d);
-      if (bl === true) {
-        found = { row: d, index: i };
-        break;
+      if (d) {
+        let bl = fn(d);
+        if (bl === true) {
+          found = { row: d, index: i };
+          break;
+        }
       }
     }
 
@@ -1869,54 +1871,54 @@ class EditableTable extends React.Component {
 
   api = {
     /** 添加n行数据-同默认按钮动作 */
-    addRange: this.addRange,
+    addRange: this.addRange.bind(this),
     /** 添加数据行-同默认按钮动作 */
-    addRows: this.addRows,
+    addRows: this.addRows.bind(this),
     /** 删除选中数据-同默认按钮动作 */
-    delete: this.delete,
+    delete: this.delete.bind(this),
     /** 编辑所有数据-同默认按钮动作 */
-    edit: this.edit,
+    edit: this.edit.bind(this),
 
     /** 编辑指定行 */
-    editRows: this.editRows,
+    editRows: this.editRows.bind(this),
     /** 编辑所有 */
-    editAll: this.editAll,
+    editAll: this.editAll.bind(this),
     /** 删除数据 */
-    deleteData: this.deleteData,
+    deleteData: this.deleteData.bind(this),
     /** 插入数据 */
-    insertData: this.insertData,
+    insertData: this.insertData.bind(this),
     /** 修改数据 */
-    modifyData: this.modifyData,
+    modifyData: this.modifyData.bind(this),
     /** 完成编辑 */
-    completeEdit: this.completeEdit,
+    completeEdit: this.completeEdit.bind(this),
     /** 取消编辑 */
-    cancelEdit: this.cancelEdit,
+    cancelEdit: this.cancelEdit.bind(this),
     /** 获取表格所有状态下的数据 */
-    getDataState: this.getModifiedData,
+    getDataState: this.getModifiedData.bind(this),
 
     /** 查找数据行 */
-    findData: this.findData,
+    findData: this.findData.bind(this),
     /** 筛选数据 */
-    filterData: this.filterData,
+    filterData: this.filterData.bind(this),
     /** 折叠所有 */
-    collapseAll: this.collapseAll,
+    collapseAll: this.collapseAll.bind(this),
     /** 展开所有 */
-    expandAll: this.expandAll,
+    expandAll: this.expandAll.bind(this),
     /** 展开至指定层级 */
-    expandTo: this.expandTo,
+    expandTo: this.expandTo.bind(this),
     /** 切换节点展开、折叠状态 */
-    expandToggle: this.expandToggle,
+    expandToggle: this.expandToggle.bind(this),
     /** 选中所有 */
-    selectAll: this.selectAll,
+    selectAll: this.selectAll.bind(this),
     /** 取消所有选中 */
-    unSelectAll: this.unSelectAll,
+    unSelectAll: this.unSelectAll.bind(this),
     /** 切换节点选中状态 */
-    selectToggle: this.selectToggle,
+    selectToggle: this.selectToggle.bind(this),
 
-    reset: this.reset,
-    isEditing: this.isEditing,
-    validateChanged: this.validate,
-    validateAll: this.validateAll,
+    reset: this.reset.bind(this),
+    isEditing: this.isEditing.bind(this),
+    validateChanged: this.validate.bind(this),
+    validateAll: this.validateAll.bind(this),
     getData: () => this.state.data,
     getAllData: () => {
       return {
@@ -1928,9 +1930,9 @@ class EditableTable extends React.Component {
     },
 
     /** 滚动到指定行 */
-    scrollToItem: this.scrollToItem,
+    scrollToItem: this.scrollToItem.bind(this),
     /** 滚动到指定行 */
-    scrollToRow: this.scrollToRow
+    scrollToRow: this.scrollToRow.bind(this)
   };
 
   headerToolsBar = () => {

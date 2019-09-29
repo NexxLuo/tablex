@@ -35,10 +35,6 @@ class BaseDataGrid extends React.Component {
       scrollbarY: 0,
       needResetScrollbar: false
     };
-
-    if (typeof props.innerRef === "function") {
-      props.innerRef(this);
-    }
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -219,6 +215,9 @@ class BaseDataGrid extends React.Component {
   };
 
   componentDidMount() {
+    if (typeof this.props.innerRef === "function") {
+      this.props.innerRef(this);
+    }
     if (this.state.hoverable) {
       this.bindHoverClass();
     }
