@@ -82,7 +82,12 @@ class Draggable extends React.Component {
     let { list, treeProps } = treeToList(data, rowKey);
     delete list[sourceInfo.treeIndex].children;
 
+    let oldIndex = sourceInfo.treeIndex;
     let newIndex = targetInfo.treeIndex;
+
+    if (newIndex < oldIndex) {
+      newIndex = newIndex + 1;
+    }
 
     //层级改变
     if (sourceInfo.parentKey !== targetInfo.parentKey) {
@@ -90,17 +95,14 @@ class Draggable extends React.Component {
         treeProps[sourceKey].parentKey = targetKey;
       } else {
         treeProps[sourceKey].parentKey = targetInfo.parentKey;
-        newIndex = newIndex + 1;
       }
     } else {
       if (isInner === true) {
         treeProps[sourceKey].parentKey = targetKey;
-      } else {
-        newIndex = newIndex + 1;
       }
     }
 
-    let newList = arrayMove(list, sourceInfo.treeIndex, newIndex);
+    let newList = arrayMove(list, oldIndex, newIndex);
 
     let newTreeData = getTreeFromFlatData({
       flatData: newList,
