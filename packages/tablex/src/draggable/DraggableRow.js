@@ -102,6 +102,12 @@ const DraggableRow = memo(
       },
       canDrop(item, monitor) {
         let { key: draggedId } = item;
+
+        //不可拖动到本身
+        if (draggedId === itemKey) {
+          return false;
+        }
+
         removeClass("drag-under");
         if (allowDragLevel === true) {
           removeClass("drag-inner");
