@@ -365,6 +365,7 @@ const TableRow = memo(({ data, index, style, isRowSpan }) => {
 
     let componentProps = {
       ...rowComponentProps,
+      ...extraAttr,
       onRowProps: extraAttr,
       rowKey: k,
       rowData: row,
