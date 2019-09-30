@@ -645,3 +645,116 @@ let { columns, data } = this.state;
 }
 
 </Playground>
+
+
+
+
+
+## 拖动&编辑
+
+<Playground style={{ height: 400 }}>
+ {
+  class Demo extends React.Component {
+  generateData(columns, count = 20, prefix = "Row") {
+    return new Array(count).fill(0).map((row, rowIndex) => {
+      return columns.reduce(
+        (rowData, column, columnIndex) => {
+          if (column.dataIndex !== "id") {
+            rowData[column.dataIndex] = Math.floor(Math.random() * 100 + 1);
+          } else {
+            rowData[column.dataIndex] =
+              prefix + " " + rowIndex + " - Col " + columnIndex;
+          }
+
+          return rowData;
+        },
+        {
+          id: prefix + rowIndex,
+          parentId: null
+        }
+      );
+    });
+
+}
+
+constructor(props) {
+super(props);
+
+    const columns = [
+      {
+        dataIndex: "id",
+        title: "id",
+        key: "id",
+        width: 150
+      },
+      {
+        dataIndex: "column-1",
+        key: "column-1",
+        title: "column-1",
+        width: 100,
+        editor:(value, row, index, onchange, ref)=>{
+          return <Input ref={ref} defaultValue={value} onChange={(e)=>onchange({"column-1": e.target.value})} />
+        }
+      },
+
+      {
+        dataIndex: "column-2",
+        key: "column-2",
+        title: "column-2",
+        width: 150
+      },
+
+      {
+        dataIndex: "column-3",
+        key: "column-3",
+        title: "column-3",
+        align: "right"
+      },
+      {
+        dataIndex: "column-4",
+        key: "column-4",
+        title: "column-4",
+        width: 100,
+        align: "center"
+      }
+    ];
+
+    let data = this.generateData(columns, 20);
+
+    this.state = {
+      data: data,
+      columns: columns
+    };
+
+}
+
+onDragComplete(result){
+console.log("onDragComplete:",result)
+}
+
+  onEditSave(changedRows, newRows, editType) {
+    this.setState({ data: newRows });
+  }
+
+render() {
+let { columns, data } = this.state;
+
+    return (
+      <DraggableTable
+        rowKey="id"
+        editable={true}
+        useDragHandle={true}
+        onEditSave={this.onEditSave.bind(this)}
+        columns={columns}
+        data={data}
+        onDragComplete={this.onDragComplete.bind(this)}
+      />
+    );
+
+}
+}
+
+}
+
+</Playground>
+
