@@ -316,16 +316,19 @@ class TreeGrid extends Component {
     let { index, treeIndex, depth, parents, orders } = nodeInfo;
 
     let rootKey = parents[0];
+    let parentKey = parents[parents.length - 1] || "";
+    let parent = null;
 
-    let root = dataMap[rootKey];
-    let rootInfo = (treeProps || {})[rootKey] || {};
-    let rootIndex = rootInfo.index;
+    if (parentKey) {
+      parent = dataMap[parentKey];
+    }
 
     return {
       depth,
-      root,
-      rootIndex,
+      rootKey,
       parents,
+      parentKey,
+      parent,
       orders,
       treeIndex,
       index
@@ -394,7 +397,7 @@ class TreeGrid extends Component {
   }
 
   rowRender = params => {
-    let { rowKey } = this.state;
+    let { rowKey, dataMap, treeProps } = this.state;
 
     let { rowData, rowIndex } = params;
     let fn = this.props.expandedRowRender;
@@ -402,7 +405,10 @@ class TreeGrid extends Component {
 
     if (typeof fn === "function") {
       if (rowData.__type === "__expandedRowRender") {
-        let { root, rootIndex } = this.getTreeNode(rowData[rowKey]);
+        let { rootKey } = this.getTreeNode(rowData[rowKey]);
+        let nodeInfo = (treeProps || {})[rootKey];
+        let root = dataMap[rootKey];
+        let rootIndex = nodeInfo.index;
         return (
           <div className="tablex-row-expandedRowRender">
             {fn(root, rootIndex, params)}
