@@ -239,6 +239,7 @@ const TableRow = memo(({ data, index, style, isRowSpan }) => {
     onCell,
     rowClassName,
     rowComponent,
+    onRowComponent,
     rowRender,
     rowRenderExtra,
     cellRenderExtra,
@@ -357,8 +358,14 @@ const TableRow = memo(({ data, index, style, isRowSpan }) => {
   if (typeof rowComponent === "function") {
     let RowCmp = rowComponent;
 
+    let rowComponentProps = {};
+    if (typeof onRowComponent === "function") {
+      rowComponentProps = onRowComponent(row, index, rowProps, rowExtra);
+    }
+
     let componentProps = {
-      ...extraAttr,
+      ...rowComponentProps,
+      onRowProps: extraAttr,
       rowKey: k,
       rowData: row,
       rowIndex: index,
@@ -518,6 +525,7 @@ class DataList extends Component {
       onRow,
       rowClassName,
       rowComponent,
+      onRowComponent,
       style,
       onScroll,
       listRef,
@@ -536,6 +544,7 @@ class DataList extends Component {
     itemData.onRow = onRow;
     itemData.rowClassName = rowClassName;
     itemData.rowComponent = rowComponent;
+    itemData.onRowComponent = onRowComponent;
     itemData.rowRender = rowRender;
     itemData.cellRenderExtra = cellRenderExtra;
     itemData.columnRowSpan = this.columnRowSpan;

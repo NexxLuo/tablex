@@ -560,6 +560,9 @@ BaseDataGrid.propTypes = {
   /** 自定义行属性，可处理行事件 */
   onRow: PropTypes.func,
 
+  /** 自定义行组件属性 */
+  onRowComponent: PropTypes.func,
+
   /** 自定义列属性，可处理列事件 */
   onCell: PropTypes.func,
 
