@@ -205,16 +205,16 @@ class Draggable extends React.Component {
       ];
     }
 
-    return (
-      <DndProvider
-        backend={HTML5Backend}
-        options={{ enableMouseEvents: true, enableTouchEvents: false }}
-      >
-        <Table {...props} {...newProps} ref={this.tableRef} />
-      </DndProvider>
-    );
+    return <Table {...props} {...newProps} ref={this.tableRef} />;
   }
 }
+const withDragDropContext = Cmp => {
+  return props => (
+    <DndProvider backend={HTML5Backend}>
+      <Cmp {...props} />
+    </DndProvider>
+  );
+};
 
 Draggable.defaultProps = {
   allowDragLevel: true,
@@ -252,4 +252,4 @@ Draggable.propTypes = {
   tableRef: PropTypes.func
 };
 
-export default Draggable;
+export default withDragDropContext(Draggable);
