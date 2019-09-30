@@ -177,18 +177,20 @@ const DraggableRow = memo(
     connectDrop(ref);
 
     useEffect(() => {
+      let drag_el = null;
+
       if (useDragHandle === true) {
-        let drag_el = null;
         if (ref.current) {
-          if (dragHandleSelector) {
-            drag_el = ref.current.querySelector(dragHandleSelector);
-          } else {
-            drag_el = ref.current.querySelector(".drag-handler");
-          }
+          drag_el = ref.current.querySelector(".drag-handler");
         }
         connectDrag(drag_el);
       } else {
-        connectDrag(ref);
+        if (dragHandleSelector) {
+          drag_el = ref.current.querySelector(dragHandleSelector);
+          connectDrag(drag_el);
+        } else {
+          connectDrag(ref);
+        }
       }
     });
     preview(ref, { captureDraggingState: true });
