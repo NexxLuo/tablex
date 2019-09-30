@@ -6,7 +6,7 @@ import ReactDom from "react-dom";
 import { DndProvider } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
 import DragIcon from "./DragIcon";
-import { treeToList, getTreeFromFlatData, cloneData } from "../utils";
+import { treeToList, getTreeFromFlatData } from "../utils";
 
 import "./styles.css";
 
@@ -83,25 +83,34 @@ class Draggable extends React.Component {
     return bl;
   };
 
-  onDrop = (result, monitor) => {
+  onDragComplete = result => {
     let { source, target, isInner } = result;
-    let { info: sourceInfo, key: sourceKey } = source;
-    let { info: targetInfo, key: targetKey } = target;
+    let { info: sourceInfo, key: sourceKey, data: sourceData } = source;
+    let { info: targetInfo, key: targetKey, data: targetData } = target;
 
     let { data, rowKey } = this.state;
 
     let { list, treeProps } = treeToList(data, rowKey);
+    delete list[sourceInfo.treeIndex].children;
 
-    //改变了层级
-    if (isInner === true) {
-      treeProps[sourceKey].parentKey = targetKey;
-    } else {
-      if (sourceInfo.depth !== targetInfo.depth) {
+    //层级改变
+    if (sourceInfo.parentKey !== targetInfo.parentKey) {
+      if (isInner === true) {
+        treeProps[sourceKey].parentKey = targetKey;
+      } else {
         treeProps[sourceKey].parentKey = targetInfo.parentKey;
+      }
+    } else {
+      if (isInner === true) {
+        treeProps[sourceKey].parentKey = targetKey;
       }
     }
 
-    let newList = arrayMove(list, sourceInfo.treeIndex, targetInfo.treeIndex);
+    let newList = arrayMove(
+      list,
+      sourceInfo.treeIndex,
+      targetInfo.treeIndex + 1
+    );
 
     let newTreeData = getTreeFromFlatData({
       flatData: newList,
@@ -113,11 +122,24 @@ class Draggable extends React.Component {
       rootKey: ""
     });
 
+    this.setState({ data: newTreeData });
+
+    if (typeof this.props.onDragComplete === "function") {
+      this.props.onDragComplete({
+        data: newTreeData,
+        flatData: newList,
+        target: targetData,
+        source: sourceData
+      });
+    }
+  };
+
+  onDrop = (result, monitor) => {
     if (typeof this.props.onDrop === "function") {
       this.props.onDrop(result, monitor);
     }
 
-    this.setState({ data: newTreeData.slice() });
+    this.onDragComplete(result);
   };
 
   onRow = (row, index, rowProps, rowExtra) => {
@@ -205,27 +227,29 @@ Draggable.defaultProps = {
 Draggable.propTypes = {
   /** 是否允许拖动层级 */
   allowDragLevel: PropTypes.bool,
-  /** 是否使用拖动按钮 */
+  /** 是否使用拖动按钮，此按钮将独占一列 */
   useDragHandle: PropTypes.bool,
-  /** 拖动按钮渲染 */
+  /** 拖动按钮渲染,useDragHandle:true时有效 */
   dragHandleRender: PropTypes.func,
-  /** 拖动按钮元素选择器,dragHandleRender */
+  /** 拖动按钮元素选择器,useDragHandle:false时有效，将会在当前行元素内查找此选择器 */
   dragHandleSelector: PropTypes.string,
 
-  /** 行是否允许拖动 */
+  /** 行是否允许拖动,返回false阻止拖拽 */
   canDrag: PropTypes.func,
   /** 拖动开始事件 */
   onDragBegin: PropTypes.func,
   /** 拖动结束事件 */
   onDragEnd: PropTypes.func,
 
-  /** 是否允许放置 */
+  /** 是否允许放置,返回false阻止放置 */
   canDrop: PropTypes.func,
   /** 放置hover事件 */
   onDropHover: PropTypes.func,
   /** 放置完成事件 */
   onDrop: PropTypes.func,
 
+  /** 拖动、放置完成事件，此事件中返回拖动后的新数据 */
+  onDragComplete: PropTypes.func,
   /** 获取表格实例 */
   tableRef: PropTypes.func
 };
