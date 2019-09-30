@@ -5,20 +5,17 @@ name: 自定义组件
 import { Playground, Props } from "docz";
 
 import Body from "./body.js";
-import Dnd from "./dnd.js";
 
 
 # Table.components
  
-## 行拖动
+## 使用react-sortable-hoc实现行拖动
  
 <Playground style={{ height: 400 }}>
-  <Dnd virtual={true} />
+  <Body />
 </Playground>
 
-<Playground style={{ height: 400 }}>
-  <Dnd virtual={false} />
-</Playground>
+
 
 `js`
 
