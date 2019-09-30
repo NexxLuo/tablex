@@ -5,6 +5,7 @@ import DraggableRow from "./DraggableRow";
 import ReactDom from "react-dom";
 import { DndProvider } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
+
 import DragIcon from "./DragIcon";
 import { treeToList, getTreeFromFlatData } from "../utils";
 
@@ -17,23 +18,11 @@ const arrayMove = (array, from, to) => {
 };
 
 function DraggableTableRow(props) {
-  let {
-    rowData,
-    rowIndex,
-    rowKey,
-    rowProps,
-    getContainer,
-    rowExtra,
-    dragOptions
-  } = props;
+  let { rowProps, onRowProps = {}, dragOptions } = props;
   return (
     <DraggableRow
-      {...rowProps}
-      getContainer={getContainer}
-      itemInfo={rowExtra}
-      itemKey={rowKey}
-      data={rowData}
-      index={rowIndex}
+      rowProps={rowProps}
+      onRowProps={onRowProps}
       dragOptions={dragOptions}
     />
   );
@@ -93,24 +82,25 @@ class Draggable extends React.Component {
     let { list, treeProps } = treeToList(data, rowKey);
     delete list[sourceInfo.treeIndex].children;
 
+    let newIndex = targetInfo.treeIndex;
+
     //层级改变
     if (sourceInfo.parentKey !== targetInfo.parentKey) {
       if (isInner === true) {
         treeProps[sourceKey].parentKey = targetKey;
       } else {
         treeProps[sourceKey].parentKey = targetInfo.parentKey;
+        newIndex = newIndex + 1;
       }
     } else {
       if (isInner === true) {
         treeProps[sourceKey].parentKey = targetKey;
+      } else {
+        newIndex = newIndex + 1;
       }
     }
 
-    let newList = arrayMove(
-      list,
-      sourceInfo.treeIndex,
-      targetInfo.treeIndex + 1
-    );
+    let newList = arrayMove(list, sourceInfo.treeIndex, newIndex);
 
     let newTreeData = getTreeFromFlatData({
       flatData: newList,
@@ -142,19 +132,26 @@ class Draggable extends React.Component {
     this.onDragComplete(result);
   };
 
-  onRow = (row, index, rowProps, rowExtra) => {
+  onRowComponent = (row, index, rowProps, rowExtra) => {
     let {
       allowDragLevel,
       useDragHandle,
       dragHandleSelector,
-
       canDrag,
       onDragBegin,
       onDragEnd,
       canDrop,
-      onDropHover
+      onDropHover,
+      rowKey
     } = this.props;
+
     let dragOptions = {
+      itemInfo: rowExtra,
+      itemKey: row[rowKey],
+      index: index,
+      data: row,
+      getContainer: this.getContainer,
+
       allowDragLevel,
       useDragHandle,
       dragHandleSelector,
@@ -165,9 +162,8 @@ class Draggable extends React.Component {
       onDropHover,
       onDrop: this.onDrop
     };
+
     return {
-      rowExtra: rowExtra,
-      getContainer: this.getContainer,
       dragOptions
     };
   };
@@ -177,7 +173,7 @@ class Draggable extends React.Component {
 
     let newProps = {
       data: this.state.data,
-      onRow: this.onRow,
+      onRowComponent: this.onRowComponent,
       components: {
         row: DraggableTableRow
       }
