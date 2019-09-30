@@ -324,6 +324,7 @@ class TreeGrid extends Component {
     }
 
     return {
+      key,
       depth,
       rootKey,
       parents,
