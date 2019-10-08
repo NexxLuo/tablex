@@ -80,7 +80,10 @@ class Draggable extends React.Component {
     let { data, rowKey } = this.state;
 
     let { list, treeProps } = treeToList(data, rowKey);
-    delete list[sourceInfo.treeIndex].children;
+
+    list.forEach(d => {
+      delete d.children;
+    });
 
     let oldIndex = sourceInfo.treeIndex;
     let newIndex = targetInfo.treeIndex;
