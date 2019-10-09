@@ -10,6 +10,7 @@ const DraggableRow = memo(({ rowProps, onRowProps, dragOptions }) => {
     index,
     data,
     getContainer,
+    acceptType = "",
 
     useDragHandle,
     dragHandleSelector,
@@ -49,11 +50,11 @@ const DraggableRow = memo(({ rowProps, onRowProps, dragOptions }) => {
     index: index,
     data: data,
     info: itemInfo,
-    type: "item"
+    type: acceptType + "-item"
   };
 
   if (allowDragLevel === false) {
-    dragInfo.type = "depth-" + itemInfo.depth;
+    dragInfo.type = acceptType + "-item" + "-depth-" + itemInfo.depth;
   }
 
   const [{ isDragging, height }, connectDrag, preview] = useDrag({

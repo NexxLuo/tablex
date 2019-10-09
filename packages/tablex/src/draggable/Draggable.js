@@ -30,9 +30,13 @@ function DraggableTableRow(props) {
 
 class Draggable extends React.Component {
   tableRef = React.createRef(null);
+
+  acceptType = "";
+
   constructor(props) {
     super(props);
     this.state = { data: [], rowKey: "" };
+    this.acceptType = "Draggable_" + new Date().getTime();
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -156,6 +160,7 @@ class Draggable extends React.Component {
       index: index,
       data: row,
       getContainer: this.getContainer,
+      acceptType: this.acceptType,
 
       allowDragLevel,
       useDragHandle,
@@ -212,11 +217,20 @@ class Draggable extends React.Component {
   }
 }
 const withDragDropContext = Cmp => {
-  return props => (
-    <DndProvider backend={HTML5Backend}>
-      <Cmp {...props} />
-    </DndProvider>
-  );
+  return class DraggableTable extends React.Component {
+    __isReactDndBackendSetUp = false;
+    render() {
+      if (this.__isReactDndBackendSetUp) {
+        return <Cmp {...this.props} />;
+      }
+      this.__isReactDndBackendSetUp = true;
+      return (
+        <DndProvider backend={HTML5Backend}>
+          <Cmp {...this.props} />
+        </DndProvider>
+      );
+    }
+  };
 };
 
 Draggable.defaultProps = {
