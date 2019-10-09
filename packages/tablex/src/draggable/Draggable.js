@@ -216,16 +216,13 @@ class Draggable extends React.Component {
     return <Table {...props} {...newProps} ref={this.tableRef} />;
   }
 }
+
+ 
 const withDragDropContext = Cmp => {
   return class DraggableTable extends React.Component {
-    __isReactDndBackendSetUp = false;
     render() {
-      if (this.__isReactDndBackendSetUp) {
-        return <Cmp {...this.props} />;
-      }
-      this.__isReactDndBackendSetUp = true;
       return (
-        <DndProvider backend={HTML5Backend}>
+        <DndProvider backend={HTML5Backend} context={window}>
           <Cmp {...this.props} />
         </DndProvider>
       );
