@@ -994,7 +994,9 @@ class EditableTable extends React.Component {
     let editType = this.editType;
 
     if (!editType) {
-      console.error("未检测到编辑状态,如果使用了api.xxx进行编辑，请使用completeEdit、onComplete替代...");
+      console.error(
+        "未检测到编辑状态,如果使用了api.xxx进行编辑，请使用completeEdit、onComplete替代..."
+      );
       return;
     }
 
@@ -1878,6 +1880,8 @@ class EditableTable extends React.Component {
     delete: this.delete.bind(this),
     /** 编辑所有数据-同默认按钮动作 */
     edit: this.edit.bind(this),
+    /** 编辑保存-同默认按钮动作 */
+    saveEdit: this.editSave.bind(this),
 
     /** 编辑指定行 */
     editRows: this.editRows.bind(this),
