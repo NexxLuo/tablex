@@ -32,11 +32,11 @@ let treeData = unflatten(flatData,"id","parentId");
 ### 手动触发默认的编辑动作
 
 
-> 使用api自定义编辑时与表格内置的编辑按钮组具有不同的行为，请勿混用
+> 以下api均同内置的编辑按钮组行为一致，可通过以下api手动触发
  
 ```javascript
 api = {
-     /** 添加n行数据-同默认按钮动作 */
+     /** 添加n行数据,这将会调用rowTemplate函数-同默认按钮动作 */
     addRange: (n:number)=>{},
     /** 添加数据行-同默认按钮动作 */
     addRows:(rows:[])=>{},
@@ -92,7 +92,18 @@ api = {
      * 取消编辑 
      * 调用此方法后，上次未提交的数据更改将被放弃
      * */
-    cancelEdit:()=>{}
+    cancelEdit:()=>{},
+    /**
+     * 获取编辑后的数据，同onComplete中返回的数据一致
+     * */
+    getDataState:()=>{
+      return {
+        data,//编辑后的数据
+        inserted,//新增的数据
+        changed,//修改的数据
+        deleted//删除的数据
+      }
+    }
  }
 ```
 
