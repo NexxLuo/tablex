@@ -1594,7 +1594,9 @@ class EditableTable extends React.Component {
       keys,
       rowKey
     );
-    this.deletedData = deletedRows;
+    
+    let deletedData = this.deletedData;
+    this.deletedData = deletedData.slice().concat(deletedRows);
 
     let {
       selectedRowKeys: nextSelectedRowKeys,
