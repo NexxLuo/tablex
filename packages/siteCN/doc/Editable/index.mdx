@@ -81,13 +81,30 @@ super(props);
         dataIndex: "column-2",
         title: "column-2",
         width: 150,
-        align: "center"
+        align: "center",
+        editor: function(value, row, index, onchange, ref) {
+          return (
+            <InputNumber
+              defaultValue={value}
+              ref={ref}
+              onChange={e => onchange({ ["column-2"]: e })}
+            />
+          );
+        }
       },
-
       {
         dataIndex: "column-3",
         title: "column-3",
-        align: "right"
+        align: "right",
+        editor: function(value, row, index, onchange, ref) {
+          return (
+            <Select
+              defaultValue={value}
+              ref={ref}
+            
+            />
+          );
+        }
       },
       {
         dataIndex: "column-4",
@@ -126,6 +143,7 @@ let { columns, data } = this.state;
         validateTrigger="onChange"
         data={data}
         editable={true}
+        keyboardNavigation={false}
         alwaysValidate={true}
         isAppend={false}
         allowSaveEmpty={false}
