@@ -30,12 +30,17 @@ Editable.defaultProps = {
   allowSaveEmpty: false,
   dataControled: false,
   alwaysValidate: false,
-  editorNoBorder: false
+  editorNoBorder: false,
+  keyboardNavigation: true
 };
 
 Editable.propTypes = {
   /** 是否允许编辑 */
   editable: PropTypes.bool,
+
+  /** 是否启用键盘导航 */
+  keyboardNavigation: PropTypes.bool,
+
   /** 是否只读模式，只读模式下，将无法编辑，且无法触发选择事件 */
   readOnly: PropTypes.bool,
 

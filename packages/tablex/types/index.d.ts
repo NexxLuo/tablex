@@ -195,6 +195,7 @@ export interface TableProps<T> {
   indentSize?: number;
 
   editable?: boolean;
+  keyboardNavigation?: boolean;
   readOnly?: boolean;
   editTools?: EditTools;
   editToolsConfig?: EditToolsConfig;

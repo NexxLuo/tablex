@@ -813,6 +813,10 @@ class EditableTable extends React.Component {
   };
 
   onKeyDown = (e, rowKey, columnKey) => {
+    if (this.props.keyboardNavigation !== true) {
+      return;
+    }
+
     let nextEditor = this.getNextEditor(e.keyCode, rowKey, columnKey);
 
     let currEditor = this.getEditorIns(rowKey, columnKey);
@@ -1594,7 +1598,7 @@ class EditableTable extends React.Component {
       keys,
       rowKey
     );
-    
+
     let deletedData = this.deletedData;
     this.deletedData = deletedData.slice().concat(deletedRows);
 
@@ -2067,7 +2071,8 @@ EditableTable.defaultProps = {
   allowSaveEmpty: false,
   dataControled: false,
   alwaysValidate: false,
-  editorNoBorder: false
+  editorNoBorder: false,
+  keyboardNavigation: true
 };
 
 EditableTable.propTypes = {
@@ -2075,6 +2080,8 @@ EditableTable.propTypes = {
   readOnly: PropTypes.bool,
   /** 是否允许编辑 */
   editable: PropTypes.bool,
+  /** 是否启用键盘导航 */
+  keyboardNavigation: PropTypes.bool,
   /** 工具栏样式 */
   toolBarStyle: PropTypes.object,
   /** 工具栏，工具按钮 ['edit', 'add','delete',{icon:"",text:"",props:{},handler:Function},Function] addSingle:单行新增 */
