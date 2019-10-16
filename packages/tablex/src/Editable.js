@@ -1071,15 +1071,15 @@ class EditableTable extends React.Component {
   edit = () => {
     let arr = this.state.data || [];
 
-    if (arr.length === 0) {
-      message.error("没有可编辑的数据");
-      return false;
-    }
-
     let bl = true;
 
     if (typeof this.props.onBeforeEdit === "function") {
-      bl = this.props.onBeforeEdit();
+      bl = this.props.onBeforeEdit(arr);
+    }
+
+    if (arr.length === 0) {
+      message.error("没有可编辑的数据");
+      return false;
     }
 
     if (bl === false) {
@@ -1351,6 +1351,10 @@ class EditableTable extends React.Component {
         }
 
         if (d === "delete") {
+          let { selectedRowKeys = [], data = [] } = this.state;
+          let hasSelectedRows = selectedRowKeys.length > 0;
+          let hasData = data.length > 0;
+
           buttons.push(
             <Popconfirm
               key={d}
@@ -1358,12 +1362,20 @@ class EditableTable extends React.Component {
               okText="确定"
               cancelText="取消"
               onConfirm={this.delete}
+              disabled={!hasSelectedRows}
             >
               <Button
                 style={styles}
                 loading={this.state.deleteLoading}
                 onClick={e => {
                   e.stopPropagation();
+                  if (!hasSelectedRows) {
+                    if (hasData) {
+                      message.warn("请选择要删除的数据");
+                    } else {
+                      message.warn("没有可删除的数据");
+                    }
+                  }
                 }}
               >
                 {deleteIcon}
