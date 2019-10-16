@@ -2,24 +2,19 @@
   display: inline-block;
   vertical-align: middle;
   width: 100%;
+  text-align: left;
 }
 
-.tablex-editor-noborder .tablex-row-cell-editor.no-error .ant-input,
-.tablex-editor-noborder .tablex-row-cell-editor.no-error .table-custom-editor,
-.tablex-editor-noborder .tablex-row-cell-editor.no-error .ant-input-number,
-.tablex-editor-noborder
-  .tablex-row-cell-editor.no-error
-  .ant-input-number
-  .ant-input-number-input-wrap,
-.tablex-editor-noborder .tablex-row-cell-editor.no-error .ant-select,
-.tablex-editor-noborder .tablex-row-cell-editor.no-error .ant-select-selection {
+.tablex-row-cell-editor .ant-input,
+.tablex-row-cell-editor .table-custom-editor,
+.tablex-row-cell-editor .ant-input-number,
+.tablex-row-cell-editor .ant-input-number .ant-input-number-input-wrap,
+.tablex-row-cell-editor .ant-select,
+.tablex-row-cell-editor .ant-select-selection {
   width: 100%;
 }
 
-.tablex-editor-noborder
-  .tablex-row-cell-editor.no-error
-  .ant-input-number
-  .ant-input-number-input {
+.tablex-row-cell-editor .ant-input-number .ant-input-number-input {
   width: calc(100% - 24px);
 }
 
