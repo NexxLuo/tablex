@@ -293,3 +293,86 @@ export function addCheckedKeyWithDisabled({
     halfCheckedKeys: newHalfCheckedKeys
   };
 }
+
+/**
+ * 根据key键值去重数据，重复项只保留第一条数据
+ * @param {*} data
+ * @param {*} key
+ */
+export function distinctData(data = [], key = "") {
+  let keyMap = {};
+
+  let arr = [];
+  for (let i = 0; i < data.length; i++) {
+    const d = data[i];
+    let rk = d[key];
+    let isExist = keyMap[rk] === true;
+
+    if (!isExist) {
+      keyMap[rk] = true;
+      arr.push(d);
+    }
+  }
+
+  return arr;
+}
+
+/**
+ * 根据key键值删除数据
+ * @param {*} data
+ * @param {*} keyField
+ * @param {*} keys
+ */
+export function removeData(data = [], keyField = "", keys = []) {
+  let keyMap = {};
+
+  keys.forEach(k => {
+    keyMap[k] = true;
+  });
+
+  let arr = [];
+
+  for (let i = 0; i < data.length; i++) {
+    const d = data[i];
+    let rk = d[keyField];
+    let shouldRemoved = keyMap[rk] === true;
+
+    if (!shouldRemoved) {
+      arr.push(d);
+    }
+  }
+
+  return arr;
+}
+
+/**
+ * 根据key键值匹配数据
+ * @param {*} data
+ * @param {*} keyField
+ * @param {*} keys
+ */
+export function filterDataByKeys(data = [], keyField = "", keys = []) {
+  let keyMap = {};
+
+  keys.forEach(k => {
+    keyMap[k] = true;
+  });
+
+  let existsKeyMap = {};
+
+  let arr = [];
+
+  for (let i = 0; i < data.length; i++) {
+    const d = data[i];
+    let rk = d[keyField];
+    let matched = keyMap[rk] === true;
+    let isExist = existsKeyMap[rk] === true;
+
+    if (!isExist && matched) {
+      existsKeyMap[rk] = true;
+      arr.push(d);
+    }
+  }
+
+  return arr;
+}
