@@ -174,6 +174,12 @@ export interface TableProps<T> {
     selectedRows: any[],
     triggerKey: string
   ) => void;
+  onBeforeSelect?: ({
+    selected: boolean,
+    rowData: any,
+    index: number,
+    key: string
+  }) => boolean;
   onSelect?: (record: object, index: number, rowKey: string) => void;
   onUnSelect?: (record: object, index: number, rowKey: string) => void;
   onSelectAll?: () => void;

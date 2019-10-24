@@ -193,6 +193,10 @@ let { columns, data } = this.state;
       <Table
         rowKey="id"
         columns={columns}
+        onBeforeSelect={function(a){
+          console.log("onBeforeSelect:",a)
+          return true;
+        }}
         data={data}
        selectMode="single"
         orderNumber={false}
@@ -290,6 +294,10 @@ let { columns, data } = this.state;
       <Table
         rowKey="id"
         columns={columns}
+          onBeforeSelect={function(a){
+          console.log("onBeforeSelect:",a)
+          return true;
+        }}
         data={data}
          selectMode="multiple"
         orderNumber={false}

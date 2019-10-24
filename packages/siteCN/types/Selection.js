@@ -35,6 +35,9 @@ Selection.propTypes = {
    * */
   onSelectChange: PropTypes.func,
 
+  /** 行选择前置事件,返回false取消选择操作 */
+  onBeforeSelect: PropTypes.func,
+
   /** 行单选事件 */
   onSelect: PropTypes.func,
   /** 行单选取消事件 */

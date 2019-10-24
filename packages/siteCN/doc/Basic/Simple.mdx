@@ -511,6 +511,12 @@ let { columns, data, current, pageSize, total } = this.state;
       <Table
         rowKey="id"
         columns={columns}
+        selectMode="multiple"
+        checkStrictly={true}
+         onSelectChange={function(a,b){
+          console.log("onSelectChange rows:",b)
+          return true;
+        }}
         data={data}
              pagination={{
           current,
