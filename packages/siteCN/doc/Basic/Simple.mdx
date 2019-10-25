@@ -513,8 +513,8 @@ let { columns, data, current, pageSize, total } = this.state;
         columns={columns}
         selectMode="multiple"
         checkStrictly={true}
-         onSelectChange={function(a,b){
-          console.log("onSelectChange rows:",b)
+         onSelectChange={function(a,b,c,d){
+          console.log("onSelectChange rows2:",c,d)
           return true;
         }}
         data={data}

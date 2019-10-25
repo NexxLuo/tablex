@@ -195,7 +195,8 @@ let { columns, data } = this.state;
         columns={columns}
         onBeforeSelect={function(a){
           console.log("onBeforeSelect:",a)
-          return true;
+           a.callback();
+          return false;
         }}
         data={data}
        selectMode="single"
@@ -295,8 +296,9 @@ let { columns, data } = this.state;
         rowKey="id"
         columns={columns}
           onBeforeSelect={function(a){
-          console.log("onBeforeSelect:",a)
-          return true;
+          console.log("onBeforeSelect:",a);
+          a.callback();
+          return false;
         }}
         data={data}
          selectMode="multiple"

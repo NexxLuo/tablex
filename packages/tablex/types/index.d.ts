@@ -180,6 +180,7 @@ export interface TableProps<T> {
     index: number,
     key: string
   }) => boolean;
+  onBeforeSelectAll?: ({ selected: boolean }) => boolean;
   onSelect?: (record: object, index: number, rowKey: string) => void;
   onUnSelect?: (record: object, index: number, rowKey: string) => void;
   onSelectAll?: () => void;
