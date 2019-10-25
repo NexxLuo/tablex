@@ -254,10 +254,10 @@ class SelectionGrid extends Component {
 
   /** 判断行/行父级是否被禁用选中 */
   isDisabledCheck = (key, rowData) => {
-    let arr = this.state.disabledSelectKeys;
+    let { checkStrictly, disabledSelectKeys: arr } = this.state;
     let bl = arr.indexOf(key) > -1;
 
-    if (bl === false) {
+    if (bl === false && checkStrictly) {
       let parentKeys = this.getParents(key);
 
       for (let i = 0; i < parentKeys.length; i++) {
@@ -354,7 +354,7 @@ class SelectionGrid extends Component {
       .data;
 
     if (typeof this.props.onSelect === "function") {
-      this.props.onSelect(nextKeys, nextRows, key), { rowIndex, rowData };
+      this.props.onSelect(nextKeys, nextRows, key, { rowIndex, rowData });
     }
 
     if (typeof this.props.onSelectChange === "function") {
