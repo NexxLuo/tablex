@@ -79,7 +79,7 @@ let fixedColumns = [
       };
 
       if (index % 20 === 0) {
-        obj.props.rowSpan = 13;
+       // obj.props.rowSpan = 13;
         obj.children = value;
       }
 
@@ -101,7 +101,7 @@ let fixedColumns = [
           };
     
           if (index % 5 === 0) {
-            obj.props.rowSpan = 3;
+          //  obj.props.rowSpan = 3;
             obj.children = value;
           }
     
@@ -163,7 +163,7 @@ function createData(level, parentKey, maxLevel, index) {
 function createTreeData() {
   let data = [];
   for (let i = 0; i < 50; i++) {
-    // let childrens = createData(0, i, 2);
+     let childrens = createData(0, i, 2);
     let d = {
       id: "" + i,
       level: 0,
@@ -173,7 +173,7 @@ function createTreeData() {
     };
 
     if (i % 3 === 0) {
-      // d.children = childrens;
+      d.children = childrens;
     }
 
     data.push(d);
@@ -316,6 +316,7 @@ class Demo extends Component {
           <Table
             loading={this.state.loading}
             editTools={["edit", "add", "delete"]}
+        
             tableId="preview_table"
             sortable={false}
             editable={true}
@@ -328,8 +329,9 @@ class Demo extends Component {
             ref={this.tableRef}
             columns={fixedColumns}
             checkStrictly={true}
+            disabledSelectKeys={["0"]}
+            selectOnRowClick={false}
             selectMode="multiple"
-            selectOnRowClick={true}
             defaultExpandedRowKeys={["0"]}
             data={this.state.data}
             onExpand={(b, r) => {
@@ -341,7 +343,7 @@ class Demo extends Component {
               // console.log("rowClassName");
             }}
             orderNumber={this.orderNumber}
-            selectionColumn={this.selectionColumn}
+            selectionColumn2={this.selectionColumn}
             summary={{
               style: { border: "none" },
               title: { text: "合计:", column: "__checkbox_column" },
