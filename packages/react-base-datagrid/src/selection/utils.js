@@ -352,6 +352,9 @@ export function removeData(data = [], keyField = "", keys = []) {
  * @param {*} keys
  */
 export function filterDataByKeys(data = [], keyField = "", keys = []) {
+  let nextKeys = [];
+  let nextData = [];
+
   let keyMap = {};
 
   keys.forEach(k => {
@@ -359,8 +362,6 @@ export function filterDataByKeys(data = [], keyField = "", keys = []) {
   });
 
   let existsKeyMap = {};
-
-  let arr = [];
 
   for (let i = 0; i < data.length; i++) {
     const d = data[i];
@@ -370,7 +371,41 @@ export function filterDataByKeys(data = [], keyField = "", keys = []) {
 
     if (!isExist && matched) {
       existsKeyMap[rk] = true;
-      arr.push(d);
+      nextKeys.push(rk);
+      nextData.push(d);
+    }
+  }
+
+  return { data: nextData, keys: nextKeys };
+}
+
+/**
+ * 根据数据删除keys键值
+ * @param {*} keys
+ * @param {*} keyField
+ * @param {*} data
+ */
+
+export function removeKeysByData(keys = [], keyField = "", data = []) {
+  let dataMap = {};
+
+  for (let i = 0; i < data.length; i++) {
+    const k = data[i][keyField];
+    dataMap[k] = true;
+  }
+
+  let existsKeyMap = {};
+
+  let arr = [];
+  for (let i = 0; i < keys.length; i++) {
+    const rk = keys[i];
+    let matched = dataMap[rk] === true;
+
+    let isExist = existsKeyMap[rk] === true;
+
+    if (!isExist && !matched) {
+      existsKeyMap[rk] = true;
+      arr.push(rk);
     }
   }
 

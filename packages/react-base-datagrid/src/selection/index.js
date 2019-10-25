@@ -6,8 +6,8 @@ import Checkbox from "./Checkbox";
 import {
   removeCheckedKey,
   addCheckedKeyWithDisabled,
-  distinctData,
-  filterDataByKeys
+  filterDataByKeys,
+  removeKeysByData
 } from "./utils";
 
 class SelectionGrid extends Component {
@@ -18,7 +18,14 @@ class SelectionGrid extends Component {
     let selectedRows = [];
 
     if (props.defaultSelectedRowKeys instanceof Array === true) {
-      selectedKeys = props.defaultSelectedRowKeys;
+      let { data, keys } = filterDataByKeys(
+        props.data,
+        props.rowKey,
+        props.defaultSelectedRowKeys
+      );
+
+      selectedKeys = keys;
+      selectedRows = data;
     }
 
     this.state = {
@@ -30,7 +37,7 @@ class SelectionGrid extends Component {
       prependColumns: [],
       rowKey: "",
       selectedRowKeys: selectedKeys,
-      selectedRows: [],
+      selectedRows: selectedRows,
       disabledSelectKeys: [],
       halfCheckedKeys: [],
       selectMode: "",
@@ -95,7 +102,14 @@ class SelectionGrid extends Component {
       };
 
       if ("selectedRowKeys" in nextProps) {
-        nextState.selectedRowKeys = selectedRowKeys;
+        let { data: selectedData, keys } = filterDataByKeys(
+          data.concat(prevState.selectedRows),
+          rowKey,
+          selectedRowKeys
+        );
+
+        nextState.selectedRowKeys = keys;
+        nextState.selectedRows = selectedData;
         if (selectedRowKeys.length === 0) {
           nextState.halfCheckedKeys = [];
         }
@@ -304,6 +318,7 @@ class SelectionGrid extends Component {
       selectedRows,
       rowKey,
       flatData,
+      data,
       halfCheckedKeys,
       disabledSelectKeys,
       treeProps
@@ -322,8 +337,9 @@ class SelectionGrid extends Component {
       disabledSelectKeys
     });
 
-    let nextRows = this.getRowsByKeys(nextKeys);
-    nextRows = distinctData(nextRows.concat(selectedRows), rowKey);
+    //记录上一次选中的行数据，避免翻页情况下的数据丢失
+    let nextRows = filterDataByKeys(data.concat(selectedRows), rowKey, nextKeys)
+      .data;
 
     if (typeof this.props.onSelect === "function") {
       this.props.onSelect(nextKeys, nextRows, key);
@@ -348,7 +364,8 @@ class SelectionGrid extends Component {
       rowKey,
       flatData,
       halfCheckedKeys,
-      treeProps
+      treeProps,
+      data
     } = this.state;
     let {
       selectedRowKeys: nextKeys,
@@ -362,13 +379,8 @@ class SelectionGrid extends Component {
       halfCheckedKeys
     });
 
-    let nextRows = this.getRowsByKeys(nextKeys);
-
-    nextRows = filterDataByKeys(
-      nextRows.concat(selectedRows),
-      rowKey,
-      nextKeys
-    );
+    let nextRows = filterDataByKeys(data.concat(selectedRows), rowKey, nextKeys)
+      .data;
 
     if (typeof this.props.onUnSelect === "function") {
       this.props.onUnSelect(nextKeys, nextRows, key);
@@ -385,11 +397,36 @@ class SelectionGrid extends Component {
     });
   }
 
-  onCheckAllChange = (bl, value, { indeterminate }) => {
+  onBeforeSelectAll = selected => {
+    let { selectedRows, selectedRowKeys } = this.state;
+
+    let fn = this.props.onBeforeSelectAll;
+    let bl = true;
+
+    if (typeof fn === "function") {
+      bl = fn({
+        selected,
+        selectedRows,
+        selectedRowKeys,
+        selectAll: this.addAllChecked,
+        unSelectAll: this.removeAllChecked
+      });
+    }
+
+    return bl;
+  };
+
+  onCheckAllChange = (selected, value, { indeterminate }) => {
+    let bl = this.onBeforeSelectAll(selected);
+
+    if (bl === false) {
+      return;
+    }
+
     if (indeterminate === true && this.state.disabledSelectKeys.length > 0) {
       this.removeAllChecked();
     } else {
-      if (bl === true) {
+      if (selected === true) {
         this.removeAllChecked();
       } else {
         this.addAllChecked();
@@ -398,9 +435,9 @@ class SelectionGrid extends Component {
   };
 
   addAllChecked = () => {
-    let { rowKey, flatData } = this.state;
-    let nextSelected = [];
-    let arr = [];
+    let { rowKey, selectedRows, selectedRowKeys, flatData, data } = this.state;
+
+    let selectedKeys = selectedRowKeys.slice();
 
     flatData.forEach(d => {
       let k = d[rowKey];
@@ -408,38 +445,51 @@ class SelectionGrid extends Component {
       let bl = !this.isDisabledCheck(k, d);
 
       if (bl) {
-        nextSelected.push(k);
-        arr.push(d);
+        selectedKeys.push(k);
       }
     });
 
+    let { data: nextRows, keys: nextKeys } = filterDataByKeys(
+      data.concat(selectedRows),
+      rowKey,
+      selectedKeys
+    );
+
     if (typeof this.props.onSelectChange === "function") {
-      this.props.onSelectChange(nextSelected, arr, "");
+      this.props.onSelectChange(nextKeys, nextRows, "");
     }
 
     if (typeof this.props.onSelectAll === "function") {
-      this.props.onSelectAll(nextSelected, arr, "");
+      this.props.onSelectAll(nextKeys, nextRows, "");
     }
 
     this.setState({
-      selectedRowKeys: nextSelected,
-      selectedRows: arr,
+      selectedRowKeys: nextKeys,
+      selectedRows: nextRows,
       halfCheckedKeys: []
     });
   };
 
+  /** 移除当前显示的所有数据 */
   removeAllChecked = () => {
+    let { data, selectedRowKeys, selectedRows, rowKey } = this.state;
+
+    let nextKeys = removeKeysByData(selectedRowKeys, rowKey, data);
+
+    let nextRows = filterDataByKeys(data.concat(selectedRows), rowKey, nextKeys)
+      .data;
+
     if (typeof this.props.onSelectChange === "function") {
-      this.props.onSelectChange([], [], "");
+      this.props.onSelectChange(nextKeys, nextRows, "");
     }
 
     if (typeof this.props.onUnSelectAll === "function") {
-      this.props.onUnSelectAll([], [], "");
+      this.props.onUnSelectAll(nextKeys, nextRows, "");
     }
 
     this.setState({
-      selectedRows: [],
-      selectedRowKeys: [],
+      selectedRows: nextRows,
+      selectedRowKeys: nextKeys,
       halfCheckedKeys: []
     });
   };
@@ -482,7 +532,15 @@ class SelectionGrid extends Component {
                   selected: checked,
                   rowData,
                   index: index,
-                  key: key
+                  key: key,
+                  callback: () => {
+                    this.onCheckChange({
+                      selected: checked,
+                      key: key,
+                      index: index,
+                      rowData: rowData
+                    });
+                  }
                 });
 
                 if (bl !== false) {
@@ -510,7 +568,15 @@ class SelectionGrid extends Component {
             selected: checked,
             rowData,
             index: index,
-            key: ck
+            key: ck,
+            callback: () => {
+              this.onCheckChange({
+                selected: checked,
+                key: ck,
+                index: index,
+                rowData: rowData
+              });
+            }
           });
 
           if (bl !== false) {
@@ -613,7 +679,10 @@ class SelectionGrid extends Component {
             selected: isSelected,
             rowData,
             index: rowIndex,
-            key: rowKey
+            key: rowKey,
+            callback: () => {
+              this.onSelectChange(rowKey, rowData, rowIndex);
+            }
           });
           if (bl !== false) {
             this.onSelectChange(rowKey, rowData, rowIndex);
@@ -625,7 +694,15 @@ class SelectionGrid extends Component {
             selected: isSelected,
             rowData,
             index: rowIndex,
-            key: rowKey
+            key: rowKey,
+            callback: () => {
+              this.onCheckChange({
+                selected: isSelected,
+                key: rowKey,
+                index: rowIndex,
+                rowData: rowData
+              });
+            }
           });
           if (bl !== false) {
             let isEnabled = !this.isDisabledCheck(rowKey, rowData);
@@ -717,6 +794,10 @@ SelectionGrid.propTypes = {
 
   /** 行单选取消事件 */
   onUnSelect: PropTypes.func,
+
+  /** 行全选前置事件,返回false取消选择操作 */
+  onBeforeSelectAll: PropTypes.func,
+
   /** 全选事件 */
   onSelectAll: PropTypes.func,
   /** 取消全选事件 */
