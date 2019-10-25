@@ -199,14 +199,17 @@ class SelectionGrid extends Component {
         nextRows = [];
 
         if (typeof this.props.onUnSelect === "function") {
-          this.props.onUnSelect(rowData, rowIndex, rowKey);
+          this.props.onUnSelect(rowData, rowIndex, rowKey, {
+            rowIndex,
+            rowData
+          });
         }
       } else {
         nextKeys = [rowKey];
         nextRows = [rowData];
 
         if (typeof this.props.onSelect === "function") {
-          this.props.onSelect(rowData, rowIndex, rowKey);
+          this.props.onSelect(rowData, rowIndex, rowKey, { rowIndex, rowData });
         }
       }
     } else if (this.isMultipleSelect()) {
@@ -219,14 +222,20 @@ class SelectionGrid extends Component {
         }
 
         if (typeof this.props.onUnSelect === "function") {
-          this.props.onUnSelect(nextKeys, nextRows, rowKey);
+          this.props.onUnSelect(nextKeys, nextRows, rowKey, {
+            rowIndex,
+            rowData
+          });
         }
       } else {
         nextKeys.push(rowKey);
         nextRows.push(rowData);
 
         if (typeof this.props.onSelect === "function") {
-          this.props.onSelect(nextKeys, nextRows, rowKey);
+          this.props.onSelect(nextKeys, nextRows, rowKey, {
+            rowIndex,
+            rowData
+          });
         }
       }
     } else {
@@ -234,7 +243,10 @@ class SelectionGrid extends Component {
     }
 
     if (typeof this.props.onSelectChange === "function") {
-      this.props.onSelectChange(nextKeys, nextRows, rowKey);
+      this.props.onSelectChange(nextKeys, nextRows, rowKey, {
+        rowIndex,
+        rowData
+      });
     }
 
     this.setState({ selectedRowKeys: nextKeys, selectedRows: nextRows });
@@ -264,9 +276,9 @@ class SelectionGrid extends Component {
       this.onSelectChange(key, rowData, index);
     } else {
       if (selected === true) {
-        this.removeChecked(key);
+        this.removeChecked(key, index, rowData);
       } else {
-        this.addChecked(key);
+        this.addChecked(key, index, rowData);
       }
     }
   };
@@ -312,7 +324,7 @@ class SelectionGrid extends Component {
   };
 
   /** 添加复选行 */
-  addChecked(key) {
+  addChecked(key, rowIndex, rowData) {
     let {
       selectedRowKeys,
       selectedRows,
@@ -342,11 +354,11 @@ class SelectionGrid extends Component {
       .data;
 
     if (typeof this.props.onSelect === "function") {
-      this.props.onSelect(nextKeys, nextRows, key);
+      this.props.onSelect(nextKeys, nextRows, key), { rowIndex, rowData };
     }
 
     if (typeof this.props.onSelectChange === "function") {
-      this.props.onSelectChange(nextKeys, nextRows, key);
+      this.props.onSelectChange(nextKeys, nextRows, key, { rowIndex, rowData });
     }
 
     this.setState({
@@ -357,7 +369,7 @@ class SelectionGrid extends Component {
   }
 
   /** 移除复选行 */
-  removeChecked(key) {
+  removeChecked(key, rowIndex, rowData) {
     let {
       selectedRowKeys,
       selectedRows,
@@ -383,11 +395,11 @@ class SelectionGrid extends Component {
       .data;
 
     if (typeof this.props.onUnSelect === "function") {
-      this.props.onUnSelect(nextKeys, nextRows, key);
+      this.props.onUnSelect(nextKeys, nextRows, key, { rowIndex, rowData });
     }
 
     if (typeof this.props.onSelectChange === "function") {
-      this.props.onSelectChange(nextKeys, nextRows, key);
+      this.props.onSelectChange(nextKeys, nextRows, key, { rowIndex, rowData });
     }
 
     this.setState({
@@ -456,7 +468,7 @@ class SelectionGrid extends Component {
     );
 
     if (typeof this.props.onSelectChange === "function") {
-      this.props.onSelectChange(nextKeys, nextRows, "");
+      this.props.onSelectChange(nextKeys, nextRows, "", {});
     }
 
     if (typeof this.props.onSelectAll === "function") {
@@ -480,7 +492,7 @@ class SelectionGrid extends Component {
       .data;
 
     if (typeof this.props.onSelectChange === "function") {
-      this.props.onSelectChange(nextKeys, nextRows, "");
+      this.props.onSelectChange(nextKeys, nextRows, "", {});
     }
 
     if (typeof this.props.onUnSelectAll === "function") {

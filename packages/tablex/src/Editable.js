@@ -1847,7 +1847,7 @@ class EditableTable extends React.Component {
     });
 
     if (silent === false) {
-      this.onSelectChange(nextKeys, null);
+      this.onSelectChange(nextKeys, null, "", {});
     }
 
     return nextKeys;
@@ -1855,7 +1855,7 @@ class EditableTable extends React.Component {
 
   unSelectAll = silent => {
     if (silent === false) {
-      this.onSelectChange([], [], null);
+      this.onSelectChange([], [], null, {});
     }
     return [];
   };
@@ -1884,7 +1884,7 @@ class EditableTable extends React.Component {
         return true;
       });
 
-      this.onSelectChange(nextKeys, nextRows, triggerKey);
+      this.onSelectChange(nextKeys, nextRows, triggerKey, {});
     }
     return nextKeys;
   };
@@ -1983,13 +1983,13 @@ class EditableTable extends React.Component {
     return toolBar;
   };
 
-  onSelectChange = (selectedKeys, selectedRows, triggerKey) => {
+  onSelectChange = (selectedKeys, selectedRows, triggerKey, extra) => {
     this.setState({
       selectedRowKeys: selectedKeys.slice(),
       selectedRows: selectedRows.slice()
     });
     if (typeof this.props.onSelectChange === "function") {
-      this.props.onSelectChange(selectedKeys, selectedRows, triggerKey);
+      this.props.onSelectChange(selectedKeys, selectedRows, triggerKey, extra);
     }
   };
 
