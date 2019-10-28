@@ -131,6 +131,9 @@ export interface TableProps<T> {
   data?: T[];
   rowHeight?: number | ((record: object, index: number) => number);
   headerRowHeight?: number[];
+  minHeight?: number;
+  maxHeight?: number;
+  autoHeight?: boolean;
 
   rowClassName?: (record: T, index: number) => string;
   selectionColumn?: false | null | ColumnProps<T>;
@@ -148,7 +151,6 @@ export interface TableProps<T> {
   onRow?: (record: T, index: number) => object;
   frozenRender?: FrozenRenderProps;
 
-  minHeight?: number;
   columnDropMenu?: boolean;
   contextMenu?: (row: any) => React.ReactNode;
   orderNumber?: false | null | ColumnProps<T>;

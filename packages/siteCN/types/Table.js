@@ -17,7 +17,8 @@ Table.defaultProps = {
   striped: true,
   bordered: true,
   rowHeight: 40,
-  virtual: true
+  virtual: true,
+  autoHeight: false
 };
 
 Table.propTypes = {
@@ -36,8 +37,14 @@ Table.propTypes = {
   /** 行高 */
   rowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
 
-  /** table最小高度，虚拟加载的表格依赖外部区域的高度，如果未探测到外部高度，将使用此高度 */
+  /** 是否自动高度，为true时表格的高度将会随行数而变化 */
+  autoHeight: PropTypes.bool,
+
+  /** 表格区域最小高度 */
   minHeight: PropTypes.number,
+
+  /** 表格区域最大高度 */
+  maxHeight: PropTypes.number,
 
   /** 是否启用虚拟加载 */
   virtual: PropTypes.bool,
