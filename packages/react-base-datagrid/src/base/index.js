@@ -48,12 +48,14 @@ class BaseDataGrid extends React.Component {
         data,
         formattedColumns,
         hoverable,
-        prevProps: nextProps
+        prevProps: nextProps,
+        tableHeight: nextProps.height
       };
 
-      if (data.length !== prevState.data.length) {
+      if (prevState.tableHeight !== nextProps.height) {
         nextState.needResetScrollbar = true;
       }
+
       return nextState;
     }
     return null;
@@ -259,16 +261,59 @@ class BaseDataGrid extends React.Component {
     }
   };
 
-  render() {
+  getTableHeight = () => {
     let {
-      width,
       height,
-      className,
-      overlayRenderer,
+      rowHeight,
+      autoHeight,
+      maxHeight,
+      minHeight,
       showHeader,
-      bordered,
       headerRowHeight
     } = this.props;
+
+    let { data, formattedColumns, scrollbarX } = this.state;
+    let maxDepth = formattedColumns.maxDepth;
+
+    //表头高度
+    let headerHeight = 0;
+    let headerHeights = [];
+
+    if (showHeader === true) {
+      for (let i = 0; i < maxDepth + 1; i++) {
+        let h = headerRowHeight[i];
+        if (!isNumber(h)) {
+          h = HEADER_HEIGHT;
+        }
+        headerHeights.push(h);
+        headerHeight = headerHeight + h;
+      }
+    }
+
+    let tableHeight = height;
+
+    if (autoHeight === true || !tableHeight) {
+      let rh = 40;
+      if (typeof rowHeight === "number") {
+        rh = rowHeight;
+      }
+      let totalRowsHeight = data.length * rh;
+      tableHeight = totalRowsHeight + headerHeight + scrollbarX + 2;
+    }
+
+    if (tableHeight < minHeight) {
+      tableHeight = minHeight;
+    }
+
+    if (tableHeight > maxHeight) {
+      tableHeight = maxHeight;
+    }
+
+    return { tableHeight, headerHeights, headerHeight };
+  };
+
+  render() {
+    let { width, className, overlayRenderer, bordered } = this.props;
 
     let props = this.props;
 
@@ -286,21 +331,7 @@ class BaseDataGrid extends React.Component {
     let hasLeft = left.length > 0;
     let hasRight = right.length > 0;
 
-    let headerHeight = 0;
-    let headerHeights = [];
-
-    for (let i = 0; i < maxDepth + 1; i++) {
-      let h = headerRowHeight[i];
-      if (!isNumber(h)) {
-        h = HEADER_HEIGHT;
-      }
-      headerHeights.push(h);
-      headerHeight = headerHeight + h;
-    }
-
-    if (showHeader === false) {
-      headerHeight = 0;
-    }
+    let { tableHeight, headerHeight, headerHeights } = this.getTableHeight();
 
     let headStyle = {};
 
@@ -351,7 +382,11 @@ class BaseDataGrid extends React.Component {
     cls = cls.join(" ");
 
     return (
-      <div className={cls} style={{ width, height }} ref={this.containerRef}>
+      <div
+        className={cls}
+        style={{ width, height: tableHeight }}
+        ref={this.containerRef}
+      >
         {overlay}
         {hasLeft ? (
           <div
@@ -371,7 +406,7 @@ class BaseDataGrid extends React.Component {
               <Table
                 {...attrs}
                 headStyle={{ width: leftWidth }}
-                containerHeight={height - scrollbarX}
+                containerHeight={tableHeight - scrollbarX}
                 columns={left}
                 style={{ overflowX: "hidden" }}
                 innerStyle={{ width: leftWidth }}
@@ -391,7 +426,7 @@ class BaseDataGrid extends React.Component {
         <div className="tablex-main" style={{ overflow: "hidden" }}>
           <Table
             {...attrs}
-            containerHeight={height}
+            containerHeight={tableHeight}
             columns={middle}
             ref={this.middleRef}
             onScroll={this.onMiddleScroll}
@@ -416,7 +451,7 @@ class BaseDataGrid extends React.Component {
           >
             <Table
               {...attrs}
-              containerHeight={height - scrollbarX}
+              containerHeight={tableHeight - scrollbarX}
               headStyle={{ width: rightWidth }}
               columns={right}
               style={{ overflowX: "hidden" }}
@@ -441,10 +476,6 @@ const AutoSizerTable = forwardRef((props, ref) => {
   return (
     <ReactResizeDetector handleWidth handleHeight>
       {({ width, height }) => {
-        if (!height) {
-          return <div />;
-        }
-
         return (
           <BaseDataGrid {...props} height={height} width={width} ref={ref} />
         );
@@ -469,10 +500,20 @@ BaseDataGrid.defaultProps = {
   showHeader: true,
   hoverable: true,
   bordered: true,
-  virtual: true
+  virtual: true,
+  autoHeight: false
 };
 
 BaseDataGrid.propTypes = {
+  /** 是否自动高度，为true时表格的高度将会随行数而变化 */
+  autoHeight: PropTypes.bool,
+
+  /** 表格区域最小高度 */
+  minHeight: PropTypes.number,
+
+  /** 表格区域最大高度 */
+  maxHeight: PropTypes.number,
+
   /** 是否显示表头 */
   showHeader: PropTypes.bool,
 
@@ -490,9 +531,6 @@ BaseDataGrid.propTypes = {
 
   /** 表头行高 */
   headerRowHeight: PropTypes.arrayOf(PropTypes.number),
-
-  /** table最小高度，虚拟加载的表格依赖外部区域的高度，如果未探测到外部高度，将使用此高度 */
-  minHeight: PropTypes.number,
 
   /** 自定义行样式 */
   rowClassName: PropTypes.func,

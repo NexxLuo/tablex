@@ -908,12 +908,6 @@ class Table extends React.Component {
       bodyStyles.height = `calc(100% - ${extraHeight}px)`;
     }
 
-    let wrapperStyles = Object.assign({}, props.style || {});
-
-    if (props.minHeight) {
-      wrapperStyles.minHeight = props.minHeight + extraHeight;
-    }
-
     let classNames = ["tablex__container"];
 
     if (props.className) {
@@ -923,7 +917,7 @@ class Table extends React.Component {
     classNames = classNames.join(" ");
 
     return (
-      <div className={classNames} style={wrapperStyles}>
+      <div className={classNames} style={props.style}>
         {header}
         <div className="tablex__container__body" style={bodyStyles}>
           <BaseTable {...props} {...newProps} />
@@ -975,14 +969,10 @@ Table.defaultProps = {
   columnDropMenu: true,
   pagination: false,
   loading: false,
-  striped: true,
-  minHeight: 200
+  striped: true
 };
 
 Table.propTypes = {
-  /** 表格区域最小高度 */
-  minHeight: PropTypes.number,
-
   /** 数据是否加载中 */
   loading: PropTypes.bool,
 
