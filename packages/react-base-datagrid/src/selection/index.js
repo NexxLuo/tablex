@@ -330,7 +330,6 @@ class SelectionGrid extends Component {
       selectedRows,
       rowKey,
       flatData,
-      data,
       halfCheckedKeys,
       disabledSelectKeys,
       treeProps
@@ -350,8 +349,11 @@ class SelectionGrid extends Component {
     });
 
     //记录上一次选中的行数据，避免翻页情况下的数据丢失
-    let nextRows = filterDataByKeys(data.concat(selectedRows), rowKey, nextKeys)
-      .data;
+    let nextRows = filterDataByKeys(
+      flatData.concat(selectedRows),
+      rowKey,
+      nextKeys
+    ).data;
 
     if (typeof this.props.onSelect === "function") {
       this.props.onSelect(nextKeys, nextRows, key, { rowIndex, rowData });
@@ -376,8 +378,7 @@ class SelectionGrid extends Component {
       rowKey,
       flatData,
       halfCheckedKeys,
-      treeProps,
-      data
+      treeProps
     } = this.state;
     let {
       selectedRowKeys: nextKeys,
@@ -391,8 +392,11 @@ class SelectionGrid extends Component {
       halfCheckedKeys
     });
 
-    let nextRows = filterDataByKeys(data.concat(selectedRows), rowKey, nextKeys)
-      .data;
+    let nextRows = filterDataByKeys(
+      flatData.concat(selectedRows),
+      rowKey,
+      nextKeys
+    ).data;
 
     if (typeof this.props.onUnSelect === "function") {
       this.props.onUnSelect(nextKeys, nextRows, key, { rowIndex, rowData });
@@ -447,7 +451,7 @@ class SelectionGrid extends Component {
   };
 
   addAllChecked = () => {
-    let { rowKey, selectedRows, selectedRowKeys, flatData, data } = this.state;
+    let { rowKey, selectedRows, selectedRowKeys, flatData } = this.state;
 
     let selectedKeys = selectedRowKeys.slice();
 
@@ -462,7 +466,7 @@ class SelectionGrid extends Component {
     });
 
     let { data: nextRows, keys: nextKeys } = filterDataByKeys(
-      data.concat(selectedRows),
+      flatData.concat(selectedRows),
       rowKey,
       selectedKeys
     );
@@ -484,12 +488,15 @@ class SelectionGrid extends Component {
 
   /** 移除当前显示的所有数据 */
   removeAllChecked = () => {
-    let { data, selectedRowKeys, selectedRows, rowKey } = this.state;
+    let { flatData, selectedRowKeys, selectedRows, rowKey } = this.state;
 
-    let nextKeys = removeKeysByData(selectedRowKeys, rowKey, data);
+    let nextKeys = removeKeysByData(selectedRowKeys, rowKey, flatData);
 
-    let nextRows = filterDataByKeys(data.concat(selectedRows), rowKey, nextKeys)
-      .data;
+    let nextRows = filterDataByKeys(
+      flatData.concat(selectedRows),
+      rowKey,
+      nextKeys
+    ).data;
 
     if (typeof this.props.onSelectChange === "function") {
       this.props.onSelectChange(nextKeys, nextRows, "", {});
