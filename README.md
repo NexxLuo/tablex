@@ -56,7 +56,6 @@ class Demo extends Component {
 ## FAQ
 
 存在固定列时，联动滚动可能会存在少许延迟。此问题只会出现在开发环境，生产模式下不会存在此问题。
-表格高度，虚拟加载的表格依赖外层高度，外层需要高度(固定高度或者百分比高度)，或者给table设置minHeight
  
 
  ## Breaking Changes
