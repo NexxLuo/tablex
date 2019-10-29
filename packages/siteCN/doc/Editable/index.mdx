@@ -868,6 +868,9 @@ super(props);
             dataIndex: "name",
             title: "姓名",
             width: 150,
+            validator:(v)=>{
+return {valid:!!v,message:"请输入"};
+            },
             editor: (value, row, index, onchange, ref) => {
 
                 return <Input defaultValue={ value } ref={ ref } onChange={ (e) => {
@@ -928,6 +931,13 @@ onEditCancel(){
 console.log("onEditCancel")
 }
 
+add(){
+
+    if (this.refs.etable) {
+        this.refs.etable.api.addRows([{},{},{}])
+    }
+}
+
     render() {
 
         let { data, count } = this.state;
@@ -936,13 +946,14 @@ console.log("onEditCancel")
                     ref="etable"
                     columns={ this.columns }
                     dataSource={ data }
+                    header={()=><div><Button onClick={this.add.bind(this)} >api.addRows</Button></div>}
                     editable={true}
                     defaultAddCount={ 5 }
                     onEditSave={ this.onEditSave.bind(this) }
                     onCancel={this.onEditCancel}
                     isAppend={ true }
                     allowSaveEmpty={false}
-                    alwaysValidate={ true }
+                    alwaysValidate={ false }
                     validateTrigger="onChange"
                     rowKey="id">
                 </Table>
