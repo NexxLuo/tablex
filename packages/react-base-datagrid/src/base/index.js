@@ -52,7 +52,10 @@ class BaseDataGrid extends React.Component {
         tableHeight: nextProps.height
       };
 
-      if (prevState.tableHeight !== nextProps.height) {
+      if (
+        prevState.tableHeight !== nextProps.height ||
+        data.length !== prevState.data.length
+      ) {
         nextState.needResetScrollbar = true;
       }
 
