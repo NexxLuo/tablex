@@ -953,10 +953,14 @@ class Table extends React.Component {
           </Popover>
         ) : null}
 
-        <ContextMenu
-          ref={this.contextmenu_ref}
-          content={props.contextMenu}
-        ></ContextMenu>
+        {typeof props.contextMenu === "function" ? (
+          <ContextMenu
+            ref={this.contextmenu_ref}
+            wrapperStyle={props.contextMenuWrapperStyle}
+            style={props.contextMenuStyle}
+            content={props.contextMenu}
+          ></ContextMenu>
+        ) : null}
       </div>
     );
   }
@@ -969,7 +973,9 @@ Table.defaultProps = {
   columnDropMenu: true,
   pagination: false,
   loading: false,
-  striped: true
+  striped: true,
+  contextMenuWrapperStyle: {},
+  contextMenuStyle: {}
 };
 
 Table.propTypes = {
@@ -981,6 +987,12 @@ Table.propTypes = {
 
   /** 行右键菜单渲染 */
   contextMenu: PropTypes.func,
+
+  /** 右键菜单外层样式 */
+  contextMenuWrapperStyle: {},
+
+  /** 右键菜单样式 */
+  contextMenuStyle: {},
 
   /** 分页 */
   pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),

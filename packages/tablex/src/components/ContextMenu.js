@@ -28,20 +28,27 @@ class ContextMenu extends Component {
   render() {
     let c = null;
 
-    if (typeof this.props.content === "function") {
-      c = this.props.content(this.state.data);
+    let { content, style, wrapperStyle } = this.props;
+
+    if (typeof content === "function") {
+      c = content(this.state.data);
     }
 
-    return c === null ? null : (
+    return (
       <div
-        className="tablex-row-contextmenu"
+        className="tablex-row-contextmenu-wrapper"
         ref={this._ref}
-        tabIndex="1"
         autoFocus={true}
+        tabIndex="1"
         onBlur={this.hide}
         onClick={this.hide}
+        style={wrapperStyle}
       >
-        {c}
+        {c === null ? null : (
+          <div className="tablex-row-contextmenu" style={style}>
+            {c}
+          </div>
+        )}
       </div>
     );
   }
