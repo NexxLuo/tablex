@@ -989,10 +989,10 @@ Table.propTypes = {
   contextMenu: PropTypes.func,
 
   /** 右键菜单外层样式 */
-  contextMenuWrapperStyle: {},
+  contextMenuWrapperStyle: PropTypes.object,
 
   /** 右键菜单样式 */
-  contextMenuStyle: {},
+  contextMenuStyle: PropTypes.object,
 
   /** 分页 */
   pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
