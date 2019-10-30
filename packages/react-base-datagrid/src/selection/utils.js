@@ -411,3 +411,54 @@ export function removeKeysByData(keys = [], keyField = "", data = []) {
 
   return arr;
 }
+
+export function getSelectionChanged({
+  keyField,
+  selectedRowKeys,
+  selectedRows,
+  data,
+  triggerKeys,
+  selected
+}) {
+  let selectedKeyMap = {};
+
+  selectedRowKeys.forEach(k => {
+    selectedKeyMap[k] = true;
+  });
+
+  let dataMap = {};
+  data.forEach(d => {
+    dataMap[d[keyField]] = d;
+  });
+
+  let changedKeys = [];
+  let changedRows = [];
+
+  if (selected === true) {
+    for (let i = 0; i < triggerKeys.length; i++) {
+      const k = triggerKeys[i];
+      let isExist = selectedKeyMap[k] === true;
+      if (!isExist) {
+        changedKeys.push(k);
+        let d = dataMap[k];
+        if (d) {
+          changedRows.push(d);
+        }
+      }
+    }
+  } else {
+    for (let i = 0; i < triggerKeys.length; i++) {
+      const k = triggerKeys[i];
+      let isExist = selectedKeyMap[k] === true;
+      if (isExist) {
+        changedKeys.push(k);
+        let d = dataMap[k];
+        if (d) {
+          changedRows.push(d);
+        }
+      }
+    }
+  }
+
+  return { changedKeys, changedRows };
+}
