@@ -140,10 +140,8 @@ class BaseDataGrid extends React.Component {
 
   resetScrollbarSize = () => {
     let ms = this.mainScrollerIns;
-
     if (ms) {
       let { scrollbarX, scrollbarY } = this.state;
-
       let X =
         (ms.offsetHeight - ms.clientHeight) * (window.devicePixelRatio || 1);
       let Y =
@@ -301,7 +299,10 @@ class BaseDataGrid extends React.Component {
         rh = rowHeight;
       }
       let totalRowsHeight = data.length * rh;
-      tableHeight = totalRowsHeight + headerHeight + scrollbarX + 2;
+      tableHeight = totalRowsHeight + headerHeight + scrollbarX;
+      if (scrollbarX > 0) {
+        tableHeight = tableHeight + 2;
+      }
     }
 
     if (tableHeight < minHeight) {
