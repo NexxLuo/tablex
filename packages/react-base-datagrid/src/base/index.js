@@ -299,10 +299,7 @@ class BaseDataGrid extends React.Component {
         rh = rowHeight;
       }
       let totalRowsHeight = data.length * rh;
-      tableHeight = totalRowsHeight + headerHeight + scrollbarX;
-      if (scrollbarX > 0) {
-        tableHeight = tableHeight + 2;
-      }
+      tableHeight = totalRowsHeight + headerHeight + 2;
     }
 
     if (tableHeight < minHeight) {
@@ -403,7 +400,7 @@ class BaseDataGrid extends React.Component {
             <div
               className="tablex-forzen-left-scroll"
               style={{
-                width: leftWidth + scrollbarY + 1,
+                width: leftWidth + scrollbarY + 10,
                 height: "100%"
               }}
             >
