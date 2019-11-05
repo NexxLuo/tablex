@@ -132,6 +132,7 @@ class SelectionGrid extends Component {
       selectedRows: selectedRows,
       disabledSelectKeys: [],
       halfCheckedKeys: [],
+      checkedKeys: [],
       selectMode: "",
       rowSelectClassName: "",
       checkStrictly: false
@@ -150,8 +151,6 @@ class SelectionGrid extends Component {
       treeProps,
       prependColumns = [],
       selectedRowKeys,
-      halfCheckedKeys,
-      disabledSelectKeys,
       selectOnRowClick
     } = nextProps;
 
@@ -396,92 +395,6 @@ class SelectionGrid extends Component {
     return bl;
   };
 
-  onBeforeSelect = params => {
-    let bl = this.call_onBeforeSelect(params);
-    return bl;
-  };
-
-  /** single change */
-  onSelectChange = (rowKey, rowData, rowIndex) => {
-    let { selectedRowKeys, selectedRows, rowKey: key } = this.state;
-    let i = selectedRowKeys.indexOf(rowKey);
-    let nextKeys = [].concat(selectedRowKeys);
-    let nextRows = [].concat(selectedRows);
-
-    if (this.isDisabledSelect(rowKey)) {
-      return;
-    }
-
-    if (this.isSingleSelect()) {
-      if (i > -1) {
-        nextKeys = [];
-        nextRows = [];
-
-        this.call_onUnSelect({
-          rowKey,
-          rowIndex,
-          rowData,
-          selectedRowKeys: nextKeys,
-          selectedRows: nextRows,
-          selectMode: "single"
-        });
-      } else {
-        nextKeys = [rowKey];
-        nextRows = [rowData];
-
-        this.call_onSelect({
-          rowKey,
-          rowIndex,
-          rowData,
-          selectedRowKeys: nextKeys,
-          selectedRows: nextRows,
-          selectMode: "single"
-        });
-      }
-    } else if (this.isMultipleSelect()) {
-      if (i > -1) {
-        nextKeys.splice(i, 1);
-
-        let j = nextRows.findIndex(d => d[key] === rowKey);
-        if (j > -1) {
-          nextRows.splice(j, 1);
-        }
-
-        this.call_onUnSelect({
-          selectedRowKeys: nextKeys,
-          selectedRows: nextRows,
-          rowKey,
-          rowIndex,
-          rowData,
-          selectMode: "multiple"
-        });
-      } else {
-        nextKeys.push(rowKey);
-        nextRows.push(rowData);
-        this.call_onSelect({
-          selectedRowKeys: nextKeys,
-          selectedRows: nextRows,
-          rowKey,
-          rowIndex,
-          rowData,
-          selectMode: "multiple"
-        });
-      }
-    } else {
-      return;
-    }
-
-    this.call_onSelectChange({
-      rowData,
-      rowIndex,
-      rowKey,
-      selectedRowKeys: nextKeys,
-      selectedRows: nextRows
-    });
-
-    this.setState({ selectedRowKeys: nextKeys, selectedRows: nextRows });
-  };
-
   /** 判断行/行父级是否被禁用选中 */
   isDisabledCheck = (key, rowData) => {
     let { checkStrictly, disabledSelectKeys: arr } = this.state;
@@ -499,18 +412,6 @@ class SelectionGrid extends Component {
       }
     }
     return bl;
-  };
-
-  onCheckChange = ({ selected, key, index, rowData }) => {
-    if (this.state.checkStrictly === false || this.isSingleSelect()) {
-      this.onSelectChange(key, rowData, index);
-    } else {
-      if (selected === true) {
-        this.removeChecked(key, index, rowData);
-      } else {
-        this.addChecked(key, index, rowData);
-      }
-    }
   };
 
   isSelected = key => {
@@ -553,6 +454,177 @@ class SelectionGrid extends Component {
     }
   };
 
+  onBeforeSelect = params => {
+    let bl = this.call_onBeforeSelect(params);
+    return bl;
+  };
+
+  addSelected = ({ rowKey, rowData, rowIndex, quiet = false }) => {
+    let { selectedRowKeys, selectedRows } = this.state;
+    let i = selectedRowKeys.indexOf(rowKey);
+
+    let nextKeys = selectedRowKeys.slice();
+    let nextRows = selectedRows.slice();
+
+    let type = "";
+
+    if (this.isSingleSelect()) {
+      nextKeys = [rowKey];
+      nextRows = [rowData];
+      type = "single";
+    } else if (this.isMultipleSelect()) {
+      nextKeys.push(rowKey);
+      nextRows.push(rowData);
+      type = "multiple";
+    }
+
+    if (quiet === false) {
+      this.call_onSelect({
+        selectedRowKeys: nextKeys,
+        selectedRows: nextRows,
+        rowKey,
+        rowIndex,
+        rowData,
+        selectMode: type
+      });
+
+      this.call_onSelectChange({
+        rowData,
+        rowIndex,
+        rowKey,
+        selectedRowKeys: nextKeys,
+        selectedRows: nextRows
+      });
+
+      this.setState({ selectedRowKeys: nextKeys, selectedRows: nextRows });
+    }
+
+    return {
+      selectedRowKeys: nextKeys,
+      selectedRows: nextRows
+    };
+  };
+
+  removeSelected = ({ rowKey, rowData, rowIndex, quiet = false }) => {
+    let { selectedRowKeys, selectedRows, rowKey: keyField } = this.state;
+    let i = selectedRowKeys.indexOf(rowKey);
+
+    let nextKeys = selectedRowKeys.slice();
+    let nextRows = selectedRows.slice();
+
+    let type = "";
+
+    if (this.isSingleSelect()) {
+      nextKeys = [];
+      nextRows = [];
+      type = "single";
+    } else if (this.isMultipleSelect()) {
+      if (i > -1) {
+        nextKeys.splice(i, 1);
+
+        let j = nextRows.findIndex(d => d[keyField] === rowKey);
+        if (j > -1) {
+          nextRows.splice(j, 1);
+        }
+      }
+
+      type = "multiple";
+    }
+
+    if (quiet === false) {
+      this.call_onUnSelect({
+        selectedRowKeys: nextKeys,
+        selectedRows: nextRows,
+        rowKey,
+        rowIndex,
+        rowData,
+        selectMode: type
+      });
+
+      this.call_onSelectChange({
+        rowData,
+        rowIndex,
+        rowKey,
+        selectedRowKeys: nextKeys,
+        selectedRows: nextRows
+      });
+
+      this.setState({ selectedRowKeys: nextKeys, selectedRows: nextRows });
+    }
+
+    return {
+      selectedRowKeys: nextKeys,
+      selectedRows: nextRows
+    };
+  };
+
+  onRowClick = ({ rowData, rowIndex }) => {
+    let { rowKey: keyField, selectOnRowClick, selectedRowKeys } = this.state;
+
+    let rowKey = rowData[keyField];
+    let isSelected = selectedRowKeys.indexOf(rowKey) > -1;
+
+    if (this.isSingleSelect()) {
+      this.onSelectChange(rowKey, rowData, rowIndex);
+    } else {
+      if (this.isMultipleSelect() && selectOnRowClick === true) {
+        this.onCheckChange({
+          selected: isSelected,
+          key: rowKey,
+          index: rowIndex,
+          rowData
+        });
+      }
+    }
+  };
+
+  /** single change */
+  onSelectChange = (rowKey, rowData, rowIndex) => {
+    let { selectedRowKeys } = this.state;
+    let i = selectedRowKeys.indexOf(rowKey);
+    let isSelected = i > -1;
+
+    let bl = this.onBeforeSelect({
+      selected: isSelected,
+      rowData,
+      index: rowIndex,
+      key: rowKey,
+      callback: () => {
+        if (isSelected) {
+          this.removeSelected({ rowKey, rowData, rowIndex });
+        } else {
+          this.addSelected({ rowKey, rowData, rowIndex });
+        }
+      }
+    });
+
+    if (bl === false) {
+      return;
+    }
+
+    if (this.isDisabledSelect(rowKey)) {
+      return;
+    }
+
+    if (isSelected) {
+      this.removeSelected({ rowKey, rowData, rowIndex });
+    } else {
+      this.addSelected({ rowKey, rowData, rowIndex });
+    }
+  };
+
+  onCheckChange = ({ selected, key, index, rowData }) => {
+    if (this.state.checkStrictly === false || this.isSingleSelect()) {
+      this.onSelectChange(key, rowData, index);
+    } else {
+      if (selected === true) {
+        this.removeChecked(key, index, rowData);
+      } else {
+        this.addChecked(key, index, rowData);
+      }
+    }
+  };
+
   /** 添加复选行 */
   addChecked(key, rowIndex, rowData) {
     let {
@@ -578,7 +650,7 @@ class SelectionGrid extends Component {
       disabledSelectKeys
     });
 
-    // //记录上一次选中的行数据，避免翻页情况下的数据丢失
+    //记录上一次选中的行数据，避免翻页情况下的数据丢失
     let nextRows = filterDataByKeys(
       flatData.concat(selectedRows),
       rowKey,
@@ -718,13 +790,7 @@ class SelectionGrid extends Component {
 
     let nextKeys = selectedRowKeys.slice().concat(changedKeys);
     let nextRows = selectedRows.slice().concat(changedRows);
-
-    // let { data: nextRows, keys: nextKeys } = filterDataByKeys(
-    //   flatData.concat(selectedRows),
-    //   rowKey,
-    //   selectedKeys
-    // );
-
+ 
     this.call_onSelectAll({
       selectedRowKeys: nextKeys,
       selectedRows: nextRows,
@@ -981,55 +1047,10 @@ class SelectionGrid extends Component {
 
     return {
       ...o,
-      onClick: () => {
-        let { selectedRowKeys, rowKey: key, selectOnRowClick } = this.state;
-        let rowKey = rowData[key];
-        let isSelected = selectedRowKeys.indexOf(rowKey) > -1;
-
-        if (this.isSingleSelect()) {
-          let bl = this.onBeforeSelect({
-            selected: isSelected,
-            rowData,
-            index: rowIndex,
-            key: rowKey,
-            callback: () => {
-              this.onSelectChange(rowKey, rowData, rowIndex);
-            }
-          });
-          if (bl !== false) {
-            this.onSelectChange(rowKey, rowData, rowIndex);
-          }
-        }
-
-        if (this.isMultipleSelect() && selectOnRowClick) {
-          let bl = this.onBeforeSelect({
-            selected: isSelected,
-            rowData,
-            index: rowIndex,
-            key: rowKey,
-            callback: () => {
-              this.onCheckChange({
-                selected: isSelected,
-                key: rowKey,
-                index: rowIndex,
-                rowData: rowData
-              });
-            }
-          });
-          if (bl !== false) {
-            let isEnabled = !this.isDisabledCheck(rowKey, rowData);
-            isEnabled &&
-              this.onCheckChange({
-                selected: isSelected,
-                key: rowKey,
-                index: rowIndex,
-                rowData: rowData
-              });
-          }
-        }
-
+      onClick: e => {
+        this.onRowClick({ rowData, rowIndex });
         if (typeof o.onClick === "function") {
-          o.onClick({ rowData, rowIndex, rowKey, event });
+          o.onClick({ rowData, rowIndex, rowKey }, e);
         }
       }
     };
