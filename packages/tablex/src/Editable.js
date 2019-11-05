@@ -1426,6 +1426,67 @@ class EditableTable extends React.Component {
     return newProps;
   };
 
+  headerToolsBar = () => {
+    let header = null;
+
+    let { editToolsConfig = {} } = this.props;
+    let toolBarPosition = editToolsConfig.position;
+
+    if (toolBarPosition === "top") {
+      header = this.createToolBar("top");
+    }
+
+    return header;
+  };
+
+  footerToolsBar = () => {
+    let { editToolsConfig = {} } = this.props;
+    let toolBarPosition = editToolsConfig.position;
+
+    let toolBar = null;
+
+    if (toolBarPosition === "bottom") {
+      toolBar = this.createToolBar();
+    }
+
+    return toolBar;
+  };
+
+  onSelectChange = (selectedKeys, selectedRows, triggerKey, extra) => {
+    this.setState({
+      selectedRowKeys: selectedKeys.slice(),
+      selectedRows: selectedRows.slice()
+    });
+    if (typeof this.props.onSelectChange === "function") {
+      this.props.onSelectChange(selectedKeys, selectedRows, triggerKey, extra);
+    }
+  };
+
+  onExpandedRowsChange = keys => {
+    this.setState({
+      expandedRowKeys: keys.slice()
+    });
+    if (typeof this.props.onExpandedRowsChange === "function") {
+      this.props.onExpandedRowsChange(keys);
+    }
+  };
+
+  rowClassName = (row, index) => {
+    let { focusedRowKeys, rowKey } = this.state;
+    let arr = [];
+
+    if (typeof this.props.rowClassName === "function") {
+      let cls = this.props.rowClassName(row, index);
+      cls && arr.push(cls);
+    }
+
+    if (focusedRowKeys.indexOf(row[rowKey]) > -1) {
+      arr.push("tablex-row-focused");
+    }
+
+    return arr.join(" ");
+  };
+
   createToolBar = pos => {
     let { editable, readOnly, toolBarStyle } = this.props;
     let styles = {};
@@ -1889,6 +1950,44 @@ class EditableTable extends React.Component {
     return nextKeys;
   };
 
+  getDataByKeys = (keys, data, keyField) => {
+    let keysMap = {};
+
+    let matched = [];
+
+    keys.forEach(k => {
+      keysMap[k] = true;
+    });
+
+    data.forEach(d => {
+      if (keysMap[d[keyField]]) {
+        matched.push(d);
+      }
+    });
+
+    return matched;
+  };
+
+  getSelections = () => {
+    let { selectedRowKeys, flatData, rowKey } = this.state;
+    let rows = this.getDataByKeys(selectedRowKeys, flatData, rowKey);
+
+    return {
+      keys: selectedRowKeys,
+      data: rows
+    };
+  };
+
+  getExpanded = () => {
+    let { expandedRowKeys, flatData, rowKey } = this.state;
+    let rows = this.getDataByKeys(expandedRowKeys, flatData, rowKey);
+
+    return {
+      keys: expandedRowKeys,
+      data: rows
+    };
+  };
+
   api = {
     /** 添加n行数据-同默认按钮动作 */
     addRange: this.addRange.bind(this),
@@ -1954,69 +2053,12 @@ class EditableTable extends React.Component {
     /** 滚动到指定行 */
     scrollToItem: this.scrollToItem.bind(this),
     /** 滚动到指定行 */
-    scrollToRow: this.scrollToRow.bind(this)
+    scrollToRow: this.scrollToRow.bind(this),
+
+    getSelections: this.getSelections.bind(this),
+    getExpanded: this.getExpanded.bind(this)
   };
 
-  headerToolsBar = () => {
-    let header = null;
-
-    let { editToolsConfig = {} } = this.props;
-    let toolBarPosition = editToolsConfig.position;
-
-    if (toolBarPosition === "top") {
-      header = this.createToolBar("top");
-    }
-
-    return header;
-  };
-
-  footerToolsBar = () => {
-    let { editToolsConfig = {} } = this.props;
-    let toolBarPosition = editToolsConfig.position;
-
-    let toolBar = null;
-
-    if (toolBarPosition === "bottom") {
-      toolBar = this.createToolBar();
-    }
-
-    return toolBar;
-  };
-
-  onSelectChange = (selectedKeys, selectedRows, triggerKey, extra) => {
-    this.setState({
-      selectedRowKeys: selectedKeys.slice(),
-      selectedRows: selectedRows.slice()
-    });
-    if (typeof this.props.onSelectChange === "function") {
-      this.props.onSelectChange(selectedKeys, selectedRows, triggerKey, extra);
-    }
-  };
-
-  onExpandedRowsChange = keys => {
-    this.setState({
-      expandedRowKeys: keys.slice()
-    });
-    if (typeof this.props.onExpandedRowsChange === "function") {
-      this.props.onExpandedRowsChange(keys);
-    }
-  };
-
-  rowClassName = (row, index) => {
-    let { focusedRowKeys, rowKey } = this.state;
-    let arr = [];
-
-    if (typeof this.props.rowClassName === "function") {
-      let cls = this.props.rowClassName(row, index);
-      cls && arr.push(cls);
-    }
-
-    if (focusedRowKeys.indexOf(row[rowKey]) > -1) {
-      arr.push("tablex-row-focused");
-    }
-
-    return arr.join(" ");
-  };
   render() {
     let columns = this.formatColumns();
 
