@@ -1328,6 +1328,20 @@ super(props);
     console.log("onEditSave editType:", editType);
   }
 
+  
+  getSelections() {
+    let r=this.tableRef.current.api.getSelections();
+
+    console.log("getSelections:", r);
+  }
+
+  
+  getExpanded() {
+    let r=this.tableRef.current.api.getExpanded();
+
+    console.log("getExpanded:", r);
+  }
+
   render() {
     return (
       <div style={{ height: "100%" }}>
@@ -1376,6 +1390,14 @@ super(props);
                 >
                   edit all
                 </Button>
+
+                     <Button
+                  onClick={this.getSelections.bind(this)}
+                  style={{ cursor: "pointer", marginLeft: 10 }}
+                >
+                  get selections
+                </Button>
+ 
               </div>
             );
           }}

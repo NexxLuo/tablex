@@ -228,7 +228,7 @@ class Demo extends React.Component {
       {
         dataIndex: "column-1",
         key: "column-1",
-        title: "column-1",
+        title: "column-1"
       },
 
       {
@@ -284,11 +284,11 @@ class Demo extends React.Component {
       type: "checkbox",
       showCheckbox: true,
       fixed: true,
-      onBeforeSelect:()=>{
+      onBeforeSelect: () => {
         console.log("onBeforeSelect");
         return true;
       },
-      onBeforeSelectAll:()=>{
+      onBeforeSelectAll: () => {
         console.log("onBeforeSelectAll");
         return true;
       },
@@ -315,42 +315,47 @@ class Demo extends React.Component {
     };
   }
 
-  contextMenu=(row)=>{
-    
-    
-    console.log("contextMenu:",row&&row.id)
+  contextMenu = row => {
+    console.log("contextMenu:", row && row.id);
 
-    if (row&&row.id==="Row 4 - Col 0") {
-      return <div>asadasd</div>
+    if (row && row.id === "Row 4 - Col 0") {
+      return <div>asadasd</div>;
     }
     return null;
-  }
+  };
 
   render() {
     let { columns, data, current, pageSize, total } = this.state;
 
     return (
       <>
-        <Table
-          rowKey="id"
-          columns={columns}
-          selectMode="multiple"
-          checkStrictly={true}
-          onSelectChange={function(a, b, c, d) {
-            console.log("onSelectChange");
-            return true;
-          }}
-          data={data}
-          rowSelection={this.getRowSelection()}
-          pagination2={{
-            current,
-            pageSize,
-            total,
-            onPageChange: this.onPageChange.bind(this),
-            onRefresh: this.onRefresh.bind(this)
-          }}
-        />
-   
+        <Input.Search
+          onChange={() => console.log("onchange")}
+          allowClear={true}
+        ></Input.Search>
+        <div>
+          <Table
+            rowKey="id"
+            editable={true}
+            columns={columns}
+            selectMode="none"
+            checkStrictly={true}
+            onSelectChange={function(a, b, c, d) {
+              console.log("onSelectChange");
+              return true;
+            }}
+            data={data}
+            selectOnRowClick={true}
+            rowSelection={this.getRowSelection()}
+            pagination2={{
+              current,
+              pageSize,
+              total,
+              onPageChange: this.onPageChange.bind(this),
+              onRefresh: this.onRefresh.bind(this)
+            }}
+          />
+        </div>
       </>
     );
   }
