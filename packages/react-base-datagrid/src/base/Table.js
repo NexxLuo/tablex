@@ -78,16 +78,19 @@ class Table extends React.Component {
       headRef,
       onColumnResizeStop,
       components,
-      headStyle = {},
+      headStyle,
       headerHeight,
       headerRowHeight
     } = this.props;
 
     let { columns, showHeader, columnsLeafs } = this.state;
 
-    let styles = Object.assign(headStyle, {
-      height: headerHeight
-    });
+    let styles = Object.assign(
+      { ...headStyle },
+      {
+        height: headerHeight
+      }
+    );
 
     let TableComponents = components || {};
 
@@ -119,11 +122,7 @@ class Table extends React.Component {
     }
 
     return (
-      <div
-        className="tablex-table-head-container"
-        style={headStyle}
-        ref={headRef}
-      >
+      <div className="tablex-table-head-container" style={styles} ref={headRef}>
         {innerElement}
       </div>
     );
@@ -229,7 +228,7 @@ class Table extends React.Component {
 
     let styles = {
       height: height,
-      right: scrollbarY,
+      right: scrollbarY
     };
 
     let currRef = null;

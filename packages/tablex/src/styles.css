@@ -19,6 +19,7 @@
   flex: 0 0 auto;
   -webkit-box-flex: 0;
   background-color: #ffffff;
+  z-index: 1;
 }
 
 .tablex__container__footer {
@@ -102,6 +103,19 @@
   top: 0;
 }
 
+.tablex__overlay__inner{
+  z-index: 3;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  top: 0;
+  margin: auto;
+  width: 100%;
+  text-align: center;
+  height: 70px;
+}
+
 .tablex__emptydata {
   text-align: center;
   position: absolute;
@@ -114,7 +128,6 @@
   height: 70px;
   color: #c7c7c7;
   font-size: 14px;
-  z-index: 2;
   letter-spacing: 1px;
 }
 

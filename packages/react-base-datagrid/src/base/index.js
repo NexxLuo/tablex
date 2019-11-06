@@ -48,20 +48,35 @@ class BaseDataGrid extends React.Component {
         data,
         formattedColumns,
         hoverable,
-        prevProps: nextProps,
-        tableHeight: nextProps.height
+        prevProps: nextProps
       };
+
+      if (nextProps.height) {
+        nextState.tableHeight = nextProps.height;
+      }
+      if (nextProps.width) {
+        nextState.tableWidth = nextProps.width;
+      }
 
       if (
         prevState.tableHeight !== nextProps.height ||
+        prevState.tableWidth !== nextProps.width ||
         data.length !== prevState.data.length
       ) {
         nextState.needResetScrollbar = true;
       }
+       nextState.needResetScrollbar = true;
 
       return nextState;
     }
     return null;
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (!nextProps.height) {
+      return false;
+    }
+    return true;
   }
 
   onLeftScroll = ({ scrollOffset, scrollUpdateWasRequested }) => {
@@ -264,7 +279,6 @@ class BaseDataGrid extends React.Component {
 
   getTableHeight = () => {
     let {
-      height,
       rowHeight,
       autoHeight,
       maxHeight,
@@ -273,7 +287,12 @@ class BaseDataGrid extends React.Component {
       headerRowHeight
     } = this.props;
 
-    let { data, formattedColumns, scrollbarX } = this.state;
+    let {
+      data,
+      formattedColumns,
+      scrollbarX,
+      tableHeight: height
+    } = this.state;
     let maxDepth = formattedColumns.maxDepth;
 
     //表头高度
@@ -292,14 +311,15 @@ class BaseDataGrid extends React.Component {
     }
 
     let tableHeight = height;
+    let tableBodyMinHeight = 100;
 
     if (autoHeight === true || !tableHeight) {
       let rh = 40;
       if (typeof rowHeight === "number") {
         rh = rowHeight;
       }
-      let totalRowsHeight = data.length * rh;
-      tableHeight = totalRowsHeight + headerHeight + 2;
+      let totalRowsHeight = data.length * rh || tableBodyMinHeight;
+      tableHeight = totalRowsHeight + headerHeight + scrollbarX + 2;
     }
 
     if (tableHeight < minHeight) {
@@ -314,7 +334,7 @@ class BaseDataGrid extends React.Component {
   };
 
   render() {
-    let { width, className, overlayRenderer, bordered } = this.props;
+    let { className, overlayRenderer, bordered } = this.props;
 
     let props = this.props;
 
@@ -383,11 +403,7 @@ class BaseDataGrid extends React.Component {
     cls = cls.join(" ");
 
     return (
-      <div
-        className={cls}
-        style={{ width, height: tableHeight }}
-        ref={this.containerRef}
-      >
+      <div className={cls} ref={this.containerRef}>
         {overlay}
         {hasLeft ? (
           <div

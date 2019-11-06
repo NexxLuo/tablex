@@ -667,21 +667,17 @@ class Table extends React.Component {
           top: headerHeight
         }}
       >
-        <Spin
-          spinning={true}
-          tip="数据加载中，请稍候..."
-          style={{
-            position: "absolute",
-            margin: "auto",
-            left: 0,
-            right: 0,
-            width: 300,
-            height: 50,
-            top: 0,
-            bottom: 0,
-            zIndex: 3
-          }}
-        />
+        <div className="tablex__overlay__inner">
+          <Spin
+            spinning={true}
+            tip="数据加载中，请稍候..."
+            style={{
+              margin: "auto",
+              width: 300,
+              height: 50,
+            }}
+          />
+        </div>
       </div>
     );
   };
@@ -697,9 +693,11 @@ class Table extends React.Component {
           top: headerHeight
         }}
       >
-        <div className="tablex__emptydata">
-          <EmptyIcon />
-          暂无数据
+        <div className="tablex__overlay__inner">
+          <div className="tablex__emptydata">
+            <EmptyIcon />
+            暂无数据
+          </div>
         </div>
       </div>
     );
@@ -888,7 +886,6 @@ class Table extends React.Component {
         newProps.overlayRenderer = this.emptyRenderer;
       }
     }
-
     let columnMenuState = columnMenu || {};
 
     let { footer, height: footerHeight } = this.renderFooter();
@@ -896,16 +893,11 @@ class Table extends React.Component {
 
     let extraHeight = 0;
 
-    let bodyStyles = { height: "100%" };
     if (footer) {
       extraHeight += footerHeight;
     }
     if (header) {
       extraHeight += headerHeight;
-    }
-
-    if (extraHeight > 0) {
-      bodyStyles.height = `calc(100% - ${extraHeight}px)`;
     }
 
     let classNames = ["tablex__container"];
@@ -916,8 +908,20 @@ class Table extends React.Component {
 
     classNames = classNames.join(" ");
 
+    let bodyStyles = { height: "100%" };
+    let wrapperStyles = Object.assign(props.style || {}, { height: "100%" });
+
+    if (props.autoHeight === true) {
+      bodyStyles.height = "auto";
+      wrapperStyles.height = "auto";
+    } else {
+      if (extraHeight > 0) {
+        bodyStyles.height = `calc(100% - ${extraHeight}px)`;
+      }
+    }
+
     return (
-      <div className={classNames} style={props.style}>
+      <div className={classNames} style={wrapperStyles}>
         {header}
         <div className="tablex__container__body" style={bodyStyles}>
           <BaseTable {...props} {...newProps} />
