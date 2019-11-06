@@ -313,11 +313,12 @@ class Demo extends Component {
         <Button onClick={this.scrollToItem1}>scrollToItem</Button>
 
         <Table
-          loading={this.state.loading}
+       
           editTools={["edit", "add", "delete"]}
-          autoHeight={true}
           tableId="preview_table"
           sortable={false}
+          loading={false}
+          autoHeight={true}
           editable={true}
           isAppend={true}
           allowSaveEmpty={true}
