@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 
 import Pagination from "antd/lib/pagination";
 import Button from "antd/lib/button";
-import "antd/dist/antd.css";
 import "./styles.css";
 
 class Pager extends React.Component {
