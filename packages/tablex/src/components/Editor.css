@@ -13,8 +13,8 @@
   width: 100%;
 }
 
-.tablex-row-cell-editor .ant-input-number .ant-input-number-input {
-  width: calc(100% - 24px);
+.tablex-row-cell-editor .ant-input-number {
+  padding-right: 16px;
 }
 
 .tablex-editor-noborder .tablex-row-cell-editor.no-error.not-focused .ant-input,
