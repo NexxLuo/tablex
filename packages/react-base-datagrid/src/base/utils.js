@@ -97,7 +97,7 @@ export function getFlattenColumns(arr, idField = "key") {
   return { list, leafs, roots, maxDepth };
 }
 
-function getDepth(node, depth = 0) {
+export function getDepth(node, depth = 0) {
   if (!node.children) {
     return depth;
   }
@@ -522,4 +522,58 @@ export function isNumber(v) {
   }
 
   return true;
+}
+
+const HEADER_HEIGHT = 40;
+export function getTableHeight({
+  rowHeight,
+  autoHeight,
+  maxHeight,
+  minHeight,
+  showHeader,
+  headerRowHeight,
+  data,
+  columns,
+  height
+}) {
+  let maxDepth = getDepth({ children: columns }, -1);
+
+  console.log("maxDepth:", maxDepth);
+
+  //表头高度
+  let headerHeight = 0;
+  let headerHeights = [];
+
+  if (showHeader === true) {
+    for (let i = 0; i < maxDepth + 1; i++) {
+      let h = headerRowHeight[i];
+      if (!isNumber(h)) {
+        h = HEADER_HEIGHT;
+      }
+      headerHeights.push(h);
+      headerHeight = headerHeight + h;
+    }
+  }
+
+  let tableHeight = height;
+  let tableBodyMinHeight = 100;
+
+  if (autoHeight === true || !tableHeight) {
+    let rh = 40;
+    if (typeof rowHeight === "number") {
+      rh = rowHeight;
+    }
+    let totalRowsHeight = data.length * rh || tableBodyMinHeight;
+    tableHeight = totalRowsHeight + headerHeight + 2;
+  }
+
+  if (tableHeight < minHeight) {
+    tableHeight = minHeight;
+  }
+
+  if (tableHeight > maxHeight) {
+    tableHeight = maxHeight;
+  }
+
+  return { tableHeight, headerHeights, headerHeight };
 }
