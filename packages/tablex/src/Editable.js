@@ -559,6 +559,7 @@ class EditableTable extends React.Component {
     this.editType = "";
     this.deletedData = [];
     this.insertedData = [];
+    this.nextData = [];
 
     let nextState = {
       editSaveLoading: false,
@@ -599,6 +600,7 @@ class EditableTable extends React.Component {
     this.changedRows = [];
     this.insertedData = [];
     this.deletedData = [];
+    this.nextData = [];
     this.rowsValidation = [];
     this.setState(nextState);
   };
@@ -858,7 +860,14 @@ class EditableTable extends React.Component {
     let { allowSaveEmpty } = this.props;
 
     //当前表格数据,树形数据
-    let data = this.state.data;
+    let data = this.nextData;
+    if (
+      changedRows.length === 0 &&
+      insertedData.length === 0 &&
+      deletedData.length === 0
+    ) {
+      data = this.state.data;
+    }
 
     //最终表格产生更改的数据
     let changedState = {
@@ -1601,6 +1610,7 @@ class EditableTable extends React.Component {
     }
   };
 
+  nextData = [];
   insertedData = [];
   insertData = ({
     data = [],
@@ -1636,6 +1646,7 @@ class EditableTable extends React.Component {
     };
 
     this.insertedData = insertedData.slice().concat(insertedRows);
+    this.nextData = newData;
 
     if (editing === true) {
       nextState.editKeys = editKeys.concat(insertedRowKeys);
@@ -1674,6 +1685,7 @@ class EditableTable extends React.Component {
 
     let deletedData = this.deletedData;
     this.deletedData = deletedData.slice().concat(deletedRows);
+    this.nextData = newData;
 
     let {
       selectedRowKeys: nextSelectedRowKeys,
@@ -1756,6 +1768,7 @@ class EditableTable extends React.Component {
       modifiedData.push(k);
     });
 
+    this.nextData = data.slice();
     return modifiedData;
   };
 
