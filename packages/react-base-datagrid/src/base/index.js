@@ -65,7 +65,7 @@ class BaseDataGrid extends React.Component {
       ) {
         nextState.needResetScrollbar = true;
       }
-       nextState.needResetScrollbar = true;
+      nextState.needResetScrollbar = true;
 
       return nextState;
     }
@@ -493,6 +493,12 @@ const AutoSizerTable = forwardRef((props, ref) => {
   return (
     <ReactResizeDetector handleWidth handleHeight>
       {({ width, height }) => {
+        if (!height) {
+          if (props.autoHeight === true) {
+          } else {
+            return <div></div>;
+          }
+        }
         return (
           <BaseDataGrid {...props} height={height} width={width} ref={ref} />
         );
