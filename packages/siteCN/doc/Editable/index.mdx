@@ -1311,6 +1311,7 @@ super(props);
 
   delete() {
     let deleted = this.tableRef.current.api.deleteData();
+       this.tableRef.current.api.completeEdit();
     console.log("deleted:",deleted);
   }
 
