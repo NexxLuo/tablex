@@ -462,3 +462,119 @@ export function getSelectionChanged({
 
   return { changedKeys, changedRows };
 }
+
+export function getRowSelectionFromProps(props, k) {
+  let o = props.rowSelection;
+
+  let rowSelection = {};
+  let defaultRowSelection = {
+    showCheckbox: props.selectMode === "multiple",
+    selectOnCheck: true,
+    checkOnSelect: true
+  };
+
+  if (o instanceof Object) {
+    rowSelection = Object.assign({}, defaultRowSelection, o);
+  } else {
+    rowSelection = defaultRowSelection;
+  }
+
+  if (k) {
+    return rowSelection[k];
+  } else {
+    return rowSelection;
+  }
+}
+
+export function getSelectionConfigFromProps(props) {
+  let selectionColumn = null;
+  let selectionProps = {};
+
+  let { selectMode, selectionColumn: c } = props;
+
+  if (props.rowSelection instanceof Object) {
+    let rowSelection = getRowSelectionFromProps(props);
+
+    let { type, columnWidth, columnTitle, fixed, showCheckbox } = rowSelection;
+
+    let showSelectioColumn = false;
+
+    if (type === "checkbox") {
+      showSelectioColumn = true;
+    }
+
+    if (typeof showCheckbox === "boolean") {
+      showSelectioColumn = showCheckbox;
+    }
+
+    if (showSelectioColumn === true) {
+      let defaultSelectionColumn = {
+        key: "__checkbox_column",
+        dataIndex: "__checkbox_column",
+        __type: "__checkbox_column",
+        resizable: false,
+        width: 50,
+        align: "center"
+      };
+
+      selectionColumn = defaultSelectionColumn;
+
+      let resetSelectionColumn = {};
+
+      if ("columnWidth" in rowSelection) {
+        resetSelectionColumn.width = columnWidth;
+      }
+
+      if ("columnTitle" in rowSelection) {
+        resetSelectionColumn.title = columnTitle;
+      }
+
+      if (fixed === true) {
+        resetSelectionColumn.fixed = "left";
+      }
+
+      selectionColumn = Object.assign(
+        {},
+        defaultSelectionColumn,
+        resetSelectionColumn
+      );
+    }
+
+    if ("selectedRowKeys" in rowSelection) {
+      selectionProps.selectedRowKeys = rowSelection.selectedRowKeys;
+    }
+  } else {
+    if (selectMode === "multiple") {
+      let defaultSelectionColumn = {
+        key: "__checkbox_column",
+        dataIndex: "__checkbox_column",
+        __type: "__checkbox_column",
+        resizable: false,
+        width: 50,
+        align: "center"
+      };
+
+      selectionColumn = defaultSelectionColumn;
+
+      if (c !== false && c !== null) {
+        if (c instanceof Object) {
+          selectionColumn = Object.assign({}, defaultSelectionColumn, c);
+        }
+      }
+    }
+
+    if ("selectedRowKeys" in props) {
+      selectionProps.selectedRowKeys = props.selectedRowKeys;
+    }
+
+    if ("halfCheckedKeys" in props) {
+      selectionProps.halfCheckedKeys = props.halfCheckedKeys;
+    }
+
+    if ("disabledSelectKeys" in props) {
+      selectionProps.disabledSelectKeys = props.disabledSelectKeys;
+    }
+  }
+
+  return { selectionProps, selectionColumn };
+}

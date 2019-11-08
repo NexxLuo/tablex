@@ -282,18 +282,40 @@ class Demo extends React.Component {
   getRowSelection() {
     return {
       type: "checkbox",
+      selectMode: "single",
+      checkMode: "single",
       showCheckbox: true,
+      selectOnCheck: false,
+      checkOnSelect: true,
       fixed: true,
       onBeforeSelect: () => {
-        console.log("onBeforeSelect");
+        // console.log("onBeforeSelect");
         return true;
       },
-      onBeforeSelectAll: () => {
-        console.log("onBeforeSelectAll");
-        return true;
+
+      onSelectChange: () => {
+        console.log("onSelectChange");
       },
-      onChange: () => {
+
+      onSelect: () => {
+        console.log("onSelect");
+      },
+      onCheck: () => {
+        console.log("onCheck");
+      },
+      onChange2: () => {
         console.log("onChange");
+      },
+      onCheckAll2: () => {
+        console.log("onCheckAll");
+      },
+      onBeforeCheck: () => {
+        console.log("onBeforeCheck");
+        return true;
+      },
+      onBeforeCheckAll: () => {
+        console.log("onBeforeCheckAll");
+        return true;
       },
       getCheckboxProps: r => {
         return {
@@ -338,15 +360,42 @@ class Demo extends React.Component {
             rowKey="id"
             editable={true}
             columns={columns}
-            selectMode="none"
+            autoHeight={true}
+            selectMode="multiple"
             checkStrictly={true}
+            disabledSelectKeys={[data[0].id]}
             onSelectChange={function(a, b, c, d) {
               console.log("onSelectChange");
               return true;
             }}
+            onSelect={function(a, b, c, d) {
+              console.log("onSelect");
+              return true;
+            }}
+            onBeforeSelect={function(a, b, c, d) {
+              console.log("onBeforeSelect");
+              return true;
+            }}
+            onUnSelect={function(a, b, c, d) {
+              console.log("onUnSelect");
+              return true;
+            }}
+            onBeforeSelectAll={function(a, b, c, d) {
+              console.log("onBeforeSelectAll");
+              return true;
+            }}
+            onSelectAll={function(a, b, c, d) {
+              console.log("onSelectAll");
+              return true;
+            }}
+            onUnSelectAll={function(a, b, c, d) {
+              console.log("onUnSelectAll");
+              return true;
+            }}
+       
             data={data}
             selectOnRowClick={true}
-            rowSelection={this.getRowSelection()}
+            rowSelection2={this.getRowSelection()}
             pagination2={{
               current,
               pageSize,
