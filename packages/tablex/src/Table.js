@@ -7,14 +7,15 @@ import ColumnDropMenu from "./components/ColumnDropMenu";
 import Setting, { getConfigs, setConfigs } from "./components/setting";
 import SortIcon from "./components/SortIndicator";
 import EmptyIcon from "./components/EmptyIcon";
-import Spin from "antd/lib/spin";
+
+import { Spin, Popover } from "./antd";
+
 import {
   treeToFlatten as treeToList,
   treeFilter,
   getParentElement
 } from "./utils";
 import orderBy from "lodash/orderBy";
-import Popover from "antd/lib/popover";
 import cloneDeep from "lodash/cloneDeep";
 import maxBy from "lodash/maxBy";
 import minBy from "lodash/minBy";
@@ -674,7 +675,7 @@ class Table extends React.Component {
             style={{
               margin: "auto",
               width: 300,
-              height: 50,
+              height: 50
             }}
           />
         </div>

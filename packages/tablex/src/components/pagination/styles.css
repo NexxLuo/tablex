@@ -69,3 +69,9 @@
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
+
+.tablex-pagination-options-size-changer.ant-select {
+  display: inline-block;
+  width: auto;
+  margin-right: 8px;
+}

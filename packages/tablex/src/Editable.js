@@ -14,15 +14,10 @@ import {
   insertData,
   deleteData
 } from "./utils";
-import Button from "antd/lib/button";
-import message from "antd/lib/message";
-import Popconfirm from "antd/lib/popconfirm";
-import Menu from "antd/lib/menu";
-import Dropdown from "antd/lib/dropdown";
-import Icon from "antd/lib/icon";
+
+import { message, Button, Popconfirm, Menu, Dropdown, Icon } from "./antd";
+
 import orderBy from "lodash/orderBy";
-import ConfigProvider from 'antd/lib/config-provider';
-import "./antd/style.css";
 import "./styles.css";
 
 /**
@@ -2114,7 +2109,7 @@ class EditableTable extends React.Component {
 
     newProps.className = classNames.join(" ");
 
-    return <ConfigProvider prefixCls="tablex"><Table {...props} {...newProps} /></ConfigProvider>;
+    return <Table {...props} {...newProps} />;
   }
 }
 

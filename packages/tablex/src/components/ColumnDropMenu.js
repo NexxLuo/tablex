@@ -1,6 +1,6 @@
 import React from "react";
-import Menu from "antd/lib/menu";
-import Checkbox from "antd/lib/checkbox";
+
+import { Menu, Checkbox } from "../antd";
 
 const SubMenu = Menu.SubMenu;
 

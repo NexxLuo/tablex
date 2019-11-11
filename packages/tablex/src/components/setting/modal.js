@@ -1,9 +1,7 @@
 import React, { Component } from "react";
-import Modal from "antd/lib/modal";
-import Button from "antd/lib/button";
-import InputNumber from "antd/lib/input-number";
-import Radio from "antd/lib/radio";
-import Switch from "antd/lib/switch";
+
+import { Modal,Button,InputNumber,Radio,Switch } from "../../antd";
+
 import { saveConfigs, removeConfigs, treeToList } from "./utils";
 import { SortableContainer, SortableElement } from "react-sortable-hoc";
 import cloneDeep from "lodash/cloneDeep";
@@ -376,6 +374,7 @@ class SettingModal extends React.Component {
       title: "表格配置",
       onOk: this.onOk,
       onCancel: this.onCancel,
+    
       width: "720px",
       zIndex: 99999,
       bodyStyle: {
