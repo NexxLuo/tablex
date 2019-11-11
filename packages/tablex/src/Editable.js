@@ -469,20 +469,23 @@ class EditableTable extends React.Component {
       newRenderProps.props = rendered.props;
     }
 
-    let c = (
-      <Editor
-        valid={valid}
-        message={msg}
-        onClick={this.onClick}
-        rowKey={rowKey}
-        columnKey={columnKey}
-        onKeyDown={this.onKeyDown}
-      >
-        {ed}
-      </Editor>
-    );
-
-    newRenderProps.children = c;
+    if (!ed) {
+      newRenderProps.children = null;
+    } else {
+      let c = (
+        <Editor
+          valid={valid}
+          message={msg}
+          onClick={this.onClick}
+          rowKey={rowKey}
+          columnKey={columnKey}
+          onKeyDown={this.onKeyDown}
+        >
+          {ed}
+        </Editor>
+      );
+      newRenderProps.children = c;
+    }
 
     return newRenderProps;
   };
@@ -845,7 +848,9 @@ class EditableTable extends React.Component {
 
   onClick = e => {
     this.isMouseFocus = true;
-    e.stopPropagation();
+    if (this.props.editorClickBubble === false) {
+      e.stopPropagation();
+    }
   };
 
   getModifiedData = () => {
@@ -2139,7 +2144,8 @@ EditableTable.defaultProps = {
   dataControled: false,
   alwaysValidate: false,
   editorNoBorder: false,
-  keyboardNavigation: true
+  keyboardNavigation: true,
+  editorClickBubble: false
 };
 
 EditableTable.propTypes = {
@@ -2149,6 +2155,8 @@ EditableTable.propTypes = {
   editable: PropTypes.bool,
   /** 是否启用键盘导航 */
   keyboardNavigation: PropTypes.bool,
+  /** 编辑器是否允许点击事件冒泡 */
+  editorClickBubble: PropTypes.bool,
   /** 工具栏样式 */
   toolBarStyle: PropTypes.object,
   /** 工具栏，工具按钮 ['edit', 'add','delete',{icon:"",text:"",props:{},handler:Function},Function] addSingle:单行新增 */
