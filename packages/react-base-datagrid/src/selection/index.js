@@ -8,99 +8,10 @@ import {
   addCheckedKeyWithDisabled,
   filterDataByKeys,
   removeKeysByData,
-  getSelectionChanged
+  getSelectionChanged,
+  getRowSelectionFromProps,
+  getSelectionConfigFromProps
 } from "./utils";
-
-function getSelectionConfig(props) {
-  let selectionColumn = null;
-  let selectionProps = {};
-
-  let { selectMode, selectionColumn: c, rowSelection } = props;
-
-  if (rowSelection instanceof Object) {
-    let { type, columnWidth, columnTitle, fixed, showCheckbox } = rowSelection;
-
-    let showSelectioColumn = false;
-
-    if (type === "checkbox") {
-      showSelectioColumn = true;
-    }
-
-    if (typeof showCheckbox === "boolean") {
-      showSelectioColumn = showCheckbox;
-    }
-
-    if (showSelectioColumn === true) {
-      let defaultSelectionColumn = {
-        key: "__checkbox_column",
-        dataIndex: "__checkbox_column",
-        __type: "__checkbox_column",
-        resizable: false,
-        width: 50,
-        align: "center"
-      };
-
-      selectionColumn = defaultSelectionColumn;
-
-      let resetSelectionColumn = {};
-
-      if ("columnWidth" in rowSelection) {
-        resetSelectionColumn.width = columnWidth;
-      }
-
-      if ("columnTitle" in rowSelection) {
-        resetSelectionColumn.title = columnTitle;
-      }
-
-      if (fixed === true) {
-        resetSelectionColumn.fixed = "left";
-      }
-
-      selectionColumn = Object.assign(
-        {},
-        defaultSelectionColumn,
-        resetSelectionColumn
-      );
-    }
-
-    if ("selectedRowKeys" in rowSelection) {
-      selectionProps.selectedRowKeys = rowSelection.selectedRowKeys;
-    }
-  } else {
-    if (selectMode === "multiple") {
-      let defaultSelectionColumn = {
-        key: "__checkbox_column",
-        dataIndex: "__checkbox_column",
-        __type: "__checkbox_column",
-        resizable: false,
-        width: 50,
-        align: "center"
-      };
-
-      selectionColumn = defaultSelectionColumn;
-
-      if (c !== false && c !== null) {
-        if (c instanceof Object) {
-          selectionColumn = Object.assign({}, defaultSelectionColumn, c);
-        }
-      }
-    }
-
-    if ("selectedRowKeys" in props) {
-      selectionProps.selectedRowKeys = props.selectedRowKeys;
-    }
-
-    if ("halfCheckedKeys" in props) {
-      selectionProps.halfCheckedKeys = props.halfCheckedKeys;
-    }
-
-    if ("disabledSelectKeys" in props) {
-      selectionProps.disabledSelectKeys = props.disabledSelectKeys;
-    }
-  }
-
-  return { selectionProps, selectionColumn };
-}
 
 class SelectionGrid extends Component {
   constructor(props) {
@@ -133,6 +44,7 @@ class SelectionGrid extends Component {
       disabledSelectKeys: [],
       halfCheckedKeys: [],
       checkedKeys: [],
+      checkedRows: [],
       selectMode: "",
       rowSelectClassName: "",
       checkStrictly: false
@@ -159,7 +71,9 @@ class SelectionGrid extends Component {
     if (prevState.prevProps !== nextProps) {
       let extraColumns = [];
 
-      let { selectionProps, selectionColumn } = getSelectionConfig(nextProps);
+      let { selectionProps, selectionColumn } = getSelectionConfigFromProps(
+        nextProps
+      );
       if (selectionColumn) {
         extraColumns.unshift(selectionColumn);
       }
@@ -257,7 +171,7 @@ class SelectionGrid extends Component {
     selectedRowKeys,
     selectedRows
   }) => {
-    let rfn = this.getRowSelection("onChange");
+    let rfn = this.getRowSelection("onSelectChange");
     if (typeof rfn === "function") {
       rfn(selectedRowKeys, selectedRows);
     } else {
@@ -321,21 +235,94 @@ class SelectionGrid extends Component {
     return true;
   };
 
+  //
+
+  call_onCheck = ({ rowData, rowIndex, rowKey, keys, rows }) => {
+    let rfn = this.getRowSelection("onCheck");
+    if (typeof rfn === "function") {
+      rfn(rowData, true, rows);
+    }
+  };
+
+  call_onUnCheck = ({ rowData, rowIndex, rowKey, keys, rows }) => {
+    let rfn = this.getRowSelection("onCheck");
+    if (typeof rfn === "function") {
+      rfn(rowData, false, rows);
+    }
+  };
+
+  call_onCheckChange = ({ rowData, rowIndex, rowKey, keys, rows }) => {
+    let rfn = this.getRowSelection("onChange");
+    if (typeof rfn === "function") {
+      rfn(keys, rows);
+    }
+  };
+
+  call_onCheckAll = ({ keys, rows, changed }) => {
+    let rfn = this.getRowSelection("onCheckAll");
+    if (typeof rfn === "function") {
+      rfn(true, rows, changed);
+    } else {
+      let fn = this.props.onSelectAll;
+      if (typeof fn === "function") {
+        fn(keys, rows);
+      }
+    }
+  };
+
+  call_onUnCheckAll = ({ keys, rows, changed }) => {
+    let rfn = this.getRowSelection("onCheckAll");
+    if (typeof rfn === "function") {
+      rfn(false, rows, changed);
+    } else {
+      let fn = this.props.onUnSelectAll;
+      if (typeof fn === "function") {
+        fn(keys, rows);
+      }
+    }
+  };
+
+  call_onBeforeCheck = params => {
+    let rfn = this.getRowSelection("onBeforeCheck");
+    if (typeof rfn === "function") {
+      return rfn(params);
+    }
+
+    return true;
+  };
+
+  call_onBeforeCheckAll = params => {
+    let rfn = this.getRowSelection("onBeforeCheckAll");
+    if (typeof rfn === "function") {
+      return rfn(params);
+    } else {
+      let fn = this.props.onBeforeSelectAll;
+      if (typeof fn === "function") {
+        return fn(params);
+      }
+    }
+
+    return true;
+  };
+  //
+
+  onBeforeSelect = params => {
+    let bl = this.call_onBeforeSelect(params);
+    return bl;
+  };
+
+  onBeforeCheck = params => {
+    let bl = this.call_onBeforeCheck(params);
+    return bl;
+  };
+
   hasRowSelection = () => {
     return this.props.rowSelection instanceof Object;
   };
 
   getRowSelection = k => {
-    let rowSelection = this.props.rowSelection;
-    if (rowSelection instanceof Object) {
-      if (k) {
-        return rowSelection[k];
-      } else {
-        return rowSelection;
-      }
-    } else {
-      return undefined;
-    }
+    let r = getRowSelectionFromProps(this.props, k);
+    return r;
   };
 
   getParents = key => {
@@ -396,8 +383,9 @@ class SelectionGrid extends Component {
   };
 
   /** 判断行/行父级是否被禁用选中 */
-  isDisabledCheck = (key, rowData) => {
+  isDisabledCheck = key => {
     let { checkStrictly, disabledSelectKeys: arr } = this.state;
+
     let bl = arr.indexOf(key) > -1;
 
     if (bl === false && checkStrictly) {
@@ -454,14 +442,40 @@ class SelectionGrid extends Component {
     }
   };
 
-  onBeforeSelect = params => {
-    let bl = this.call_onBeforeSelect(params);
-    return bl;
+  isCheckedAll = () => {
+    let { checkedKeys, flatData, rowKey } = this.state;
+
+    let keys = checkedKeys;
+
+    if (flatData.length === 0 || keys.length === 0) {
+      return false;
+    }
+
+    if (keys.length >= flatData.length) {
+      let bl = true;
+
+      let selectedMap = {};
+
+      for (let i = 0, len = keys.length; i < len; i++) {
+        selectedMap[keys[i]] = true;
+      }
+
+      for (let i = 0, len = flatData.length; i < len; i++) {
+        let dk = flatData[i][rowKey];
+        if (selectedMap[dk] !== true) {
+          bl = false;
+          break;
+        }
+      }
+
+      return bl;
+    } else {
+      return false;
+    }
   };
 
   addSelected = ({ rowKey, rowData, rowIndex, quiet = false }) => {
     let { selectedRowKeys, selectedRows } = this.state;
-    let i = selectedRowKeys.indexOf(rowKey);
 
     let nextKeys = selectedRowKeys.slice();
     let nextRows = selectedRows.slice();
@@ -479,9 +493,31 @@ class SelectionGrid extends Component {
     }
 
     if (quiet === false) {
-      this.call_onSelect({
+      let nextState = {
         selectedRowKeys: nextKeys,
-        selectedRows: nextRows,
+        selectedRows: nextRows
+      };
+
+      if (this.getRowSelection("checkOnSelect") === true) {
+        let {
+          keys: nextCheckedKeys,
+          rows: nextCheckedRows,
+          halfKeys: nextHalfCheckedKeys
+        } = this.addChecked(rowKey, rowIndex, rowData, true);
+
+        nextState.checkedKeys = nextCheckedKeys;
+        nextState.checkedRows = nextCheckedRows;
+        nextState.halfCheckedKeys = nextHalfCheckedKeys;
+
+        if (this.getRowSelection("selectOnCheck") === true) {
+          nextState.selectedRowKeys = nextCheckedKeys;
+          nextState.selectedRows = nextCheckedRows;
+        }
+      }
+
+      this.call_onSelect({
+        selectedRowKeys: nextState.selectedRowKeys,
+        selectedRows: nextState.selectedRows,
         rowKey,
         rowIndex,
         rowData,
@@ -492,16 +528,16 @@ class SelectionGrid extends Component {
         rowData,
         rowIndex,
         rowKey,
-        selectedRowKeys: nextKeys,
-        selectedRows: nextRows
+        selectedRowKeys: nextState.selectedRowKeys,
+        selectedRows: nextState.selectedRows
       });
 
-      this.setState({ selectedRowKeys: nextKeys, selectedRows: nextRows });
+      this.setState(nextState);
     }
 
     return {
-      selectedRowKeys: nextKeys,
-      selectedRows: nextRows
+      keys: nextKeys,
+      rows: nextRows
     };
   };
 
@@ -532,9 +568,31 @@ class SelectionGrid extends Component {
     }
 
     if (quiet === false) {
-      this.call_onUnSelect({
+      let nextState = {
         selectedRowKeys: nextKeys,
-        selectedRows: nextRows,
+        selectedRows: nextRows
+      };
+
+      if (this.getRowSelection("checkOnSelect") === true) {
+        let {
+          keys: nextCheckedKeys,
+          rows: nextCheckedRows,
+          halfKeys: nextHalfCheckedKeys
+        } = this.removeChecked(rowKey, rowIndex, rowData, true);
+
+        nextState.checkedKeys = nextCheckedKeys;
+        nextState.checkedRows = nextCheckedRows;
+        nextState.halfCheckedKeys = nextHalfCheckedKeys;
+
+        if (this.getRowSelection("selectOnCheck") === true) {
+          nextState.selectedRowKeys = nextCheckedKeys;
+          nextState.selectedRows = nextCheckedRows;
+        }
+      }
+
+      this.call_onUnSelect({
+        selectedRowKeys: nextState.selectedRowKeys,
+        selectedRows: nextState.selectedRows,
         rowKey,
         rowIndex,
         rowData,
@@ -545,36 +603,66 @@ class SelectionGrid extends Component {
         rowData,
         rowIndex,
         rowKey,
-        selectedRowKeys: nextKeys,
-        selectedRows: nextRows
+        selectedRowKeys: nextState.selectedRowKeys,
+        selectedRows: nextState.selectedRows
       });
 
-      this.setState({ selectedRowKeys: nextKeys, selectedRows: nextRows });
+      this.setState(nextState);
     }
 
     return {
-      selectedRowKeys: nextKeys,
-      selectedRows: nextRows
+      keys: nextKeys,
+      rows: nextRows
+    };
+  };
+
+  addAllSelected = ({ keys, rows, changedRows, quiet = false }) => {
+    let nextKeys = keys;
+    let nextRows = rows;
+
+    if (quiet === false) {
+      this.call_onSelectChange({
+        rowData: null,
+        rowIndex: -1,
+        rowKey: "",
+        selectedRowKeys: nextKeys,
+        selectedRows: nextRows
+      });
+    }
+
+    return {
+      keys: nextKeys,
+      rows: nextRows
+    };
+  };
+
+  removeAllSelected = ({ keys, rows, changedRows, quiet = false }) => {
+    let nextKeys = keys;
+    let nextRows = rows;
+
+    if (quiet === false) {
+      this.call_onSelectChange({
+        rowData: null,
+        rowIndex: -1,
+        rowKey: "",
+        selectedRowKeys: nextKeys,
+        selectedRows: nextRows
+      });
+    }
+
+    return {
+      keys: nextKeys,
+      rows: nextRows
     };
   };
 
   onRowClick = ({ rowData, rowIndex }) => {
-    let { rowKey: keyField, selectOnRowClick, selectedRowKeys } = this.state;
+    let { rowKey: keyField, selectOnRowClick } = this.state;
 
     let rowKey = rowData[keyField];
-    let isSelected = selectedRowKeys.indexOf(rowKey) > -1;
 
-    if (this.isSingleSelect()) {
+    if (selectOnRowClick === true) {
       this.onSelectChange(rowKey, rowData, rowIndex);
-    } else {
-      if (this.isMultipleSelect() && selectOnRowClick === true) {
-        this.onCheckChange({
-          selected: isSelected,
-          key: rowKey,
-          index: rowIndex,
-          rowData
-        });
-      }
     }
   };
 
@@ -614,22 +702,38 @@ class SelectionGrid extends Component {
   };
 
   onCheckChange = ({ selected, key, index, rowData }) => {
-    if (this.state.checkStrictly === false || this.isSingleSelect()) {
-      this.onSelectChange(key, rowData, index);
-    } else {
-      if (selected === true) {
-        this.removeChecked(key, index, rowData);
-      } else {
-        this.addChecked(key, index, rowData);
+    let isSelected = selected;
+
+    let bl = this.onBeforeCheck({
+      selected: isSelected,
+      rowData,
+      index: index,
+      key: key,
+      callback: () => {
+        if (isSelected) {
+          this.removeChecked(key, index, rowData);
+        } else {
+          this.addChecked(key, index, rowData);
+        }
       }
+    });
+
+    if (bl === false) {
+      return;
+    }
+
+    if (selected === true) {
+      this.removeChecked(key, index, rowData);
+    } else {
+      this.addChecked(key, index, rowData);
     }
   };
 
   /** 添加复选行 */
-  addChecked(key, rowIndex, rowData) {
+  addChecked(key, rowIndex, rowData, quiet = false) {
     let {
-      selectedRowKeys,
-      selectedRows,
+      checkedKeys,
+      checkedRows,
       rowKey,
       flatData,
       halfCheckedKeys,
@@ -637,13 +741,24 @@ class SelectionGrid extends Component {
       treeProps
     } = this.state;
 
+    if (this.isSingleSelect()) {
+      checkedKeys = [key];
+      checkedRows = [rowData];
+    } else if (!this.isMultipleSelect()) {
+      return {
+        keys: checkedKeys,
+        rows: checkedRows,
+        halfKeys: halfCheckedKeys
+      };
+    }
+
     let {
       selectedRowKeys: nextKeys,
       halfCheckedKeys: nextHalflCheckedKeys
     } = addCheckedKeyWithDisabled({
       key,
       treeProps,
-      selectedRowKeys,
+      selectedRowKeys: checkedKeys,
       rowKey,
       flatData,
       halfCheckedKeys,
@@ -652,103 +767,160 @@ class SelectionGrid extends Component {
 
     //记录上一次选中的行数据，避免翻页情况下的数据丢失
     let nextRows = filterDataByKeys(
-      flatData.concat(selectedRows),
+      flatData.concat(checkedRows),
       rowKey,
       nextKeys
     ).data;
 
-    this.call_onSelect({
-      rowKey: key,
-      rowIndex,
-      rowData,
-      selectedRowKeys: nextKeys,
-      selectedRows: nextRows,
-      selectMode: "multiple"
-    });
+    if (quiet === false) {
+      let nextState = {
+        checkedRows: nextRows,
+        checkedKeys: nextKeys,
+        halfCheckedKeys: nextHalflCheckedKeys
+      };
 
-    this.call_onSelectChange({
-      rowData,
-      rowIndex,
-      rowKey: key,
-      selectedRowKeys: nextKeys,
-      selectedRows: nextRows
-    });
+      this.call_onCheck({
+        rowData,
+        rowIndex,
+        rowKey,
+        keys: nextKeys,
+        rows: nextRows
+      });
 
-    this.setState({
-      selectedRows: nextRows,
-      selectedRowKeys: nextKeys,
-      halfCheckedKeys: nextHalflCheckedKeys
-    });
+      this.call_onCheckChange({
+        rowData,
+        rowIndex,
+        rowKey,
+        keys: nextKeys,
+        rows: nextRows
+      });
+
+      if (this.getRowSelection("selectOnCheck") === true) {
+        this.addSelected({
+          rowKey: key,
+          rowData: rowData,
+          rowIndex: rowIndex,
+          quiet: true
+        });
+
+        if (this.getRowSelection("checkOnSelect") === true) {
+          nextState.selectedRowKeys = nextKeys;
+          nextState.selectedRows = nextRows;
+        }
+      }
+
+      this.setState(nextState);
+    }
+
+    return {
+      keys: nextKeys,
+      rows: nextRows,
+      halfKeys: nextHalflCheckedKeys
+    };
   }
 
   /** 移除复选行 */
-  removeChecked(key, rowIndex, rowData) {
+  removeChecked(key, rowIndex, rowData, quiet = false) {
     let {
-      selectedRowKeys,
-      selectedRows,
+      checkedKeys,
+      checkedRows,
       rowKey,
       flatData,
       halfCheckedKeys,
       treeProps
     } = this.state;
+
+    if (this.isSingleSelect()) {
+      checkedKeys = [];
+      checkedRows = [];
+    } else if (!this.isMultipleSelect()) {
+      return {
+        keys: checkedKeys,
+        rows: checkedRows,
+        halfKeys: halfCheckedKeys
+      };
+    }
+
     let {
       selectedRowKeys: nextKeys,
       halfCheckedKeys: nextHalflCheckedKeys
     } = removeCheckedKey({
       key,
       treeProps,
-      selectedRowKeys,
+      selectedRowKeys: checkedKeys,
       rowKey,
       flatData,
       halfCheckedKeys
     });
 
     let nextRows = filterDataByKeys(
-      flatData.concat(selectedRows),
+      flatData.concat(checkedRows),
       rowKey,
       nextKeys
     ).data;
 
-    this.call_onUnSelect({
-      rowKey: key,
-      rowIndex,
-      rowData,
-      selectedRowKeys: nextKeys,
-      selectedRows: nextRows,
-      selectMode: "multiple"
-    });
+    if (quiet === false) {
+      let nextState = {
+        checkedRows: nextRows,
+        checkedKeys: nextKeys,
+        halfCheckedKeys: nextHalflCheckedKeys
+      };
 
-    this.call_onSelectChange({
-      rowData,
-      rowIndex,
-      rowKey: key,
-      selectedRowKeys: nextKeys,
-      selectedRows: nextRows
-    });
+      this.call_onUnCheck({
+        rowData,
+        rowIndex,
+        rowKey: key,
+        keys: nextKeys,
+        rows: nextRows
+      });
 
-    this.setState({
-      selectedRowKeys: nextKeys,
-      selectedRows: nextRows,
-      halfCheckedKeys: nextHalflCheckedKeys
-    });
+      this.call_onCheckChange({
+        rowData,
+        rowIndex,
+        rowKey,
+        keys: nextKeys,
+        rows: nextRows
+      });
+
+      if (this.getRowSelection("selectOnCheck") === true) {
+        this.removeSelected({
+          rowKey: key,
+          rowData: rowData,
+          rowIndex: rowIndex,
+          quiet: true
+        });
+
+        if (this.getRowSelection("checkOnSelect") === true) {
+          nextState.selectedRowKeys = nextKeys;
+          nextState.selectedRows = nextRows;
+        }
+      }
+      this.setState(nextState);
+    }
+
+    return {
+      keys: nextKeys,
+      rows: nextRows,
+      halfKeys: nextHalflCheckedKeys
+    };
   }
 
-  onBeforeSelectAll = selected => {
+  onBeforeCheckAll = selected => {
     let { selectedRows, selectedRowKeys } = this.state;
 
-    let bl = this.call_onBeforeSelectAll({
+    let bl = this.call_onBeforeCheckAll({
       selected,
       selectedRows,
       selectedRowKeys,
-      selectAll: this.addAllChecked,
-      unSelectAll: this.removeAllChecked
+      checkAll: this.addAllChecked,
+      unCheckAll: this.removeAllChecked
     });
 
     return bl;
   };
 
   onCheckAllChange = (selected, value, { indeterminate }) => {
-    let bl = this.onBeforeSelectAll(selected);
+    let bl = this.onBeforeCheckAll(selected);
 
     if (bl === false) {
       return;
@@ -766,9 +938,9 @@ class SelectionGrid extends Component {
   };
 
   addAllChecked = () => {
-    let { rowKey, selectedRows, selectedRowKeys, flatData } = this.state;
+    let { rowKey, checkedKeys, checkedRows, flatData } = this.state;
 
-    let selectedKeys = selectedRowKeys.slice();
+    let currKeys = checkedKeys.slice();
 
     flatData.forEach(d => {
       let k = d[rowKey];
@@ -776,77 +948,116 @@ class SelectionGrid extends Component {
       let bl = !this.isDisabledCheck(k, d);
 
       if (bl) {
-        selectedKeys.push(k);
+        currKeys.push(k);
       }
     });
 
     let { changedKeys, changedRows } = getSelectionChanged({
       keyField: rowKey,
-      selectedRowKeys: selectedRowKeys,
+      selectedRowKeys: checkedKeys,
       data: flatData,
-      triggerKeys: selectedKeys,
+      triggerKeys: currKeys,
       selected: true
     });
 
-    let nextKeys = selectedRowKeys.slice().concat(changedKeys);
-    let nextRows = selectedRows.slice().concat(changedRows);
- 
-    this.call_onSelectAll({
-      selectedRowKeys: nextKeys,
-      selectedRows: nextRows,
-      changedRows: changedRows
-    });
+    let nextKeys = checkedKeys.slice().concat(changedKeys);
+    let nextRows = checkedRows.slice().concat(changedRows);
 
-    this.call_onSelectChange({
+    let nextState = {
+      checkedRows: nextRows,
+      checkedKeys: nextKeys,
+      halfCheckedKeys: []
+    };
+
+    this.call_onCheckAll({
       rowData: null,
       rowIndex: -1,
       rowKey: "",
-      selectedRowKeys: nextKeys,
-      selectedRows: nextRows
+      keys: nextKeys,
+      rows: nextRows,
+      changed: changedRows
     });
 
-    this.setState({
-      selectedRowKeys: nextKeys,
-      selectedRows: nextRows,
-      halfCheckedKeys: []
+    this.call_onCheckChange({
+      rowData: null,
+      rowIndex: -1,
+      rowKey: "",
+      keys: nextKeys,
+      rows: nextRows
     });
+
+    if (this.getRowSelection("selectOnCheck") === true) {
+      let {
+        keys: nextSelectedRowKeys,
+        rows: nextSelectedRows
+      } = this.addAllSelected({
+        keys: nextKeys,
+        rows: nextRows,
+        changedRows: changedRows,
+        quiet: true
+      });
+      nextState.selectedRowKeys = nextSelectedRowKeys;
+      nextState.selectedRows = nextSelectedRows;
+    }
+
+    this.setState(nextState);
   };
 
   /** 移除当前显示的所有数据 */
   removeAllChecked = () => {
-    let { flatData, selectedRowKeys, selectedRows, rowKey } = this.state;
+    let { flatData, checkedKeys, checkedRows, rowKey } = this.state;
 
-    let nextKeys = removeKeysByData(selectedRowKeys, rowKey, flatData);
+    let nextKeys = removeKeysByData(checkedKeys, rowKey, flatData);
 
     let nextRows = filterDataByKeys(
-      flatData.concat(selectedRows),
+      flatData.concat(checkedRows),
       rowKey,
       nextKeys
     ).data;
 
-    this.call_onUnSelectAll({
-      selectedRowKeys: nextKeys,
-      selectedRows: nextRows,
-      changedRows: flatData
-    });
+    let nextState = {
+      checkedRows: nextRows,
+      checkedKeys: nextKeys,
+      halfCheckedKeys: []
+    };
 
-    this.call_onSelectChange({
+    this.call_onUnCheckAll({
       rowData: null,
       rowIndex: -1,
       rowKey: "",
-      selectedRowKeys: nextKeys,
-      selectedRows: nextRows
+      keys: nextKeys,
+      rows: nextRows,
+      changed: flatData
     });
 
-    this.setState({
-      selectedRows: nextRows,
-      selectedRowKeys: nextKeys,
-      halfCheckedKeys: []
+    this.call_onCheckChange({
+      rowData: null,
+      rowIndex: -1,
+      rowKey: "",
+      keys: nextKeys,
+      rows: nextRows
     });
+
+    if (this.getRowSelection("selectOnCheck") === true) {
+      let {
+        keys: nextSelectedRowKeys,
+        rows: nextSelectedRows
+      } = this.removeAllSelected({
+        keys: nextKeys,
+        rows: nextRows,
+        changedRows: flatData,
+        quiet: true
+      });
+
+      nextState.selectedRowKeys = nextSelectedRowKeys;
+      nextState.selectedRows = nextSelectedRows;
+    }
+
+    this.setState(nextState);
   };
 
   checkboxCellRender = (value, rowData, index) => {
-    let { rowKey, selectedRowKeys, halfCheckedKeys } = this.state;
+    let { rowKey, checkedKeys, selectedRowKeys, halfCheckedKeys } = this.state;
 
     let key = rowData[rowKey];
 
@@ -864,7 +1075,7 @@ class SelectionGrid extends Component {
       }
     }
 
-    if (selectedRowKeys.indexOf(key) > -1) {
+    if (checkedKeys.indexOf(key) > -1) {
       attr.checked = true;
     }
 
@@ -952,7 +1163,7 @@ class SelectionGrid extends Component {
   };
 
   checkboxHeadRender = () => {
-    let { selectedRowKeys, halfCheckedKeys, flatData, rowKey } = this.state;
+    let { checkedKeys, halfCheckedKeys, flatData } = this.state;
 
     if (this.isSingleSelect()) {
       return null;
@@ -965,13 +1176,13 @@ class SelectionGrid extends Component {
       indeterminate: false
     };
 
-    isCheckedAll = this.isSelectedAll();
+    isCheckedAll = this.isCheckedAll();
 
     if (flatData.length > 0) {
       if (isCheckedAll === true) {
         attr.checked = true;
       } else {
-        if (selectedRowKeys.length > 0 || halfCheckedKeys.length > 0) {
+        if (checkedKeys.length > 0 || halfCheckedKeys.length > 0) {
           attr.indeterminate = true;
         }
       }
@@ -983,8 +1194,8 @@ class SelectionGrid extends Component {
       if (typeof SelectionTitle === "function") {
         return (
           <SelectionTitle
-            selectAll={this.addAllChecked}
-            unSelectAll={this.removeAllChecked}
+            checkAll={this.addAllChecked}
+            unCheckAll={this.removeAllChecked}
           ></SelectionTitle>
         );
       } else {
@@ -1113,7 +1324,7 @@ SelectionGrid.propTypes = {
     onSelectAll: PropTypes.func,
     showCheckbox: PropTypes.bool,
     onBeforeSelect: PropTypes.func,
-    onBeforeSelectAll: PropTypes.func
+    onBeforeCheckAll: PropTypes.func
   }),
 
   /** 复选列配置 */
