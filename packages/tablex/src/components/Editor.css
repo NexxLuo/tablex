@@ -4,29 +4,29 @@
   width: 100%;
 }
 
-.tablex-row-cell-editor .ant-input,
+.tablex-row-cell-editor .tablex-input,
 .tablex-row-cell-editor .table-custom-editor,
-.tablex-row-cell-editor .ant-input-number,
-.tablex-row-cell-editor .ant-input-number .ant-input-number-input-wrap,
-.tablex-row-cell-editor .ant-select,
-.tablex-row-cell-editor .ant-select-selection {
+.tablex-row-cell-editor .tablex-input-number,
+.tablex-row-cell-editor .tablex-input-number .tablex-input-number-input-wrap,
+.tablex-row-cell-editor .tablex-select,
+.tablex-row-cell-editor .tablex-select-selection {
   width: 100%;
 }
 
-.tablex-row-cell-editor .ant-input-number {
+.tablex-row-cell-editor .tablex-input-number {
   padding-right: 16px;
 }
 
-.tablex-editor-noborder .tablex-row-cell-editor.no-error.not-focused .ant-input,
+.tablex-editor-noborder .tablex-row-cell-editor.no-error.not-focused .tablex-input,
 .tablex-editor-noborder
   .tablex-row-cell-editor.no-error.not-focused
   .table-custom-editor,
 .tablex-editor-noborder
   .tablex-row-cell-editor.no-error.not-focused
-  .ant-input-number,
+  .tablex-input-number,
 .tablex-editor-noborder
   .tablex-row-cell-editor.no-error.not-focused
-  .ant-select-selection {
+  .tablex-select-selection {
   border: none;
   box-shadow: none;
   outline: none;
@@ -35,28 +35,28 @@
 
 .tablex-editor-noborder
   .tablex-row-cell-editor.no-error
-  .ant-select-selection
-  .ant-select-arrow {
+  .tablex-select-selection
+  .tablex-select-arrow {
   visibility: hidden;
 }
 
 .tablex-editor-noborder
   .tablex-row-cell-editor.no-error
-  .ant-select-selection:hover
-  .ant-select-arrow {
+  .tablex-select-selection:hover
+  .tablex-select-arrow {
   visibility: visible;
 }
 
 .tablex-editor-noborder
   .tablex-row-cell-editor.no-error
-  .ant-calendar-picker
-  .ant-calendar-picker-icon {
+  .tablex-calendar-picker
+  .tablex-calendar-picker-icon {
   visibility: hidden;
 }
 
 .tablex-editor-noborder
   .tablex-row-cell-editor.no-error
-  .ant-calendar-picker:hover
-  .ant-calendar-picker-icon {
+  .tablex-calendar-picker:hover
+  .tablex-calendar-picker-icon {
   visibility: visible;
 }

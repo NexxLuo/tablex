@@ -1,0 +1,186 @@
+/* stylelint-disable at-rule-empty-line-before,at-rule-name-space-after,at-rule-no-unknown */
+/* stylelint-disable no-duplicate-selectors */
+/* stylelint-disable */
+/* stylelint-disable declaration-bang-space-before,no-duplicate-selectors,string-no-newline */
+.tablex-tooltip {
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    color: rgba(0, 0, 0, 0.65);
+    font-size: 14px;
+    font-variant: tabular-nums;
+    line-height: 1.5;
+    list-style: none;
+    -webkit-font-feature-settings: 'tnum';
+            font-feature-settings: 'tnum';
+    position: absolute;
+    z-index: 1060;
+    display: block;
+    max-width: 250px;
+    visibility: visible;
+  }
+  .tablex-tooltip-hidden {
+    display: none;
+  }
+  .tablex-tooltip-placement-top,
+  .tablex-tooltip-placement-topLeft,
+  .tablex-tooltip-placement-topRight {
+    padding-bottom: 8px;
+  }
+  .tablex-tooltip-placement-right,
+  .tablex-tooltip-placement-rightTop,
+  .tablex-tooltip-placement-rightBottom {
+    padding-left: 8px;
+  }
+  .tablex-tooltip-placement-bottom,
+  .tablex-tooltip-placement-bottomLeft,
+  .tablex-tooltip-placement-bottomRight {
+    padding-top: 8px;
+  }
+  .tablex-tooltip-placement-left,
+  .tablex-tooltip-placement-leftTop,
+  .tablex-tooltip-placement-leftBottom {
+    padding-right: 8px;
+  }
+  .tablex-tooltip-inner {
+    min-width: 30px;
+    min-height: 32px;
+    padding: 6px 8px;
+    color: #fff;
+    text-align: left;
+    text-decoration: none;
+    word-wrap: break-word;
+    background-color: rgba(0, 0, 0, 0.75);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  .tablex-tooltip-arrow {
+    position: absolute;
+    display: block;
+    width: 13.07106781px;
+    height: 13.07106781px;
+    background: transparent;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .tablex-tooltip-arrow::before {
+    width: 5px;
+    height: 5px;
+    content: '';
+    display: block;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    position: absolute;
+    pointer-events: auto;
+  }
+  .tablex-tooltip-placement-top .tablex-tooltip-arrow,
+  .tablex-tooltip-placement-topLeft .tablex-tooltip-arrow,
+  .tablex-tooltip-placement-topRight .tablex-tooltip-arrow {
+    bottom: -5.07106781px;
+  }
+  .tablex-tooltip-placement-top .tablex-tooltip-arrow::before,
+  .tablex-tooltip-placement-topLeft .tablex-tooltip-arrow::before,
+  .tablex-tooltip-placement-topRight .tablex-tooltip-arrow::before {
+    -webkit-transform: translateY(-6.53553391px) rotate(45deg);
+        -ms-transform: translateY(-6.53553391px) rotate(45deg);
+            transform: translateY(-6.53553391px) rotate(45deg);
+    -webkit-box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.07);
+            box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.07);
+  }
+  .tablex-tooltip-placement-top .tablex-tooltip-arrow {
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+            transform: translateX(-50%);
+  }
+  .tablex-tooltip-placement-topLeft .tablex-tooltip-arrow {
+    left: 13px;
+  }
+  .tablex-tooltip-placement-topRight .tablex-tooltip-arrow {
+    right: 13px;
+  }
+  .tablex-tooltip-placement-right .tablex-tooltip-arrow,
+  .tablex-tooltip-placement-rightTop .tablex-tooltip-arrow,
+  .tablex-tooltip-placement-rightBottom .tablex-tooltip-arrow {
+    left: -5.07106781px;
+  }
+  .tablex-tooltip-placement-right .tablex-tooltip-arrow::before,
+  .tablex-tooltip-placement-rightTop .tablex-tooltip-arrow::before,
+  .tablex-tooltip-placement-rightBottom .tablex-tooltip-arrow::before {
+    -webkit-transform: translateX(6.53553391px) rotate(45deg);
+        -ms-transform: translateX(6.53553391px) rotate(45deg);
+            transform: translateX(6.53553391px) rotate(45deg);
+    -webkit-box-shadow: -3px 3px 7px rgba(0, 0, 0, 0.07);
+            box-shadow: -3px 3px 7px rgba(0, 0, 0, 0.07);
+  }
+  .tablex-tooltip-placement-right .tablex-tooltip-arrow {
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+            transform: translateY(-50%);
+  }
+  .tablex-tooltip-placement-rightTop .tablex-tooltip-arrow {
+    top: 5px;
+  }
+  .tablex-tooltip-placement-rightBottom .tablex-tooltip-arrow {
+    bottom: 5px;
+  }
+  .tablex-tooltip-placement-left .tablex-tooltip-arrow,
+  .tablex-tooltip-placement-leftTop .tablex-tooltip-arrow,
+  .tablex-tooltip-placement-leftBottom .tablex-tooltip-arrow {
+    right: -5.07106781px;
+  }
+  .tablex-tooltip-placement-left .tablex-tooltip-arrow::before,
+  .tablex-tooltip-placement-leftTop .tablex-tooltip-arrow::before,
+  .tablex-tooltip-placement-leftBottom .tablex-tooltip-arrow::before {
+    -webkit-transform: translateX(-6.53553391px) rotate(45deg);
+        -ms-transform: translateX(-6.53553391px) rotate(45deg);
+            transform: translateX(-6.53553391px) rotate(45deg);
+    -webkit-box-shadow: 3px -3px 7px rgba(0, 0, 0, 0.07);
+            box-shadow: 3px -3px 7px rgba(0, 0, 0, 0.07);
+  }
+  .tablex-tooltip-placement-left .tablex-tooltip-arrow {
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+            transform: translateY(-50%);
+  }
+  .tablex-tooltip-placement-leftTop .tablex-tooltip-arrow {
+    top: 5px;
+  }
+  .tablex-tooltip-placement-leftBottom .tablex-tooltip-arrow {
+    bottom: 5px;
+  }
+  .tablex-tooltip-placement-bottom .tablex-tooltip-arrow,
+  .tablex-tooltip-placement-bottomLeft .tablex-tooltip-arrow,
+  .tablex-tooltip-placement-bottomRight .tablex-tooltip-arrow {
+    top: -5.07106781px;
+  }
+  .tablex-tooltip-placement-bottom .tablex-tooltip-arrow::before,
+  .tablex-tooltip-placement-bottomLeft .tablex-tooltip-arrow::before,
+  .tablex-tooltip-placement-bottomRight .tablex-tooltip-arrow::before {
+    -webkit-transform: translateY(6.53553391px) rotate(45deg);
+        -ms-transform: translateY(6.53553391px) rotate(45deg);
+            transform: translateY(6.53553391px) rotate(45deg);
+    -webkit-box-shadow: -3px -3px 7px rgba(0, 0, 0, 0.07);
+            box-shadow: -3px -3px 7px rgba(0, 0, 0, 0.07);
+  }
+  .tablex-tooltip-placement-bottom .tablex-tooltip-arrow {
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+            transform: translateX(-50%);
+  }
+  .tablex-tooltip-placement-bottomLeft .tablex-tooltip-arrow {
+    left: 13px;
+  }
+  .tablex-tooltip-placement-bottomRight .tablex-tooltip-arrow {
+    right: 13px;
+  }
+  

@@ -10,7 +10,7 @@
   flex: auto;
 }
 
-.tablex__pager__number .ant-pagination {
+.tablex__pager__number .tablex-pagination {
   display: inline-block;
   width: auto;
   vertical-align: middle;
@@ -20,52 +20,52 @@
   font-size: 14px;
 }
 
-.tablex__pager .ant-pagination-simple {
+.tablex__pager .tablex-pagination-simple {
   padding-top: 4px;
 }
 
-.tablex__pager ul.ant-pagination {
+.tablex__pager ul.tablex-pagination {
   display: inline-block;
 }
 
-.tablex__pager .ant-pagination-item,
-.tablex__pager .ant-pagination-prev,
-.tablex__pager .ant-pagination-next {
+.tablex__pager .tablex-pagination-item,
+.tablex__pager .tablex-pagination-prev,
+.tablex__pager .tablex-pagination-next {
   margin: 0;
   border-radius: 0;
   margin-left: -1px;
 }
 
-.tablex__pager .ant-pagination-item a {
+.tablex__pager .tablex-pagination-item a {
   color: #188ae2;
 }
 
-.tablex__pager .ant-pagination-item:focus,
-.tablex__pager .ant-pagination-item:hover {
+.tablex__pager .tablex-pagination-item:focus,
+.tablex__pager .tablex-pagination-item:hover {
   border-color: #d9d9d9;
 }
 
-.tablex__pager .ant-pagination-item.ant-pagination-item-active:hover,
-.tablex__pager .ant-pagination-item.ant-pagination-item-active:focus {
+.tablex__pager .tablex-pagination-item.tablex-pagination-item-active:hover,
+.tablex__pager .tablex-pagination-item.tablex-pagination-item-active:focus {
   border-color: #798df5;
 }
 
-.tablex__pager .ant-pagination-item-active {
+.tablex__pager .tablex-pagination-item-active {
   border-color: #798df5;
   background-color: #798df5;
 }
 
-.tablex__pager .ant-pagination-item-active a,
-.tablex__pager .ant-pagination-item-active:focus a {
+.tablex__pager .tablex-pagination-item-active a,
+.tablex__pager .tablex-pagination-item-active:focus a {
   color: #ffffff;
 }
 
-.tablex__pager .ant-pagination-prev .ant-pagination-item-link {
+.tablex__pager .tablex-pagination-prev .tablex-pagination-item-link {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
 
-.tablex__pager .ant-pagination-next .ant-pagination-item-link {
+.tablex__pager .tablex-pagination-next .tablex-pagination-item-link {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }

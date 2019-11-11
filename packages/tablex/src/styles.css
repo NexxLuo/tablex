@@ -82,14 +82,14 @@
   display: inline-block;
 }
 
-.tablex__head__cell__title__dropdown.ant-popover-open {
+.tablex__head__cell__title__dropdown.tablex-popover-open {
   display: inline-block;
 }
 
 .tablex__column__dropMenu
-  .ant-menu-vertical
-  > .ant-menu-submenu
-  > .ant-menu-submenu-title {
+  .tablex-menu-vertical
+  > .tablex-menu-submenu
+  > .tablex-menu-submenu-title {
   height: auto;
   line-height: normal;
   padding: 0 8px;
@@ -145,95 +145,95 @@
   box-shadow: 0 0px 5px 0px rgba(0, 0, 0, 0.2);
 }
 
-.tablex__setting__modal__footer .ant-btn.ant-btn-purple {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-purple {
   background-color: #798df5;
   border-color: #798df5;
   color: #ffffff;
 }
 
-.tablex__setting__modal__footer .ant-btn.ant-btn-purple:hover,
-.tablex__setting__modal__footer .ant-btn.ant-btn-purple:focus {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-purple:hover,
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-purple:focus {
   background-color: #7b8be3;
   border-color: #7b8be3;
   color: #ffffff;
 }
 
-.tablex__setting__modal__footer .ant-btn.ant-btn-purple:active {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-purple:active {
   background-color: #6676ca;
   border-color: #6676ca;
   color: #ffffff;
 }
 
-.tablex__setting__modal__footer .ant-btn.ant-btn-purple.ant-btn-clicked:after {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-purple.tablex-btn-clicked:after {
   border-color: #6676ca;
 }
 
-.tablex__setting__modal__footer .ant-btn.ant-btn-green {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-green {
   background-color: #3ec396;
   border-color: #3ec396;
   color: #ffffff;
 }
 
-.tablex__setting__modal__footer .ant-btn.ant-btn-green:hover,
-.tablex__setting__modal__footer .ant-btn.ant-btn-green:focus {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-green:hover,
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-green:focus {
   background-color: #3ec396;
   border-color: #3ec396;
   color: #ffffff;
 }
 
-.tablex__setting__modal__footer .ant-btn.ant-btn-green:active {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-green:active {
   background-color: #03a45e;
   border-color: #03a45e;
   color: #ffffff;
 }
 
-.tablex__setting__modal__footer .ant-btn.ant-btn-green.ant-btn-clicked:after {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-green.tablex-btn-clicked:after {
   border-color: #03a45e;
 }
 
-.tablex__setting__modal__footer .ant-btn.ant-btn-red {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-red {
   background-color: #d6616d;
   border-color: #d6616d;
   color: #ffffff;
 }
 
-.tablex__setting__modal__footer .ant-btn.ant-btn-red:hover,
-.tablex__setting__modal__footer .ant-btn.ant-btn-red:focus {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-red:hover,
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-red:focus {
   background-color: #f04844;
   border-color: #f04844;
   color: #ffffff;
 }
 
-.tablex__setting__modal__footer .ant-btn.ant-btn-red:active {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-red:active {
   background-color: #d33f3c;
   border-color: #d33f3c;
   color: #ffffff;
 }
 
-.tablex__setting__modal__footer .ant-btn.ant-btn-red.ant-btn-clicked:after {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-red.tablex-btn-clicked:after {
   border-color: #d33f3c;
 }
 
-.tablex__setting__modal__footer .ant-btn.ant-btn-gray {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-gray {
   background-color: #bbbbbb;
   border-color: #bbbbbb;
   color: #ffffff;
 }
 
-.tablex__setting__modal__footer .ant-btn.ant-btn-gray:hover,
-.tablex__setting__modal__footer .ant-btn.ant-btn-gray:focus {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-gray:hover,
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-gray:focus {
   background-color: #b3b2b2;
   border-color: #b3b2b2;
   color: #ffffff;
 }
 
-.tablex__setting__modal__footer .ant-btn.ant-btn-gray:active {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-gray:active {
   background-color: #a9a6a6;
   border-color: #a9a6a6;
   color: #ffffff;
 }
 
-.tablex__setting__modal__footer .ant-btn.ant-btn-gray.ant-btn-clicked:after {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-gray.tablex-btn-clicked:after {
   border-color: #a9a6a6;
 }
 

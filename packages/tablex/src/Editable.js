@@ -20,8 +20,9 @@ import Popconfirm from "antd/lib/popconfirm";
 import Menu from "antd/lib/menu";
 import Dropdown from "antd/lib/dropdown";
 import Icon from "antd/lib/icon";
-import "antd/dist/antd.css";
 import orderBy from "lodash/orderBy";
+import ConfigProvider from 'antd/lib/config-provider';
+import "./antd/style.css";
 import "./styles.css";
 
 /**
@@ -2113,7 +2114,7 @@ class EditableTable extends React.Component {
 
     newProps.className = classNames.join(" ");
 
-    return <Table {...props} {...newProps} />;
+    return <ConfigProvider prefixCls="tablex"><Table {...props} {...newProps} /></ConfigProvider>;
   }
 }
 
