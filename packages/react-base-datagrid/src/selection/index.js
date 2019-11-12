@@ -1110,29 +1110,12 @@ class SelectionGrid extends Component {
               ...attr,
               value: key,
               onChange: checked => {
-                let bl = this.onBeforeSelect({
-                  selected: checked,
-                  rowData,
-                  index: index,
+                this.onCheckChange({
+                  selected: !checked,
                   key: key,
-                  callback: () => {
-                    this.onCheckChange({
-                      selected: checked,
-                      key: key,
-                      index: index,
-                      rowData: rowData
-                    });
-                  }
+                  index: index,
+                  rowData: rowData
                 });
-
-                if (bl !== false) {
-                  this.onCheckChange({
-                    selected: checked,
-                    key: key,
-                    index: index,
-                    rowData: rowData
-                  });
-                }
               }
             }) || null
           );
