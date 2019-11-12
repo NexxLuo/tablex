@@ -77,6 +77,10 @@ function message(props) {
   return <Amessage {...props} />;
 }
 
+message.error = Amessage.error;
+message.warn = Amessage.warn;
+message.info = Amessage.info;
+
 function Popconfirm(props) {
   return <APopconfirm {...props} />;
 }
@@ -101,65 +105,65 @@ function Select(props) {
   return <ASelect {...props} />;
 }
 
-Button.defaultProps = Object.assign({}, Button.defaultProps, {
+Button.defaultProps = {
   prefixCls: "tablex-btn"
-});
+};
 
-Modal.defaultProps = Object.assign({}, Modal.defaultProps, {
+Modal.defaultProps = {
   prefixCls: "tablex-modal"
-});
+};
 
-Menu.defaultProps = Object.assign({}, Menu.defaultProps, {
+Menu.defaultProps = {
   prefixCls: "tablex-menu"
-});
+};
 
-Checkbox.defaultProps = Object.assign({}, Checkbox.defaultProps, {
+Checkbox.defaultProps = {
   prefixCls: "tablex-checkbox"
-});
+};
 
-Tooltip.defaultProps = Object.assign({}, Tooltip.defaultProps, {
+Tooltip.defaultProps = {
   prefixCls: "tablex-tooltip"
-});
+};
 
-Pagination.defaultProps = Object.assign({}, Pagination.defaultProps, {
+Pagination.defaultProps = {
   prefixCls: "tablex-pagination"
-});
+};
 
-InputNumber.defaultProps = Object.assign({}, InputNumber.defaultProps, {
+InputNumber.defaultProps = {
   prefixCls: "tablex-input-number"
-});
+};
 
-Radio.defaultProps = Object.assign({}, Radio.defaultProps, {
+Radio.defaultProps = {
   prefixCls: "tablex-radio"
-});
+};
 
-Switch.defaultProps = Object.assign({}, Switch.defaultProps, {
+Switch.defaultProps = {
   prefixCls: "tablex-switch"
-});
+};
 
-message.defaultProps = Object.assign({}, message.defaultProps, {
+message.defaultProps = {
   prefixCls: "tablex-message"
-});
+};
 
-Popconfirm.defaultProps = Object.assign({}, Popconfirm.defaultProps, {
+Popconfirm.defaultProps = {
   prefixCls: "tablex-popconfirm"
-});
+};
 
-Dropdown.defaultProps = Object.assign({}, Dropdown.defaultProps, {
+Dropdown.defaultProps = {
   prefixCls: "tablex-dropdown"
-});
+};
 
-Spin.defaultProps = Object.assign({}, Spin.defaultProps, {
+Spin.defaultProps = {
   prefixCls: "tablex-spin"
-});
+};
 
-Popover.defaultProps = Object.assign({}, Popover.defaultProps, {
+Popover.defaultProps = {
   prefixCls: "tablex-popover"
-});
+};
 
-Select.defaultProps = Object.assign({}, Select.defaultProps, {
+Select.defaultProps = {
   prefixCls: "tablex-select"
-});
+};
 
 export {
   Button,
