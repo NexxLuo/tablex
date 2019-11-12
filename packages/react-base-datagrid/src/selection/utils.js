@@ -468,7 +468,7 @@ export function getRowSelectionFromProps(props, k) {
 
   let rowSelection = {};
   let defaultRowSelection = {
-    showCheckbox: props.selectMode === "multiple",
+    showCheckbox: true,
     selectOnCheck: true,
     checkOnSelect: true
   };
@@ -542,6 +542,19 @@ export function getSelectionConfigFromProps(props) {
 
     if ("selectedRowKeys" in rowSelection) {
       selectionProps.selectedRowKeys = rowSelection.selectedRowKeys;
+      selectionProps.checkedKeys = rowSelection.selectedRowKeys;
+    }
+
+    if ("selectedRowKeys" in rowSelection) {
+      selectionProps.selectedRowKeys = rowSelection.selectedRowKeys;
+    }
+
+    if ("disabledCheckedKeys" in rowSelection) {
+      selectionProps.disabledCheckedKeys = rowSelection.disabledCheckedKeys;
+    }
+
+    if ("disabledSelectKeys" in rowSelection) {
+      selectionProps.disabledSelectKeys = rowSelection.disabledSelectKeys;
     }
   } else {
     if (selectMode === "multiple") {
@@ -565,6 +578,7 @@ export function getSelectionConfigFromProps(props) {
 
     if ("selectedRowKeys" in props) {
       selectionProps.selectedRowKeys = props.selectedRowKeys;
+      selectionProps.checkedKeys = props.selectedRowKeys;
     }
 
     if ("halfCheckedKeys" in props) {
@@ -572,6 +586,7 @@ export function getSelectionConfigFromProps(props) {
     }
 
     if ("disabledSelectKeys" in props) {
+      selectionProps.disabledCheckedKeys = props.disabledSelectKeys;
       selectionProps.disabledSelectKeys = props.disabledSelectKeys;
     }
   }

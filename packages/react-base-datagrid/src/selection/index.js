@@ -42,6 +42,7 @@ class SelectionGrid extends Component {
       selectedRowKeys: selectedKeys,
       selectedRows: selectedRows,
       disabledSelectKeys: [],
+      disabledCheckedKeys: [],
       halfCheckedKeys: [],
       checkedKeys: [],
       checkedRows: [],
@@ -106,12 +107,24 @@ class SelectionGrid extends Component {
         }
       }
 
+      if ("selectedRowKeys" in selectionProps) {
+        nextState.selectedRowKeys = selectionProps.selectedRowKeys;
+      }
+
+      if ("checkedKeys" in selectionProps) {
+        nextState.checkedKeys = selectionProps.checkedKeys;
+      }
+
       if ("halfCheckedKeys" in selectionProps) {
         nextState.halfCheckedKeys = selectionProps.halfCheckedKeys;
       }
 
       if ("disabledSelectKeys" in selectionProps) {
         nextState.disabledSelectKeys = selectionProps.disabledSelectKeys;
+      }
+
+      if ("disabledCheckedKeys" in selectionProps) {
+        nextState.disabledCheckedKeys = selectionProps.disabledCheckedKeys;
       }
     }
 
@@ -384,7 +397,7 @@ class SelectionGrid extends Component {
 
   /** 判断行/行父级是否被禁用选中 */
   isDisabledCheck = key => {
-    let { checkStrictly, disabledSelectKeys: arr } = this.state;
+    let { checkStrictly, disabledCheckedKeys: arr } = this.state;
 
     let bl = arr.indexOf(key) > -1;
 
@@ -737,7 +750,7 @@ class SelectionGrid extends Component {
       rowKey,
       flatData,
       halfCheckedKeys,
-      disabledSelectKeys,
+      disabledCheckedKeys,
       treeProps
     } = this.state;
 
@@ -762,7 +775,7 @@ class SelectionGrid extends Component {
       rowKey,
       flatData,
       halfCheckedKeys,
-      disabledSelectKeys
+      disabledSelectKeys: disabledCheckedKeys
     });
 
     //记录上一次选中的行数据，避免翻页情况下的数据丢失
@@ -925,8 +938,7 @@ class SelectionGrid extends Component {
     if (bl === false) {
       return;
     }
-
-    if (indeterminate === true && this.state.disabledSelectKeys.length > 0) {
+    if (indeterminate === true && this.state.disabledCheckedKeys.length > 0) {
       this.removeAllChecked();
     } else {
       if (selected === true) {
@@ -1317,6 +1329,7 @@ SelectionGrid.propTypes = {
     columnWidth: PropTypes.number,
     fixed: PropTypes.bool,
     getCheckboxProps: PropTypes.func,
+    disabledCheckedKeys: PropTypes.array,
     selectedRowKeys: PropTypes.array,
     type: PropTypes.oneOf(["checkbox", "radio"]),
     onChange: PropTypes.func,
