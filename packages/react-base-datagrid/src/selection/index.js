@@ -1341,6 +1341,7 @@ SelectionGrid.propTypes = {
   selectMode: PropTypes.oneOf(["multiple", "single", "none"]),
 
   rowSelection: PropTypes.shape({
+    checkStrictly: PropTypes.bool,
     columnTitle: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.func,
@@ -1354,12 +1355,14 @@ SelectionGrid.propTypes = {
     selectType: PropTypes.oneOf(["single", "multiple"]),
     selectInverted: PropTypes.bool,
     type: PropTypes.oneOf(["checkbox", "radio"]),
-    onChange: PropTypes.func,
-    onSelect: PropTypes.func,
-    onSelectAll: PropTypes.func,
     showCheckbox: PropTypes.bool,
     onBeforeSelect: PropTypes.func,
-    onBeforeCheckAll: PropTypes.func
+    onSelect: PropTypes.func,
+    onSelectAll: PropTypes.func,
+    onBeforeCheck: PropTypes.func,
+    onBeforeCheckAll: PropTypes.func,
+    onCheckAll: PropTypes.func,
+    onChange: PropTypes.func
   }),
 
   /** 复选列配置 */
