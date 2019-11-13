@@ -283,7 +283,7 @@ class Demo extends React.Component {
     return {
       type: "checkbox",
       selectType: "single",
-      selectInverted:false,
+      selectInverted: false,
       showCheckbox: true,
       selectOnCheck: false,
       checkOnSelect: true,
@@ -392,7 +392,6 @@ class Demo extends React.Component {
               console.log("onUnSelectAll");
               return true;
             }}
-       
             data={data}
             selectOnRowClick={true}
             rowSelection={this.getRowSelection()}
