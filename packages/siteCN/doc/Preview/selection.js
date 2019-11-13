@@ -282,8 +282,8 @@ class Demo extends React.Component {
   getRowSelection() {
     return {
       type: "checkbox",
-      selectMode: "single",
-      checkMode: "single",
+      selectType: "single",
+      selectInverted:false,
       showCheckbox: true,
       selectOnCheck: false,
       checkOnSelect: true,
@@ -303,7 +303,7 @@ class Demo extends React.Component {
       onCheck: () => {
         console.log("onCheck");
       },
-      onChange2: () => {
+      onChange: () => {
         console.log("onChange");
       },
       onCheckAll2: () => {
@@ -395,7 +395,7 @@ class Demo extends React.Component {
        
             data={data}
             selectOnRowClick={true}
-            rowSelection2={this.getRowSelection()}
+            rowSelection={this.getRowSelection()}
             pagination2={{
               current,
               pageSize,
