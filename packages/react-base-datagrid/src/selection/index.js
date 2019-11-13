@@ -699,6 +699,24 @@ class SelectionGrid extends Component {
       }
     });
 
+    if (bl !== false) {
+      if (this.getRowSelection("checkOnSelect") === true) {
+        bl = this.onBeforeCheck({
+          selected: isSelected,
+          rowData,
+          index: rowIndex,
+          key: rowKey,
+          callback: () => {
+            if (isSelected) {
+              this.removeChecked(rowKey, rowIndex, rowData);
+            } else {
+              this.addChecked(rowKey, rowIndex, rowData);
+            }
+          }
+        });
+      }
+    }
+
     if (bl === false) {
       return;
     }
@@ -730,6 +748,24 @@ class SelectionGrid extends Component {
         }
       }
     });
+
+    if (bl !== false) {
+      if (this.getRowSelection("selectOnCheck") === true) {
+        bl = this.onBeforeSelect({
+          selected: isSelected,
+          rowData,
+          index: index,
+          key: key,
+          callback: () => {
+            if (isSelected) {
+              this.removeSelected({ rowKey: key, rowData, rowIndex: index });
+            } else {
+              this.addSelected({ rowKey: key, rowData, rowIndex: index });
+            }
+          }
+        });
+      }
+    }
 
     if (bl === false) {
       return;
@@ -1129,29 +1165,12 @@ class SelectionGrid extends Component {
         value={key}
         {...attr}
         onChange={(checked, ck) => {
-          let bl = this.onBeforeSelect({
+          this.onCheckChange({
             selected: checked,
-            rowData,
-            index: index,
             key: ck,
-            callback: () => {
-              this.onCheckChange({
-                selected: checked,
-                key: ck,
-                index: index,
-                rowData: rowData
-              });
-            }
+            index: index,
+            rowData: rowData
           });
-
-          if (bl !== false) {
-            this.onCheckChange({
-              selected: checked,
-              key: ck,
-              index: index,
-              rowData: rowData
-            });
-          }
         }}
       />
     );
