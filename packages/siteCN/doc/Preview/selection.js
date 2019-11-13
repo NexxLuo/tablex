@@ -289,7 +289,7 @@ class Demo extends React.Component {
       checkOnSelect: true,
       fixed: true,
       onBeforeSelect: () => {
-        // console.log("onBeforeSelect");
+        console.log("onBeforeSelect");
         return true;
       },
 

@@ -76,7 +76,10 @@ Table.propTypes = {
   rowRender: PropTypes.func,
 
   /** 自定义行属性，可处理行事件 */
-  onRow: PropTypes.func
+  onRow: PropTypes.func,
+
+  /** 选择功能配置，配置项详情见下方 */
+  rowSelection: PropTypes.object
 };
 
 export default Table;
