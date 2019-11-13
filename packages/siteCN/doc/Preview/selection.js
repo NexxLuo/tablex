@@ -285,7 +285,7 @@ class Demo extends React.Component {
       selectType: "single",
       selectInverted: false,
       showCheckbox: true,
-      selectOnCheck: false,
+      selectOnCheck: true,
       checkOnSelect: true,
       fixed: true,
       onBeforeSelect: () => {

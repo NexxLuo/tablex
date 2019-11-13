@@ -42,6 +42,10 @@ RowSelection.propTypes = {
   /** 是否显示多选框列 */
   showCheckbox: PropTypes.bool,
 
+  /** 行选中时是否勾选 */
+  selectOnCheck: PropTypes.bool,
+  /** 勾选时是否同时选中行 */
+  checkOnSelect: PropTypes.bool,
   /** 多选模式是否级联控制checkbox选中状态 */
   checkStrictly: PropTypes.bool,
   /** 禁用checkbox选择的行key */
