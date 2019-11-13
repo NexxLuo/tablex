@@ -828,7 +828,8 @@ class SelectionGrid extends Component {
       flatData,
       halfCheckedKeys,
       disabledCheckedKeys,
-      treeProps
+      treeProps,
+      checkStrictly
     } = this.state;
 
     if (this.isSingleCheck()) {
@@ -842,25 +843,29 @@ class SelectionGrid extends Component {
       };
     }
 
+    let data = flatData.slice();
+    let data_treeProps = {};
+
+    if (checkStrictly === true) {
+      data_treeProps = treeProps;
+    }
+
     let {
       selectedRowKeys: nextKeys,
       halfCheckedKeys: nextHalflCheckedKeys
     } = addCheckedKeyWithDisabled({
       key,
-      treeProps,
+      treeProps: data_treeProps,
       selectedRowKeys: checkedKeys,
       rowKey,
-      flatData,
+      flatData: data,
       halfCheckedKeys,
       disabledSelectKeys: disabledCheckedKeys
     });
 
     //记录上一次选中的行数据，避免翻页情况下的数据丢失
-    let nextRows = filterDataByKeys(
-      flatData.concat(checkedRows),
-      rowKey,
-      nextKeys
-    ).data;
+    let nextRows = filterDataByKeys(data.concat(checkedRows), rowKey, nextKeys)
+      .data;
 
     this.call_onCheck({
       rowData,
@@ -946,7 +951,8 @@ class SelectionGrid extends Component {
       rowKey,
       flatData,
       halfCheckedKeys,
-      treeProps
+      treeProps,
+      checkStrictly
     } = this.state;
 
     if (this.isSingleCheck()) {
@@ -960,23 +966,27 @@ class SelectionGrid extends Component {
       };
     }
 
+    let data = flatData.slice();
+    let data_treeProps = {};
+
+    if (checkStrictly === true) {
+      data_treeProps = treeProps;
+    }
+
     let {
       selectedRowKeys: nextKeys,
       halfCheckedKeys: nextHalflCheckedKeys
     } = removeCheckedKey({
       key,
-      treeProps,
+      treeProps: data_treeProps,
       selectedRowKeys: checkedKeys,
       rowKey,
-      flatData,
+      flatData: data,
       halfCheckedKeys
     });
 
-    let nextRows = filterDataByKeys(
-      flatData.concat(checkedRows),
-      rowKey,
-      nextKeys
-    ).data;
+    let nextRows = filterDataByKeys(data.concat(checkedRows), rowKey, nextKeys)
+      .data;
 
     this.call_onUnCheck({
       rowData,
@@ -1069,7 +1079,8 @@ class SelectionGrid extends Component {
     return bl;
   };
 
-  onCheckAllChange = (selected, value, { indeterminate }) => {
+  onCheckAllChange = (selected, value, extra = {}) => {
+    let { indeterminate } = extra;
     let bl = this.onBeforeCheckAll(selected);
 
     if (bl === false) {
@@ -1311,10 +1322,7 @@ class SelectionGrid extends Component {
     if (typeof SelectionTitle !== "undefined") {
       if (typeof SelectionTitle === "function") {
         return (
-          <SelectionTitle
-            checkAll={this.addAllChecked}
-            unCheckAll={this.removeAllChecked}
-          ></SelectionTitle>
+          <SelectionTitle onChange={this.onCheckAllChange}></SelectionTitle>
         );
       } else {
         return SelectionTitle;
