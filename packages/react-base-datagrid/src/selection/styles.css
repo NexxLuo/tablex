@@ -45,7 +45,7 @@
   position: relative;
   top: 0;
   left: 0;
-  display: block;
+  display: inline-block;
   width: 16px;
   height: 16px;
   background-color: #fff;
