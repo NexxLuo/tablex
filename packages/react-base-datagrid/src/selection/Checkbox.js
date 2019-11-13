@@ -38,6 +38,7 @@ const Checkbox = props => {
         className="tablex__checkbox__input"
       />
       <span className="tablex__checkbox__inner" />
+      {props.children}
     </span>
   );
 };
