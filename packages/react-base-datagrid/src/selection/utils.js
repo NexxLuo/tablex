@@ -499,12 +499,16 @@ export function getSelectionConfigFromProps(props) {
 
     let showSelectioColumn = false;
 
-    if (type === "checkbox") {
+    if (type === "checkbox" || type === "radio") {
       showSelectioColumn = true;
     }
 
     if (typeof showCheckbox === "boolean") {
       showSelectioColumn = showCheckbox;
+    }
+
+    if (type === "none") {
+      showSelectioColumn = false;
     }
 
     if (showSelectioColumn === true) {

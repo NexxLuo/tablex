@@ -389,6 +389,12 @@ class SelectionGrid extends Component {
     }
   };
 
+  /** 点击行是否可选中 */
+  isEnableSelect = () => {
+    let selectType = this.getRowSelection("selectType");
+    return selectType === "single" || selectType === "multiple";
+  };
+
   /** 点击行是否为单选 */
   isSingleSelect = () => {
     if (this.hasRowSelection()) {
@@ -699,6 +705,10 @@ class SelectionGrid extends Component {
 
     let rowKey = rowData[keyField];
 
+    if (!this.isEnableSelect()) {
+      return;
+    }
+
     if (selectOnRowClick === true) {
       this.onSelectChange(rowKey, rowData, rowIndex);
     }
@@ -872,10 +882,15 @@ class SelectionGrid extends Component {
       let nextState = {
         checkedRows: nextRows,
         checkedKeys: nextKeys,
-        halfCheckedKeys: nextHalflCheckedKeys
+        halfCheckedKeys: nextHalflCheckedKeys,
+        selectedRowKeys: this.state.selectedRowKeys,
+        selectedRows: this.state.selectedRows
       };
 
-      if (this.getRowSelection("selectOnCheck") === true) {
+      if (
+        this.isEnableSelect() &&
+        this.getRowSelection("selectOnCheck") === true
+      ) {
         let {
           keys: nextSelectedKeys,
           rows: nextSelectedRows
@@ -983,10 +998,15 @@ class SelectionGrid extends Component {
       let nextState = {
         checkedRows: nextRows,
         checkedKeys: nextKeys,
-        halfCheckedKeys: nextHalflCheckedKeys
+        halfCheckedKeys: nextHalflCheckedKeys,
+        selectedRowKeys: this.state.selectedRowKeys,
+        selectedRows: this.state.selectedRows
       };
 
-      if (this.getRowSelection("selectOnCheck") === true) {
+      if (
+        this.isEnableSelect() &&
+        this.getRowSelection("selectOnCheck") === true
+      ) {
         let {
           keys: nextSelectedKeys,
           rows: nextSelectedRows
@@ -1126,7 +1146,7 @@ class SelectionGrid extends Component {
         quiet: true
       });
 
-      if (!this.isSingleSelect()) {
+      if (this.isEnableSelect() && !this.isSingleSelect()) {
         nextState.selectedRowKeys = nextSelectedRowKeys;
         nextState.selectedRows = nextSelectedRows;
       }
@@ -1418,9 +1438,9 @@ SelectionGrid.propTypes = {
     getCheckboxProps: PropTypes.func,
     disabledCheckedKeys: PropTypes.array,
     selectedRowKeys: PropTypes.array,
-    selectType: PropTypes.oneOf(["single", "multiple"]),
+    selectType: PropTypes.oneOf(["single", "multiple", "none"]),
     selectInverted: PropTypes.bool,
-    type: PropTypes.oneOf(["checkbox", "radio"]),
+    type: PropTypes.oneOf(["checkbox", "radio", "none"]),
     showCheckbox: PropTypes.bool,
     selectOnCheck: PropTypes.bool,
     checkOnSelect: PropTypes.bool,
