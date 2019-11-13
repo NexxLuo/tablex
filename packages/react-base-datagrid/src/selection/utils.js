@@ -470,10 +470,16 @@ export function getRowSelectionFromProps(props, k) {
   let defaultRowSelection = {
     showCheckbox: true,
     selectOnCheck: true,
-    checkOnSelect: true
+    checkOnSelect: true,
+    selectType: "single"
   };
 
   if (o instanceof Object) {
+    if (o.type === "none") {
+      defaultRowSelection.selectType = "none";
+    } else if (o.type === "checkbox") {
+      defaultRowSelection.selectType = "multiple";
+    }
     rowSelection = Object.assign({}, defaultRowSelection, o);
   } else {
     rowSelection = defaultRowSelection;
