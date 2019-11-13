@@ -1422,6 +1422,8 @@ SelectionGrid.propTypes = {
     selectInverted: PropTypes.bool,
     type: PropTypes.oneOf(["checkbox", "radio"]),
     showCheckbox: PropTypes.bool,
+    selectOnCheck: PropTypes.bool,
+    checkOnSelect: PropTypes.bool,
     onBeforeSelect: PropTypes.func,
     onSelect: PropTypes.func,
     onSelectAll: PropTypes.func,
