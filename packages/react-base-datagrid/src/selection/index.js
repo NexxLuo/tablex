@@ -59,7 +59,6 @@ class SelectionGrid extends Component {
       rowKey,
       selectMode,
       rowSelectClassName,
-      checkStrictly,
       flatData,
       treeProps,
       prependColumns = [],
@@ -89,9 +88,12 @@ class SelectionGrid extends Component {
         prevProps: nextProps,
         selectMode,
         rowSelectClassName,
-        checkStrictly,
         selectOnRowClick
       };
+
+      if ("checkStrictly" in selectionProps) {
+        nextState.checkStrictly = selectionProps.checkStrictly;
+      }
 
       if ("selectedRowKeys" in selectionProps) {
         let { data: selectedData, keys } = filterDataByKeys(

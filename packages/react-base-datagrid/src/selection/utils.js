@@ -540,6 +540,10 @@ export function getSelectionConfigFromProps(props) {
       );
     }
 
+    if ("checkStrictly" in rowSelection) {
+      selectionProps.checkStrictly = rowSelection.checkStrictly;
+    }
+
     if ("selectedRowKeys" in rowSelection) {
       selectionProps.selectedRowKeys = rowSelection.selectedRowKeys;
       selectionProps.checkedKeys = rowSelection.selectedRowKeys;
@@ -574,6 +578,10 @@ export function getSelectionConfigFromProps(props) {
           selectionColumn = Object.assign({}, defaultSelectionColumn, c);
         }
       }
+    }
+
+    if ("checkStrictly" in props) {
+      selectionProps.checkStrictly = props.checkStrictly;
     }
 
     if ("selectedRowKeys" in props) {
