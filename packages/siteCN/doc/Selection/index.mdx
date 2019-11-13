@@ -98,7 +98,9 @@ let { columns, data } = this.state;
         rowKey="id"
         columns={columns}
         data={data}
-        selectMode="none"
+        rowSelection={{
+          type:"none"
+        }}
         orderNumber={false}
       />
     );
@@ -194,13 +196,11 @@ let { columns, data } = this.state;
       <Table
         rowKey="id"
         columns={columns}
-        onBeforeSelect={function(a){
-          console.log("onBeforeSelect:",a)
-           a.callback();
-          return false;
-        }}
         data={data}
-       selectMode="single"
+       rowSelection={{
+          type:"radio",
+          showCheckbox:false
+        }}
         orderNumber={false}
       />
     );
@@ -296,15 +296,120 @@ let { columns, data } = this.state;
       <Table
         rowKey="id"
         columns={columns}
-          onBeforeSelect={function(a){
-          console.log("onBeforeSelect:",a);
-          a.callback();
-          return false;
-        }}
+    
         data={data}
-         selectMode="multiple"
+          
         orderNumber={false}
-        selectOnRowClick={false}
+        rowSelection={{
+          type:"checkbox"
+        }}
+
+/>
+);
+
+}
+}
+
+}
+
+</Playground>
+
+
+
+## 复选框多选模式&行单选
+
+<Playground style={{ height: 400 }}>
+ {
+  class Demo extends React.Component {
+  generateData(columns, count = 20, prefix = "Row") {
+    return new Array(count).fill(0).map((row, rowIndex) => {
+      return columns.reduce(
+        (rowData, column, columnIndex) => {
+          if (column.dataIndex !== "id") {
+            rowData[column.dataIndex] = Math.floor(Math.random() * 100 + 1);
+          } else {
+            rowData[column.dataIndex] =
+              prefix + " " + rowIndex + " - Col " + columnIndex;
+          }
+
+          return rowData;
+        },
+        {
+          id: prefix + rowIndex,
+          parentId: null
+        }
+      );
+    });
+
+}
+
+constructor(props) {
+super(props);
+
+    const columns = [
+      {
+        dataIndex: "id",
+        title: "id",
+        key: "id",
+        width: 150,
+        align: "center"
+      },
+      {
+        dataIndex: "column-1",
+        key: "column-1",
+        title: "column-1",
+        width: 100
+      },
+
+      {
+        dataIndex: "column-2",
+        key: "column-2",
+        title: "column-2",
+        width: 150,
+        align: "center"
+      },
+
+      {
+        dataIndex: "column-3",
+        key: "column-3",
+        title: "column-3",
+        align: "right"
+      },
+      {
+        dataIndex: "column-4",
+        key: "column-4",
+        title: "column-4",
+        width: 100,
+        align: "center"
+      }
+    ];
+
+    let data = this.generateData(columns, 20);
+
+    this.state = {
+      data: data,
+      columns: columns
+    };
+
+}
+
+render() {
+let { columns, data } = this.state;
+
+    return (
+      <Table
+        rowKey="id"
+        columns={columns}
+    
+        data={data}
+          
+        orderNumber={false}
+        rowSelection={{
+          type:"checkbox",
+          checkOnSelect:true,
+          selectOnCheck:true,
+          selectType:"single"
+        }}
 
 />
 );
@@ -402,7 +507,23 @@ let { columns, data, current, pageSize, total } = this.state;
         columns={columns}
         data={data}
         selectMode="multiple"
-       disabledSelectKeys={["Row0-Col0","Row1-Col0","Row2-Col0","Row3-Col0","Row4-Col0"]}
+            rowSelection={{
+          type:"checkbox",
+          selectType:"none",
+          getCheckboxProps:function(row){
+              let  disabledCheckedKeys=["Row0-Col0","Row1-Col0","Row2-Col0","Row3-Col0","Row4-Col0"];
+              let attr={};
+
+              if(disabledCheckedKeys.indexOf(row.id)>-1){
+                attr.disabled=true;
+              }
+
+              return attr;
+
+          }
+       
+        }}
+    
       />
     );
 
@@ -506,9 +627,13 @@ let { columns, data } = this.state;
         rowKey="id"
         columns={columns}
         data={data}
+
+          rowSelection={{
+            type:"checkbox",
+            checkStrictly:true
+          }}
          selectMode="multiple"
-        orderNumber={false}
-        checkStrictly={true}
+  
 
 />
 );
@@ -610,30 +735,14 @@ let { columns, data } = this.state;
         data={data}
          selectMode="multiple"
         orderNumber={false}
-       selectionColumn={{
-    fixed: "left",
-    title: attrs => {
-      return (
-        <Checkbox
-          {...attrs}
-          disabled={true}
-          onChange={e => {
-            attrs.onChange(e.target.checked);
-          }}
-        />
-      );
-    },
-    render: (row, index, extra) => {
-      return (
-        <Checkbox
-          {...extra}
-          onChange={e => {
-            extra.onChange(e.target.checked);
-          }}
-        />
-      );
-    }
-  }}
+
+        rowSelection={{
+          fixed:true,
+          columnWidth:100,
+          getCheckboxProps:function(){return {children:<span>check</span>}},
+          columnTitle:function({onChange}){return <Checkbox onChange={(e)=>{onChange(!e.target.checked)}}>check</Checkbox>}
+        }}
+     
 
 />
 );
