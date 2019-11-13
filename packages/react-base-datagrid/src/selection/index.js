@@ -526,6 +526,11 @@ class SelectionGrid extends Component {
           nextState.selectedRowKeys = nextCheckedKeys;
           nextState.selectedRows = nextCheckedRows;
         }
+
+        if (this.getRowSelection("selectType") === "single") {
+          nextState.selectedRowKeys = [rowKey];
+          nextState.selectedRows = [rowData];
+        }
       }
 
       this.setState(nextState);
@@ -600,6 +605,11 @@ class SelectionGrid extends Component {
         if (this.getRowSelection("selectOnCheck") === true) {
           nextState.selectedRowKeys = nextCheckedKeys;
           nextState.selectedRows = nextCheckedRows;
+        }
+
+        if (this.getRowSelection("selectType") === "single") {
+          nextState.selectedRowKeys = [];
+          nextState.selectedRows = [];
         }
       }
 
@@ -684,6 +694,12 @@ class SelectionGrid extends Component {
     let { selectedRowKeys } = this.state;
     let i = selectedRowKeys.indexOf(rowKey);
     let isSelected = i > -1;
+
+    if (this.getRowSelection("selectInverted") === false) {
+      if (isSelected) {
+        return;
+      }
+    }
 
     let bl = this.onBeforeSelect({
       selected: isSelected,
@@ -1333,6 +1349,8 @@ SelectionGrid.propTypes = {
     getCheckboxProps: PropTypes.func,
     disabledCheckedKeys: PropTypes.array,
     selectedRowKeys: PropTypes.array,
+    selectType: PropTypes.oneOf(["single", "multiple"]),
+    selectInverted: PropTypes.bool,
     type: PropTypes.oneOf(["checkbox", "radio"]),
     onChange: PropTypes.func,
     onSelect: PropTypes.func,
