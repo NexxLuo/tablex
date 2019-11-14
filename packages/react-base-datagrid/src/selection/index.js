@@ -134,7 +134,6 @@ class SelectionGrid extends Component {
   }
 
   call_onSelect = ({
-    selectMode,
     rowData,
     rowIndex,
     rowKey,
@@ -147,7 +146,7 @@ class SelectionGrid extends Component {
     } else {
       let fn = this.props.onSelect;
       if (typeof fn === "function") {
-        if (selectMode === "multiple") {
+        if (this.props.selectMode === "multiple") {
           fn(selectedRowKeys, selectedRows, rowKey, { rowIndex, rowData });
         } else {
           fn(rowData, rowIndex, rowKey, { rowData, rowIndex });
@@ -157,7 +156,6 @@ class SelectionGrid extends Component {
   };
 
   call_onUnSelect = ({
-    selectMode,
     rowData,
     rowIndex,
     rowKey,
@@ -170,7 +168,7 @@ class SelectionGrid extends Component {
     } else {
       let fn = this.props.onUnSelect;
       if (typeof fn === "function") {
-        if (selectMode === "multiple") {
+        if (this.props.selectMode === "multiple") {
           fn(selectedRowKeys, selectedRows, rowKey, { rowIndex, rowData });
         } else {
           fn(rowData, rowIndex, rowKey, { rowData, rowIndex });
@@ -641,8 +639,7 @@ class SelectionGrid extends Component {
         selectedRows: nextState.selectedRows,
         rowKey,
         rowIndex,
-        rowData,
-        selectMode: type
+        rowData
       });
 
       this.call_onSelectChange({
