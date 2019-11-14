@@ -1038,7 +1038,7 @@ class SelectionGrid extends Component {
       }
       this.setState(nextState);
 
-      this.call_onSelect({
+      this.call_onUnSelect({
         selectedRowKeys: nextState.selectedRowKeys,
         selectedRows: nextState.selectedRows,
         rowKey: key,
