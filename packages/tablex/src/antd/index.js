@@ -19,6 +19,8 @@ import ASelect from "antd/lib/select";
 import "./style.css";
 
 import "antd/es/select/style/css"; // 加载 CSS
+import "antd/es/popconfirm/style/css"; // 加载 CSS
+
 
 function Button(props) {
   return <AButton {...props} />;
@@ -145,9 +147,9 @@ message.defaultProps = {
   prefixCls: "tablex-message"
 };
 
-Popconfirm.defaultProps = {
-  prefixCls: "tablex-popconfirm"
-};
+// Popconfirm.defaultProps = {
+//   prefixCls: "tablex-popconfirm"
+// };
 
 Dropdown.defaultProps = {
   prefixCls: "tablex-dropdown"
