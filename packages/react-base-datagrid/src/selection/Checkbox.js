@@ -30,6 +30,7 @@ const Checkbox = props => {
           onChange(checked, props.value, { indeterminate: indeterminate });
         }
       }}
+      {...props.events}
     >
       <input
         type="checkbox"

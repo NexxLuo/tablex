@@ -1374,9 +1374,9 @@ class SelectionGrid extends Component {
     return cls.join(" ");
   };
 
-  onRow = (rowData, rowIndex, rowProps, rowExtra) => {
+  onRow = (rowData, rowIndex, rowProps, rowExtra = {}) => {
     let fn = this.props.onRow;
-
+    let rowKey = rowExtra.key;
     let o = {};
     if (typeof fn === "function") {
       o = fn(rowData, rowIndex, rowProps, rowExtra) || {};

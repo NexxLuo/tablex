@@ -910,7 +910,9 @@ class Table extends React.Component {
     classNames = classNames.join(" ");
 
     let bodyStyles = { height: "100%" };
-    let wrapperStyles = Object.assign(props.style || {}, { height: "100%" });
+    let wrapperStyles = Object.assign({}, props.style || {}, {
+      height: "100%"
+    });
 
     if (props.autoHeight === true) {
       bodyStyles.height = "auto";
