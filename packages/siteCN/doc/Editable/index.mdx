@@ -9,6 +9,7 @@ import 'antd/dist/antd.css';
 
 import Complex from "./complex";
 import CustomEdit from "./customEdit";
+import Search from "./Search"
 
 
 # 用法示例
@@ -69,10 +70,12 @@ super(props);
         },
         editor: function(value, row, index, onchange, ref) {
           return (
-            <Input
-              defaultValue={value}
+            <Search
+            allowClear
+              defaultValue={"1"}
               ref={ref}
-              onChange={e => onchange({ ["column-1"]: e.target.value })}
+              placeholder="请输入"
+              onChange={e => onchange({ ["column-1"]: value })}
             />
           );
         }
@@ -129,9 +132,22 @@ super(props);
 
 onEditSave(changedRows, newData, type) {
 console.log("onEditSave:", newData);
-this.setState({
-data: newData
-});
+
+return new Promise((resolve,reject)=>{
+
+setTimeout(function(){
+reject("asdsa");
+console.log("reject after")
+
+},1000)
+
+
+}).catch(e=>{
+
+console.log("catch")
+throw e;
+})
+
 }
 
 render() {

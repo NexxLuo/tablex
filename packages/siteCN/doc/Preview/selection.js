@@ -281,19 +281,19 @@ class Demo extends React.Component {
 
   getRowSelection() {
     return {
-      type: "checkbox",
-      selectType2: "single",
+      type: "checkbox",//radio checkbox none
+      selectType: "single",//multiple single none
       selectInverted: true,
       showCheckbox: true,
-      selectOnCheck: true,
+      selectOnCheck: true,//false
       checkOnSelect: true,
       fixed: true,
 
       onSelect: (a,b,c) => {
-        //console.log("onSelect:",a,b,c);
+        console.log("onSelect:",a,b,c);
       },
       onChange: (a,b,c) => {
-       // console.log("onChange:",a,b,c);
+       console.log("onChange:",a,b,c);
 
       },
 
@@ -311,20 +311,26 @@ class Demo extends React.Component {
         return true;
       },
 
-      onSelectChange: () => {
-     //   console.log("onSelectChange");
+      onSelectChange: (a,b,c) => {
+        console.log("onSelectChange:",a,b,c);
       },
 
     
+      onBeforeCheck: () => {
+        console.log("onBeforeCheck");
+        return true;
+      },
+
       onCheck: () => {
         console.log("onCheck");
       },
  
-      onCheckAll2: () => {
-        console.log("onCheckAll");
+      onCheckChange: () => {
+        console.log("onCheckChange");
       },
-      onBeforeCheck: () => {
-        console.log("onBeforeCheck");
+
+      onBeforeSelectAll: () => {
+        console.log("onBeforeSelectAll");
         return true;
       },
       onBeforeCheckAll: () => {
@@ -377,9 +383,9 @@ class Demo extends React.Component {
             autoHeight={true}
             selectMode="multiple"
             checkStrictly={true}
-            disabledSelectKeys={[data[0].id]}
+         
             onSelectChange={function(a, b, c, d) {
-              //console.log("onSelectChange");
+             console.log("onSelectChange2:",a, b, c, d);
               return true;
             }}
             onSelect={function(a, b, c, d) {
@@ -421,7 +427,21 @@ class Demo extends React.Component {
             }}
             data={data}
             selectOnRowClick={true}
-            rowSelection={this.getRowSelection()}
+            selectionColumn = {{
+              fixed: "left",
+              render: (row, index, extra) => {
+                return (
+                  <Checkbox
+                      {...extra}
+                      onChange={e => {
+                        console.log("onChange 2222")
+                          extra.onChange(e.target.checked);
+                      }}
+                  />
+              );
+              }
+          }}
+            rowSelection2={this.getRowSelection()}
             pagination2={{
               current,
               pageSize,

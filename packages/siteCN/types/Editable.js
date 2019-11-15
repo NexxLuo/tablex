@@ -101,7 +101,7 @@ Editable.propTypes = {
   /** 数据是否完全受控，如若受控，请在onEditSave、onCancel中自行更新数据源 */
   dataControled: PropTypes.bool,
 
-  /** 内置编辑按钮保存事件 (changedRows,newRows,editType)=>void
+  /** 内置编辑按钮保存事件 (changedRows,newRows,editType)=>void|Promise  Promise中如果捕获了异常，需进行再次抛出，否则内部可能无法正常进行后续操作
    * @param {Array} changedRows-改变的数据行
    * @param {Array} newRows-改变后最新的数据
    * @param {string} editType-编辑类型;"edit":编辑;"add":新增;"delete":删除
