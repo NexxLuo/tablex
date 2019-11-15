@@ -1054,14 +1054,18 @@ class EditableTable extends React.Component {
 
       if (fn) {
         //如果返回的是一个promise对象，则只有当调用resolve时，才触发编辑完成事件
-        if (fn.constructor.name === "Promise") {
-          fn.then(() => {
-            this.endEdit(callBack);
-          });
-
-          fn.catch(() => {
-            this.setState({ editSaveLoading: false, deleteLoading: false });
-          });
+        if (fn.constructor && fn.constructor.name === "Promise") {
+          fn.then(
+            () => {
+              this.endEdit(callBack);
+            },
+            e => {
+              if (e) {
+                console.error(e);
+              }
+              this.setState({ editSaveLoading: false });
+            }
+          );
         } else {
           this.setState({ editSaveLoading: false });
         }
@@ -1184,14 +1188,22 @@ class EditableTable extends React.Component {
 
         let fn = onEditSave(deletedRows, newData, this.editType);
 
-        if (fn && typeof fn.then === "function") {
-          fn.then(() => {
+        if (fn) {
+          if (fn.constructor && fn.constructor.name === "Promise") {
+            fn.then(
+              () => {
+                this.setState(nextState);
+              },
+              e => {
+                if (e) {
+                  console.error(e);
+                }
+                this.setState({ deleteLoading: false });
+              }
+            );
+          } else {
             this.setState(nextState);
-          });
-
-          fn.catch(() => {
-            this.setState({ editSaveLoading: false, deleteLoading: false });
-          });
+          }
         } else {
           this.setState(nextState);
         }
