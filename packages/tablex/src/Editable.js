@@ -1060,7 +1060,7 @@ class EditableTable extends React.Component {
           });
 
           fn.catch(() => {
-            this.setState({ editSaveLoading: false });
+            this.setState({ editSaveLoading: false, deleteLoading: false });
           });
         } else {
           this.setState({ editSaveLoading: false });
@@ -1187,6 +1187,10 @@ class EditableTable extends React.Component {
         if (fn && typeof fn.then === "function") {
           fn.then(() => {
             this.setState(nextState);
+          });
+
+          fn.catch(() => {
+            this.setState({ editSaveLoading: false, deleteLoading: false });
           });
         } else {
           this.setState(nextState);
