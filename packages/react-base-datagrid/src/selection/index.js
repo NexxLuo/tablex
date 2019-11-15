@@ -560,11 +560,114 @@ class SelectionGrid extends Component {
     }
   };
 
+  insertSelected({ key, rowIndex, rowData }) {
+    let {
+      selectedRowKeys,
+      selectedRows,
+      rowKey,
+      flatData,
+      halfCheckedKeys,
+      disabledCheckedKeys,
+      treeProps,
+      checkStrictly
+    } = this.state;
+
+    let keys = selectedRowKeys.slice();
+    let rows = selectedRows.slice();
+
+    if (this.isSingleCheck()) {
+      keys = [key];
+      rows = [rowData];
+    } else if (!this.isMultipleCheck()) {
+      return {
+        keys: keys,
+        rows: rows,
+        halfKeys: halfCheckedKeys
+      };
+    }
+
+    let data = flatData.slice();
+    let data_treeProps = {};
+
+    if (checkStrictly === true) {
+      data_treeProps = treeProps;
+    }
+
+    let { selectedRowKeys: nextKeys } = addCheckedKeyWithDisabled({
+      key,
+      treeProps: data_treeProps,
+      selectedRowKeys: keys,
+      rowKey,
+      flatData: data,
+      halfCheckedKeys: [],
+      disabledSelectKeys: []
+    });
+
+    //记录上一次选中的行数据，避免翻页情况下的数据丢失
+    let nextRows = filterDataByKeys(data.concat(rows), rowKey, nextKeys).data;
+
+    return {
+      keys: nextKeys,
+      rows: nextRows
+    };
+  }
+
+  /** 移除选中行 */
+  deleteSelected({ key, rowIndex, rowData }) {
+    let {
+      selectedRowKeys,
+      selectedRows,
+      rowKey,
+      flatData,
+      halfCheckedKeys,
+      treeProps,
+      checkStrictly
+    } = this.state;
+
+    let keys = selectedRowKeys.slice();
+    let rows = selectedRows.slice();
+
+    if (this.isSingleSelect()) {
+      keys = [];
+      rows = [];
+    } else if (!this.isMultipleSelect()) {
+      return {
+        keys: keys,
+        rows: rows
+      };
+    }
+
+    let data = flatData.slice();
+    let data_treeProps = {};
+
+    if (checkStrictly === true) {
+      data_treeProps = treeProps;
+    }
+
+    let { selectedRowKeys: nextKeys } = removeCheckedKey({
+      key,
+      treeProps: data_treeProps,
+      selectedRowKeys: keys,
+      rowKey,
+      flatData: data,
+      halfCheckedKeys
+    });
+
+    let nextRows = filterDataByKeys(data.concat(rows), rowKey, nextKeys).data;
+
+    return {
+      keys: nextKeys,
+      rows: nextRows
+    };
+  }
+
   addSelected = ({ rowKey, rowData, rowIndex, quiet = false }) => {
     let { selectedRowKeys, selectedRows, rowKey: keyField } = this.state;
 
     let nextKeys = selectedRowKeys.slice();
     let nextRows = selectedRows.slice();
+
+   // let {keys:nextKeys,rows:nextRows}=this.insertSelected({ key: rowKey, rowIndex, rowData });
 
     let type = "";
 
@@ -601,6 +704,11 @@ class SelectionGrid extends Component {
           rows: nextCheckedRows,
           halfKeys: nextHalfCheckedKeys
         } = this.insertChecked({ key: rowKey, rowIndex, rowData });
+
+        if (this.isMultipleSelect()) {
+          nextState.selectedRowKeys = nextCheckedKeys;
+          nextState.selectedRows = nextCheckedRows;
+        }
 
         nextState.checkedKeys = nextCheckedKeys;
         nextState.checkedRows = nextCheckedRows;
@@ -682,6 +790,11 @@ class SelectionGrid extends Component {
         nextState.checkedKeys = nextCheckedKeys;
         nextState.checkedRows = nextCheckedRows;
         nextState.halfCheckedKeys = nextHalfCheckedKeys;
+
+        if (this.isMultipleSelect()) {
+          nextState.selectedRowKeys = nextCheckedKeys;
+          nextState.selectedRows = nextCheckedRows;
+        }
 
         this.call_onCheck({
           rowData,
@@ -1053,10 +1166,18 @@ class SelectionGrid extends Component {
         }
       );
 
-      if (this.isSingleSelect()) {
-        nextState.selectedRowKeys = nextSelectedKeys;
-        nextState.selectedRows = nextSelectedRows;
-      } else if (this.isMultipleSelect()) {
+      if (this.isMultipleSelect()) {
+        // let { data, keys } = filterDataByKeys(
+        //   nextRows.concat(nextSelectedRows),
+        //   this.state.rowKey,
+        //   nextKeys.concat(nextSelectedKeys)
+        // );
+
+        // console.log("isMultipleSelect:",keys)
+
+        nextState.selectedRowKeys = nextKeys;
+        nextState.selectedRows = nextRows;
+      } else {
         nextState.selectedRowKeys = nextSelectedKeys;
         nextState.selectedRows = nextSelectedRows;
       }
@@ -1133,8 +1254,16 @@ class SelectionGrid extends Component {
         quiet: true
       });
 
-      nextState.selectedRowKeys = nextSelectedKeys;
-      nextState.selectedRows = nextSelectedRows;
+      if (this.isMultipleSelect()) {
+        nextState.selectedRowKeys = nextKeys;
+        nextState.selectedRows = nextRows;
+      } else {
+        nextState.selectedRowKeys = nextSelectedKeys;
+        nextState.selectedRows = nextSelectedRows;
+      }
+
+      //   nextState.selectedRowKeys = nextSelectedKeys;
+      // nextState.selectedRows = nextSelectedRows;
 
       this.call_onUnSelect({
         selectedRowKeys: nextState.selectedRowKeys,
