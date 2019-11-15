@@ -282,30 +282,44 @@ class Demo extends React.Component {
   getRowSelection() {
     return {
       type: "checkbox",
-      selectType: "single",
-      selectInverted: false,
+      selectType2: "single",
+      selectInverted: true,
       showCheckbox: true,
-      selectOnCheck: false,
+      selectOnCheck: true,
       checkOnSelect: true,
       fixed: true,
+
+      onSelect: (a,b,c) => {
+        //console.log("onSelect:",a,b,c);
+      },
+      onChange: (a,b,c) => {
+       // console.log("onChange:",a,b,c);
+
+      },
+
+      onSelectAll: (a,b,c) => {
+        console.log("onSelectAll:",a,b,c);
+
+      },
+      onCheckAll: (a,b,c) => {
+        console.log("onCheckAll");
+
+      },
+
       onBeforeSelect: () => {
         console.log("onBeforeSelect");
         return true;
       },
 
       onSelectChange: () => {
-        console.log("onSelectChange");
+     //   console.log("onSelectChange");
       },
 
-      onSelect: () => {
-        console.log("onSelect");
-      },
+    
       onCheck: () => {
         console.log("onCheck");
       },
-      onChange: () => {
-        console.log("onChange");
-      },
+ 
       onCheckAll2: () => {
         console.log("onCheckAll");
       },
@@ -365,11 +379,15 @@ class Demo extends React.Component {
             checkStrictly={true}
             disabledSelectKeys={[data[0].id]}
             onSelectChange={function(a, b, c, d) {
-              console.log("onSelectChange");
+              //console.log("onSelectChange");
               return true;
             }}
             onSelect={function(a, b, c, d) {
-              console.log("onSelect");
+              console.log("onSelect",a);
+              console.log("onSelect",b);
+              console.log("onSelect", c);
+              console.log("onSelect", d);
+
               return true;
             }}
             onBeforeSelect={function(a, b, c, d) {
@@ -377,19 +395,28 @@ class Demo extends React.Component {
               return true;
             }}
             onUnSelect={function(a, b, c, d) {
-              console.log("onUnSelect");
+              console.log("onUnSelect",a);
+              console.log("onUnSelect",b);
+              console.log("onUnSelect", c);
+              console.log("onUnSelect", d);
               return true;
             }}
-            onBeforeSelectAll={function(a, b, c, d) {
-              console.log("onBeforeSelectAll");
+            onBeforeSelectAll={function(a) {
+              console.log("onBeforeSelectAll",a);
               return true;
             }}
             onSelectAll={function(a, b, c, d) {
-              console.log("onSelectAll");
+              console.log("onSelectAll",a);
+              console.log("onSelectAll",b);
+              console.log("onSelectAll", c);
+              console.log("onSelectAll", d);
               return true;
             }}
             onUnSelectAll={function(a, b, c, d) {
-              console.log("onUnSelectAll");
+              console.log("onUnSelectAll",a);
+              console.log("onUnSelectAll",b);
+              console.log("onUnSelectAll", c);
+              console.log("onUnSelectAll", d);
               return true;
             }}
             data={data}
