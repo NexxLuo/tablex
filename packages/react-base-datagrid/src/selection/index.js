@@ -109,12 +109,15 @@ class SelectionGrid extends Component {
         }
       }
 
-      if ("selectedRowKeys" in selectionProps) {
-        nextState.selectedRowKeys = selectionProps.selectedRowKeys;
-      }
-
       if ("checkedKeys" in selectionProps) {
-        nextState.checkedKeys = selectionProps.checkedKeys;
+        let { data: checkedData, keys } = filterDataByKeys(
+          data.concat(prevState.checkedRows),
+          rowKey,
+          selectionProps.checkedKeys
+        );
+
+        nextState.checkedKeys = keys;
+        nextState.checkedRows = checkedData;
       }
 
       if ("halfCheckedKeys" in selectionProps) {
@@ -667,7 +670,7 @@ class SelectionGrid extends Component {
     let nextKeys = selectedRowKeys.slice();
     let nextRows = selectedRows.slice();
 
-   // let {keys:nextKeys,rows:nextRows}=this.insertSelected({ key: rowKey, rowIndex, rowData });
+    // let {keys:nextKeys,rows:nextRows}=this.insertSelected({ key: rowKey, rowIndex, rowData });
 
     let type = "";
 
@@ -1683,6 +1686,7 @@ SelectionGrid.propTypes = {
     onBeforeSelect: PropTypes.func,
     onSelect: PropTypes.func,
     onSelectAll: PropTypes.func,
+    onCheck: PropTypes.func,
     onBeforeCheck: PropTypes.func,
     onBeforeCheckAll: PropTypes.func,
     onCheckAll: PropTypes.func,
