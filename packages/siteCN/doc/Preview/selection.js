@@ -261,7 +261,8 @@ class Demo extends React.Component {
       columns: columns,
       current: 1,
       pageSize: 10,
-      total: data.length
+      total: data.length,
+      selectedRowKeys:[]
     };
   }
 
@@ -375,18 +376,19 @@ class Demo extends React.Component {
           onChange={() => console.log("onchange")}
           allowClear={true}
         ></Input.Search>
-        <div>
+        <div style={{height:400}}>
           <Table
             rowKey="id"
             editable={true}
             columns={columns}
-            autoHeight={true}
-            selectMode="multiple"
+            style={{height:"35vh"}}
+            autoHeight={false}
+            selectMode="single"
             checkStrictly={true}
-         
-            onSelectChange={function(a, b, c, d) {
-             console.log("onSelectChange2:",a, b, c, d);
-              return true;
+            selectedRowKeys={this.state.selectedRowKeys}
+            onSelectChange={(a, b, c, d)=> {
+             this.setState({selectedRowKeys:[data[2].id]})
+             console.log("onSelectChange",a);
             }}
             onSelect={function(a, b, c, d) {
               console.log("onSelect",a);
@@ -441,6 +443,7 @@ class Demo extends React.Component {
               );
               }
           }}
+          
             rowSelection2={this.getRowSelection()}
             pagination2={{
               current,
