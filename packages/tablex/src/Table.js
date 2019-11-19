@@ -923,7 +923,7 @@ class Table extends React.Component {
       wrapperStyles.height = "auto";
     } else {
       if (extraHeight > 0) {
-        // bodyStyles.height = `calc(100% - ${extraHeight}px)`;
+        bodyStyles.height = `calc(100% - ${extraHeight}px)`;
       }
     }
 
