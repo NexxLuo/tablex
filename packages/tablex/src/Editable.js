@@ -89,6 +89,7 @@ class EditableTable extends React.Component {
 
       if (prevState.dataControled === true) {
         let flatData = treeToFlatten(data).list;
+        nextState.rawData = data;
         nextState.flatData = flatData;
         nextState.data = data;
         nextState.sourceData = cloneData(data);
