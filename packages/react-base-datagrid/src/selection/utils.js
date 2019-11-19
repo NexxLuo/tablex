@@ -482,6 +482,9 @@ export function getRowSelectionFromProps(props, k) {
     }
     rowSelection = Object.assign({}, defaultRowSelection, o);
   } else {
+    if (props.selectMode === "multiple") {
+      defaultRowSelection.type = "checkbox";
+    }
     rowSelection = defaultRowSelection;
   }
 
