@@ -136,6 +136,83 @@ class SelectionGrid extends Component {
     return nextState;
   }
 
+  // 添加rowSelection后，仍然执行tableprops.onSelect等事件的兼容性代码
+  call_props_onSelect = ({
+    rowData,
+    rowIndex,
+    rowKey,
+    selectedRowKeys,
+    selectedRows
+  }) => {
+    let fn = this.props.onSelect;
+    if (typeof fn === "function") {
+      if (this.props.selectMode === "multiple") {
+        fn(selectedRowKeys, selectedRows, rowKey, { rowIndex, rowData });
+      } else {
+        fn(rowData, rowIndex, rowKey, { rowData, rowIndex });
+      }
+    }
+  };
+
+  call_props_onUnSelect = ({
+    rowData,
+    rowIndex,
+    rowKey,
+    selectedRowKeys,
+    selectedRows
+  }) => {
+    let fn = this.props.onUnSelect;
+    if (typeof fn === "function") {
+      if (this.props.selectMode === "multiple") {
+        fn(selectedRowKeys, selectedRows, rowKey, { rowIndex, rowData });
+      } else {
+        fn(rowData, rowIndex, rowKey, { rowData, rowIndex });
+      }
+    }
+  };
+
+  call_props_onSelectChange = ({
+    rowData,
+    rowIndex,
+    rowKey,
+    selectedRowKeys,
+    selectedRows
+  }) => {
+    let fn = this.props.onSelectChange;
+    if (typeof fn === "function") {
+      fn(selectedRowKeys, selectedRows, rowKey, { rowIndex, rowData });
+    }
+  };
+
+  call_props_onSelectAll = ({ selectedRowKeys, selectedRows }) => {
+    let fn = this.props.onSelectAll;
+    if (typeof fn === "function") {
+      fn(selectedRowKeys, selectedRows);
+    }
+  };
+
+  call_props_onUnSelectAll = ({ selectedRowKeys, selectedRows }) => {
+    let fn = this.props.onUnSelectAll;
+    if (typeof fn === "function") {
+      fn(selectedRowKeys, selectedRows);
+    }
+  };
+
+  call_props_onBeforeSelect = params => {
+    let fn = this.props.onBeforeSelect;
+    if (typeof fn === "function") {
+      return fn(params);
+    }
+  };
+
+  call_props_onBeforeSelectAll = params => {
+    let fn = this.props.onBeforeSelectAll;
+    if (typeof fn === "function") {
+      return fn(params);
+    }
+  };
+  //
+
   call_onSelect = ({
     rowData,
     rowIndex,
@@ -143,20 +220,17 @@ class SelectionGrid extends Component {
     selectedRowKeys,
     selectedRows
   }) => {
-    if (this.hasRowSelection()) {
-      let rfn = this.getRowSelection("onSelect");
-      if (typeof rfn === "function") {
-        rfn(rowData, true, selectedRows);
-      }
+    let rfn = this.getRowSelection("onSelect");
+    if (typeof rfn === "function") {
+      rfn(rowData, true, selectedRows);
     } else {
-      let fn = this.props.onSelect;
-      if (typeof fn === "function") {
-        if (this.props.selectMode === "multiple") {
-          fn(selectedRowKeys, selectedRows, rowKey, { rowIndex, rowData });
-        } else {
-          fn(rowData, rowIndex, rowKey, { rowData, rowIndex });
-        }
-      }
+      this.call_props_onSelect({
+        rowData,
+        rowIndex,
+        rowKey,
+        selectedRowKeys,
+        selectedRows
+      });
     }
   };
 
@@ -167,20 +241,17 @@ class SelectionGrid extends Component {
     selectedRowKeys,
     selectedRows
   }) => {
-    if (this.hasRowSelection()) {
-      let rfn = this.getRowSelection("onSelect");
-      if (typeof rfn === "function") {
-        rfn(rowData, false, selectedRows);
-      }
+    let rfn = this.getRowSelection("onSelect");
+    if (typeof rfn === "function") {
+      rfn(rowData, false, selectedRows);
     } else {
-      let fn = this.props.onUnSelect;
-      if (typeof fn === "function") {
-        if (this.props.selectMode === "multiple") {
-          fn(selectedRowKeys, selectedRows, rowKey, { rowIndex, rowData });
-        } else {
-          fn(rowData, rowIndex, rowKey, { rowData, rowIndex });
-        }
-      }
+      this.call_props_onUnSelect({
+        rowData,
+        rowIndex,
+        rowKey,
+        selectedRowKeys,
+        selectedRows
+      });
     }
   };
 
@@ -191,60 +262,54 @@ class SelectionGrid extends Component {
     selectedRowKeys,
     selectedRows
   }) => {
-    if (this.hasRowSelection()) {
-      let rfn = this.getRowSelection("onSelectChange");
-      if (typeof rfn === "function") {
-        rfn(selectedRowKeys, selectedRows);
-      }
+    let rfn = this.getRowSelection("onSelectChange");
+    if (typeof rfn === "function") {
+      rfn(selectedRowKeys, selectedRows);
     } else {
-      let fn = this.props.onSelectChange;
-      if (typeof fn === "function") {
-        fn(selectedRowKeys, selectedRows, rowKey, { rowIndex, rowData });
-      }
+      this.call_props_onSelectChange({
+        rowData,
+        rowIndex,
+        rowKey,
+        selectedRowKeys,
+        selectedRows
+      });
     }
   };
 
   call_onSelectAll = ({ selectedRowKeys, selectedRows, changedRows }) => {
-    if (this.hasRowSelection()) {
-      let rfn = this.getRowSelection("onSelectAll");
-      if (typeof rfn === "function") {
-        rfn(true, selectedRows, changedRows);
-      }
+    let rfn = this.getRowSelection("onSelectAll");
+    if (typeof rfn === "function") {
+      rfn(true, selectedRows, changedRows);
     } else {
-      let fn = this.props.onSelectAll;
-      if (typeof fn === "function") {
-        fn(selectedRowKeys, selectedRows);
-      }
+      this.call_props_onSelectAll({
+        selectedRowKeys,
+        selectedRows
+      });
     }
   };
 
   call_onUnSelectAll = ({ selectedRowKeys, selectedRows, changedRows }) => {
-    if (this.hasRowSelection()) {
-      let rfn = this.getRowSelection("onSelectAll");
-      if (typeof rfn === "function") {
-        rfn(false, selectedRows, changedRows);
-      }
+    let rfn = this.getRowSelection("onSelectAll");
+    if (typeof rfn === "function") {
+      rfn(false, selectedRows, changedRows);
     } else {
-      let fn = this.props.onUnSelectAll;
-      if (typeof fn === "function") {
-        fn(selectedRowKeys, selectedRows);
-      }
+      this.call_props_onSelectAll({
+        selectedRowKeys,
+        selectedRows
+      });
     }
   };
 
   call_onBeforeSelect = params => {
-    if (this.hasRowSelection()) {
-      let rfn = this.getRowSelection("onBeforeSelect");
-      if (typeof rfn === "function") {
-        return rfn(params);
-      }
+    let rfn = this.getRowSelection("onBeforeSelect");
+    if (typeof rfn === "function") {
+      return rfn(params);
     } else {
-      let fn = this.props.onBeforeSelect;
-      if (typeof fn === "function") {
-        return fn(params);
+      let bl = this.call_props_onBeforeSelect(params);
+      if (bl === false) {
+        return bl;
       }
     }
-
     return true;
   };
 
@@ -279,51 +344,51 @@ class SelectionGrid extends Component {
 
     if (typeof rfn === "function") {
       rfn(keys, rows);
-    }
-
-    if (typeof fn === "function") {
+    } else if (typeof fn === "function") {
       fn(keys, rows);
+    } else {
+      this.call_props_onSelectChange({
+        rowData,
+        rowIndex,
+        rowKey,
+        selectedRowKeys: keys,
+        selectedRows: rows
+      });
     }
   };
 
   call_onCheckAll = ({ keys, rows, changed }) => {
-    if (this.hasRowSelection()) {
-      let rfn_c = this.getRowSelection("onCheckAll");
-      if (typeof rfn_c === "function") {
-        rfn_c(true, rows, changed);
-      }
+    let rfn_c = this.getRowSelection("onCheckAll");
+    if (typeof rfn_c === "function") {
+      rfn_c(true, rows, changed);
     } else {
-      let fn = this.props.onSelectAll;
-      if (typeof fn === "function") {
-        fn(keys, rows);
-      }
+      this.call_props_onSelectAll({
+        selectedRowKeys: keys,
+        selectedRows: rows
+      });
     }
   };
 
   call_onUnCheckAll = ({ keys, rows, changed }) => {
-    if (this.hasRowSelection()) {
-      let rfn_c = this.getRowSelection("onCheckAll");
-      if (typeof rfn_c === "function") {
-        rfn_c(false, rows, changed);
-      }
+    let rfn_c = this.getRowSelection("onCheckAll");
+    if (typeof rfn_c === "function") {
+      rfn_c(false, rows, changed);
     } else {
-      let fn = this.props.onUnSelectAll;
-      if (typeof fn === "function") {
-        fn(keys, rows);
-      }
+      this.call_props_onUnSelectAll({
+        selectedRowKeys: keys,
+        selectedRows: rows
+      });
     }
   };
 
   call_onBeforeCheckAll = params => {
-    if (this.hasRowSelection()) {
-      let rfn = this.getRowSelection("onBeforeCheckAll");
-      if (typeof rfn === "function") {
-        return rfn(params);
-      }
+    let rfn = this.getRowSelection("onBeforeCheckAll");
+    if (typeof rfn === "function") {
+      return rfn(params);
     } else {
-      let fn = this.props.onBeforeSelectAll;
-      if (typeof fn === "function") {
-        return fn(params);
+      let bl = this.call_props_onBeforeSelectAll(params);
+      if (bl === false) {
+        return bl;
       }
     }
 
