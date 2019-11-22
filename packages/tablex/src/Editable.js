@@ -709,9 +709,12 @@ class EditableTable extends React.Component {
     newAddedData = [].concat(rows);
     this.insertedData = newAddedData;
 
+    let newData = data.slice().concat(newAddedData);
+    this.nextData = newData;
+
     let nextState = {
       isAddingRange: true,
-      data: data.slice().concat(newAddedData),
+      data: newData,
       flatData: flatData.slice().concat(newAddedData)
     };
 
@@ -1171,6 +1174,7 @@ class EditableTable extends React.Component {
         rowKey
       );
       this.deletedData = deletedRows;
+      this.nextData = newData;
 
       let { editKeys: nextEditKeys } = this.deleteRowsState(deletedRowKeys);
 
@@ -1260,6 +1264,7 @@ class EditableTable extends React.Component {
 
     this.changedRows = [];
     this.insertedData = insertedData;
+    this.nextData = newData;
 
     this.setState({
       data: newData,
