@@ -596,7 +596,7 @@ class SelectionGrid extends Component {
     }
   };
 
-  isCheckedAll = () => {
+  isCheckedAll = (excludes = []) => {
     let { checkedKeys, flatData, rowKey } = this.state;
 
     let keys = checkedKeys;
@@ -605,27 +605,29 @@ class SelectionGrid extends Component {
       return false;
     }
 
-    if (keys.length >= flatData.length) {
-      let bl = true;
+    let bl = true;
 
-      let selectedMap = {};
+    let selectedMap = {};
 
-      for (let i = 0, len = keys.length; i < len; i++) {
-        selectedMap[keys[i]] = true;
-      }
-
-      for (let i = 0, len = flatData.length; i < len; i++) {
-        let dk = flatData[i][rowKey];
-        if (selectedMap[dk] !== true) {
-          bl = false;
-          break;
-        }
-      }
-
-      return bl;
-    } else {
-      return false;
+    for (let i = 0, len = keys.length; i < len; i++) {
+      selectedMap[keys[i]] = true;
     }
+
+    let excludesMap = {};
+
+    for (let i = 0, len = excludes.length; i < len; i++) {
+      excludesMap[excludes[i]] = true;
+    }
+
+    for (let i = 0, len = flatData.length; i < len; i++) {
+      let dk = flatData[i][rowKey];
+      if (excludesMap[dk] !== true && selectedMap[dk] !== true) {
+        bl = false;
+        break;
+      }
+    }
+
+    return bl;
   };
 
   insertSelected({ key, rowIndex, rowData }) {
@@ -1372,17 +1374,19 @@ class SelectionGrid extends Component {
     return bl;
   };
 
-  onCheckAllChange = (selected, value, extra = {}) => {
-    let { indeterminate } = extra;
+  onCheckAllChange = selected => {
     let bl = this.onBeforeCheckAll(selected);
 
     if (bl === false) {
       return;
     }
-    if (indeterminate === true && this.state.disabledCheckedKeys.length > 0) {
+
+    if (selected === true) {
       this.removeAllChecked();
     } else {
-      if (selected === true) {
+      let hasCheckedAll = this.isCheckedAll(this.state.disabledCheckedKeys);
+
+      if (hasCheckedAll === true) {
         this.removeAllChecked();
       } else {
         this.addAllChecked();
@@ -1601,7 +1605,7 @@ class SelectionGrid extends Component {
       indeterminate: false
     };
 
-    isCheckedAll = this.isCheckedAll();
+    isCheckedAll = this.isCheckedAll(this.state.disabledCheckedKeys);
 
     if (flatData.length > 0) {
       if (isCheckedAll === true) {
