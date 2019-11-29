@@ -12,6 +12,7 @@ import {
   getRowSelectionFromProps,
   getSelectionConfigFromProps
 } from "./utils";
+import { AreaSelect } from "./Selector";
 
 class SelectionGrid extends Component {
   constructor(props) {
@@ -1519,6 +1520,18 @@ class SelectionGrid extends Component {
     this.setState(nextState);
   };
 
+  onCheckboxCell = (row, index, extra = {}) => {
+    let key = extra.key;
+    return {
+      onMouseDown: e => {
+        AreaSelect.begin(e, key);
+      },
+      onContextMenu: e => {
+        e.preventDefault();
+      }
+    };
+  };
+
   checkboxCellRender = (value, rowData, index) => {
     let { rowKey, checkedKeys, halfCheckedKeys } = this.state;
 
@@ -1689,6 +1702,50 @@ class SelectionGrid extends Component {
         if (typeof o.onClick === "function") {
           o.onClick({ rowData, rowIndex, rowKey }, e);
         }
+      },
+      onMouseEnter: e => {
+        AreaSelect.add(e, rowKey);
+      },
+      onMouseUp: () => {
+        let areaKeys = AreaSelect.end();
+        if (areaKeys.length > 0) {
+          let { flatData, checkedRows, checkedKeys, rowKey } = this.state;
+          let { data, keys } = filterDataByKeys(
+            flatData.slice().concat(checkedRows),
+            rowKey,
+            checkedKeys.concat(areaKeys)
+          );
+
+          this.call_onCheckChange({
+            rowData: null,
+            rowIndex: -1,
+            rowKey: "",
+            keys: keys,
+            rows: data
+          });
+
+          if (
+            this.isMultipleSelect() &&
+            this.getRowSelection("selectOnCheck") === true
+          ) {
+            this.call_onSelectChange({
+              rowData: null,
+              rowIndex: -1,
+              rowKey: "",
+              selectedRowKeys: keys,
+              selectedRows: data
+            });
+
+            this.setState({
+              checkedKeys: keys,
+              checkedRows: data,
+              selectedRowKeys: keys.slice(),
+              selectedRows: data.slice()
+            });
+          } else {
+            this.setState({ checkedKeys: keys, checkedRows: data });
+          }
+        }
       }
     };
   };
@@ -1704,6 +1761,7 @@ class SelectionGrid extends Component {
     if (checkboxColumn) {
       checkboxColumn.render = this.checkboxCellRender;
       checkboxColumn.title = this.checkboxHeadRender;
+      checkboxColumn.onCell = this.onCheckboxCell;
     }
 
     let newProps = {
