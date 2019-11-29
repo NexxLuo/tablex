@@ -608,7 +608,7 @@ class EditableTable extends React.Component {
   //取消编辑
   cancelEdit = () => {
     if (typeof this.props.onCancel === "function") {
-      this.props.onCancel();
+      this.props.onCancel(this.state.sourceData);
     }
     this.reset();
   };
