@@ -318,6 +318,52 @@ export function distinctData(data = [], key = "") {
 }
 
 /**
+ * 去重数据
+ * @param {Array} data
+ */
+export function distinct(data = []) {
+  let keyMap = {};
+
+  let arr = [];
+  for (let i = 0; i < data.length; i++) {
+    let k = data[i];
+    let isExist = keyMap[k] === true;
+
+    if (!isExist) {
+      keyMap[k] = true;
+      arr.push(k);
+    }
+  }
+
+  return arr;
+}
+
+/**
+ * 删除数组元素
+ * @param {Array} data
+ * @param {Array} removed 需要删除的数据
+ */
+export function removeArray(data = [], removed = []) {
+  let keyMap = {};
+  for (let i = 0; i < removed.length; i++) {
+    let k = removed[i];
+    keyMap[k] = true;
+  }
+
+  let arr = [];
+  for (let i = 0; i < data.length; i++) {
+    let k = data[i];
+    let isRemoved = keyMap[k] === true;
+
+    if (!isRemoved) {
+      arr.push(k);
+    }
+  }
+
+  return arr;
+}
+
+/**
  * 根据key键值删除数据
  * @param {*} data
  * @param {*} keyField
