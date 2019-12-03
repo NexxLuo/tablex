@@ -1493,11 +1493,78 @@ class SelectionGrid extends Component {
     this.setState(nextState);
   };
 
+  endAreaSelect = rowIndex => {
+    let { rowKey: keyField, data } = this.state;
+    let areaKeys = AreaSelect.endWithIndex(data, rowIndex, keyField);
+    if (areaKeys.length > 0) {
+      let {
+        flatData,
+        checkedRows,
+        checkedKeys,
+        halfCheckedKeys,
+        rowKey,
+        treeProps,
+        disabledCheckedKeys,
+        checkStrictly
+      } = this.state;
+
+      let { includes, halfKeys } = addToCheckeds({
+        treeProps: treeProps,
+        strictly: checkStrictly,
+        prevHalf: halfCheckedKeys,
+        keys: areaKeys,
+        prevIncludes: checkedKeys,
+        excludeKeys: disabledCheckedKeys
+      });
+
+      let { data, keys } = filterDataByKeys(
+        flatData.slice().concat(checkedRows),
+        rowKey,
+        includes
+      );
+
+      this.call_onCheckChange({
+        rowData: null,
+        rowIndex: -1,
+        rowKey: "",
+        keys: keys,
+        rows: data
+      });
+
+      if (
+        this.isMultipleSelect() &&
+        this.getRowSelection("selectOnCheck") === true
+      ) {
+        this.call_onSelectChange({
+          rowData: null,
+          rowIndex: -1,
+          rowKey: "",
+          selectedRowKeys: keys,
+          selectedRows: data
+        });
+
+        this.setState({
+          checkedKeys: keys,
+          checkedRows: data,
+          halfCheckedKeys: halfKeys,
+          selectedRowKeys: keys.slice(),
+          selectedRows: data.slice()
+        });
+      } else {
+        this.setState({
+          checkedKeys: keys,
+          checkedRows: data,
+          halfCheckedKeys: halfKeys
+        });
+      }
+    }
+  };
+
   onCheckboxCell = (row, index, extra = {}) => {
     let key = extra.key;
     return {
       onMouseDown: e => {
-        AreaSelect.begin(e, key);
+        AreaSelect.beginWithIndex(e, key, index);
       },
       onContextMenu: e => {
         e.preventDefault();
@@ -1676,73 +1743,10 @@ class SelectionGrid extends Component {
           o.onClick({ rowData, rowIndex, rowKey }, e);
         }
       },
-      onMouseEnter: e => {
-        AreaSelect.add(e, rowKey);
-      },
-      onMouseUp: () => {
-        let areaKeys = AreaSelect.end();
-
-        if (areaKeys.length > 0) {
-          let {
-            flatData,
-            checkedRows,
-            checkedKeys,
-            halfCheckedKeys,
-            rowKey,
-            treeProps,
-            disabledCheckedKeys,
-            checkStrictly
-          } = this.state;
-
-          let { includes, halfKeys } = addToCheckeds({
-            treeProps: treeProps,
-            strictly: checkStrictly,
-            prevHalf: halfCheckedKeys,
-            keys: areaKeys,
-            prevIncludes: checkedKeys,
-            excludeKeys: disabledCheckedKeys
-          });
-
-          let { data, keys } = filterDataByKeys(
-            flatData.slice().concat(checkedRows),
-            rowKey,
-            includes
-          );
-
-          this.call_onCheckChange({
-            rowData: null,
-            rowIndex: -1,
-            rowKey: "",
-            keys: keys,
-            rows: data
-          });
-
-          if (
-            this.isMultipleSelect() &&
-            this.getRowSelection("selectOnCheck") === true
-          ) {
-            this.call_onSelectChange({
-              rowData: null,
-              rowIndex: -1,
-              rowKey: "",
-              selectedRowKeys: keys,
-              selectedRows: data
-            });
-
-            this.setState({
-              checkedKeys: keys,
-              checkedRows: data,
-              halfCheckedKeys: halfKeys,
-              selectedRowKeys: keys.slice(),
-              selectedRows: data.slice()
-            });
-          } else {
-            this.setState({
-              checkedKeys: keys,
-              checkedRows: data,
-              halfCheckedKeys: halfKeys
-            });
-          }
+      onMouseUp: e => {
+        this.endAreaSelect(rowIndex);
+        if (typeof o.onMouseUp === "function") {
+          o.onMouseUp(e);
         }
       }
     };

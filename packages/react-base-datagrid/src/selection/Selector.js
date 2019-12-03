@@ -49,6 +49,7 @@ let AreaSelect = new (function() {
 
   this.hasBegin = false;
   this.beginKey = "";
+  this.beginIndex = -1;
 
   var testText = "";
   let el = null;
@@ -179,6 +180,41 @@ let AreaSelect = new (function() {
 
     return keys;
   };
+
+  this.beginWithIndex = function(e, key, index) {
+    if (typeof index === "number") {
+      this.beginIndex = index;
+    }
+    this.begin(e, key);
+  };
+  this.endWithIndex = function(data, index, keyField) {
+    let beginIndex = this.beginIndex;
+    let arr = data || [];
+    let maxIndex = arr.length - 1;
+    let endIndex = index > maxIndex ? maxIndex : index;
+
+    if (this.beginIndex > endIndex) {
+      beginIndex = endIndex;
+      endIndex = this.beginIndex;
+    }
+
+    let keys = [];
+
+    if (index > -1 && beginIndex > -1) {
+      for (let i = beginIndex; i <= endIndex; i++) {
+        let d = arr[i];
+        if (d) {
+          let k = d[keyField] || "";
+          k && keys.push(k);
+        }
+      }
+    }
+
+    this.beginIndex = -1;
+    this.end();
+    return keys;
+  };
+
   this.add = function(e, key) {
     if (this.hasBegin && key) {
       this.keysMap[key] = true;
