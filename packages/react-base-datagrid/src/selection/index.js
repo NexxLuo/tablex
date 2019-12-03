@@ -4,13 +4,13 @@ import Table from "../base";
 import "./styles.css";
 import Checkbox from "./Checkbox";
 import {
-  removeCheckedKey,
-  addCheckedKeyWithDisabled,
   filterDataByKeys,
   removeKeysByData,
   getSelectionChanged,
   getRowSelectionFromProps,
-  getSelectionConfigFromProps
+  getSelectionConfigFromProps,
+  addToCheckeds,
+  removeCheckeds
 } from "./utils";
 import { AreaSelect } from "./Selector";
 
@@ -658,20 +658,14 @@ class SelectionGrid extends Component {
     }
 
     let data = flatData.slice();
-    let data_treeProps = {};
 
-    if (checkStrictly === true) {
-      data_treeProps = treeProps;
-    }
-
-    let { selectedRowKeys: nextKeys } = addCheckedKeyWithDisabled({
-      key,
-      treeProps: data_treeProps,
-      selectedRowKeys: keys,
-      rowKey,
-      flatData: data,
-      halfCheckedKeys: [],
-      disabledSelectKeys: []
+    let { includes: nextKeys } = addToCheckeds({
+      keys: [key],
+      treeProps: treeProps,
+      strictly: checkStrictly,
+      prevIncludes: keys,
+      prevHalf: [],
+      excludeKeys: []
     });
 
     //记录上一次选中的行数据，避免翻页情况下的数据丢失
@@ -709,19 +703,13 @@ class SelectionGrid extends Component {
     }
 
     let data = flatData.slice();
-    let data_treeProps = {};
-
-    if (checkStrictly === true) {
-      data_treeProps = treeProps;
-    }
-
-    let { selectedRowKeys: nextKeys } = removeCheckedKey({
-      key,
-      treeProps: data_treeProps,
-      selectedRowKeys: keys,
-      rowKey,
-      flatData: data,
-      halfCheckedKeys
+    let { includes: nextKeys } = removeCheckeds({
+      keys: [key],
+      treeProps: treeProps,
+      prevIncludes: keys,
+      prevHalf: halfCheckedKeys,
+      excludeKeys: [],
+      strictly: checkStrictly
     });
 
     let nextRows = filterDataByKeys(data.concat(rows), rowKey, nextKeys).data;
@@ -1110,23 +1098,14 @@ class SelectionGrid extends Component {
     }
 
     let data = flatData.slice();
-    let data_treeProps = {};
 
-    if (checkStrictly === true) {
-      data_treeProps = treeProps;
-    }
-
-    let {
-      selectedRowKeys: nextKeys,
-      halfCheckedKeys: nextHalflCheckedKeys
-    } = addCheckedKeyWithDisabled({
-      key,
-      treeProps: data_treeProps,
-      selectedRowKeys: checkedKeys,
-      rowKey,
-      flatData: data,
-      halfCheckedKeys,
-      disabledSelectKeys: disabledCheckedKeys
+    let { includes: nextKeys, halfKeys: nextHalflCheckedKeys } = addToCheckeds({
+      keys: [key],
+      treeProps: treeProps,
+      strictly: checkStrictly,
+      prevIncludes: checkedKeys,
+      prevHalf: halfCheckedKeys,
+      excludeKeys: disabledCheckedKeys
     });
 
     //记录上一次选中的行数据，避免翻页情况下的数据丢失
@@ -1164,23 +1143,17 @@ class SelectionGrid extends Component {
     }
 
     let data = flatData.slice();
-    let data_treeProps = {};
 
-    if (checkStrictly === true) {
-      data_treeProps = treeProps;
-    }
-
-    let {
-      selectedRowKeys: nextKeys,
-      halfCheckedKeys: nextHalflCheckedKeys
-    } = removeCheckedKey({
-      key,
-      treeProps: data_treeProps,
-      selectedRowKeys: checkedKeys,
-      rowKey,
-      flatData: data,
-      halfCheckedKeys
-    });
+    let { includes: nextKeys, halfKeys: nextHalflCheckedKeys } = removeCheckeds(
+      {
+        keys: [key],
+        treeProps: treeProps,
+        prevIncludes: checkedKeys,
+        prevHalf: halfCheckedKeys,
+        excludeKeys: [],
+        strictly: checkStrictly
+      }
+    );
 
     let nextRows = filterDataByKeys(data.concat(checkedRows), rowKey, nextKeys)
       .data;
@@ -1708,12 +1681,32 @@ class SelectionGrid extends Component {
       },
       onMouseUp: () => {
         let areaKeys = AreaSelect.end();
+
         if (areaKeys.length > 0) {
-          let { flatData, checkedRows, checkedKeys, rowKey } = this.state;
+          let {
+            flatData,
+            checkedRows,
+            checkedKeys,
+            halfCheckedKeys,
+            rowKey,
+            treeProps,
+            disabledCheckedKeys,
+            checkStrictly
+          } = this.state;
+
+          let { includes, halfKeys } = addToCheckeds({
+            treeProps: treeProps,
+            strictly: checkStrictly,
+            prevHalf: halfCheckedKeys,
+            keys: areaKeys,
+            prevIncludes: checkedKeys,
+            excludeKeys: disabledCheckedKeys
+          });
+
           let { data, keys } = filterDataByKeys(
             flatData.slice().concat(checkedRows),
             rowKey,
-            checkedKeys.concat(areaKeys)
+            includes
           );
 
           this.call_onCheckChange({
@@ -1739,11 +1732,16 @@ class SelectionGrid extends Component {
             this.setState({
               checkedKeys: keys,
               checkedRows: data,
+              halfCheckedKeys: halfKeys,
               selectedRowKeys: keys.slice(),
               selectedRows: data.slice()
             });
           } else {
-            this.setState({ checkedKeys: keys, checkedRows: data });
+            this.setState({
+              checkedKeys: keys,
+              checkedRows: data,
+              halfCheckedKeys: halfKeys
+            });
           }
         }
       }
