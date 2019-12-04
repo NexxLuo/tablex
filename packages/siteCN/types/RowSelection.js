@@ -26,22 +26,18 @@ RowSelection.propTypes = {
   type: PropTypes.oneOf(["checkbox", "radio", "none"]),
   /** 手动选择/取消选择某行的回调 */
   onSelect: PropTypes.func,
-
   /** 行全选事件 */
   onSelectAll: PropTypes.func,
-
   /** 行选中项发生变化时的回调 */
   onSelectChange: PropTypes.func,
-
   /** 勾选项全选事件 */
   onCheckAll: PropTypes.func,
-
   /** 勾选项发生变化时的回调 */
   onChange: PropTypes.func,
-
   /** 是否显示勾选框列 */
   showCheckbox: PropTypes.bool,
-
+  /** 是否启用shift、拖拽区域快速选择 */
+  areaSelectEnabled: PropTypes.bool,
   /** 行选中时是否勾选 */
   selectOnCheck: PropTypes.bool,
   /** 勾选时是否同时选中行 */
