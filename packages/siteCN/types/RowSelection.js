@@ -36,7 +36,7 @@ RowSelection.propTypes = {
   onChange: PropTypes.func,
   /** 是否显示勾选框列 */
   showCheckbox: PropTypes.bool,
-  /** 是否启用shift、拖拽区域快速选择 */
+  /** 是否启用shift、拖拽区域快速选择，多选模式下生效 */
   areaSelectEnabled: PropTypes.bool,
   /** 行选中时是否勾选 */
   selectOnCheck: PropTypes.bool,
