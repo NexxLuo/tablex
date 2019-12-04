@@ -43,7 +43,7 @@ let RangeSelect = new (function() {
   };
 })();
 
-let AreaSelect = new (function() {
+let AreaSelect = function() {
   this.keysMap = {};
   this.rectKeyMap = {};
 
@@ -51,7 +51,9 @@ let AreaSelect = new (function() {
   this.beginKey = "";
   this.beginIndex = -1;
 
-  var testText = "";
+  let hasShiftKeyDown = false;
+  let shiftStartIndex = -1;
+
   let el = null;
 
   let starts = {
@@ -115,13 +117,24 @@ let AreaSelect = new (function() {
     });
 
     if (el) {
-      //el.innerText = `${pos.y}:${testText}`;
       el.style.setProperty("left", pos.x + "px");
       el.style.setProperty("top", pos.y + "px");
       el.style.setProperty("width", size.w + "px");
       el.style.setProperty("height", size.h + "px");
     }
   };
+
+  function keydown(e) {
+    if (e.keyCode === 16) {
+      hasShiftKeyDown = true;
+    }
+  }
+
+  function keyup(e) {
+    if (e.keyCode === 16) {
+      hasShiftKeyDown = false;
+    }
+  }
 
   this.begin = function(e, key) {
     if (key) {
@@ -181,21 +194,36 @@ let AreaSelect = new (function() {
     return keys;
   };
 
+  this.add = function(e, key) {
+    if (this.hasBegin && key) {
+      this.keysMap[key] = true;
+      let rect = e.target.getBoundingClientRect();
+      testText = rect.y;
+      this.rectKeyMap[key] = {
+        x: rect.x,
+        y: rect.y,
+        h: rect.height
+      };
+    }
+  };
+
   this.beginWithIndex = function(e, key, index) {
     if (typeof index === "number") {
       this.beginIndex = index;
     }
     this.begin(e, key);
   };
+
   this.endWithIndex = function(data, index, keyField) {
-    let beginIndex = this.beginIndex;
+    let rawStartIndex = this.beginIndex;
+    let beginIndex = rawStartIndex;
     let arr = data || [];
     let maxIndex = arr.length - 1;
     let endIndex = index > maxIndex ? maxIndex : index;
 
-    if (this.beginIndex > endIndex) {
+    if (rawStartIndex > endIndex) {
       beginIndex = endIndex;
-      endIndex = this.beginIndex;
+      endIndex = rawStartIndex;
     }
 
     let keys = [];
@@ -215,18 +243,49 @@ let AreaSelect = new (function() {
     return keys;
   };
 
-  this.add = function(e, key) {
-    if (this.hasBegin && key) {
-      this.keysMap[key] = true;
-      let rect = e.target.getBoundingClientRect();
-      testText = rect.y;
-      this.rectKeyMap[key] = {
-        x: rect.x,
-        y: rect.y,
-        h: rect.height
-      };
+  this.beginShift = function(index) {
+    if (typeof index === "number") {
+      shiftStartIndex = index;
     }
+    window.addEventListener("keydown", keydown);
+    window.addEventListener("keyup", keyup);
   };
-})();
+
+  this.endShift = function(data, index, keyField) {
+    let rawStartIndex = shiftStartIndex;
+    let beginIndex = rawStartIndex;
+
+    let arr = data || [];
+    let maxIndex = arr.length - 1;
+    let endIndex = index > maxIndex ? maxIndex : index;
+
+    if (rawStartIndex > endIndex) {
+      beginIndex = endIndex;
+      endIndex = rawStartIndex;
+    }
+
+    let keys = [];
+
+    if (index > -1 && beginIndex > -1) {
+      for (let i = beginIndex; i <= endIndex; i++) {
+        let d = arr[i];
+        if (d) {
+          let k = d[keyField] || "";
+          k && keys.push(k);
+        }
+      }
+    }
+
+    shiftStartIndex = -1;
+    window.removeEventListener("keydown", keydown);
+    window.removeEventListener("keyup", keyup);
+
+    return keys;
+  };
+
+  this.hasShiftKeyDown = function() {
+    return hasShiftKeyDown;
+  };
+};
 
 export { RangeSelect, AreaSelect };

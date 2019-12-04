@@ -18,6 +18,15 @@ class SelectionGrid extends Component {
   constructor(props) {
     super(props);
 
+    let areaSelectEnabled = getRowSelectionFromProps(
+      props,
+      "areaSelectEnabled"
+    );
+
+    if (areaSelectEnabled === true) {
+      this.AreaSelector = new AreaSelect();
+    }
+
     let selectedKeys = [];
     let selectedRows = [];
 
@@ -1167,6 +1176,15 @@ class SelectionGrid extends Component {
 
   /** 添加复选行 */
   addChecked(key, rowIndex, rowData, quiet = false) {
+    if (this.AreaSelector) {
+      if (this.AreaSelector.hasShiftKeyDown() === true) {
+        this.endAreaSelect(rowIndex, true);
+        this.AreaSelector.beginShift(rowIndex);
+        return;
+      }
+      this.AreaSelector.beginShift(rowIndex);
+    }
+
     let {
       keys: nextKeys,
       rows: nextRows,
@@ -1211,14 +1229,6 @@ class SelectionGrid extends Component {
       );
 
       if (this.isMultipleSelect()) {
-        // let { data, keys } = filterDataByKeys(
-        //   nextRows.concat(nextSelectedRows),
-        //   this.state.rowKey,
-        //   nextKeys.concat(nextSelectedKeys)
-        // );
-
-        // console.log("isMultipleSelect:",keys)
-
         nextState.selectedRowKeys = nextKeys;
         nextState.selectedRows = nextRows;
       } else {
@@ -1493,9 +1503,17 @@ class SelectionGrid extends Component {
     this.setState(nextState);
   };
 
-  endAreaSelect = rowIndex => {
+  endAreaSelect = (rowIndex, isShift) => {
+    if (!this.AreaSelector) {
+      return;
+    }
     let { rowKey: keyField, data } = this.state;
-    let areaKeys = AreaSelect.endWithIndex(data, rowIndex, keyField);
+    let areaKeys = [];
+    if (isShift === true) {
+      areaKeys = this.AreaSelector.endShift(data, rowIndex, keyField);
+    } else {
+      areaKeys = this.AreaSelector.endWithIndex(data, rowIndex, keyField);
+    }
     if (areaKeys.length > 0) {
       let {
         flatData,
@@ -1564,7 +1582,7 @@ class SelectionGrid extends Component {
     let key = extra.key;
     return {
       onMouseDown: e => {
-        AreaSelect.beginWithIndex(e, key, index);
+        this.AreaSelector && this.AreaSelector.beginWithIndex(e, key, index);
       },
       onContextMenu: e => {
         e.preventDefault();
@@ -1795,6 +1813,7 @@ SelectionGrid.propTypes = {
   selectMode: PropTypes.oneOf(["multiple", "single", "none"]),
 
   rowSelection: PropTypes.shape({
+    areaSelectEnabled: PropTypes.bool,
     checkStrictly: PropTypes.bool,
     columnTitle: PropTypes.oneOfType([
       PropTypes.string,
