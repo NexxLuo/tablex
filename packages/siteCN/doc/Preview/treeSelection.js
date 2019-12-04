@@ -117,9 +117,9 @@ class Demo extends React.Component {
         }}
         rowSelection={{
           type: "checkbox",
+          areaSelectEnabled: true,
           selectOnCheck: false, //false
           checkOnSelect: false,
-
           selectType: "single",
           // selectedRowKeys:["Row 1 - Col 0"],
           // selectInverted:false,
