@@ -1787,10 +1787,6 @@ class EditableTable extends React.Component {
       }
     }
 
-    Object.keys(modifiedDataKeyMap).forEach(k => {
-      modifiedData.push(k);
-    });
-
     this.nextData = data.slice();
     return modifiedData;
   };
