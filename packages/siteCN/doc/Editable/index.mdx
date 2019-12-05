@@ -460,7 +460,7 @@ data: newData
 }
 
 componentDidMount() {
-this.refs.tableRef.api.edit()
+//this.refs.tableRef.api.edit()
 }
 
 render() {
@@ -477,6 +477,7 @@ let { columns, data } = this.state;
         editable={true}
         selectMode={"multiple"}
         checkStrictly={false}
+        editAll={true}
         editTools={['edit', 'add','delete']}
         onEditSave={this.onEditSave.bind(this)}
       />
