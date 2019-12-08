@@ -467,9 +467,9 @@ class Table extends React.Component {
 
     cols.forEach(d => {
       let columnKey = d.key || d.dataIndex;
-      let config = configs[columnKey] || configs[columnKey] || {};
+      let config = configs[columnKey] || {};
       let dropMenu = columnDropMenu;
-      if (typeof d.dropMenu === "dropMenu") {
+      if (typeof d.dropMenu === "boolean") {
         dropMenu = d.dropMenu;
       }
 
