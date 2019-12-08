@@ -32,7 +32,9 @@ Editable.defaultProps = {
   alwaysValidate: false,
   editorNoBorder: false,
   keyboardNavigation: true,
-  editorClickBubble: false
+  editorClickBubble: false,
+  editKeys: [],
+  editAll: false
 };
 
 Editable.propTypes = {
@@ -110,7 +112,11 @@ Editable.propTypes = {
   /** api.completeEdit 触发此事件
    * @param {changed:[],inserted:[],deleted:[],data:[]} --包含修改、新增、删除的数据，以及最新的表格数据data
    */
-  onComplete: PropTypes.func
+  onComplete: PropTypes.func,
+  /** 需要编辑的key */
+  editKeys: PropTypes.array,
+  /** 是否编辑所有数据,优先级大于editKeys */
+  editAll: PropTypes.bool
 };
 
 export default Editable;

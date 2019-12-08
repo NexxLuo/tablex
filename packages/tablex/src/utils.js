@@ -236,7 +236,7 @@ export function getTreeFromFlatData({
 
   const trav = parent => {
     const parentKey = getKey(parent);
-    if (parentKey in childrenToParents) {
+    if (parentKey && parentKey in childrenToParents) {
       return {
         ...parent,
         children: childrenToParents[parentKey].map(child => trav(child))

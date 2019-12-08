@@ -10,15 +10,7 @@ function getChildrens(key, treeProps) {
   return keys;
 }
 
-function testTime(v) {
-  if (v) {
-    return (new Date().getTime() - v) / 1000;
-  }
-
-  return new Date();
-}
-
-/**
+/** deprecated
  * 添加选中行
  * @key {Array} 行key
  * @treeProps {Object} 对应的树形数据属性
@@ -140,7 +132,7 @@ export function removeCheckedKey({
   };
 }
 
-/**
+/** deprecated
  * 添加选中行
  * @key {Array} 行key
  * @treeProps {Object} 对应的树形数据属性
@@ -295,6 +287,302 @@ export function addCheckedKeyWithDisabled({
 }
 
 /**
+ *  添加指定的keys
+ * @param {*} treeProps 树形数据属性
+ * @param {*} keys 需要添加的keys
+ * @param {*} prevHalf 已半选的key
+ * @param {*} prevIncludes 已选中的keys
+ * @param {*} excludeKeys 需要排除处理的keys
+ * @param {*} strictly 是否级联控制树形数据 } param0
+ */
+export function addToCheckeds({
+  treeProps,
+  keys,
+  prevHalf,
+  prevIncludes,
+  excludeKeys,
+  strictly = false
+}) {
+  let includeKeysMap = {};
+  let halfKeysMap = {};
+  let excludes = {};
+
+  let treeInfo = {};
+  if (strictly === true) {
+    treeInfo = treeProps;
+  }
+
+  //排除指定的key
+  for (let i = 0; i < excludeKeys.length; i++) {
+    const k = excludeKeys[i];
+    const node = treeInfo[k] || {};
+    const childrenKeys = node.childrens || [];
+    excludes[k] = true;
+    for (let j = 0; j < childrenKeys.length; j++) {
+      const ck = childrenKeys[j];
+      excludes[ck] = true;
+    }
+  }
+
+  //包含指定的key
+  for (let i = 0; i < prevIncludes.length; i++) {
+    const k = prevIncludes[i];
+    includeKeysMap[k] = true;
+  }
+
+  //半选key
+  for (let i = 0; i < prevHalf.length; i++) {
+    const k = prevHalf[i];
+    halfKeysMap[k] = true;
+  }
+
+  let allParentKeysMap = {};
+
+  //选中当前及其子级key
+  for (let i = 0; i < keys.length; i++) {
+    const k = keys[i];
+    const node = treeInfo[k] || {};
+
+    const childrenKeys = node.childrens || [];
+    const parentKeys = node.parents || [];
+
+    for (let m = 0; m < parentKeys.length; m++) {
+      const pk = parentKeys[m];
+      allParentKeysMap[pk] = true;
+    }
+
+    //选中本级
+    if (excludes[k] !== true) {
+      includeKeysMap[k] = true;
+      halfKeysMap[k] = false;
+    }
+
+    //选中子级
+    for (let j = 0; j < childrenKeys.length; j++) {
+      const ck = childrenKeys[j];
+      if (excludes[ck] !== true) {
+        includeKeysMap[ck] = true;
+        halfKeysMap[ck] = false;
+      }
+    }
+    //
+  }
+
+  //半选、全选父级
+  let allParentKeys = Object.keys(allParentKeysMap);
+  let includeParentsMap = {};
+  let halfParentsMap = {};
+
+  for (let i = allParentKeys.length - 1; i >= 0; i--) {
+    const k = allParentKeys[i];
+    const node = treeInfo[k] || {};
+    const childrenKeys = node.childrens || [];
+
+    let hasIncludeAllChildren = true;
+    let hasIncludeChildren = false;
+
+    //是否包含子级
+    for (let m = 0; m < childrenKeys.length; m++) {
+      const ck = childrenKeys[m];
+      if (includeKeysMap[ck] === true || includeParentsMap[ck] === true) {
+        hasIncludeChildren = true;
+        break;
+      }
+    }
+
+    //是否全包含子级
+    for (let j = 0; j < childrenKeys.length; j++) {
+      const ck = childrenKeys[j];
+
+      if (includeKeysMap[ck] !== true && includeParentsMap[ck] !== true) {
+        hasIncludeAllChildren = false;
+        break;
+      }
+    }
+
+    //半选、全选
+    if (hasIncludeChildren === true) {
+      if (hasIncludeAllChildren === true) {
+        includeParentsMap[k] = true;
+        halfKeysMap[k] = false;
+      } else {
+        halfParentsMap[k] = true;
+      }
+    }
+  }
+  //
+
+  let nextKeys = Object.keys(Object.assign(includeKeysMap, includeParentsMap));
+
+  //全选父级后，移除父级的半选状态
+  let halfKeys = [];
+  for (const k in halfKeysMap) {
+    if (halfKeysMap[k] === true) {
+      halfKeys.push(k);
+    }
+  }
+
+  let nextHalfKeys = halfKeys.concat(Object.keys(halfParentsMap));
+
+  return {
+    includes: nextKeys,
+    halfKeys: nextHalfKeys
+  };
+}
+
+/**
+ * 从当前包含的key中移除指定的keys
+ * @param {*} treeProps 树形数据属性
+ * @param {*} keys 需要移除的keys
+ * @param {*} prevHalf 已半选的key
+ * @param {*} prevIncludes 已选中的keys
+ * @param {*} excludeKeys 需要排除处理的keys
+ * @param {*} strictly 是否级联控制树形数据
+ */
+export function removeCheckeds({
+  treeProps,
+  keys,
+  prevHalf,
+  prevIncludes,
+  excludeKeys,
+  strictly = false
+}) {
+  let removeKeysMap = {};
+
+  let includeKeysMap = {};
+  let halfKeysMap = {};
+  let excludes = {};
+
+  let treeInfo = {};
+  if (strictly === true) {
+    treeInfo = treeProps;
+  }
+
+  //排除指定的key
+  for (let i = 0; i < excludeKeys.length; i++) {
+    const k = excludeKeys[i];
+    const node = treeInfo[k] || {};
+    const childrenKeys = node.childrens || [];
+    excludes[k] = true;
+    for (let j = 0; j < childrenKeys.length; j++) {
+      const ck = childrenKeys[j];
+      excludes[ck] = true;
+    }
+  }
+
+  //半选key
+  for (let i = 0; i < prevHalf.length; i++) {
+    const k = prevHalf[i];
+    halfKeysMap[k] = true;
+  }
+
+  let allParentKeysMap = {};
+  //移除当前及其子级key
+  for (let i = 0; i < keys.length; i++) {
+    const k = keys[i];
+    const node = treeInfo[k] || {};
+
+    const childrenKeys = node.childrens || [];
+    const parentKeys = node.parents || [];
+
+    for (let m = 0; m < parentKeys.length; m++) {
+      const pk = parentKeys[m];
+      allParentKeysMap[pk] = true;
+    }
+
+    if (excludes[k] !== true) {
+      removeKeysMap[k] = true;
+    }
+
+    for (let j = 0; j < childrenKeys.length; j++) {
+      const ck = childrenKeys[j];
+      if (excludes[ck] !== true) {
+        removeKeysMap[ck] = true;
+      }
+    }
+  }
+
+  for (let i = 0; i < prevIncludes.length; i++) {
+    const k = prevIncludes[i];
+    if (removeKeysMap[k] !== true) {
+      includeKeysMap[k] = true;
+    }
+  }
+
+  //取消半选、取消全选父级
+  let allParentKeys = Object.keys(allParentKeysMap);
+  let includeParentsMap = {};
+  let halfParentsMap = {};
+
+  for (let i = 0; i < allParentKeys.length; i++) {
+    const k = allParentKeys[i];
+    const node = treeInfo[k] || {};
+    const childrenKeys = node.childrens || [];
+
+    let hasIncludeAllChildren = true;
+    let hasIncludeChildren = false;
+
+    if (halfKeysMap.hasOwnProperty(k)) {
+      halfKeysMap[k] = false;
+    }
+
+    if (includeKeysMap.hasOwnProperty(k)) {
+      includeKeysMap[k] = false;
+    }
+
+    //是否包含子级
+    for (let m = 0; m < childrenKeys.length; m++) {
+      const ck = childrenKeys[m];
+      if (includeKeysMap[ck] === true) {
+        hasIncludeChildren = true;
+        break;
+      }
+    }
+
+    //是否全包含子级
+    for (let j = 0; j < childrenKeys.length; j++) {
+      const ck = childrenKeys[j];
+      if (includeKeysMap[ck] !== true) {
+        hasIncludeAllChildren = false;
+        break;
+      }
+    }
+
+    //半选、全选
+    if (hasIncludeChildren === true) {
+      if (hasIncludeAllChildren === true) {
+        includeParentsMap[k] = true;
+      } else {
+        halfParentsMap[k] = true;
+      }
+    }
+  }
+  //
+
+  let includeKeys = [];
+  for (const k in includeKeysMap) {
+    if (includeKeysMap[k] === true) {
+      includeKeys.push(k);
+    }
+  }
+
+  let halfKeys = [];
+  for (const k in halfKeysMap) {
+    if (halfKeysMap[k] === true) {
+      halfKeys.push(k);
+    }
+  }
+
+  let nextKeys = includeKeys.concat(Object.keys(includeParentsMap));
+  let nextHalfKeys = halfKeys.concat(Object.keys(halfParentsMap));
+
+  return {
+    includes: nextKeys,
+    halfKeys: nextHalfKeys
+  };
+}
+
+/**
  * 根据key键值去重数据，重复项只保留第一条数据
  * @param {*} data
  * @param {*} key
@@ -311,6 +599,52 @@ export function distinctData(data = [], key = "") {
     if (!isExist) {
       keyMap[rk] = true;
       arr.push(d);
+    }
+  }
+
+  return arr;
+}
+
+/**
+ * 去重数据
+ * @param {Array} data
+ */
+export function distinct(data = []) {
+  let keyMap = {};
+
+  let arr = [];
+  for (let i = 0; i < data.length; i++) {
+    let k = data[i];
+    let isExist = keyMap[k] === true;
+
+    if (!isExist) {
+      keyMap[k] = true;
+      arr.push(k);
+    }
+  }
+
+  return arr;
+}
+
+/**
+ * 删除数组元素
+ * @param {Array} data
+ * @param {Array} removed 需要删除的数据
+ */
+export function removeArray(data = [], removed = []) {
+  let keyMap = {};
+  for (let i = 0; i < removed.length; i++) {
+    let k = removed[i];
+    keyMap[k] = true;
+  }
+
+  let arr = [];
+  for (let i = 0; i < data.length; i++) {
+    let k = data[i];
+    let isRemoved = keyMap[k] === true;
+
+    if (!isRemoved) {
+      arr.push(k);
     }
   }
 
@@ -482,6 +816,9 @@ export function getRowSelectionFromProps(props, k) {
     }
     rowSelection = Object.assign({}, defaultRowSelection, o);
   } else {
+    if (props.selectMode === "multiple") {
+      defaultRowSelection.type = "checkbox";
+    }
     rowSelection = defaultRowSelection;
   }
 
@@ -556,11 +893,16 @@ export function getSelectionConfigFromProps(props) {
 
     if ("selectedRowKeys" in rowSelection) {
       selectionProps.selectedRowKeys = rowSelection.selectedRowKeys;
-      selectionProps.checkedKeys = rowSelection.selectedRowKeys;
+      if (rowSelection.checkOnSelect === true) {
+        selectionProps.checkedKeys = rowSelection.selectedRowKeys;
+      }
     }
 
-    if ("selectedRowKeys" in rowSelection) {
-      selectionProps.selectedRowKeys = rowSelection.selectedRowKeys;
+    if ("checkedKeys" in rowSelection) {
+      selectionProps.checkedKeys = rowSelection.checkedKeys;
+      if (rowSelection.selectOnCheck === true) {
+        selectionProps.selectedRowKeys = rowSelection.checkedKeys;
+      }
     }
 
     if ("disabledCheckedKeys" in rowSelection) {

@@ -864,7 +864,8 @@ class Table extends React.Component {
       columns,
       prependColumns,
       onColumnResizeStop: this.onColumnResize,
-      innerRef: this.innerRef
+      innerRef: this.innerRef,
+      style: {}
     };
 
     if (typeof props.contextMenu === "function") {
@@ -910,9 +911,12 @@ class Table extends React.Component {
     classNames = classNames.join(" ");
 
     let bodyStyles = { height: "100%" };
-    let wrapperStyles = Object.assign({}, props.style || {}, {
-      height: "100%"
-    });
+    let wrapperStyles = Object.assign(
+      {
+        height: "100%"
+      },
+      props.style || {}
+    );
 
     if (props.autoHeight === true) {
       bodyStyles.height = "auto";

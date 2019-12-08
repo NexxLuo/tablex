@@ -5,13 +5,7 @@ const RowSelection = () => {
   return <div />;
 };
 
-RowSelection.defaultProps = {
-  selectMode: "single",
-  rowSelectClassName: "tablex__row--selected",
-  defaultSelectedRowKeys: [],
-  disabledSelectKeys: [],
-  checkStrictly: true
-};
+RowSelection.defaultProps = {};
 
 RowSelection.propTypes = {
   /** 多选框列标题 */
@@ -28,20 +22,22 @@ RowSelection.propTypes = {
   getCheckboxProps: PropTypes.func,
   /** 选中的行key */
   selectedRowKeys: PropTypes.array,
-  /** 选择模式，单选、复选 */
-  type: PropTypes.oneOf(["checkbox", "radio"]),
+  /** 选择模式，单选、复选、不可选 */
+  type: PropTypes.oneOf(["checkbox", "radio", "none"]),
   /** 手动选择/取消选择某行的回调 */
   onSelect: PropTypes.func,
-
-  /** 全选事件 */
+  /** 行全选事件 */
   onSelectAll: PropTypes.func,
-
-  /** 选中项发生变化时的回调 */
+  /** 行选中项发生变化时的回调 */
+  onSelectChange: PropTypes.func,
+  /** 勾选项全选事件 */
+  onCheckAll: PropTypes.func,
+  /** 勾选项发生变化时的回调 */
   onChange: PropTypes.func,
-
-  /** 是否显示多选框列 */
+  /** 是否显示勾选框列 */
   showCheckbox: PropTypes.bool,
-
+  /** 是否启用shift、拖拽区域快速选择，多选模式下生效 */
+  areaSelectEnabled: PropTypes.bool,
   /** 行选中时是否勾选 */
   selectOnCheck: PropTypes.bool,
   /** 勾选时是否同时选中行 */
@@ -51,10 +47,13 @@ RowSelection.propTypes = {
   /** 禁用checkbox选择的行key */
   disabledCheckedKeys: PropTypes.array,
 
-  /** 行选择模式，支持checkbox多选状态下，行选择为单选 */
-  selectType: PropTypes.oneOf(["single", "multiple"]),
+  /** 行选择模式，支持checkbox勾选模式下，行选择为单选 */
+  selectType: PropTypes.oneOf(["single", "multiple", "none"]),
   /** 是否允许点击选中行时，取消选中状态 */
   selectInverted: PropTypes.bool,
+
+  /** 手动勾选/取消勾选某行的回调 */
+  onCheck: PropTypes.func,
 
   /** 选择前置事件 */
   onBeforeSelect: PropTypes.func,

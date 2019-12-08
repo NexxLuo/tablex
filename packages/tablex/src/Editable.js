@@ -67,8 +67,14 @@ class EditableTable extends React.Component {
         dataControled: nextProps.dataControled || false,
         readOnly: nextProps.readOnly,
         rawColumns: nextProps.columns || [],
-        isAppend: nextProps.isAppend
+        isAppend: nextProps.isAppend,
+        editKeys: nextProps.editKeys || [],
+        isEditAll: !!nextProps.editAll
       };
+
+      if (nextState.isEditAll === true || nextState.editKeys.length > 0) {
+        nextState.isEditing = true;
+      }
 
       if ("expandedRowKeys" in nextProps) {
         nextState.expandedRowKeys = nextProps.expandedRowKeys;
@@ -89,6 +95,7 @@ class EditableTable extends React.Component {
 
       if (prevState.dataControled === true) {
         let flatData = treeToFlatten(data).list;
+        nextState.rawData = data;
         nextState.flatData = flatData;
         nextState.data = data;
         nextState.sourceData = cloneData(data);
@@ -607,7 +614,7 @@ class EditableTable extends React.Component {
   //取消编辑
   cancelEdit = () => {
     if (typeof this.props.onCancel === "function") {
-      this.props.onCancel();
+      this.props.onCancel(this.state.sourceData);
     }
     this.reset();
   };
@@ -708,9 +715,12 @@ class EditableTable extends React.Component {
     newAddedData = [].concat(rows);
     this.insertedData = newAddedData;
 
+    let newData = data.slice().concat(newAddedData);
+    this.nextData = newData;
+
     let nextState = {
       isAddingRange: true,
-      data: data.slice().concat(newAddedData),
+      data: newData,
       flatData: flatData.slice().concat(newAddedData)
     };
 
@@ -1170,6 +1180,7 @@ class EditableTable extends React.Component {
         rowKey
       );
       this.deletedData = deletedRows;
+      this.nextData = newData;
 
       let { editKeys: nextEditKeys } = this.deleteRowsState(deletedRowKeys);
 
@@ -1259,6 +1270,7 @@ class EditableTable extends React.Component {
 
     this.changedRows = [];
     this.insertedData = insertedData;
+    this.nextData = newData;
 
     this.setState({
       data: newData,
@@ -1781,10 +1793,6 @@ class EditableTable extends React.Component {
       }
     }
 
-    Object.keys(modifiedDataKeyMap).forEach(k => {
-      modifiedData.push(k);
-    });
-
     this.nextData = data.slice();
     return modifiedData;
   };
@@ -2157,7 +2165,9 @@ EditableTable.defaultProps = {
   alwaysValidate: false,
   editorNoBorder: false,
   keyboardNavigation: true,
-  editorClickBubble: false
+  editorClickBubble: false,
+  editKeys: [],
+  editAll: false
 };
 
 EditableTable.propTypes = {
@@ -2225,7 +2235,11 @@ EditableTable.propTypes = {
   /** 无论是否存在输入变化，是否始终验证 */
   alwaysValidate: PropTypes.bool,
   /** 数据是否完全受控，如若受控，请在onEditSave、onCancel中自行更新数据源 */
-  dataControled: PropTypes.bool
+  dataControled: PropTypes.bool,
+  /** 需要编辑的key */
+  editKeys: PropTypes.array,
+  /**  是否编辑所有数据,优先级大于editKeys */
+  editAll: PropTypes.bool
 };
 
 export default EditableTable;

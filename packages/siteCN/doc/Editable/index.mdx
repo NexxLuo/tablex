@@ -15,7 +15,7 @@ import Search from "./Search"
 # 用法示例
 
 ```javascript
-import Table, { flatten, unflatten } from "sy-framework/lib/widget/table";
+import Table, { flatten, unflatten } from "tablex";
 ```
 
 ## 基本编辑及验证
@@ -460,7 +460,7 @@ data: newData
 }
 
 componentDidMount() {
-this.refs.tableRef.api.edit()
+//this.refs.tableRef.api.edit()
 }
 
 render() {
@@ -477,6 +477,7 @@ let { columns, data } = this.state;
         editable={true}
         selectMode={"multiple"}
         checkStrictly={false}
+        editAll={true}
         editTools={['edit', 'add','delete']}
         onEditSave={this.onEditSave.bind(this)}
       />
@@ -885,7 +886,7 @@ super(props);
             dataIndex: "name",
             title: "姓名",
             width: 150,
-            validator:(v)=>{
+            validator2:(v)=>{
 return {valid:!!v,message:"请输入"};
             },
             editor: (value, row, index, onchange, ref) => {
@@ -938,6 +939,9 @@ return {valid:!!v,message:"请输入"};
 }
 
     onEditSave(changedRows, newData, type) {
+console.log("onEditSave changedRows:",changedRows)
+console.log("onEditSave newData:",newData)
+
 
         this.setState({
             data: newData
@@ -966,11 +970,12 @@ add(){
                     header={()=><div><Button onClick={this.add.bind(this)} >api.addRows</Button></div>}
                     editable={true}
                     defaultAddCount={ 5 }
+                    editTools={["add","edit","delete"]}
                     onEditSave={ this.onEditSave.bind(this) }
                     onCancel={this.onEditCancel}
                     isAppend={ true }
-                    allowSaveEmpty={false}
-                    alwaysValidate={ false }
+                    allowSaveEmpty={true}
+                    alwaysValidate={ true }
                     validateTrigger="onChange"
                     rowKey="id">
                 </Table>
@@ -1457,7 +1462,7 @@ super(props);
 ```javascript
 
 import React, { Component } from "react";
-import { Table, unflatten } from "tablex";
+import Table, { flatten, unflatten } from "tablex";
 import { Button, Input, Menu, InputNumber } from "antd";
 import _ from "lodash";
 
