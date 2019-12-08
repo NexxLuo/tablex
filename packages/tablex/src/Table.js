@@ -469,7 +469,7 @@ class Table extends React.Component {
       let columnKey = d.key || d.dataIndex;
       let config = configs[columnKey] || configs[columnKey] || {};
       let dropMenu = columnDropMenu;
-      if (typeof d.dropMenu === "dropMenu") {
+      if (typeof d.dropMenu === "boolean") {
         dropMenu = d.dropMenu;
       }
 
