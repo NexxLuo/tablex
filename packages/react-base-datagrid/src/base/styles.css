@@ -124,6 +124,7 @@
   display: flex;
   align-items: center;
   overflow: hidden;
+  font-weight: bold;
 }
 
 .tablex-table .tablex-table-head-cell {
@@ -135,6 +136,7 @@
   align-items: center;
   flex: 0 0 auto;
   overflow: hidden;
+  font-weight: bold;
 }
 
 .tablex-bordered .tablex-table .tablex-table-head-cell {
