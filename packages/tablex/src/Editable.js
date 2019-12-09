@@ -67,14 +67,27 @@ class EditableTable extends React.Component {
         dataControled: nextProps.dataControled || false,
         readOnly: nextProps.readOnly,
         rawColumns: nextProps.columns || [],
-        isAppend: nextProps.isAppend,
-        editKeys: nextProps.editKeys || [],
-        isEditAll: !!nextProps.editAll
+        isAppend: nextProps.isAppend
       };
 
-      if (nextState.isEditAll === true || nextState.editKeys.length > 0) {
-        nextState.isEditing = true;
+      //处理编辑状态受控
+
+      if ("editKeys" in nextProps || "editAll" in nextProps) {
+        let nextIsEditing = false;
+        let nextEditKeys = nextProps.editKeys || [];
+        let nextIsEditAll = !!nextProps.editAll;
+
+        if (nextIsEditAll === true || nextEditKeys.length > 0) {
+          nextIsEditing = true;
+        }
+
+        nextState.editKeys = nextEditKeys;
+        nextState.isEditAll = nextIsEditAll;
+        nextState.isEditing = nextIsEditing;
+        nextState.isControledEdit = true;
       }
+
+      //
 
       if ("expandedRowKeys" in nextProps) {
         nextState.expandedRowKeys = nextProps.expandedRowKeys;
@@ -1016,6 +1029,14 @@ class EditableTable extends React.Component {
 
   editSave = async callBack => {
     let editType = this.editType;
+
+    //是否由外部控制编辑状态
+    if (this.state.isControledEdit === true) {
+      if (!editType) {
+        editType = "edit";
+      }
+    }
+    //
 
     if (!editType) {
       console.error(
@@ -2165,9 +2186,7 @@ EditableTable.defaultProps = {
   alwaysValidate: false,
   editorNoBorder: false,
   keyboardNavigation: true,
-  editorClickBubble: false,
-  editKeys: [],
-  editAll: false
+  editorClickBubble: false
 };
 
 EditableTable.propTypes = {
