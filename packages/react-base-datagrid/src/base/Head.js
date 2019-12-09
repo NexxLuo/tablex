@@ -12,14 +12,23 @@ const Column = ({
   height,
   onColumnResizeStop,
   columnKey,
-  resizable
+  resizable,
+  headerCellProps
 }) => {
   let widthStyles = getColumnWidthStyle({ width, minWidth });
 
-  let styles = { ...widthStyles, height };
+  let cellStyles = { ...widthStyles, height };
+
+  if (headerCellProps.style) {
+    cellStyles = Object.assign({}, headerCellProps.style || {}, cellStyles);
+  }
 
   return (
-    <div className="tablex-table-head-cell" style={styles}>
+    <div
+      className="tablex-table-head-cell"
+      {...headerCellProps}
+      style={cellStyles}
+    >
       <div className="tablex-table-head-cell-inner" style={alignStyles}>
         {children}
       </div>
@@ -34,11 +43,23 @@ const Column = ({
   );
 };
 
-const ColumnGroup = ({ title, children, flexible, alignStyles, height }) => {
+const ColumnGroup = ({
+  title,
+  children,
+  flexible,
+  alignStyles,
+  height,
+  headerCellProps
+}) => {
   let styles = {};
   if (flexible) {
     styles.flexGrow = 1;
     styles.flexShrink = 1;
+  }
+
+  let cellStyles = { height: height };
+  if (headerCellProps.style) {
+    cellStyles = Object.assign({}, headerCellProps.style || {}, cellStyles);
   }
 
   return (
@@ -46,7 +67,8 @@ const ColumnGroup = ({ title, children, flexible, alignStyles, height }) => {
       {height > 0 ? (
         <div
           className="tablex-table-head-group-cell"
-          style={{ height: height }}
+          {...headerCellProps}
+          style={cellStyles}
         >
           <div className="tablex-table-head-group-inner" style={alignStyles}>
             {title}
@@ -80,6 +102,12 @@ const renderColumns = ({
 
     let TitleComponent = d.title;
     let titleRenderFn = d.titleRender;
+    let onHeaderCell = d.onHeaderCell;
+
+    let headerCellProps = {};
+    if (typeof onHeaderCell === "function") {
+      headerCellProps = onHeaderCell(d);
+    }
 
     if (typeof titleRenderFn === "function") {
       TitleComponent = titleRenderFn;
@@ -88,7 +116,7 @@ const renderColumns = ({
     let titleElement = null;
 
     if (typeof TitleComponent === "function") {
-      titleElement = <TitleComponent column={d} />;
+      titleElement = <TitleComponent column={d} {...headerCellProps} />;
     } else {
       titleElement = d.title;
     }
@@ -105,6 +133,7 @@ const renderColumns = ({
       return (
         <ColumnGroup
           key={columnKey}
+          headerCellProps={headerCellProps}
           title={titleElement}
           flexible={flexible}
           alignStyles={alignStyles}
@@ -145,6 +174,7 @@ const renderColumns = ({
     return (
       <Column
         key={columnKey}
+        headerCellProps={headerCellProps}
         columnKey={columnKey}
         width={d.width}
         minWidth={d.minWidth}

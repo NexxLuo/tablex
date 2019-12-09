@@ -657,11 +657,32 @@ super(props);
         title: "id",
         key: "id",
         width: 150,
-        align: "center"
+        align: "center",
+        onHeaderCell:function(){
+          console.log("onHeadCell")
+          return {
+            style:{
+              backgroundColor:"#eaeaea"
+            },
+            onClick:()=>{
+              alert("clicked the header cell id");
+            }
+          }
+        }
       },
       {
         key: "column-group-1",
         title:"column group",
+                onHeaderCell:function(){
+          return {
+            style:{
+              backgroundColor:"#eaeaea"
+            },
+            onClick:()=>{
+              alert("clicked the header cell column-group-1");
+            }
+          }
+        },
         children:[
             { dataIndex: "column-1",
         key: "column-1",
@@ -680,7 +701,16 @@ super(props);
         key: "column-4",
         title: "column-4",
         width: 100,
-        
+                       onHeaderCell:function(){
+          return {
+            style:{
+              backgroundColor:"#eaeaea"
+            },
+            onClick:()=>{
+              alert("clicked the header cell column-4");
+            }
+          }
+        },
         }
         ]
         }
