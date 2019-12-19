@@ -1,0 +1,31 @@
+.tablex-table .tablex-table-head {
+  table-layout: fixed;
+  display: table!important;
+  min-width: auto;
+}
+
+.tablex-table-head .tablex-table-head-row {
+  height: 40px;
+  display: table-row;
+}
+
+.tablex-table-head-row .tablex-table-head-colgroup {
+  border-right: 1px solid #e8e8ee;
+  border-bottom: 1px solid #e8e8ee;
+  position: relative;
+  font-size: 14px;
+  font-weight: bold;
+  vertical-align: middle;
+  display: table-cell;
+}
+
+.tablex-table-head-row .tablex-table-head-col {
+  border-right: 1px solid #e8e8ee;
+  border-bottom: 1px solid #e8e8ee;
+  position: relative;
+  font-size: 14px;
+  vertical-align: middle;
+  font-weight: bold;
+  display: table-cell;
+
+}

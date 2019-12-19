@@ -29,7 +29,8 @@ class Demo extends React.Component {
         dataIndex: "id",
         title: "id",
         key: "id",
-        width: 150
+        width: 150,
+        colSpan:2
       },
       {
         dataIndex: "column-1",
