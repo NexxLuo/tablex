@@ -11,8 +11,13 @@ import {
 
 const HEADER_HEIGHT = 40;
 
-const ColumnPlaceolder = ({ width, minWidth, height }) => {
+const ColumnPlaceolder = ({ width, minWidth, flexible, height }) => {
   let widthStyles = getColumnWidthStyle({ width, minWidth });
+
+  if (flexible) {
+    widthStyles.flexGrow = 1;
+    widthStyles.flexShrink = 1;
+  }
 
   let cellStyles = { height, ...widthStyles };
 
@@ -141,10 +146,7 @@ const renderColumns = ({
       maxDepth: columnDepth
     });
 
-    if (d.key === "XSE1") {
-      console.log("column:", d, columnWidth);
-    }
-    if (d.key === "Title1") {
+    if (d.__placeholder__ === true) {
       console.log("column:", d, columnWidth);
     }
 
@@ -167,11 +169,14 @@ const renderColumns = ({
       columnClass = "tablex-head-cell-rowspan";
     }
 
+    let flexible = isFlexibleColumn(d);
+
     //被rowSpan掉的行，需要进行占位列渲染
     if (d.__placeholder__ === true) {
       return (
         <ColumnPlaceolder
           key={columnKey}
+          flexible={flexible}
           width={columnWidth}
           minWidth={d.minWidth}
           height={columnHeight}
@@ -229,8 +234,6 @@ const renderColumns = ({
     if (typeof renderFn === "function") {
       titleElement = renderFn({ column: d, title: titleElement });
     }
-
-    let flexible = isFlexibleColumn(d);
 
     return (
       <Column
