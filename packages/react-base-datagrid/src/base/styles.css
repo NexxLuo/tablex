@@ -139,6 +139,11 @@
   font-weight: bold;
 }
 
+.tablex-table .tablex-table-head-cell.tablex-head-cell-rowspan {
+  z-index: 2;
+  background-color: #ffffff;
+}
+
 .tablex-bordered .tablex-table .tablex-table-head-cell {
   border-right: 1px solid #e8e8ee;
   border-bottom: 1px solid #e8e8ee;
@@ -253,9 +258,7 @@
   border-left: 1px solid #e8e8ee;
 }
 
-
-
-.tablex-table-rows-frozen{
+.tablex-table-rows-frozen {
   position: absolute;
   border-top: 1px solid #eeeeee;
   left: 0;
