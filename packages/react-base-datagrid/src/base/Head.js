@@ -21,7 +21,7 @@ const ColumnPlaceolder = ({ width, minWidth, flexible, height }) => {
 
   let cellStyles = { height, ...widthStyles };
 
-  let clsArr = ["tablex-table-head-cell"];
+  let clsArr = ["tablex-table-head-cell tablex-table-head-cell-placeholder"];
 
   return <div className={clsArr.join(" ")} style={cellStyles}></div>;
 };
@@ -92,13 +92,13 @@ const ColumnGroup = ({
     cellStyles = Object.assign({}, headerCellProps.style || {}, cellStyles);
   }
 
-  let clsArr = ["tablex-table-head-cell"];
+  let clsArr = ["tablex-table-head-group-cell"];
   className && clsArr.push(className);
 
   return (
     <div className={clsArr.join(" ")} style={cellStyles}>
       {height > 0 ? (
-        <div className="tablex-table-head-cell-inner" style={alignStyles}>
+        <div className="tablex-table-head-group-cell-inner" style={alignStyles}>
           {title}
         </div>
       ) : null}
