@@ -211,28 +211,14 @@
 .tablex-container
   .tablex-forzen-right
   .tablex-table-head
-  > .tablex-table-head-cell:last-child {
-  border-right: none;
-}
-
+  > .tablex-head-row
+  > .tablex-table-head-cell:last-child,
 .tablex-container
   .tablex-forzen-right
   .tablex-table
   .tablex-table-row
   .tablex-table-row-cell:last-child {
   border-right: none;
-}
-
-.tablex-container
-  .tablex-forzen-right
-  .tablex-table-head
-  > .tablex-table-head-cell:first-child,
-.tablex-container
-  .tablex-forzen-right
-  .tablex-table
-  .tablex-table-row
-  .tablex-table-row-cell:first-child {
-  border-left: 1px solid #e8e8ee;
 }
 
 .tablex-table-rows-frozen {
