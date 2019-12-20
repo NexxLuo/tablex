@@ -146,10 +146,6 @@ const renderColumns = ({
       maxDepth: columnDepth
     });
 
-    if (d.__placeholder__ === true) {
-      console.log("column:", d, columnWidth);
-    }
-
     let isInColspan = false;
     if (i > rowColspan.start && i <= rowColspan.end) {
       isInColspan = true;
