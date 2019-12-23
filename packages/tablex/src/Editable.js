@@ -1512,13 +1512,22 @@ class EditableTable extends React.Component {
   };
 
   onSelectChange = (selectedKeys, selectedRows, triggerKey, extra) => {
-    this.setState({
-      selectedRowKeys: selectedKeys.slice(),
-      selectedRows: selectedRows.slice()
-    });
-    if (typeof this.props.onSelectChange === "function") {
-      this.props.onSelectChange(selectedKeys, selectedRows, triggerKey, extra);
-    }
+    this.setState(
+      {
+        selectedRowKeys: selectedKeys.slice(),
+        selectedRows: selectedRows.slice()
+      },
+      () => {
+        if (typeof this.props.onSelectChange === "function") {
+          this.props.onSelectChange(
+            selectedKeys,
+            selectedRows,
+            triggerKey,
+            extra
+          );
+        }
+      }
+    );
   };
 
   onExpandedRowsChange = keys => {

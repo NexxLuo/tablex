@@ -107,7 +107,7 @@ class SelectionGrid extends Component {
 
       if ("selectedRowKeys" in selectionProps) {
         let { data: selectedData, keys } = filterDataByKeys(
-          data.concat(prevState.selectedRows),
+          data.slice().concat(prevState.selectedRows),
           rowKey,
           selectionProps.selectedRowKeys
         );
@@ -121,7 +121,7 @@ class SelectionGrid extends Component {
 
       if ("checkedKeys" in selectionProps) {
         let { data: checkedData, keys } = filterDataByKeys(
-          data.concat(prevState.checkedRows),
+          data.slice().concat(prevState.checkedRows),
           rowKey,
           selectionProps.checkedKeys
         );
@@ -303,7 +303,7 @@ class SelectionGrid extends Component {
     if (typeof rfn === "function") {
       rfn(false, selectedRows, changedRows);
     } else {
-      this.call_props_onSelectAll({
+      this.call_props_onUnSelectAll({
         selectedRowKeys,
         selectedRows
       });
