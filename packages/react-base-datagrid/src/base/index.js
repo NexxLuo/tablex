@@ -364,7 +364,7 @@ class BaseDataGrid extends React.Component {
     };
 
     if (scrollbarY >= 0) {
-      rightStyles.marginLeft = -scrollbarY ;
+      rightStyles.marginLeft = -scrollbarY;
     }
 
     let frozens = {};
@@ -579,7 +579,10 @@ BaseDataGrid.propTypes = {
       resizable: PropTypes.bool,
       render: PropTypes.func,
       validator: PropTypes.func,
-      editor: PropTypes.func
+      editor: PropTypes.func,
+      colSpan: PropTypes.number,
+      rowSpan: PropTypes.number,
+      onHeaderCell: PropTypes.func
     })
   ),
 

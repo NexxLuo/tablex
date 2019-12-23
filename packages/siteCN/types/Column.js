@@ -53,7 +53,16 @@ Column.propTypes = {
   settable: PropTypes.bool,
 
   /** 列是否显示列属性下拉菜单 */
-  dropMenu: PropTypes.bool
+  dropMenu: PropTypes.bool,
+
+  /** 表头列合并 */
+  colSpan: PropTypes.number,
+
+  /** 表头行合并 */
+  rowSpan: PropTypes.number,
+
+  /** 设置表头单元格属性 */
+  onHeaderCell: PropTypes.func
 };
 
 export default Column;

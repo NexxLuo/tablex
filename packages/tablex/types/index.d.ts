@@ -54,6 +54,9 @@ export interface ColumnProps<T> {
     ref: (ins: any) => void,
     validate: () => void
   ) => React.ReactNode;
+  colSpan: number;
+  rowSpan: number;
+  onHeaderCell: (column: object) => object;
 }
 
 export interface TableComponents {
