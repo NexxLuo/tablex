@@ -77,6 +77,8 @@ let AreaSelect = function() {
   };
 
   let move = e => {
+    this.hasBegin = true;
+
     let offset = {
       x: e.clientX,
       y: e.clientY
@@ -140,7 +142,6 @@ let AreaSelect = function() {
     if (key) {
       this.beginKey = key;
     }
-    this.hasBegin = true;
 
     if (key) {
       let ele = document.createElement("div");
@@ -215,25 +216,27 @@ let AreaSelect = function() {
   };
 
   this.endWithIndex = function(data, index, keyField) {
-    let rawStartIndex = this.beginIndex;
-    let beginIndex = rawStartIndex;
-    let arr = data || [];
-    let maxIndex = arr.length - 1;
-    let endIndex = index > maxIndex ? maxIndex : index;
-
-    if (rawStartIndex > endIndex) {
-      beginIndex = endIndex;
-      endIndex = rawStartIndex;
-    }
-
     let keys = [];
 
-    if (index > -1 && beginIndex > -1) {
-      for (let i = beginIndex; i <= endIndex; i++) {
-        let d = arr[i];
-        if (d) {
-          let k = d[keyField] || "";
-          k && keys.push(k);
+    if (this.hasBegin === true) {
+      let rawStartIndex = this.beginIndex;
+      let beginIndex = rawStartIndex;
+      let arr = data || [];
+      let maxIndex = arr.length - 1;
+      let endIndex = index > maxIndex ? maxIndex : index;
+
+      if (rawStartIndex > endIndex) {
+        beginIndex = endIndex;
+        endIndex = rawStartIndex;
+      }
+
+      if (index > -1 && beginIndex > -1) {
+        for (let i = beginIndex; i <= endIndex; i++) {
+          let d = arr[i];
+          if (d) {
+            let k = d[keyField] || "";
+            k && keys.push(k);
+          }
         }
       }
     }
@@ -247,6 +250,7 @@ let AreaSelect = function() {
     if (typeof index === "number") {
       shiftStartIndex = index;
     }
+
     window.addEventListener("keydown", keydown);
     window.addEventListener("keyup", keyup);
   };

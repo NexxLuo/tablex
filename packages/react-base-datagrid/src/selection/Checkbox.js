@@ -24,12 +24,6 @@ const Checkbox = props => {
   return (
     <span
       className={cls}
-      onMouseDown={e => {
-        e.stopPropagation();
-      }}
-      onMouseUp={e => {
-        e.stopPropagation();
-      }}
       onClick={e => {
         e.stopPropagation();
         if (typeof onChange === "function" && disabled != true) {

@@ -835,120 +835,105 @@ export function getSelectionConfigFromProps(props) {
 
   let { selectMode, selectionColumn: c } = props;
 
+  let defaultSelectionColumn = {
+    key: "__checkbox_column",
+    dataIndex: "__checkbox_column",
+    __type: "__checkbox_column",
+    resizable: false,
+    width: 50,
+    align: "center"
+  };
+
+  let rowSelection = getRowSelectionFromProps(props);
+
+  let showSelectioColumn = false;
+  let resetSelectionColumn = {};
+
   if (props.rowSelection instanceof Object) {
-    let rowSelection = getRowSelectionFromProps(props);
-
     let { type, columnWidth, columnTitle, fixed, showCheckbox } = rowSelection;
-
-    let showSelectioColumn = false;
 
     if (type === "checkbox" || type === "radio") {
       showSelectioColumn = true;
     }
-
     if (typeof showCheckbox === "boolean") {
       showSelectioColumn = showCheckbox;
     }
-
     if (type === "none") {
       showSelectioColumn = false;
     }
-
-    if (showSelectioColumn === true) {
-      let defaultSelectionColumn = {
-        key: "__checkbox_column",
-        dataIndex: "__checkbox_column",
-        __type: "__checkbox_column",
-        resizable: false,
-        width: 50,
-        align: "center"
-      };
-
-      selectionColumn = defaultSelectionColumn;
-
-      let resetSelectionColumn = {};
-
-      if ("columnWidth" in rowSelection) {
-        resetSelectionColumn.width = columnWidth;
-      }
-
-      if ("columnTitle" in rowSelection) {
-        resetSelectionColumn.title = columnTitle;
-      }
-
-      if (fixed === true) {
-        resetSelectionColumn.fixed = "left";
-      }
-
-      selectionColumn = Object.assign(
-        {},
-        defaultSelectionColumn,
-        resetSelectionColumn
-      );
+    if ("columnWidth" in rowSelection) {
+      resetSelectionColumn.width = columnWidth;
     }
-
-    if ("checkStrictly" in rowSelection) {
-      selectionProps.checkStrictly = rowSelection.checkStrictly;
+    if ("columnTitle" in rowSelection) {
+      resetSelectionColumn.title = columnTitle;
     }
-
-    if ("selectedRowKeys" in rowSelection) {
-      selectionProps.selectedRowKeys = rowSelection.selectedRowKeys;
-      if (rowSelection.checkOnSelect === true) {
-        selectionProps.checkedKeys = rowSelection.selectedRowKeys;
-      }
-    }
-
-    if ("checkedKeys" in rowSelection) {
-      selectionProps.checkedKeys = rowSelection.checkedKeys;
-      if (rowSelection.selectOnCheck === true) {
-        selectionProps.selectedRowKeys = rowSelection.checkedKeys;
-      }
-    }
-
-    if ("disabledCheckedKeys" in rowSelection) {
-      selectionProps.disabledCheckedKeys = rowSelection.disabledCheckedKeys;
-    }
-
-    if ("disabledSelectKeys" in rowSelection) {
-      selectionProps.disabledSelectKeys = rowSelection.disabledSelectKeys;
+    if (fixed === true) {
+      resetSelectionColumn.fixed = "left";
     }
   } else {
     if (selectMode === "multiple") {
-      let defaultSelectionColumn = {
-        key: "__checkbox_column",
-        dataIndex: "__checkbox_column",
-        __type: "__checkbox_column",
-        resizable: false,
-        width: 50,
-        align: "center"
-      };
-
       selectionColumn = defaultSelectionColumn;
-
       if (c !== false && c !== null) {
+        showSelectioColumn = true;
         if (c instanceof Object) {
-          selectionColumn = Object.assign({}, defaultSelectionColumn, c);
+          resetSelectionColumn = c;
         }
       }
     }
+  }
 
-    if ("checkStrictly" in props) {
-      selectionProps.checkStrictly = props.checkStrictly;
+  if ("checkStrictly" in rowSelection) {
+    selectionProps.checkStrictly = rowSelection.checkStrictly;
+  } else if ("checkStrictly" in props) {
+    selectionProps.checkStrictly = props.checkStrictly;
+  }
+
+  if ("selectedRowKeys" in rowSelection) {
+    selectionProps.selectedRowKeys = rowSelection.selectedRowKeys;
+    if (rowSelection.checkOnSelect === true) {
+      selectionProps.checkedKeys = rowSelection.selectedRowKeys;
     }
-
-    if ("selectedRowKeys" in props) {
-      selectionProps.selectedRowKeys = props.selectedRowKeys;
+  } else if ("selectedRowKeys" in props) {
+    selectionProps.selectedRowKeys = props.selectedRowKeys;
+    if (rowSelection.checkOnSelect === true) {
       selectionProps.checkedKeys = props.selectedRowKeys;
     }
+  }
 
-    if ("halfCheckedKeys" in props) {
-      selectionProps.halfCheckedKeys = props.halfCheckedKeys;
+  if ("checkedKeys" in rowSelection) {
+    selectionProps.checkedKeys = rowSelection.checkedKeys;
+    if (rowSelection.selectOnCheck === true) {
+      selectionProps.selectedRowKeys = rowSelection.checkedKeys;
     }
+  } else if ("selectedRowKeys" in props) {
+    if (rowSelection.checkOnSelect === true) {
+      selectionProps.checkedKeys = props.selectedRowKeys;
+    }
+    if (rowSelection.selectOnCheck === true) {
+      selectionProps.selectedRowKeys = props.selectedRowKeys;
+    }
+  }
 
-    if ("disabledSelectKeys" in props) {
-      selectionProps.disabledCheckedKeys = props.disabledSelectKeys;
-      selectionProps.disabledSelectKeys = props.disabledSelectKeys;
-    }
+  if ("disabledCheckedKeys" in rowSelection) {
+    selectionProps.disabledCheckedKeys = rowSelection.disabledCheckedKeys;
+  } else if ("disabledSelectKeys" in props) {
+    selectionProps.disabledCheckedKeys = props.disabledSelectKeys;
+    selectionProps.disabledSelectKeys = props.disabledSelectKeys;
+  }
+
+  if ("disabledSelectKeys" in rowSelection) {
+    selectionProps.disabledSelectKeys = rowSelection.disabledSelectKeys;
+  } else if ("disabledSelectKeys" in props) {
+    selectionProps.disabledCheckedKeys = props.disabledSelectKeys;
+    selectionProps.disabledSelectKeys = props.disabledSelectKeys;
+  }
+
+  if (showSelectioColumn === true) {
+    selectionColumn = Object.assign(
+      {},
+      defaultSelectionColumn,
+      resetSelectionColumn
+    );
   }
 
   return { selectionProps, selectionColumn };

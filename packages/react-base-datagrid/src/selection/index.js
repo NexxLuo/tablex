@@ -735,14 +735,9 @@ class SelectionGrid extends Component {
     let nextKeys = selectedRowKeys.slice();
     let nextRows = selectedRows.slice();
 
-    // let {keys:nextKeys,rows:nextRows}=this.insertSelected({ key: rowKey, rowIndex, rowData });
-
-    let type = "";
-
     if (this.isSingleSelect()) {
       nextKeys = [rowKey];
       nextRows = [rowData];
-      type = "single";
     } else if (this.isMultipleSelect()) {
       let i = nextKeys.indexOf(rowKey);
       let j = nextRows.findIndex(d => d[keyField] === rowData[keyField]);
@@ -753,8 +748,6 @@ class SelectionGrid extends Component {
       if (j == -1) {
         nextRows.push(rowData);
       }
-
-      type = "multiple";
     }
 
     let nextState = {
@@ -1541,39 +1534,52 @@ class SelectionGrid extends Component {
         includes
       );
 
-      this.call_onCheckChange({
-        rowData: null,
-        rowIndex: -1,
-        rowKey: "",
-        keys: keys,
-        rows: data
-      });
-
       if (
         this.isMultipleSelect() &&
         this.getRowSelection("selectOnCheck") === true
       ) {
-        this.call_onSelectChange({
-          rowData: null,
-          rowIndex: -1,
-          rowKey: "",
-          selectedRowKeys: keys,
-          selectedRows: data
-        });
-
-        this.setState({
-          checkedKeys: keys,
-          checkedRows: data,
-          halfCheckedKeys: halfKeys,
-          selectedRowKeys: keys.slice(),
-          selectedRows: data.slice()
-        });
+        this.setState(
+          {
+            checkedKeys: keys,
+            checkedRows: data,
+            halfCheckedKeys: halfKeys,
+            selectedRowKeys: keys.slice(),
+            selectedRows: data.slice()
+          },
+          () => {
+            this.call_onCheckChange({
+              rowData: null,
+              rowIndex: -1,
+              rowKey: "",
+              keys: keys,
+              rows: data
+            });
+            this.call_onSelectChange({
+              rowData: null,
+              rowIndex: -1,
+              rowKey: "",
+              selectedRowKeys: keys,
+              selectedRows: data
+            });
+          }
+        );
       } else {
-        this.setState({
-          checkedKeys: keys,
-          checkedRows: data,
-          halfCheckedKeys: halfKeys
-        });
+        this.setState(
+          {
+            checkedKeys: keys,
+            checkedRows: data,
+            halfCheckedKeys: halfKeys
+          },
+          () => {
+            this.call_onCheckChange({
+              rowData: null,
+              rowIndex: -1,
+              rowKey: "",
+              keys: keys,
+              rows: data
+            });
+          }
+        );
       }
     }
   };
