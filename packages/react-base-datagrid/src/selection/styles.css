@@ -150,10 +150,10 @@
   animation-name: none;
 }
 
-
-.tablex__areaselect__indicator{
+.tablex__areaselect__indicator {
   position: fixed;
   border: 1px solid #0078d7;
   background-color: #aaccee;
   opacity: 0.4;
+  z-index: 99999;
 }
