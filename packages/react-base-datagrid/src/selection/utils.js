@@ -905,13 +905,6 @@ export function getSelectionConfigFromProps(props) {
     if (rowSelection.selectOnCheck === true) {
       selectionProps.selectedRowKeys = rowSelection.checkedKeys;
     }
-  } else if ("selectedRowKeys" in props) {
-    if (rowSelection.checkOnSelect === true) {
-      selectionProps.checkedKeys = props.selectedRowKeys;
-    }
-    if (rowSelection.selectOnCheck === true) {
-      selectionProps.selectedRowKeys = props.selectedRowKeys;
-    }
   }
 
   if ("disabledCheckedKeys" in rowSelection) {
