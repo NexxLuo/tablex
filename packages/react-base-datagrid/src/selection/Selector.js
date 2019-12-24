@@ -73,6 +73,11 @@ let AreaSelect = function() {
     }
   }
 
+  function preventSelect(e) {
+    e.preventDefault();
+    return false;
+  }
+
   let hasSetIndicator = false;
   let setIndicator = () => {
     if (!hasSetIndicator) {
@@ -108,7 +113,7 @@ let AreaSelect = function() {
       setIndicator();
     }
 
-    let distance = 10;
+    let distance = 5;
 
     let offset = {
       x: e.clientX,
@@ -167,6 +172,7 @@ let AreaSelect = function() {
 
     if (key) {
       window.addEventListener("mousemove", move);
+      window.addEventListener("selectstart", preventSelect);
     }
 
     return this;
@@ -191,6 +197,7 @@ let AreaSelect = function() {
     }
 
     window.removeEventListener("mousemove", move);
+    window.removeEventListener("selectstart", preventSelect);
     if (el) {
       document.body.removeChild(el);
     }
