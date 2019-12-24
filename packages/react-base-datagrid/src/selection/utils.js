@@ -882,43 +882,51 @@ export function getSelectionConfigFromProps(props) {
     }
   }
 
-  if ("checkStrictly" in rowSelection) {
-    selectionProps.checkStrictly = rowSelection.checkStrictly;
-  } else if ("checkStrictly" in props) {
-    selectionProps.checkStrictly = props.checkStrictly;
-  }
-
-  if ("selectedRowKeys" in rowSelection) {
-    selectionProps.selectedRowKeys = rowSelection.selectedRowKeys;
-    if (rowSelection.checkOnSelect === true) {
-      selectionProps.checkedKeys = rowSelection.selectedRowKeys;
+  if (props.rowSelection instanceof Object) {
+    if ("checkStrictly" in rowSelection) {
+      selectionProps.checkStrictly = rowSelection.checkStrictly;
     }
-  } else if ("selectedRowKeys" in props) {
-    selectionProps.selectedRowKeys = props.selectedRowKeys;
-    if (rowSelection.checkOnSelect === true) {
+
+    if ("selectedRowKeys" in rowSelection) {
+      selectionProps.selectedRowKeys = rowSelection.selectedRowKeys;
+      if (rowSelection.checkOnSelect === true) {
+        selectionProps.checkedKeys = rowSelection.selectedRowKeys;
+      }
+    }
+
+    if ("checkedKeys" in rowSelection) {
+      selectionProps.checkedKeys = rowSelection.checkedKeys;
+      if (rowSelection.selectOnCheck === true) {
+        selectionProps.selectedRowKeys = rowSelection.checkedKeys;
+      }
+    }
+
+    if ("disabledCheckedKeys" in rowSelection) {
+      selectionProps.disabledCheckedKeys = rowSelection.disabledCheckedKeys;
+    }
+    if ("disabledSelectKeys" in rowSelection) {
+      selectionProps.disabledSelectKeys = rowSelection.disabledSelectKeys;
+    }
+  } else {
+    if ("checkStrictly" in props) {
+      selectionProps.checkStrictly = props.checkStrictly;
+    }
+
+    if ("selectedRowKeys" in props) {
       selectionProps.checkedKeys = props.selectedRowKeys;
+      if (rowSelection.selectOnCheck === true) {
+        selectionProps.selectedRowKeys = props.selectedRowKeys;
+      }
     }
-  }
 
-  if ("checkedKeys" in rowSelection) {
-    selectionProps.checkedKeys = rowSelection.checkedKeys;
-    if (rowSelection.selectOnCheck === true) {
-      selectionProps.selectedRowKeys = rowSelection.checkedKeys;
+    if ("halfCheckedKeys" in props) {
+      selectionProps.halfCheckedKeys = props.halfCheckedKeys;
     }
-  }
 
-  if ("disabledCheckedKeys" in rowSelection) {
-    selectionProps.disabledCheckedKeys = rowSelection.disabledCheckedKeys;
-  } else if ("disabledSelectKeys" in props) {
-    selectionProps.disabledCheckedKeys = props.disabledSelectKeys;
-    selectionProps.disabledSelectKeys = props.disabledSelectKeys;
-  }
-
-  if ("disabledSelectKeys" in rowSelection) {
-    selectionProps.disabledSelectKeys = rowSelection.disabledSelectKeys;
-  } else if ("disabledSelectKeys" in props) {
-    selectionProps.disabledCheckedKeys = props.disabledSelectKeys;
-    selectionProps.disabledSelectKeys = props.disabledSelectKeys;
+    if ("disabledSelectKeys" in props) {
+      selectionProps.disabledCheckedKeys = props.disabledSelectKeys;
+      selectionProps.disabledSelectKeys = props.disabledSelectKeys;
+    }
   }
 
   if (showSelectioColumn === true) {
