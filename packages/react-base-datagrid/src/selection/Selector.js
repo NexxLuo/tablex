@@ -61,6 +61,33 @@ let AreaSelect = function() {
     y: 0
   };
 
+  function keydown(e) {
+    if (e.keyCode === 16) {
+      hasShiftKeyDown = true;
+    }
+  }
+
+  function keyup(e) {
+    if (e.keyCode === 16) {
+      hasShiftKeyDown = false;
+    }
+  }
+
+  let hasSetIndicator = false;
+  let setIndicator = () => {
+    if (!hasSetIndicator) {
+      let ele = document.createElement("div");
+      ele.className = "tablex__areaselect__indicator";
+      if (el) {
+        document.body.removeChild(el);
+      }
+      ele.onmouseup = this.end;
+      el = ele;
+      document.body.appendChild(el);
+      hasSetIndicator = true;
+    }
+  };
+
   let filterKeys = pos => {
     let o = this.rectKeyMap;
     let ok = this.keysMap;
@@ -77,7 +104,11 @@ let AreaSelect = function() {
   };
 
   let move = e => {
-    this.hasBegin = true;
+    if (this.hasBegin === true) {
+      setIndicator();
+    }
+
+    let distance = 10;
 
     let offset = {
       x: e.clientX,
@@ -107,8 +138,8 @@ let AreaSelect = function() {
       pos.y = pos.y - size.h;
     }
 
-    let distance = 10;
     if (size.w > distance || size.h > distance) {
+      this.hasBegin = true;
     }
 
     filterKeys({
@@ -126,37 +157,15 @@ let AreaSelect = function() {
     }
   };
 
-  function keydown(e) {
-    if (e.keyCode === 16) {
-      hasShiftKeyDown = true;
-    }
-  }
-
-  function keyup(e) {
-    if (e.keyCode === 16) {
-      hasShiftKeyDown = false;
-    }
-  }
-
   this.begin = function(e, key) {
     if (key) {
       this.beginKey = key;
     }
 
+    starts.x = e.clientX;
+    starts.y = e.clientY;
+
     if (key) {
-      let ele = document.createElement("div");
-      ele.className = "tablex__areaselect__indicator";
-
-      starts.x = e.clientX;
-      starts.y = e.clientY;
-
-      if (el) {
-        document.body.removeChild(el);
-      }
-      ele.onmouseup = this.end;
-      el = ele;
-      document.body.appendChild(el);
-
       window.addEventListener("mousemove", move);
     }
 
@@ -191,7 +200,7 @@ let AreaSelect = function() {
     this.keysMap = {};
     this.rectKeyMap = {};
     this.beginKey = "";
-
+    hasSetIndicator = false;
     return keys;
   };
 
