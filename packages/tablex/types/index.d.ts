@@ -93,6 +93,7 @@ export interface PaginationProps {
   ) => React.ReactNode;
   role?: string;
   showLessItems?: boolean;
+  showRefresh?: boolean;
 }
 
 export interface FrozenRenderProps {

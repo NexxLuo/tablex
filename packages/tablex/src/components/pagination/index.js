@@ -69,10 +69,9 @@ class Pager extends React.Component {
 
   render() {
     let { pageSize, current, total } = this.state;
-
+    let { showRefresh } = this.props;
     let pagerAttr = {
       ...this.props,
-      showSizeChanger: true,
       onShowSizeChange: this.onShowSizeChange,
       onChange: this.onPageIndexChange,
       pageSize,
@@ -80,13 +79,14 @@ class Pager extends React.Component {
       total
     };
 
-    let refreshButton = (
-      <Button
-        style={{ verticalAlign: "middle" }}
-        icon="reload"
-        onClick={this.onRefresh}
-      />
-    );
+    let refreshButton =
+      showRefresh === true ? (
+        <Button
+          className="tablex-pagination-refresh"
+          icon="reload"
+          onClick={this.onRefresh}
+        />
+      ) : null;
 
     let start = pageSize * (current - 1) + 1;
     let end = pageSize * current;
@@ -123,6 +123,8 @@ Pager.defaultProps = {
   pageSize: 10,
   total: 0,
   pageSizeOptions: ["10", "20", "30", "50", "100", "200"],
+  showSizeChanger: true,
+  showRefresh: true,
   onPageChange: () => {}
 };
 
@@ -136,7 +138,9 @@ Pager.propTypes = {
   /** 页码，页大小改变事件 */
   onPageChange: PropTypes.func,
   /** 指定每页可以显示多少条 */
-  pageSizeOptions: PropTypes.array
+  pageSizeOptions: PropTypes.array,
+  /** 是否显示刷新按钮 */
+  showRefresh: PropTypes.bool
 };
 
 export default Pager;

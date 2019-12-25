@@ -73,5 +73,9 @@
 .tablex-pagination-options-size-changer.ant-select {
   display: inline-block;
   width: auto;
-  margin-right: 8px;
+}
+
+.tablex-pagination-refresh {
+  vertical-align: middle;
+  margin-left: 6px;
 }
