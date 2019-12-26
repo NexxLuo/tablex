@@ -1923,9 +1923,7 @@ class EditableTable extends React.Component {
     let nextKeys = [];
 
     treeFilter(data, d => {
-      if (d.children instanceof Array) {
-        nextKeys.push(d[rowKey]);
-      }
+      nextKeys.push(d[rowKey]);
       return true;
     });
 
