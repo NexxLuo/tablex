@@ -182,7 +182,7 @@
   background-color: #188ae2;
   height: 100%;
   width: 2px;
-  z-index: 3;
+  z-index: 99;
   display: block;
 }
 
