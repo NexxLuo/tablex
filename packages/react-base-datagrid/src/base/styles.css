@@ -97,6 +97,11 @@
   word-break: break-all;
 }
 
+.tablex-autowrap .tablex-row-expandedRowRender {
+  white-space: pre-line;
+  word-break: break-all;
+}
+
 .tablex-autowrap .tablex-table-row {
   min-height: 40px;
 }
