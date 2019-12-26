@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Table } from "tablex";
+import { Button, Popover } from "antd";
 
 class Demo extends React.Component {
   generateData(columns, count = 20, prefix = "Row") {
@@ -62,16 +63,18 @@ class Demo extends React.Component {
         dataIndex: "column3",
         key: "column3",
         title: "column3",
-        align: "right",
-        width:200,
-        fixed: "right"
+        render:(v,r,i)=>{
 
+          let strArr=new Array(10+i*10).fill("a").join("");
+
+        return <div>{strArr}</div>
+        }
       },
       {
         dataIndex: "column4",
         key: "column4",
         title: "column4",
-        fixed: "right"
+        minWidth: 300
       },
       {
         dataIndex: "column1",
@@ -107,7 +110,7 @@ class Demo extends React.Component {
       }
     ];
 
-   let columns2 = [
+    let columns2 = [
       {
         key: "Title1",
         dataIndex: "Title1",
@@ -490,7 +493,7 @@ class Demo extends React.Component {
       }
     ];
 
-    let data = this.generateData(columns, 20);
+    let data = this.generateData(columns, 120);
 
     data[0].children = this.generateData(columns, 5, "Row-0-children-");
     data[0].children[0].children = this.generateData(
@@ -508,6 +511,7 @@ class Demo extends React.Component {
 
     this.state = {
       data: data,
+      selectedRowKeys: [],
       columns: columns
     };
   }
@@ -518,30 +522,55 @@ class Demo extends React.Component {
     return true;
   };
 
+  onSelectChange = selectedRowKeys => {
+    this.setState({
+      selectedRowKeys: selectedRowKeys
+    });
+  };
+
   render() {
     let { columns, data } = this.state;
     console.log("columns:", columns);
 
     return (
-      <Table
-        bordered={true}
-        editable={true}
-        autoHeight={true}
-        ref="table"
-        rowKey="id"
-        columns={columns}
-        dataSource={data}
-        editTools={["edit", "add", "delete"]}
-        selectMode="multiple"
-        defaultAddCount={1}
-        isAppend={false}
-        validateTrigger="onChange"
-        onBeforeAdd={this.onBeforeAdd}
-        onBeforeEdit={this.onBeforeAdd}
-        onEditSave={this.onEditSave}
-        editAll={true}
-        onCancel={this.onCancel}
-      />
+      <div style={{ height: 600 }}>
+        <Popover
+          trigger="click"
+          content={<div style={{ height: 300, width: 300 }}></div>}
+        >
+          <Button>click</Button>
+        </Popover>
+
+        <Table
+          bordered={true}
+          autoRowHeight={true}
+          editable={true}
+          autoHeight={false}
+          virtual={true}
+          editAll={true}
+          ref="table"
+          rowKey="id"
+          columns={columns}
+          dataSource={data}
+          editTools={["edit", "add", "delete"]}
+          selectMode="multiple"
+          defaultAddCount={1}
+          isAppend={false}
+          validateTrigger="onChange"
+          onBeforeAdd={this.onBeforeAdd}
+          onBeforeEdit={this.onBeforeAdd}
+          onEditSave={this.onEditSave}
+          onCancel={this.onCancel}
+          rowSelection={{
+            type: "radio",
+            checkOnSelect: true,
+            selectOnCheck: true,
+            selectType: "none",
+            onChange: this.onSelectChange,
+            selectedRowKeys: this.state.selectedRowKeys
+          }}
+        />
+      </div>
     );
   }
 }
