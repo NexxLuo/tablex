@@ -455,6 +455,13 @@ class BaseDataGrid extends React.Component {
             data={data}
             columns={this.props.columns}
             onItemSizeChange={this.onItemSizeChange}
+            rowRender={params =>
+              this.rowRender({
+                ...params,
+                frozen: "none",
+                frozens: frozens
+              })
+            }
           ></CalcRowHeightTable>
         ) : null}
         {overlay}

@@ -30,7 +30,7 @@ class ClacTable extends Component {
   }
 
   render() {
-    let { rowKey, data, columns } = this.props;
+    let { rowKey, data, columns, rowRender } = this.props;
 
     return (
       <div
@@ -49,6 +49,7 @@ class ClacTable extends Component {
           autoHeight={true}
           autoItemSize={true}
           rowHeight={40}
+          rowRender={rowRender}
         />
       </div>
     );
