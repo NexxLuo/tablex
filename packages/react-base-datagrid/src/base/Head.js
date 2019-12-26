@@ -37,7 +37,8 @@ const Column = ({
   columnKey,
   resizable,
   headerCellProps,
-  className = ""
+  className = "",
+  style = {}
 }) => {
   let widthStyles = getColumnWidthStyle({ width, minWidth });
 
@@ -56,7 +57,11 @@ const Column = ({
   className && clsArr.push(className);
 
   return (
-    <div className={clsArr.join(" ")} {...headerCellProps} style={cellStyles}>
+    <div
+      className={clsArr.join(" ")}
+      {...headerCellProps}
+      style={{ ...style, ...cellStyles }}
+    >
       <div className="tablex-table-head-cell-inner" style={alignStyles}>
         {children}
       </div>
@@ -74,12 +79,12 @@ const Column = ({
 const ColumnGroup = ({
   className,
   title,
-  children,
   flexible,
   alignStyles,
   height,
   width,
-  headerCellProps
+  headerCellProps,
+  style = {}
 }) => {
   let styles = {};
   if (flexible) {
@@ -96,7 +101,7 @@ const ColumnGroup = ({
   className && clsArr.push(className);
 
   return (
-    <div className={clsArr.join(" ")} style={cellStyles}>
+    <div className={clsArr.join(" ")} style={{ ...style, ...cellStyles }}>
       {height > 0 ? (
         <div className="tablex-table-head-group-cell-inner" style={alignStyles}>
           {title}
@@ -120,6 +125,7 @@ const renderColumns = ({
     let columnWidth = d.width;
     let columnHeight = 0;
     let columnClass = "";
+    let columnStyle = {};
     let columnResizable = d.resizable;
 
     let columnWidthEndIndex = i + 1;
@@ -137,6 +143,7 @@ const renderColumns = ({
         rowColspan.start = i;
         rowColspan.end = colSpanEnd;
         columnResizable = false;
+    
       }
     }
     columnWidth = getColumnsWidth({
@@ -162,7 +169,9 @@ const renderColumns = ({
     });
 
     if (rowSpan > 1) {
-      columnClass = "tablex-head-cell-rowspan";
+      columnClass = "tablex-head-cell-rowcolspan";
+      //层级越小的zIndex越大，上面的表头行覆盖下面的表头行
+      columnStyle.zIndex = columnDepth - currentDepth + 2;
     }
 
     let flexible = isFlexibleColumn(d);
@@ -221,6 +230,7 @@ const renderColumns = ({
           alignStyles={alignStyles}
           width={columnWidth}
           height={columnHeight}
+          style={columnStyle}
         ></ColumnGroup>
       );
     }
@@ -244,6 +254,7 @@ const renderColumns = ({
         resizable={columnResizable}
         alignStyles={alignStyles}
         onColumnResizeStop={onColumnResizeStop}
+        style={columnStyle}
       >
         {titleElement}
       </Column>

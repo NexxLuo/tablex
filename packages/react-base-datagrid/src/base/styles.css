@@ -135,7 +135,7 @@
   font-weight: bold;
 }
 
-.tablex-table .tablex-table-head-cell.tablex-head-cell-rowspan {
+.tablex-table .tablex-head-cell-rowcolspan {
   z-index: 2;
   background-color: #ffffff;
 }
