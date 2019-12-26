@@ -40,6 +40,9 @@ Table.propTypes = {
   /** 是否自动高度，为true时表格的高度将会随行数而变化 */
   autoHeight: PropTypes.bool,
 
+  /** 自动行高度,此选项一定程度下会牺牲一些性能 */
+  autoRowHeight: PropTypes.bool,
+
   /** 表格区域最小高度 */
   minHeight: PropTypes.number,
 
@@ -48,6 +51,9 @@ Table.propTypes = {
 
   /** 是否启用虚拟加载 */
   virtual: PropTypes.bool,
+
+  /** 虚拟加载时，额外渲染的数据行数 */
+  overscanCount: PropTypes.number,
 
   /** 自定义行样式 */
   rowClassName: PropTypes.func,
