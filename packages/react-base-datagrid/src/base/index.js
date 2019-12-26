@@ -10,6 +10,7 @@ import {
   isNumber
 } from "./utils";
 import ReactResizeDetector from "react-resize-detector";
+import CalcRowHeightTable from "./CalcRowHeightTable";
 
 const HEADER_HEIGHT = 40;
 
@@ -249,6 +250,7 @@ class BaseDataGrid extends React.Component {
   }
 
   resetAfterIndex(index, shouldForceUpdate) {
+    this.resetAutoSize();
     this.middleRef.current &&
       this.middleRef.current.resetAfterIndex(index, shouldForceUpdate);
     this.leftRef.current &&
@@ -333,6 +335,21 @@ class BaseDataGrid extends React.Component {
     return { tableHeight, headerHeights, headerHeight };
   };
 
+  memorizedSize = {};
+  memorizedTotalSize = 0;
+  onItemSizeChange = (sizes, totalSize) => {
+    this.memorizedSize = sizes;
+    this.memorizedTotalSize = totalSize;
+    this.forceUpdate(() => {
+      this.resetAfterIndex(0);
+    });
+  };
+
+  resetAutoSize = () => {
+    this.memorizedTotalSize = 0;
+    this.memorizedSize = {};
+  };
+
   render() {
     let { className, overlayRenderer, bordered } = this.props;
 
@@ -340,6 +357,7 @@ class BaseDataGrid extends React.Component {
 
     let { data, rowKey, scrollbarX, scrollbarY, formattedColumns } = this.state;
 
+    let memorizedSize = this.memorizedSize;
     let {
       middle,
       left,
@@ -377,6 +395,8 @@ class BaseDataGrid extends React.Component {
 
     let attrs = {
       ...props,
+      memorizedSize,
+      innerStyle: {},
       data,
       rowKey,
       scrollbarX,
@@ -385,6 +405,27 @@ class BaseDataGrid extends React.Component {
       headerHeight,
       headerRowHeight: headerHeights
     };
+
+    /** */
+    let needCalcRowHeight = false;
+
+    if (props.virtual === false && props.autoRowHeight === true) {
+      attrs.autoItemSize = true;
+    }
+
+    let itemTotalSize = this.memorizedTotalSize;
+    if (itemTotalSize > 0) {
+      attrs.innerStyle.height = itemTotalSize;
+    }
+
+    if (
+      props.autoRowHeight === true &&
+      props.virtual === true &&
+      itemTotalSize <= 0
+    ) {
+      needCalcRowHeight = true;
+    }
+    /**  */
 
     let overlay = null;
     if (typeof overlayRenderer === "function") {
@@ -400,10 +441,22 @@ class BaseDataGrid extends React.Component {
       cls.push("tablex-bordered");
     }
 
+    if (props.autoRowHeight === true) {
+      cls.push("tablex-autowrap");
+    }
+
     cls = cls.join(" ");
 
     return (
       <div className={cls} ref={this.containerRef}>
+        {needCalcRowHeight ? (
+          <CalcRowHeightTable
+            rowKey={rowKey}
+            data={data}
+            columns={this.props.columns}
+            onItemSizeChange={this.onItemSizeChange}
+          ></CalcRowHeightTable>
+        ) : null}
         {overlay}
         {hasLeft ? (
           <div

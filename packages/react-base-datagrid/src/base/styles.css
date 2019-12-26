@@ -92,6 +92,15 @@
   width: 100%;
 }
 
+.tablex-autowrap .tablex-table-row-cell .tablex-table-row-cell-inner {
+  white-space: pre-line;
+  word-break: break-all;
+}
+
+.tablex-autowrap .tablex-table-row {
+  min-height: 40px;
+}
+
 .tablex-table .tablex-table-head-container {
   white-space: nowrap;
   font-size: 0;

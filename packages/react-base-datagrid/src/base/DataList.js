@@ -204,31 +204,17 @@ const TableCell = props => {
     cls.push("tablex-table-row-cell-rowspan");
   }
 
-  // let isInRowSpan = false;
-
-  // if (rowIndex > columnRowSpan.start && columnRowSpan.end > rowIndex) {
-  //   if (columnRowSpan.columnKey === columnKey) {
-  //     isInRowSpan = true;
-  //   }
-  // }
-
-  // if (isInRowSpan === true) {
-  //   return (
-  //     <div {...extraAttr} className={cls.join(" ")} style={cellStyles}></div>
-  //   );
-  // }
-
   return (
     <div {...extraAttr} className={cls.join(" ")} style={cellStyles}>
-      {prepend}
       <div className="tablex-table-row-cell-inner" style={alignStyles}>
+        {prepend}
         {cellElement}
       </div>
     </div>
   );
 };
 
-const TableRow = memo(({ data, index, style, isRowSpan }) => {
+const TableRow = memo(({ data, index, style }) => {
   let {
     data: rows,
     columns,
@@ -244,7 +230,8 @@ const TableRow = memo(({ data, index, style, isRowSpan }) => {
     rowRenderExtra,
     cellRenderExtra,
     placeholders,
-    columnRowSpan
+    columnRowSpan,
+    autoItemSize
   } = data;
   let row = rows[index];
 
@@ -279,10 +266,6 @@ const TableRow = memo(({ data, index, style, isRowSpan }) => {
 
     let columnStyle = {};
 
-    if (isRowSpan === true && columnRowSpan.columnKey === columnKey) {
-      columnStyle = columnRowSpan.rowSpanStyle;
-    }
-
     return (
       <TableCell
         key={columnKey}
@@ -311,6 +294,9 @@ const TableRow = memo(({ data, index, style, isRowSpan }) => {
   }
 
   delete virtualStyles.width;
+  if (autoItemSize === true) {
+    delete virtualStyles.height;
+  }
 
   let rowProps = {
     className: cls.join(" "),
@@ -385,29 +371,6 @@ const TableRow = memo(({ data, index, style, isRowSpan }) => {
   return rowElement;
 }, areEqual);
 
-class ItemRenderer extends React.PureComponent {
-  render() {
-    let { data, index: rowIndex } = this.props;
-
-    let { columnRowSpan } = data;
-
-    if (columnRowSpan.end - 1 === rowIndex) {
-      return (
-        <React.Fragment>
-          <TableRow
-            {...this.props}
-            index={columnRowSpan.start}
-            isRowSpan={true}
-          ></TableRow>
-          <TableRow {...this.props}></TableRow>
-        </React.Fragment>
-      );
-    }
-
-    return <TableRow {...this.props}></TableRow>;
-  }
-}
-
 class DataList extends Component {
   constructor(props) {
     super(props);
@@ -436,13 +399,18 @@ class DataList extends Component {
   };
 
   getItemSize = index => {
-    let { data, rowHeight } = this.props;
+    let { data, rowHeight, memorizedSize = {} } = this.props;
     let row = data[index];
     let h = 40;
 
     if (!row) {
       let placeholderTotalHeight = this.getPlaceholderHeight();
       return placeholderTotalHeight;
+    }
+
+    let mh = memorizedSize[index];
+    if (typeof mh === "number") {
+      return mh;
     }
 
     if (typeof rowHeight === "function") {
@@ -455,25 +423,39 @@ class DataList extends Component {
   };
 
   getRowsHeight = (start, end) => {
-    let { data, rowHeight } = this.props;
+    let { data, rowHeight, memorizedSize = {} } = this.props;
 
     let endIndex = end > data.length ? data.length : end;
 
     let rowsHeight = 0;
 
-    if (typeof rowHeight === "function") {
+    if (Object.keys(memorizedSize).length > 0) {
       let h = 0;
+
       for (let i = start; i < endIndex; i++) {
-        let row = data[i];
-        if (row) {
-          h = h + rowHeight(row, i);
+        let mh = memorizedSize[index];
+        if (typeof mh === "number") {
+          h = h + mh;
         } else {
-          break;
+          h = h + 40;
         }
       }
       rowsHeight = h;
     } else {
-      rowsHeight = (endIndex - start) * rowHeight;
+      if (typeof rowHeight === "function") {
+        let h = 0;
+        for (let i = start; i < endIndex; i++) {
+          let row = data[i];
+          if (row) {
+            h = h + rowHeight(row, i);
+          } else {
+            break;
+          }
+        }
+        rowsHeight = h;
+      } else {
+        rowsHeight = (endIndex - start) * rowHeight;
+      }
     }
 
     return rowsHeight;
@@ -535,7 +517,9 @@ class DataList extends Component {
       cellRenderExtra,
       placeholders,
       onCell,
-      overscanCount = 2
+      overscanCount = 2,
+      autoItemSize,
+      virtual
     } = this.props;
 
     let itemData = createItemData(data, columns, rowKey);
@@ -554,6 +538,9 @@ class DataList extends Component {
     itemData.getColumnsWidth = this.getColumnsWidth;
     itemData.onCell = onCell;
     itemData.rowRenderExtra = rowRenderExtra;
+
+    itemData.autoItemSize = autoItemSize;
+    itemData.virtual = virtual;
 
     let itemCount = data.length;
 
