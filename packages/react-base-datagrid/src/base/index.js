@@ -173,13 +173,25 @@ class BaseDataGrid extends React.Component {
     }
   };
 
-  outterInit = ins => {
+  outerRef = ins => {
+    if (ins) {
+      //此样式可解决固定列滚动时的延迟、以及快速滚动时导致的渲染延迟问题
+      if (this.props.scrollOptimize === false) {
+        ins.style.removeProperty("will-change");
+      }
+    }
+  };
+
+  mainInit = ins => {
+    this.outerRef(ins);
     this.mainScrollerIns = ins;
     this.resetScrollbarSize();
     if (this.headInstance === null) {
       this.headInstance = ins;
-      if (this.props.showHeader !== false) {
-        ins.addEventListener("scroll", this.onDataListScroll);
+      if (ins) {
+        if (this.props.showHeader !== false) {
+          ins.addEventListener("scroll", this.onDataListScroll);
+        }
       }
     }
 
@@ -395,6 +407,7 @@ class BaseDataGrid extends React.Component {
 
     let attrs = {
       ...props,
+      outerRef: this.outerRef,
       memorizedSize,
       innerStyle: {},
       data,
@@ -507,7 +520,7 @@ class BaseDataGrid extends React.Component {
             columns={middle}
             ref={this.middleRef}
             onScroll={this.onMiddleScroll}
-            outerRef={this.outterInit}
+            outerRef={this.mainInit}
             headRef={this.headRef}
             headStyle={headStyle}
             rowRender={params =>
@@ -584,10 +597,14 @@ BaseDataGrid.defaultProps = {
   hoverable: true,
   bordered: true,
   virtual: true,
-  autoHeight: false
+  autoHeight: false,
+  scrollOptimize: false
 };
 
 BaseDataGrid.propTypes = {
+  /** 是否启用滚动优化，利用will-change */
+  scrollOptimize: PropTypes.bool,
+
   /** 是否自动高度，为true时表格的高度将会随行数而变化 */
   autoHeight: PropTypes.bool,
 
