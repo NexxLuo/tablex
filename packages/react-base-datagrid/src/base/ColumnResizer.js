@@ -103,8 +103,6 @@ class Resizer extends React.Component {
   };
 
   onMouseDown = e => {
-    e.stopPropagation();
-
     this.startX = e.clientX;
     this.endX = e.clientX;
 
@@ -150,7 +148,6 @@ class Resizer extends React.Component {
         ref={this.indicatorRef}
         className="resize-handle"
         onMouseDown={this.onMouseDown}
-        onClick={e => e.stopPropagation()}
       />
     );
   }
