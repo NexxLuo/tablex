@@ -298,7 +298,7 @@ class EditableTable extends React.Component {
       if (typeof c.validator === "function") {
         var v = c.validator(row[ck], row);
 
-        if (v.constructor.name === "Promise") {
+        if (v && v.constructor.name === "Promise") {
           this.validatorAsync.push(
             new Promise((resolve, reject) => {
               v.then(d => {
