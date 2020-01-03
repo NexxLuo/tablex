@@ -222,7 +222,41 @@ super(props);
         dataIndex: "column-2",
         title: "column-2",
         width: 150,
-        align: "center"
+        align: "center",
+             validator: function(value, row) {
+
+
+return new Promise((resolve,reject)=>{
+
+setTimeout(()=>{
+console.log("a:",value,row)
+if(value>50){
+resolve({valid:false,message:"异步验证失败"})
+
+}else{
+resolve({valid:true,message:""})
+
+}
+
+
+},3000)
+
+
+})
+
+
+        },
+        editor: function(value, row, index, onchange, ref) {
+          return (
+            <InputNumber
+              defaultValue={value}
+              ref={ref}
+              onChange={e =>{
+               onchange({ "column-2": e });       
+              } }
+            />
+          );
+        }
       },
 
       {

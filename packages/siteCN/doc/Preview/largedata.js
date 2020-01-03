@@ -90,7 +90,7 @@ class Demo extends Component {
 
   componentDidMount() {
 
-    columns[0].fixed="left";
+    //columns[0].fixed="left";
     columns.forEach(d=>{
 
         d.editor=()=>{
