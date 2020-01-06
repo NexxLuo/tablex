@@ -327,11 +327,16 @@ const TableCell = props => {
           cellElement = null;
         } else {
           let colSpanEnd = columnIndex + colSpan;
-          let w = getColumnsWidth(columnIndex, colSpanEnd);
+          let columnsStyle = getColumnsWidth(columnIndex, colSpanEnd);
+          let w = columnsStyle.width;
           columnColSpan.end = colSpanEnd;
 
           rowColSpanStyles.width = w;
           rowColSpanStyles.zIndex = 2;
+          if (columnsStyle.flexGrow === 1) {
+            rowColSpanStyles.flexGrow = 1;
+            rowColSpanStyles.flexShrink = 1;
+          }
 
           cellElement = children;
 
@@ -689,16 +694,26 @@ class DataList extends Component {
 
     let columnsWidth = 0;
 
+    let columnsStyle = {};
+
     for (let i = start; i < end; i++) {
       let d = columns[i];
       if (d) {
-        let cw = getColumnWidthStyle(columns[i]).width;
+        let widthStyles = getColumnWidthStyle(columns[i]);
+        let cw = widthStyles.width;
         columnsWidth = cw + columnsWidth;
+        if (widthStyles.flexGrow === 1) {
+          columnsStyle.flexGrow = 1;
+          break;
+        }
       } else {
         break;
       }
     }
-    return columnsWidth;
+
+    columnsStyle.width = columnsWidth;
+
+    return columnsStyle;
   };
 
   getItemKey = (index, itemData) => {
