@@ -415,14 +415,13 @@ export function addToCheckeds({
   let nextKeys = Object.keys(Object.assign(includeKeysMap, includeParentsMap));
 
   //全选父级后，移除父级的半选状态
-  let halfKeys = [];
-  for (const k in halfKeysMap) {
-    if (halfKeysMap[k] === true) {
-      halfKeys.push(k);
+  let nextHalfKeys = [];
+  let nextHalfKeysMap = Object.assign({}, halfKeysMap, halfParentsMap);
+  for (const k in nextHalfKeysMap) {
+    if (nextHalfKeysMap[k] === true) {
+      nextHalfKeys.push(k);
     }
   }
-
-  let nextHalfKeys = halfKeys.concat(Object.keys(halfParentsMap));
 
   return {
     includes: nextKeys,
@@ -566,15 +565,16 @@ export function removeCheckeds({
     }
   }
 
-  let halfKeys = [];
-  for (const k in halfKeysMap) {
-    if (halfKeysMap[k] === true) {
-      halfKeys.push(k);
+  let nextKeys = includeKeys.concat(Object.keys(includeParentsMap));
+
+  let nextHalfKeys = [];
+  let nextHalfKeysMap = Object.assign({}, halfKeysMap, halfParentsMap);
+
+  for (const k in nextHalfKeysMap) {
+    if (nextHalfKeysMap[k] === true) {
+      nextHalfKeys.push(k);
     }
   }
-
-  let nextKeys = includeKeys.concat(Object.keys(includeParentsMap));
-  let nextHalfKeys = halfKeys.concat(Object.keys(halfParentsMap));
 
   return {
     includes: nextKeys,
