@@ -1,4 +1,4 @@
-import React, { Component, memo } from "react";
+import React, { Component, Fragment, memo } from "react";
 import memoize from "memoize-one";
 import { VariableSizeList as VirtualList, areEqual } from "react-window";
 import { getColumnWidthStyle } from "./utils";
@@ -43,15 +43,137 @@ class CellWithTitle extends Component {
   }
 }
 
+const CellPlaceholder = ({
+  rowIndex,
+  rowKey,
+  columnKey,
+  width,
+  minWidth,
+  rowHeight,
+  endIndex,
+  endRowKey,
+  columnRowSpan,
+  columnSpanKey,
+  columnRowSpanPlaceholders,
+  align
+}) => {
+  let style = getColumnWidthStyle({ width, minWidth });
+
+  let cls = ["tablex-table-row-cell"];
+
+  let rowColSpanStyles = {};
+  let styles = {};
+
+  let rowSpan = (columnRowSpanPlaceholders[endRowKey] || {})[columnKey];
+
+  let isInRowspan = false;
+
+  let cellRowSpan = {};
+
+  if (rowSpan) {
+    if (endIndex === rowSpan.end && columnSpanKey === columnKey) {
+      isInRowspan = true;
+      cellRowSpan.element = rowSpan.element;
+      cellRowSpan.start = rowSpan.start;
+      cellRowSpan.end = rowSpan.end;
+      cellRowSpan.height = rowSpan.height;
+    }
+  }
+
+  let cellElement = null;
+
+  if (isInRowspan) {
+    cellElement = cellRowSpan.element;
+    rowColSpanStyles.height = cellRowSpan.height;
+    rowColSpanStyles.zIndex = cellRowSpan.end - rowIndex + 2;
+    rowColSpanStyles.top = -cellRowSpan.height; //+ rowHeight
+    cls.push("tablex-table-row-cell-rowspan");
+  }
+
+  let alignStyles = {};
+  align && (alignStyles.textAlign = align);
+  styles = Object.assign({}, style, rowColSpanStyles);
+
+  return (
+    <div className={cls.join(" ")} style={styles}>
+      <div className="tablex-table-row-cell-inner" style={alignStyles}>
+        {cellElement}
+      </div>
+    </div>
+  );
+};
+
+const RowPlaceholder = props => {
+  let {
+    style,
+    index,
+    endIndex,
+    endRowKey,
+    onRow,
+    row,
+    rowKey,
+    rowHeight,
+    rowClassName,
+    columns,
+    columnRowSpan,
+    columnSpanKey,
+    columnRowSpanPlaceholders
+  } = props;
+
+  let extraAttr = onRow(row, index, {}, {}) || {};
+
+  let cls = ["tablex-table-row tablex-table-row-placeholder"];
+  cls.push("tablex-table-row-placeholder-" + endIndex);
+
+  let rc = rowClassName({ rowData: row, rowIndex: index });
+  if (rc) {
+    cls.push(rc);
+  }
+
+  let rowCells = columns.map((d, i) => {
+    let columnKey = d.key || d.dataIndex || i;
+    let k = row[rowKey];
+
+    return (
+      <CellPlaceholder
+        rowIndex={index}
+        endIndex={endIndex}
+        rowKey={k}
+        endRowKey={endRowKey}
+        columnSpanKey={columnSpanKey}
+        key={columnKey}
+        rowHeight={rowHeight}
+        columnRowSpan={columnRowSpan}
+        columnRowSpanPlaceholders={columnRowSpanPlaceholders}
+        columnKey={columnKey}
+        {...d}
+      />
+    );
+  });
+
+  return (
+    <div
+      {...extraAttr}
+      className={cls.join(" ")}
+      data-rowindex={index}
+      style={{ ...style, height: 0, border: "none" }}
+    >
+      {rowCells}
+    </div>
+  );
+};
+
 const TableCell = props => {
   let {
     row,
     rowKey,
     rowIndex,
     getRowsHeight,
+    getRowKey,
     getColumnsWidth,
     columnColSpan,
     columnRowSpan,
+    columnRowSpanPlaceholders,
     dataIndex,
     columnKey,
     columnIndex,
@@ -68,7 +190,29 @@ const TableCell = props => {
 
   let value = row[dataIndex];
 
+  //列是否被colSpan
+  let isInColspan = false;
+
   if (columnColSpan.end > columnIndex) {
+    isInColspan = true;
+  }
+  //
+
+  //列是否被rowSpan
+  let isInRowspan = false;
+
+  let rowSpans = columnRowSpan[columnKey] || {};
+
+  Object.keys(rowSpans).forEach(r => {
+    let o = rowSpans[r];
+    if (o.start < rowIndex && o.end > rowIndex) {
+      isInRowspan = true;
+    }
+  });
+
+  //
+
+  if (isInColspan === true) {
     return null;
   }
 
@@ -117,6 +261,7 @@ const TableCell = props => {
           cellElement = null;
         } else {
           let rowSpanEnd = rowIndex + rowSpan;
+          let endRowKey = getRowKey(rowSpanEnd);
           let h = getRowsHeight(rowIndex, rowSpanEnd);
 
           if (columnRowSpan[columnKey]) {
@@ -124,7 +269,8 @@ const TableCell = props => {
               start: rowIndex,
               end: rowSpanEnd,
               height: h,
-              rowHeight
+              rowHeight,
+              element: children
             };
           } else {
             columnRowSpan[columnKey] = {
@@ -132,7 +278,28 @@ const TableCell = props => {
                 start: rowIndex,
                 end: rowSpanEnd,
                 height: h,
-                rowHeight
+                rowHeight,
+                element: children
+              }
+            };
+          }
+
+          if (columnRowSpanPlaceholders[endRowKey]) {
+            columnRowSpanPlaceholders[endRowKey][columnKey] = {
+              start: rowIndex,
+              end: rowSpanEnd,
+              height: h,
+              rowHeight,
+              element: children
+            };
+          } else {
+            columnRowSpanPlaceholders[endRowKey] = {
+              [columnKey]: {
+                start: rowIndex,
+                end: rowSpanEnd,
+                height: h,
+                rowHeight,
+                element: children
               }
             };
           }
@@ -146,7 +313,7 @@ const TableCell = props => {
           // };
 
           rowColSpanStyles.height = h;
-          rowColSpanStyles.zIndex = 2;
+          rowColSpanStyles.zIndex = rowSpanEnd - rowIndex + 3;
           cellElement = children;
           hasRowSpan = true;
           if (h === 0) {
@@ -195,6 +362,10 @@ const TableCell = props => {
     cellElement = <CellWithTitle value={cellElement} />;
   }
 
+  if (isInRowspan) {
+    cellElement = null;
+  }
+
   let cls = ["tablex-table-row-cell"];
   if (extraAttr.className) {
     cls.push(extraAttr.className);
@@ -220,6 +391,7 @@ const TableRow = memo(({ data, index, style }) => {
     columns,
     rowKey,
     getRowsHeight,
+    getRowKey,
     getColumnsWidth,
     onRow,
     onCell,
@@ -231,6 +403,7 @@ const TableRow = memo(({ data, index, style }) => {
     cellRenderExtra,
     placeholders,
     columnRowSpan,
+    columnRowSpanPlaceholders,
     autoItemSize
   } = data;
   let row = rows[index];
@@ -278,9 +451,11 @@ const TableRow = memo(({ data, index, style }) => {
         columnStyle={columnStyle}
         cellRenderExtra={cellRenderExtra}
         getRowsHeight={getRowsHeight}
+        getRowKey={getRowKey}
         getColumnsWidth={getColumnsWidth}
         columnColSpan={columnColSpan}
         columnRowSpan={columnRowSpan}
+        columnRowSpanPlaceholders={columnRowSpanPlaceholders}
         onCell={onCell}
         {...d}
       />
@@ -338,6 +513,39 @@ const TableRow = memo(({ data, index, style }) => {
     }
   }
 
+  //如果此行为rowspan的最后一行，额外添加占位行
+  let rowExtraElements = [];
+
+  if (columnRowSpanPlaceholders[k]) {
+    let rowCellSpan = columnRowSpanPlaceholders[k];
+
+    Object.keys(rowCellSpan).forEach(ck => {
+      let o = rowCellSpan[ck];
+      let startIndex = o.start;
+      let startRow = rows[startIndex];
+      let el = (
+        <RowPlaceholder
+          key={"RowPlaceholder_" + index + ck}
+          {...rowProps}
+          rowClassName={rowClassName}
+          columns={columns}
+          rowHeight={style.height}
+          row={startRow}
+          rowKey={rowKey}
+          index={startIndex}
+          endIndex={index}
+          endRowKey={k}
+          onRow={onRow}
+          columnSpanKey={ck}
+          columnRowSpan={columnRowSpan}
+          columnRowSpanPlaceholders={columnRowSpanPlaceholders}
+        ></RowPlaceholder>
+      );
+      rowExtraElements.push(el);
+    });
+  }
+  //
+
   let rowElement = null;
 
   /** rowComponent used to create row outter element */
@@ -368,13 +576,19 @@ const TableRow = memo(({ data, index, style }) => {
     rowElement = <div {...extraAttr} {...rowProps} />;
   }
 
-  return rowElement;
+  return (
+    <Fragment>
+      {rowExtraElements}
+      {rowElement}
+    </Fragment>
+  );
 }, areEqual);
 
 class DataList extends Component {
   constructor(props) {
     super(props);
     this.columnRowSpan = {}; //{rowKey:{columnKey:{ start: 0, end: 0, colspan:2,rowspan:2,width,height, columnKey: "", rowSpanStyle: {}}}}
+    this.columnRowSpanPlaceholders = {}; //{columnKey:{rowKey:{ start: 0, end: 0, colspan:2,rowspan:2,width,height, columnKey: "", rowSpanStyle: {}}}}
   }
 
   innerElementType = ({ children, style }) => {
@@ -433,7 +647,7 @@ class DataList extends Component {
       let h = 0;
 
       for (let i = start; i < endIndex; i++) {
-        let mh = memorizedSize[index];
+        let mh = memorizedSize[i];
         if (typeof mh === "number") {
           h = h + mh;
         } else {
@@ -459,6 +673,15 @@ class DataList extends Component {
     }
 
     return rowsHeight;
+  };
+
+  getRowKey = index => {
+    let { rowKey, data } = this.props;
+    let row = data[index];
+    if (row) {
+      return row[rowKey];
+    }
+    return "";
   };
 
   getColumnsWidth = (start, end) => {
@@ -533,11 +756,13 @@ class DataList extends Component {
     itemData.rowRender = rowRender;
     itemData.cellRenderExtra = cellRenderExtra;
     itemData.columnRowSpan = this.columnRowSpan;
+    itemData.columnRowSpanPlaceholders = this.columnRowSpanPlaceholders;
 
     itemData.getRowsHeight = this.getRowsHeight;
     itemData.getColumnsWidth = this.getColumnsWidth;
     itemData.onCell = onCell;
     itemData.rowRenderExtra = rowRenderExtra;
+    itemData.getRowKey = this.getRowKey;
 
     itemData.autoItemSize = autoItemSize;
     itemData.virtual = virtual;
