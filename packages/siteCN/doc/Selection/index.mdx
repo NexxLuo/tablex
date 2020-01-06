@@ -612,6 +612,10 @@ super(props);
 
 }
 
+onSelectChange(a,b,c,d){
+console.log("onSelectChange:",a,b,c,d)
+}
+
 render() {
 let { columns, data } = this.state;
 
@@ -620,7 +624,7 @@ let { columns, data } = this.state;
         rowKey="id"
         columns={columns}
         data={data}
-
+       onSelectChange={this.onSelectChange.bind(this)}
           rowSelection={{
             type:"checkbox",
             checkStrictly:true

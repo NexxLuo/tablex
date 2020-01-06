@@ -37,23 +37,16 @@ class Demo extends React.Component {
         width: 150,
         align: "center",
         render: (value, row, index) => {
-      
-
-          let rowNum=12*3;
+          let rowNum = 12 * 3;
           const obj = {
             children: value,
             props: {}
           };
-          //alert(+rowNum)
 
-          console.info("跨几行？" + rowNum);
           if (index % rowNum == 0) {
             obj.props.rowSpan = rowNum;
-          } else {
-            obj.props.rowSpan = 0;
           }
           return obj;
-
         }
       },
       {
