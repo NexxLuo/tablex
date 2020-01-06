@@ -7,7 +7,7 @@ import ColumnDropMenu from "./components/ColumnDropMenu";
 import Setting, { getConfigs, setConfigs } from "./components/setting";
 import SortIcon from "./components/SortIndicator";
 import EmptyIcon from "./components/EmptyIcon";
-
+import groupBy from "lodash/groupBy";
 import { Spin, Popover } from "./widgets";
 
 import {
@@ -79,6 +79,30 @@ let summaryMath = {
   }
 };
 
+function getGroupedData({ groupedKey = "", data = [], keyField = "" }) {
+  let rows = data;
+
+  let key = groupedKey;
+  let rowKey = keyField;
+
+  let g = groupBy(rows, key);
+
+  let arr = [];
+  Object.keys(g).forEach((k, i) => {
+    let obj = {
+      __groupName: k || "",
+      __isGroupedHeadRow: true,
+      children: g[k]
+    };
+
+    obj[rowKey] = "__group_" + i;
+
+    arr.push(obj);
+  });
+
+  return arr;
+}
+
 /**
  * 表格
  */
@@ -90,9 +114,13 @@ class Table extends React.Component {
     super(props);
 
     let configs = {};
+    let configedGroupedColumnKey = null;
 
     if (props.tableId) {
       configs = getConfigs(props.tableId) || {};
+      if ("groupedColumnKey" in configs) {
+        configedGroupedColumnKey = configs.groupedColumnKey;
+      }
     }
 
     this.state = {
@@ -104,6 +132,7 @@ class Table extends React.Component {
       columnDropMenu: false,
       sortable: false,
       columnsConfig: configs.columnsConfig || null,
+      groupedColumnKey: configedGroupedColumnKey || null,
       sortedColumns: null,
       columnMenu: null
     };
@@ -146,6 +175,10 @@ class Table extends React.Component {
       };
 
       let extraColumns = [];
+
+      if ("groupedColumnKey" in nextProps) {
+        nextState.groupedColumnKey = nextProps.groupedColumnKey;
+      }
 
       if ("orderNumber" in nextProps) {
         let orderColumn = nextProps.orderNumber;
@@ -265,7 +298,8 @@ class Table extends React.Component {
   }
 
   getData = () => {
-    let { data, sortedColumns } = this.state;
+    let { data, sortedColumns, groupedColumnKey } = this.state;
+    let rowKey = this.props.rowKey;
     let arr = data;
 
     let orderColumns = [];
@@ -287,6 +321,14 @@ class Table extends React.Component {
 
     if (this.hasPagination()) {
       arr = this.getCurrentPageData(arr);
+    }
+
+    if (groupedColumnKey) {
+      arr = getGroupedData({
+        groupedKey: groupedColumnKey,
+        data: arr,
+        keyField: rowKey
+      });
     }
 
     return arr;
@@ -384,14 +426,25 @@ class Table extends React.Component {
   };
 
   onColumnChange = (key, config) => {
-    let columnKey = key;
+    let {
+      columnsConfig,
+      columnMenu,
+      groupedColumnKey: prevGrouped
+    } = this.state;
 
-    let { columnsConfig, columnMenu } = this.state;
+    let columnKey = key;
+    let groupedColumnKey = prevGrouped;
 
     let configs = columnsConfig || {};
 
     if (!columnKey && columnMenu) {
       columnKey = columnMenu.columnKey;
+    }
+
+    if (config.grouped === true) {
+      groupedColumnKey = columnKey;
+    } else if (config.grouped === false) {
+      groupedColumnKey = null;
     }
 
     let prevConfig = configs[columnKey] || {};
@@ -403,12 +456,13 @@ class Table extends React.Component {
 
     setConfigs(this.props.tableId, {
       columnsConfig: newConfigs,
-      groupedColumnKey: null
+      groupedColumnKey: groupedColumnKey
     });
 
     this.setState(
       {
-        columnsConfig: newConfigs
+        columnsConfig: newConfigs,
+        groupedColumnKey: groupedColumnKey
       },
       this.resetScrollbarSize
     );
@@ -436,12 +490,19 @@ class Table extends React.Component {
   };
 
   formatColumns = columns => {
-    let { columnsConfig, columnDropMenu, sortedColumns, sortable } = this.state;
+    let {
+      columnsConfig,
+      columnDropMenu,
+      sortedColumns,
+      sortable,
+      groupedColumnKey
+    } = this.state;
 
     let configs = columnsConfig || {};
 
     let arr = [];
     let maxDepth = 0;
+    let needSortColumn = false;
 
     arr = treeFilter(cloneDeep(columns), (d, i, { depth }) => {
       let columnKey = d.key || d.dataIndex;
@@ -462,8 +523,19 @@ class Table extends React.Component {
       return bl;
     });
 
+    if (needSortColumn) {
+      arr = orderBy(arr, ["__order"], ["asc"]);
+    }
+
     let cols = treeToList(arr).leafs;
-    let needSortColumn = false;
+
+    let firstLeftColumn = null;
+    let firstMiddleColumn = null;
+    let firstRightColumn = null;
+    let leftColumnsCount = 0;
+    let rightColumnsCount = 0;
+    let middleColumnsCount = 0;
+    let groupedColumn = null;
 
     cols.forEach(d => {
       let columnKey = d.key || d.dataIndex;
@@ -497,6 +569,22 @@ class Table extends React.Component {
         needSortColumn = true;
       }
 
+      //查出首列，以控制数据分组时的列合并
+      if (d.fixed === "left") {
+        leftColumnsCount += 1;
+        firstLeftColumn === null && (firstLeftColumn = d);
+      } else if (d.fixed === "right") {
+        rightColumnsCount += 1;
+        firstRightColumn === null && (firstRightColumn = d);
+      } else {
+        middleColumnsCount += 1;
+        firstMiddleColumn === null && (firstMiddleColumn = d);
+      }
+      if (columnKey === groupedColumnKey) {
+        groupedColumn = d;
+      }
+      //
+
       let titleCellAttr = {};
 
       if (allowSort) {
@@ -522,9 +610,77 @@ class Table extends React.Component {
       };
     });
 
-    if (needSortColumn) {
-      arr = orderBy(arr, ["__order"], ["asc"]);
+    //数据分组的首行，进行相应的列合并
+    let firstColumn = firstLeftColumn || firstMiddleColumn || firstRightColumn;
+
+    if (groupedColumn && firstColumn) {
+      firstColumn.align = "left";
+      firstColumn.render = (value, row, index) => {
+        if (row && row.__isGroupedHeadRow) {
+          let len = row.children && row.children.length;
+          const obj = {
+            children: (
+              <span>
+                <label style={{ fontWeight: "bold" }}>
+                  {groupedColumn.title}:
+                </label>
+                {row.__groupName || ""}
+                <label style={{ fontWeight: "bold" }}>({len})</label>
+              </span>
+            ),
+            props: {
+              colSpan: cols.length - leftColumnsCount - rightColumnsCount + 1
+            }
+          };
+          return obj;
+        } else {
+          return value;
+        }
+      };
+
+      if (firstMiddleColumn && firstColumn !== firstMiddleColumn) {
+        let renderFn = firstMiddleColumn.render;
+
+        firstMiddleColumn.render = (value, row, index) => {
+          if (row && row.__isGroupedHeadRow) {
+            return {
+              props: {
+                colSpan: middleColumnsCount
+              },
+              children: null
+            };
+          } else {
+            let val = value;
+            if (typeof renderFn === "function") {
+              val = renderFn && renderFn(value, row, index);
+            }
+            return val;
+          }
+        };
+      }
+
+      if (firstRightColumn && firstColumn !== firstRightColumn) {
+        let renderFn = firstRightColumn.render;
+
+        firstRightColumn.render = (value, row, index) => {
+          if (row && row.__isGroupedHeadRow) {
+            return {
+              props: {
+                colSpan: rightColumnsCount
+              },
+              children: null
+            };
+          } else {
+            let val = value;
+            if (typeof renderFn === "function") {
+              val = renderFn && renderFn(value, row, index);
+            }
+            return val;
+          }
+        };
+      }
     }
+    //
 
     return arr;
   };
@@ -534,7 +690,10 @@ class Table extends React.Component {
   };
 
   resetConfig = () => {
-    this.setState({ columnsConfig: {} }, this.resetScrollbarSize);
+    this.setState(
+      { columnsConfig: {}, groupedColumnKey: null },
+      this.resetScrollbarSize
+    );
   };
 
   renderHeader = () => {
@@ -941,7 +1100,7 @@ class Table extends React.Component {
             onVisibleChange={this.columnSettingMenuHide}
             content={
               <ColumnDropMenu
-                options={{ pinable: true, filterable: true, groupable: false }}
+                options={{ pinable: true, filterable: true, groupable: true }}
                 columns={settableColumns}
                 columnsConfig={this.state.columnsConfig}
                 onChange={this.onColumnChange}
@@ -1016,6 +1175,9 @@ Table.propTypes = {
 
   /** 是否可进行属性配置 */
   settable: PropTypes.bool,
+
+  /** 根据此列进行数据分组 */
+  groupedColumnKey: PropTypes.string,
 
   /** 奇偶行颜色间隔 */
   striped: PropTypes.bool,
