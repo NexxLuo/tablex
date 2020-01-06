@@ -28,6 +28,9 @@ Other.propTypes = {
   /** 是否启用列标题配置项菜单 */
   columnDropMenu: PropTypes.bool,
 
+  /** 根据此列进行数据分组 */
+  groupedColumnKey: PropTypes.string,
+
   /** 是否可进行列排序 */
   sortable: PropTypes.bool,
 
