@@ -152,14 +152,19 @@ class SelectionGrid extends Component {
     rowIndex,
     rowKey,
     selectedRowKeys,
-    selectedRows
+    selectedRows,
+    halfKeys
   }) => {
     let fn = this.props.onSelect;
     if (typeof fn === "function") {
       if (this.props.selectMode === "multiple") {
-        fn(selectedRowKeys, selectedRows, rowKey, { rowIndex, rowData });
+        fn(selectedRowKeys, selectedRows, rowKey, {
+          rowIndex,
+          rowData,
+          halfKeys
+        });
       } else {
-        fn(rowData, rowIndex, rowKey, { rowData, rowIndex });
+        fn(rowData, rowIndex, rowKey, { rowData, rowIndex, halfKeys });
       }
     }
   };
@@ -169,14 +174,19 @@ class SelectionGrid extends Component {
     rowIndex,
     rowKey,
     selectedRowKeys,
-    selectedRows
+    selectedRows,
+    halfKeys
   }) => {
     let fn = this.props.onUnSelect;
     if (typeof fn === "function") {
       if (this.props.selectMode === "multiple") {
-        fn(selectedRowKeys, selectedRows, rowKey, { rowIndex, rowData });
+        fn(selectedRowKeys, selectedRows, rowKey, {
+          rowIndex,
+          rowData,
+          halfKeys
+        });
       } else {
-        fn(rowData, rowIndex, rowKey, { rowData, rowIndex });
+        fn(rowData, rowIndex, rowKey, { rowData, rowIndex, halfKeys });
       }
     }
   };
@@ -186,11 +196,16 @@ class SelectionGrid extends Component {
     rowIndex,
     rowKey,
     selectedRowKeys,
-    selectedRows
+    selectedRows,
+    halfKeys
   }) => {
     let fn = this.props.onSelectChange;
     if (typeof fn === "function") {
-      fn(selectedRowKeys, selectedRows, rowKey, { rowIndex, rowData });
+      fn(selectedRowKeys, selectedRows, rowKey, {
+        rowIndex,
+        rowData,
+        halfKeys
+      });
     }
   };
 
@@ -228,18 +243,20 @@ class SelectionGrid extends Component {
     rowIndex,
     rowKey,
     selectedRowKeys,
-    selectedRows
+    selectedRows,
+    halfKeys = []
   }) => {
     let rfn = this.getRowSelection("onSelect");
     if (typeof rfn === "function") {
-      rfn(rowData, true, selectedRows);
+      rfn(rowData, true, selectedRows, { halfKeys });
     } else {
       this.call_props_onSelect({
         rowData,
         rowIndex,
         rowKey,
         selectedRowKeys,
-        selectedRows
+        selectedRows,
+        halfKeys
       });
     }
   };
@@ -249,18 +266,20 @@ class SelectionGrid extends Component {
     rowIndex,
     rowKey,
     selectedRowKeys,
-    selectedRows
+    selectedRows,
+    halfKeys = []
   }) => {
-    let rfn = this.getRowSelection("onSelect");
+    let rfn = this.getRowSelection("onUnSelect");
     if (typeof rfn === "function") {
-      rfn(rowData, false, selectedRows);
+      rfn(rowData, false, selectedRows, { halfKeys });
     } else {
       this.call_props_onUnSelect({
         rowData,
         rowIndex,
         rowKey,
         selectedRowKeys,
-        selectedRows
+        selectedRows,
+        halfKeys
       });
     }
   };
@@ -270,18 +289,20 @@ class SelectionGrid extends Component {
     rowIndex,
     rowKey,
     selectedRowKeys,
-    selectedRows
+    selectedRows,
+    halfKeys = []
   }) => {
     let rfn = this.getRowSelection("onSelectChange");
     if (typeof rfn === "function") {
-      rfn(selectedRowKeys, selectedRows);
+      rfn(selectedRowKeys, selectedRows, { halfKeys });
     } else {
       this.call_props_onSelectChange({
         rowData,
         rowIndex,
         rowKey,
         selectedRowKeys,
-        selectedRows
+        selectedRows,
+        halfKeys
       });
     }
   };
@@ -325,17 +346,24 @@ class SelectionGrid extends Component {
 
   //
 
-  call_onCheck = ({ rowData, rowIndex, rowKey, keys, rows }) => {
+  call_onCheck = ({ rowData, rowIndex, rowKey, keys, rows, halfKeys = [] }) => {
     let rfn = this.getRowSelection("onCheck");
     if (typeof rfn === "function") {
-      rfn(rowData, true, rows);
+      rfn(rowData, true, rows, { halfKeys });
     }
   };
 
-  call_onUnCheck = ({ rowData, rowIndex, rowKey, keys, rows }) => {
+  call_onUnCheck = ({
+    rowData,
+    rowIndex,
+    rowKey,
+    keys,
+    rows,
+    halfKeys = []
+  }) => {
     let rfn = this.getRowSelection("onCheck");
     if (typeof rfn === "function") {
-      rfn(rowData, false, rows);
+      rfn(rowData, false, rows, { halfKeys });
     }
   };
 
@@ -348,21 +376,29 @@ class SelectionGrid extends Component {
     return true;
   };
 
-  call_onCheckChange = ({ rowData, rowIndex, rowKey, keys, rows }) => {
+  call_onCheckChange = ({
+    rowData,
+    rowIndex,
+    rowKey,
+    keys,
+    rows,
+    halfKeys = []
+  }) => {
     let rfn = this.getRowSelection("onCheckChange");
     let fn = this.getRowSelection("onChange");
 
     if (typeof rfn === "function") {
-      rfn(keys, rows);
+      rfn(keys, rows), { halfKeys };
     } else if (typeof fn === "function") {
-      fn(keys, rows);
+      fn(keys, rows, { halfKeys });
     } else {
       this.call_props_onSelectChange({
         rowData,
         rowIndex,
         rowKey,
         selectedRowKeys: keys,
-        selectedRows: rows
+        selectedRows: rows,
+        halfKeys
       });
     }
   };
@@ -730,7 +766,12 @@ class SelectionGrid extends Component {
   }
 
   addSelected = ({ rowKey, rowData, rowIndex, quiet = false }) => {
-    let { selectedRowKeys, selectedRows, rowKey: keyField } = this.state;
+    let {
+      selectedRowKeys,
+      selectedRows,
+      rowKey: keyField,
+      halfCheckedKeys
+    } = this.state;
 
     let nextKeys = selectedRowKeys.slice();
     let nextRows = selectedRows.slice();
@@ -752,7 +793,8 @@ class SelectionGrid extends Component {
 
     let nextState = {
       selectedRowKeys: nextKeys,
-      selectedRows: nextRows
+      selectedRows: nextRows,
+      halfCheckedKeys: halfCheckedKeys
     };
 
     if (quiet === false) {
@@ -780,7 +822,8 @@ class SelectionGrid extends Component {
           rowIndex,
           rowKey: rowKey,
           keys: nextCheckedKeys,
-          rows: nextCheckedRows
+          rows: nextCheckedRows,
+          halfKeys: nextState.halfCheckedKeys
         });
 
         this.call_onCheckChange({
@@ -788,7 +831,8 @@ class SelectionGrid extends Component {
           rowIndex,
           rowKey: rowKey,
           keys: nextCheckedKeys,
-          rows: nextCheckedRows
+          rows: nextCheckedRows,
+          halfKeys: nextState.halfCheckedKeys
         });
       }
 
@@ -799,7 +843,8 @@ class SelectionGrid extends Component {
         selectedRows: nextState.selectedRows,
         rowKey,
         rowIndex,
-        rowData
+        rowData,
+        halfKeys: nextState.halfCheckedKeys
       });
 
       this.call_onSelectChange({
@@ -807,7 +852,8 @@ class SelectionGrid extends Component {
         rowIndex,
         rowKey,
         selectedRowKeys: nextState.selectedRowKeys,
-        selectedRows: nextState.selectedRows
+        selectedRows: nextState.selectedRows,
+        halfKeys: nextState.halfCheckedKeys
       });
     }
 
@@ -818,7 +864,12 @@ class SelectionGrid extends Component {
   };
 
   removeSelected = ({ rowKey, rowData, rowIndex, quiet = false }) => {
-    let { selectedRowKeys, selectedRows, rowKey: keyField } = this.state;
+    let {
+      selectedRowKeys,
+      selectedRows,
+      rowKey: keyField,
+      halfCheckedKeys
+    } = this.state;
     let i = selectedRowKeys.indexOf(rowKey);
 
     let nextKeys = selectedRowKeys.slice();
@@ -834,7 +885,8 @@ class SelectionGrid extends Component {
 
     let nextState = {
       selectedRowKeys: nextKeys,
-      selectedRows: nextRows
+      selectedRows: nextRows,
+      halfCheckedKeys: halfCheckedKeys
     };
 
     if (quiet === false) {
@@ -857,12 +909,13 @@ class SelectionGrid extends Component {
           nextState.selectedRows = nextCheckedRows;
         }
 
-        this.call_onCheck({
+        this.call_onUnCheck({
           rowData,
           rowIndex,
           rowKey: rowKey,
           keys: nextCheckedKeys,
-          rows: nextCheckedRows
+          rows: nextCheckedRows,
+          halfKeys: nextState.halfCheckedKeys
         });
 
         this.call_onCheckChange({
@@ -870,7 +923,8 @@ class SelectionGrid extends Component {
           rowIndex,
           rowKey: rowKey,
           keys: nextCheckedKeys,
-          rows: nextCheckedRows
+          rows: nextCheckedRows,
+          halfKeys: nextState.halfCheckedKeys
         });
       }
 
@@ -881,7 +935,8 @@ class SelectionGrid extends Component {
         selectedRows: nextState.selectedRows,
         rowKey,
         rowIndex,
-        rowData
+        rowData,
+        halfKeys: nextState.halfCheckedKeys
       });
 
       this.call_onSelectChange({
@@ -889,7 +944,8 @@ class SelectionGrid extends Component {
         rowIndex,
         rowKey,
         selectedRowKeys: nextState.selectedRowKeys,
-        selectedRows: nextState.selectedRows
+        selectedRows: nextState.selectedRows,
+        halfKeys: nextState.halfCheckedKeys
       });
     }
 
@@ -1189,7 +1245,8 @@ class SelectionGrid extends Component {
       rowIndex,
       rowKey: key,
       keys: nextKeys,
-      rows: nextRows
+      rows: nextRows,
+      halfKeys: nextHalflCheckedKeys
     });
 
     this.call_onCheckChange({
@@ -1197,7 +1254,8 @@ class SelectionGrid extends Component {
       rowIndex,
       rowKey: key,
       keys: nextKeys,
-      rows: nextRows
+      rows: nextRows,
+      halfKeys: nextHalflCheckedKeys
     });
 
     let nextState = {
@@ -1229,12 +1287,13 @@ class SelectionGrid extends Component {
         nextState.selectedRows = nextSelectedRows;
       }
 
-      this.call_onUnSelect({
+      this.call_onSelect({
         selectedRowKeys: nextState.selectedRowKeys,
         selectedRows: nextState.selectedRows,
         rowKey: key,
         rowIndex,
-        rowData
+        rowData,
+        halfKeys: nextHalflCheckedKeys
       });
 
       this.call_onSelectChange({
@@ -1242,7 +1301,8 @@ class SelectionGrid extends Component {
         rowIndex,
         rowKey: key,
         selectedRowKeys: nextState.selectedRowKeys,
-        selectedRows: nextState.selectedRows
+        selectedRows: nextState.selectedRows,
+        halfKeys: nextHalflCheckedKeys
       });
     }
 
@@ -1268,7 +1328,8 @@ class SelectionGrid extends Component {
       rowIndex,
       rowKey: key,
       keys: nextKeys,
-      rows: nextRows
+      rows: nextRows,
+      halfKeys: nextHalflCheckedKeys
     });
 
     this.call_onCheckChange({
@@ -1276,7 +1337,8 @@ class SelectionGrid extends Component {
       rowIndex,
       rowKey: key,
       keys: nextKeys,
-      rows: nextRows
+      rows: nextRows,
+      halfKeys: nextHalflCheckedKeys
     });
 
     let nextState = {
@@ -1317,7 +1379,8 @@ class SelectionGrid extends Component {
         selectedRows: nextState.selectedRows,
         rowKey: key,
         rowIndex,
-        rowData
+        rowData,
+        halfKeys: nextHalflCheckedKeys
       });
 
       this.call_onSelectChange({
@@ -1325,7 +1388,8 @@ class SelectionGrid extends Component {
         rowIndex,
         rowKey: key,
         selectedRowKeys: nextState.selectedRowKeys,
-        selectedRows: nextState.selectedRows
+        selectedRows: nextState.selectedRows,
+        halfKeys: nextHalflCheckedKeys
       });
     }
     this.setState(nextState);
