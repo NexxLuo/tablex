@@ -17,8 +17,8 @@
 }
 
 .tablex-table ::-webkit-scrollbar {
-  width: 6px !important;
-  height: 6px !important;
+  width: 6px;
+  height: 6px;
   border-radius: 4px;
   background-color: #f1f1f1;
 }
@@ -132,7 +132,6 @@
   align-items: center;
   flex: 0 0 auto;
   overflow: hidden;
-  font-weight: bold;
 }
 
 .tablex-table .tablex-head-cell-rowcolspan {
@@ -155,7 +154,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0px 5px;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: bold;
   width: 100%;
   text-align: center;
 }
