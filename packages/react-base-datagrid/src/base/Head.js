@@ -100,8 +100,18 @@ const ColumnGroup = ({
   let clsArr = ["tablex-table-head-group-cell"];
   className && clsArr.push(className);
 
+  let attr = {};
+
+  if (typeof title === "string" || typeof title === "number") {
+    attr.title = title;
+  }
+
   return (
-    <div className={clsArr.join(" ")} style={{ ...style, ...cellStyles }}>
+    <div
+      className={clsArr.join(" ")}
+      style={{ ...style, ...cellStyles }}
+      {...attr}
+    >
       {height > 0 ? (
         <div className="tablex-table-head-group-cell-inner" style={alignStyles}>
           {title}
@@ -143,7 +153,7 @@ const renderColumns = ({
         rowColspan.start = i;
         rowColspan.end = colSpanEnd;
         columnResizable = false;
-    
+        
       }
     }
     columnWidth = getColumnsWidth({
