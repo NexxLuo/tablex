@@ -8,7 +8,7 @@ import Setting, { getConfigs, setConfigs } from "./components/setting";
 import SortIcon from "./components/SortIndicator";
 import EmptyIcon from "./components/EmptyIcon";
 
-import { Spin, Popover } from "./antd";
+import { Spin, Popover } from "./widgets";
 
 import {
   treeToFlatten as treeToList,

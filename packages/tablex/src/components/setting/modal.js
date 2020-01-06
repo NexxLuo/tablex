@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Modal,Button,InputNumber,Radio,Switch } from "../../antd";
+import { Modal,Button,InputNumber,Radio,Switch } from "../../widgets";
 
 import { saveConfigs, removeConfigs, treeToList } from "./utils";
 import { SortableContainer, SortableElement } from "react-sortable-hoc";

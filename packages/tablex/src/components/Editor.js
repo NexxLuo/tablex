@@ -1,5 +1,5 @@
 import React from "react";
-import { Tooltip } from "../antd";
+import { Tooltip } from "../widgets";
 import "./Editor.css";
 
 class Editor extends React.Component {

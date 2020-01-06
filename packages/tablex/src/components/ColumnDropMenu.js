@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Menu, Checkbox } from "../antd";
+import { Menu, Checkbox } from "../widgets";
 
 const SubMenu = Menu.SubMenu;
 

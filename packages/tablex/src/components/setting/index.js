@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { createPortal } from "react-dom";
-import { Button } from "../../antd";
+import { Button } from "../../widgets";
 import Modal from "./modal";
 import { getConfigs, setConfigs } from "./utils";
 

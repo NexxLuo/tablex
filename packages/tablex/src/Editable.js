@@ -15,7 +15,7 @@ import {
   deleteData
 } from "./utils";
 
-import { message, Button, Popconfirm, Menu, Dropdown, Icon } from "./antd";
+import { message, Button, Popconfirm, Menu, Dropdown, Icon } from "./widgets";
 
 import orderBy from "lodash/orderBy";
 import "./styles.css";

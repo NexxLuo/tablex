@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Pagination, Button } from "../../antd";
+import { Pagination, Button } from "../../widgets";
 import "./styles.css";
 
 class Pager extends React.Component {
