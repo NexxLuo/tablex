@@ -87,7 +87,8 @@ class Demo extends React.Component {
           rowKey="id"
           columns={columns}
           data={data}
-          groupedColumnKey={"column-3"}
+          tableId="test_table"
+          defaultGroupedColumnKey={"column-3"}
         />
       </div>
     );
