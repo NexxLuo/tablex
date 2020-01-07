@@ -31,6 +31,9 @@ Other.propTypes = {
   /** 根据此列进行数据分组 */
   groupedColumnKey: PropTypes.string,
 
+  /** 默认分组列 */
+  defaultGroupedColumnKey: PropTypes.string,
+
   /** 是否可进行列排序 */
   sortable: PropTypes.bool,
 
