@@ -691,7 +691,10 @@ class Table extends React.Component {
 
   resetConfig = () => {
     this.setState(
-      { columnsConfig: {}, groupedColumnKey: null },
+      {
+        columnsConfig: {},
+        groupedColumnKey: this.props.defaultGroupedColumnKey
+      },
       this.resetScrollbarSize
     );
   };
