@@ -114,7 +114,7 @@ class Table extends React.Component {
     super(props);
 
     let configs = {};
-    let configedGroupedColumnKey = null;
+    let configedGroupedColumnKey = props.defaultGroupedColumnKey;
 
     if (props.tableId) {
       configs = getConfigs(props.tableId) || {};
@@ -1145,7 +1145,8 @@ Table.defaultProps = {
   loading: false,
   striped: true,
   contextMenuWrapperStyle: {},
-  contextMenuStyle: {}
+  contextMenuStyle: {},
+  defaultGroupedColumnKey: null
 };
 
 Table.propTypes = {
@@ -1178,6 +1179,9 @@ Table.propTypes = {
 
   /** 根据此列进行数据分组 */
   groupedColumnKey: PropTypes.string,
+
+  /** 默认分组列 */
+  defaultGroupedColumnKey: PropTypes.string,
 
   /** 奇偶行颜色间隔 */
   striped: PropTypes.bool,
