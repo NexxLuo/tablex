@@ -70,6 +70,9 @@ class Demo extends React.Component {
       if (i % 3 === 0) {
         d["column-3"] = 3;
       }
+      if (i % 6 === 0) {
+        d["column-4"] = 4;
+      }
     });
 
     this.state = {
@@ -82,12 +85,12 @@ class Demo extends React.Component {
     let { columns, data } = this.state;
 
     return (
-      <div style={{ height: 400 }}>
+      <div style={{ height: 600 }}>
         <Table
           rowKey="id"
           columns={columns}
           data={data}
-          defaultGroupedColumnKey={"column-3"}
+          defaultGroupedColumnKey={["column-3", "column-4"]}
         />
       </div>
     );
