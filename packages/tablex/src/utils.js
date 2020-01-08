@@ -1,3 +1,5 @@
+import groupBy from "lodash/groupBy";
+
 export function getParentElement(element, selector) {
   function isMatched(el, str = "") {
     str = str.toLowerCase();
@@ -557,4 +559,69 @@ export function insertData({
     insertedRowKeys: newDataInsertedKeys,
     insertedRows: newDataInserted
   };
+}
+
+function groupData({ groupedKey = "", data = [], keyField = "", prefix = "" }) {
+  let rows = data;
+
+  let key = groupedKey;
+  let rowKey = keyField;
+
+  let g = groupBy(rows, key);
+  let arr = [];
+  Object.keys(g).forEach((k, i) => {
+    let childrens = g[k] || [];
+    let name = k || "";
+    if (name === "undefined" || name === "null") {
+      name = "";
+    }
+    let obj = {
+      __groupName: name,
+      __groupColumnKey: key,
+      __isGroupedHeadRow: true,
+      __count: childrens.length,
+      children: childrens
+    };
+
+    obj[rowKey] = "__group_" + prefix + "-" + i;
+
+    arr.push(obj);
+  });
+
+  return arr;
+}
+
+/** 根据多个字段对数据进行分组 */
+export function getGroupedData({ groupedKey = [], data = [], keyField = "" }) {
+  let arr = data;
+
+  for (let i = 0; i < groupedKey.length; i++) {
+    const k = groupedKey[i];
+
+    if (i > 0) {
+      treeFilter(arr, function(d, j, { depth, treeIndex }) {
+        if (depth === i - 1) {
+          let childrens = d.children;
+          if (childrens instanceof Array) {
+            d.children = groupData({
+              groupedKey: k,
+              data: childrens,
+              keyField: keyField,
+              prefix: k + "-children-" + treeIndex
+            });
+          }
+        }
+        return true;
+      });
+    } else {
+      arr = groupData({
+        groupedKey: k,
+        data: arr,
+        keyField: keyField
+      });
+    }
+  }
+
+  console.log("arr:", arr);
+  return arr;
 }

@@ -7,13 +7,13 @@ import ColumnDropMenu from "./components/ColumnDropMenu";
 import Setting, { getConfigs, setConfigs } from "./components/setting";
 import SortIcon from "./components/SortIndicator";
 import EmptyIcon from "./components/EmptyIcon";
-import groupBy from "lodash/groupBy";
 import { Spin, Popover } from "./widgets";
 
 import {
   treeToFlatten as treeToList,
   treeFilter,
-  getParentElement
+  getParentElement,
+  getGroupedData
 } from "./utils";
 import orderBy from "lodash/orderBy";
 import cloneDeep from "lodash/cloneDeep";
@@ -22,14 +22,6 @@ import minBy from "lodash/minBy";
 import sumBy from "lodash/sumBy";
 
 const DEFAULT_COLUMN_WIDTH = 100;
-
-function orderNumberCellRender(value, rowData, index) {
-  return index + 1;
-}
-
-function orderNumberHeadRender() {
-  return "序号";
-}
 
 let summaryMath = {
   max: (items, key) => {
@@ -79,73 +71,12 @@ let summaryMath = {
   }
 };
 
-function groupData({
-  groupedKey = "",
-  groupTitle = "",
-  data = [],
-  keyField = "",
-  prefix = ""
-}) {
-  let rows = data;
-
-  let key = groupedKey;
-  let rowKey = keyField;
-
-  let g = groupBy(rows, key);
-
-  let arr = [];
-  Object.keys(g).forEach((k, i) => {
-    let childrens = g[k] || [];
-    let obj = {
-      __groupName: k || "",
-      __groupTitle: groupTitle,
-      __isGroupedHeadRow: true,
-      __count: childrens.length,
-      children: childrens
-    };
-
-    obj[rowKey] = "__group_" + prefix + "-" + i;
-
-    arr.push(obj);
-  });
-
-  return arr;
+function orderNumberCellRender(value, rowData, index) {
+  return index + 1;
 }
 
-/** 根据多个字段对数据进行分组 */
-function getGroupedData({ groupedKey = [], data = [], keyField = "" }) {
-  let arr = data;
-
-  for (let i = 0; i < groupedKey.length; i++) {
-    const k = groupedKey[i];
-
-    if (i > 0) {
-      treeFilter(arr, function(d, j, { depth, treeIndex }) {
-        if (depth === i - 1) {
-          let childrens = d.children;
-          if (childrens instanceof Array) {
-            d.children = groupData({
-              groupTitle: k,
-              groupedKey: k,
-              data: childrens,
-              keyField: keyField,
-              prefix: k + "-children-" + treeIndex
-            });
-          }
-        }
-        return true;
-      });
-    } else {
-      arr = groupData({
-        groupedKey: k,
-        groupTitle: k,
-        data: arr,
-        keyField: keyField
-      });
-    }
-  }
-
-  return arr;
+function orderNumberHeadRender() {
+  return "序号";
 }
 
 /**
@@ -177,7 +108,7 @@ class Table extends React.Component {
       columnDropMenu: false,
       sortable: false,
       columnsConfig: configs.columnsConfig || null,
-      groupedColumnKey: configedGroupedColumnKey || null,
+      groupedColumnKey: configedGroupedColumnKey || [],
       sortedColumns: null,
       columnMenu: null
     };
@@ -487,7 +418,11 @@ class Table extends React.Component {
     }
 
     //分组列配置
-    let groupedColumnKey = prevGrouped.slice();
+    let groupedColumnKey = [];
+
+    if (prevGrouped instanceof Array) {
+      groupedColumnKey = prevGrouped.slice();
+    }
 
     if (config.grouped === true) {
       if (groupedColumnKey.indexOf(columnKey) === -1) {
@@ -585,6 +520,7 @@ class Table extends React.Component {
 
     let cols = treeToList(arr).leafs;
 
+    //分组列渲染
     let firstLeftColumn = null;
     let firstMiddleColumn = null;
     let firstRightColumn = null;
@@ -595,6 +531,7 @@ class Table extends React.Component {
     if (groupedColumnKey instanceof Array && groupedColumnKey.length > 0) {
       hasGroupColumn = true;
     }
+    let groupColumnName = {};
 
     cols.forEach(d => {
       let columnKey = d.key || d.dataIndex;
@@ -639,6 +576,10 @@ class Table extends React.Component {
         middleColumnsCount += 1;
         firstMiddleColumn === null && (firstMiddleColumn = d);
       }
+
+      if (typeof d.title === "string" || typeof d.title === "number") {
+        groupColumnName[columnKey] = d.title;
+      }
       //
 
       let titleCellAttr = {};
@@ -677,7 +618,7 @@ class Table extends React.Component {
             children: (
               <span>
                 <label style={{ fontWeight: "bold" }}>
-                  {row.__groupTitle || ""}:
+                  {groupColumnName[row.__groupColumnKey] || ""}:
                 </label>
                 {row.__groupName || ""}
                 <label style={{ fontWeight: "bold" }}>({row.__count})</label>
