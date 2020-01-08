@@ -79,7 +79,13 @@ let summaryMath = {
   }
 };
 
-function getGroupedData({ groupedKey = "", data = [], keyField = "" }) {
+function groupData({
+  groupedKey = "",
+  groupTitle = "",
+  data = [],
+  keyField = "",
+  prefix = ""
+}) {
   let rows = data;
 
   let key = groupedKey;
@@ -89,16 +95,55 @@ function getGroupedData({ groupedKey = "", data = [], keyField = "" }) {
 
   let arr = [];
   Object.keys(g).forEach((k, i) => {
+    let childrens = g[k] || [];
     let obj = {
       __groupName: k || "",
+      __groupTitle: groupTitle,
       __isGroupedHeadRow: true,
-      children: g[k]
+      __count: childrens.length,
+      children: childrens
     };
 
-    obj[rowKey] = "__group_" + i;
+    obj[rowKey] = "__group_" + prefix + "-" + i;
 
     arr.push(obj);
   });
+
+  return arr;
+}
+
+/** 根据多个字段对数据进行分组 */
+function getGroupedData({ groupedKey = [], data = [], keyField = "" }) {
+  let arr = data;
+
+  for (let i = 0; i < groupedKey.length; i++) {
+    const k = groupedKey[i];
+
+    if (i > 0) {
+      treeFilter(arr, function(d, j, { depth, treeIndex }) {
+        if (depth === i - 1) {
+          let childrens = d.children;
+          if (childrens instanceof Array) {
+            d.children = groupData({
+              groupTitle: k,
+              groupedKey: k,
+              data: childrens,
+              keyField: keyField,
+              prefix: k + "-children-" + treeIndex
+            });
+          }
+        }
+        return true;
+      });
+    } else {
+      arr = groupData({
+        groupedKey: k,
+        groupTitle: k,
+        data: arr,
+        keyField: keyField
+      });
+    }
+  }
 
   return arr;
 }
@@ -163,6 +208,7 @@ class Table extends React.Component {
 
         return true;
       });
+      //
 
       nextState = {
         columns: cloneDeep(columnsArr),
@@ -323,7 +369,7 @@ class Table extends React.Component {
       arr = this.getCurrentPageData(arr);
     }
 
-    if (groupedColumnKey) {
+    if (groupedColumnKey instanceof Array) {
       arr = getGroupedData({
         groupedKey: groupedColumnKey,
         data: arr,
@@ -433,7 +479,6 @@ class Table extends React.Component {
     } = this.state;
 
     let columnKey = key;
-    let groupedColumnKey = prevGrouped;
 
     let configs = columnsConfig || {};
 
@@ -441,11 +486,22 @@ class Table extends React.Component {
       columnKey = columnMenu.columnKey;
     }
 
+    //分组列配置
+    let groupedColumnKey = prevGrouped.slice();
+
     if (config.grouped === true) {
-      groupedColumnKey = columnKey;
+      if (groupedColumnKey.indexOf(columnKey) === -1) {
+        groupedColumnKey.push(columnKey);
+      }
     } else if (config.grouped === false) {
-      groupedColumnKey = null;
+      let gi = groupedColumnKey.indexOf(columnKey);
+      if (gi > -1) {
+        groupedColumnKey.splice(gi, 1);
+      }
+    } else if (config.grouped === "none") {
+      groupedColumnKey = [];
     }
+    //
 
     let prevConfig = configs[columnKey] || {};
     let nextConfig = {
@@ -535,7 +591,10 @@ class Table extends React.Component {
     let leftColumnsCount = 0;
     let rightColumnsCount = 0;
     let middleColumnsCount = 0;
-    let groupedColumn = null;
+    let hasGroupColumn = false;
+    if (groupedColumnKey instanceof Array && groupedColumnKey.length > 0) {
+      hasGroupColumn = true;
+    }
 
     cols.forEach(d => {
       let columnKey = d.key || d.dataIndex;
@@ -580,9 +639,6 @@ class Table extends React.Component {
         middleColumnsCount += 1;
         firstMiddleColumn === null && (firstMiddleColumn = d);
       }
-      if (columnKey === groupedColumnKey) {
-        groupedColumn = d;
-      }
       //
 
       let titleCellAttr = {};
@@ -613,19 +669,18 @@ class Table extends React.Component {
     //数据分组的首行，进行相应的列合并
     let firstColumn = firstLeftColumn || firstMiddleColumn || firstRightColumn;
 
-    if (groupedColumn && firstColumn) {
+    if (hasGroupColumn && firstColumn) {
       firstColumn.align = "left";
       firstColumn.render = (value, row, index) => {
         if (row && row.__isGroupedHeadRow) {
-          let len = row.children && row.children.length;
           const obj = {
             children: (
               <span>
                 <label style={{ fontWeight: "bold" }}>
-                  {groupedColumn.title}:
+                  {row.__groupTitle || ""}:
                 </label>
                 {row.__groupName || ""}
-                <label style={{ fontWeight: "bold" }}>({len})</label>
+                <label style={{ fontWeight: "bold" }}>({row.__count})</label>
               </span>
             ),
             props: {
@@ -1149,7 +1204,7 @@ Table.defaultProps = {
   striped: true,
   contextMenuWrapperStyle: {},
   contextMenuStyle: {},
-  defaultGroupedColumnKey: null
+  defaultGroupedColumnKey: []
 };
 
 Table.propTypes = {
@@ -1181,10 +1236,10 @@ Table.propTypes = {
   settable: PropTypes.bool,
 
   /** 根据此列进行数据分组 */
-  groupedColumnKey: PropTypes.string,
+  groupedColumnKey: PropTypes.array,
 
   /** 默认分组列 */
-  defaultGroupedColumnKey: PropTypes.string,
+  defaultGroupedColumnKey: PropTypes.array,
 
   /** 奇偶行颜色间隔 */
   striped: PropTypes.bool,

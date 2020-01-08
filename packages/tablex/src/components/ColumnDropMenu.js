@@ -136,6 +136,9 @@ class HeadDropMenu extends React.Component {
       },
       7: {
         grouped: false
+      },
+      8: {
+        grouped: "none"
       }
     }[key];
 
@@ -189,10 +192,13 @@ class HeadDropMenu extends React.Component {
           {groupable && (
             <SubMenu key="sub3" title="列分组" onTitleClick={this.onTitleClick}>
               <Menu.Item key="6" style={styles}>
-                按此列分组
+                添加此列
               </Menu.Item>
               <Menu.Item key="7" style={styles}>
-                取消分组
+                取消此列
+              </Menu.Item>
+              <Menu.Item key="8" style={styles}>
+                重置所有
               </Menu.Item>
             </SubMenu>
           )}
