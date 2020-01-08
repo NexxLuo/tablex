@@ -113,6 +113,7 @@
   box-sizing: border-box;
   flex: 0 0 auto;
   border-bottom: 1px solid #e8e8ee;
+  z-index: 1;
 }
 
 .tablex-table .tablex-table-head {
