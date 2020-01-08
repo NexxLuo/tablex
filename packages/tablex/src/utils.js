@@ -621,7 +621,5 @@ export function getGroupedData({ groupedKey = [], data = [], keyField = "" }) {
       });
     }
   }
-
-  console.log("arr:", arr);
   return arr;
 }
