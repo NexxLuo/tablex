@@ -1494,15 +1494,14 @@ super(props);
 `js`
 
 ```javascript
-
 import React, { Component } from "react";
-import Table, { flatten, unflatten } from "tablex";
+import { Table, unflatten } from "tablex";
 import { Button, Input, Menu, InputNumber } from "antd";
 import _ from "lodash";
 
 const { Search } = Input;
 
-let BaseUrl = "";
+let BaseUrl = process.env.DOCZ_BASE || "";
 
 function requestGet(url, options) {
   let xhr = new XMLHttpRequest();
@@ -1830,6 +1829,7 @@ class Demo extends Component {
 
     let f = this.refs.tb.findData(d => d.name.indexOf(v) > -1, {
       startIndex: this.searchIndex,
+      startRowKey: this.searchedKey,
       focused: true
     });
 
@@ -1839,7 +1839,7 @@ class Demo extends Component {
     }
 
     if (searchedIndex > -1) {
-      this.searchIndex = searchedIndex + 1;
+      this.searchIndex = searchedIndex+1 ;
       this.searchedKey = searchedKey;
     } else {
       this.searchIndex = -1;

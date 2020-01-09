@@ -333,6 +333,7 @@ class Demo extends Component {
 
     let f = this.refs.tb.findData(d => d.name.indexOf(v) > -1, {
       startIndex: this.searchIndex,
+      startRowKey: this.searchedKey,
       focused: true
     });
 
@@ -342,7 +343,7 @@ class Demo extends Component {
     }
 
     if (searchedIndex > -1) {
-      this.searchIndex = searchedIndex + 1;
+      this.searchIndex = searchedIndex+1 ;
       this.searchedKey = searchedKey;
     } else {
       this.searchIndex = -1;
