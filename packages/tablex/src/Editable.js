@@ -1886,12 +1886,20 @@ class EditableTable extends React.Component {
     return newTreeData;
   };
 
-  findData = (fn, { startIndex = 0, focused = true }) => {
+  findData = (fn, { startIndex = 0, startRowKey = "", focused = true }) => {
     let { flatData: data, rowKey } = this.state;
 
     let found = null;
+    let start = startIndex;
 
-    for (let i = startIndex, len = data.length; i < len; i++) {
+    if (startRowKey) {
+      let i = data.findIndex(d => d[rowKey] === startRowKey);
+      if (i > -1) {
+        start = i;
+      }
+    }
+
+    for (let i = start, len = data.length; i < len; i++) {
       let d = data[i];
       if (d) {
         let bl = fn(d);
@@ -1903,8 +1911,9 @@ class EditableTable extends React.Component {
     }
 
     if (focused === true && found && found.index > -1) {
-      this.scrollToItem(found.index, "center");
-      this.setState({ focusedRowKeys: [found.row[rowKey]] });
+      this.setState({ focusedRowKeys: [found.row[rowKey]] }, () => {
+        this.scrollToItem(found.index, "center");
+      });
     }
 
     return found;
