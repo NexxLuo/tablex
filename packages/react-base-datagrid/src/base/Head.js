@@ -153,7 +153,6 @@ const renderColumns = ({
         rowColspan.start = i;
         rowColspan.end = colSpanEnd;
         columnResizable = false;
-        
       }
     }
     columnWidth = getColumnsWidth({
@@ -284,6 +283,7 @@ class TableHead extends React.Component {
 
     let rows = [];
 
+    //计算过行合并的列数据
     let rowsColumns = {};
 
     for (let i = 0; i < maxDepth + 1; i++) {
@@ -292,33 +292,85 @@ class TableHead extends React.Component {
       treeFilter(columns, (d, j, extra) => {
         let c = Object.assign({}, d);
         let depth = extra.depth;
+
+        let rowDepth = i;
+
+        let prevRowspan = 0;
+        let prevColumns = rowsColumns[i - 1] || [];
+
+        let parent = d.__parent;
+        let parentKey = "";
+        if (parent) {
+          parentKey = parent.key;
+        }
+        let prev = prevColumns.find((p, pi) => {
+          let pk = p.key || p.dataIndex || pi;
+          return pk === parentKey;
+        });
+        if (prev) {
+          prevRowspan = prev.__rowspan__ || 0;
+        }
+
+        let isRowColumn = false;
+        let isCurrentRow = false;
+        let isPlaceholder = false;
         let hasChildren = false;
+        let maxRowSpan = maxDepth - rowDepth + 1;
+        let currRowSpan = 1;
+
+        //根据列层级匹配列是否属于此行
+        if (depth === i) {
+          isCurrentRow = true;
+        }
+
+        //如果此列没有子级，则设置此列的rowSpan
         if (d.children && d.children.length > 0) {
           hasChildren = true;
-        }
-
-        let currentDepth = i;
-
-        if (depth === i) {
-          currentRowColumns.push(c);
-
-          if (!hasChildren) {
-            let rowspan = maxDepth - currentDepth + 1;
-            if (rowspan > 1) {
-              c.__rowspan__ = rowspan;
-            }
-          }
         } else {
-          if (!hasChildren) {
-            if (depth <= i) {
-              c.__placeholder__ = true;
-              currentRowColumns.push(c);
-            }
+          currRowSpan = maxRowSpan;
+        }
+
+        //父列如果存在rowSpan且大于1，则此行此列只渲染占位符
+        if (prevRowspan > 1) {
+          isPlaceholder = true;
+        }
+
+        //如果配置的rowSpan大于最大可合并行数，则重置为最大值
+        if (typeof d.rowSpan === "number") {
+          currRowSpan = c.rowSpan;
+          if (currRowSpan > maxRowSpan) {
+            currRowSpan = maxRowSpan;
           }
         }
 
-        if (typeof d.rowSpan === "number") {
-          c.__rowspan__ = c.rowSpan;
+        if (isCurrentRow) {
+          isRowColumn = true;
+        } else {
+          //非当前行的末级列，需要在当前行渲染占位列
+          if (!hasChildren && depth < rowDepth) {
+            isRowColumn = true;
+            isPlaceholder = true;
+
+            //处理rowSpan下还存在children时,无法显示的问题
+            if (parentKey) {
+              isPlaceholder = false;
+            }
+            //
+          }
+        }
+
+        //占位列 不进行行合并
+        if (isPlaceholder) {
+          currRowSpan = 1;
+          c.__placeholder__ = true;
+        }
+
+        if (currRowSpan > 1) {
+          c.__rowspan__ = currRowSpan;
+        }
+
+        if (isRowColumn) {
+          currentRowColumns.push(c);
         }
 
         return true;
