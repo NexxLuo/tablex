@@ -1004,7 +1004,7 @@ class EditableTable extends React.Component {
 
     if (allowSaveEmpty !== true && hasModifyedData === false) {
       this.cancelEdit();
-      return;
+      return false;
     }
 
     if (alwaysValidate === true) {
@@ -1015,7 +1015,7 @@ class EditableTable extends React.Component {
 
     if (bl === false) {
       message.error("信息录入不正确，请检查");
-      return;
+      return false;
     }
 
     let fn = this.props.onComplete;
@@ -1025,6 +1025,7 @@ class EditableTable extends React.Component {
     }
 
     this.endEdit(callBack);
+    return bl;
   };
 
   editSave = async callBack => {
