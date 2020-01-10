@@ -34,6 +34,10 @@ function formatExpandRenderData(data, rowKey, render) {
   return { data: nextData, keys: keys };
 }
 
+function isTree(data = []) {
+  return data.findIndex(d => d.children instanceof Array === true) > -1;
+}
+
 class TreeGrid extends Component {
   constructor(props) {
     super(props);
@@ -52,7 +56,7 @@ class TreeGrid extends Component {
       dataMap: {},
       columns: [],
       rowKey: "",
-
+      isTree: false,
       treeProps: {},
       expandColumnKey: "",
       expandedRowKeys: expandedKeys,
@@ -88,7 +92,8 @@ class TreeGrid extends Component {
         prevProps: nextProps,
         expandColumnKey,
         disabledSelectKeys: disabledSelectKeys || [],
-        indentSize
+        indentSize,
+        isTree: isTree(nextData)
       };
 
       if (data !== prevState.rawData) {
@@ -142,12 +147,6 @@ class TreeGrid extends Component {
   isLoadingChildren = key => {
     let { loadingKeys } = this.state;
     return loadingKeys.indexOf(key) > -1;
-  };
-
-  isTree = () => {
-    return (
-      this.state.data.findIndex(d => d.children instanceof Array === true) > -1
-    );
   };
 
   isExpanded = key => {
@@ -337,8 +336,7 @@ class TreeGrid extends Component {
   };
 
   formatColumns = () => {
-    let { columns, rowKey, expandColumnKey, indentSize } = this.state;
-    let isTree = this.isTree();
+    let { columns, rowKey, expandColumnKey, indentSize, isTree } = this.state;
 
     let expandColumn = null;
 
@@ -450,8 +448,33 @@ class TreeGrid extends Component {
     return h;
   };
 
+  onRowClick = ({ rowIndex, rowKey }) => {
+    let k = rowKey;
+    let isExpanded = this.isExpanded(k);
+    this.onExpand(!isExpanded, k, rowIndex);
+  };
+
+  onRow = (rowData, rowIndex, rowProps, rowExtra = {}) => {
+    let fn = this.props.onRow;
+    let rowKey = rowExtra.key;
+    let o = {};
+    if (typeof fn === "function") {
+      o = fn(rowData, rowIndex, rowProps, rowExtra) || {};
+    }
+
+    return {
+      ...o,
+      onClick: e => {
+        this.onRowClick({ rowIndex, rowKey });
+        if (typeof o.onClick === "function") {
+          o.onClick({ rowData, rowIndex, rowKey }, e);
+        }
+      }
+    };
+  };
+
   render() {
-    let { data, flatData, disabledSelectKeys, treeProps } = this.state;
+    let { data, flatData, disabledSelectKeys, treeProps, isTree } = this.state;
     let props = this.props;
     let columns = this.formatColumns();
 
@@ -466,6 +489,10 @@ class TreeGrid extends Component {
       innerRef: this.innerRef,
       disabledSelectKeys
     };
+
+    if (isTree && props.expandOnRowClick) {
+      newProps.onRow = this.onRow;
+    }
 
     if (typeof props.expandedRowRender === "function") {
       newProps.rowHeight = this.rowHeightWithExpandRender;
@@ -482,7 +509,8 @@ TreeGrid.defaultProps = {
   expandColumnKey: "",
   expandRowHeight: 100,
   defaultExpandedRowKeys: [],
-  indentSize: 20
+  indentSize: 20,
+  expandOnRowClick: false
 };
 
 TreeGrid.propTypes = {
@@ -516,6 +544,10 @@ TreeGrid.propTypes = {
 
   /** 展开的行键值 */
   expandedRowKeys: PropTypes.array,
+
+  /** 点击行时是否展开行 */
+  expandOnRowClick: PropTypes.bool,
+
   /**
    * 行展开事件
    * (expandedRowKeys:Array) => void
