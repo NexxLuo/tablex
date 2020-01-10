@@ -33,10 +33,10 @@ Other.propTypes = {
   columnDropMenu: PropTypes.bool,
 
   /** 根据此列进行数据分组 */
-  groupedColumnKey: PropTypes.string,
+  groupedColumnKey: PropTypes.array,
 
   /** 默认分组列 */
-  defaultGroupedColumnKey: PropTypes.string,
+  defaultGroupedColumnKey: PropTypes.array,
 
   /** 是否可进行列排序 */
   sortable: PropTypes.bool,

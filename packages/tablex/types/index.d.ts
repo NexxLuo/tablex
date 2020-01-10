@@ -159,6 +159,8 @@ export interface TableProps<T> {
   contextMenu?: (row: any) => React.ReactNode;
   orderNumber?: false | null | ColumnProps<T>;
   pagination?: PaginationProps | false | null;
+  defaultGroupedColumnKey?:string[];
+  groupedColumnKey?:string[];
   resetScrollOffset?: boolean;
   loading?: boolean;
   settable?: boolean;
