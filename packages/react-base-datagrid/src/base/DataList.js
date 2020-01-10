@@ -390,7 +390,7 @@ const TableCell = props => {
   );
 };
 
-const TableRow = memo(({ data, index, style }) => {
+const ListItem = memo(function TableRow({ data, index, style }) {
   let {
     data: rows,
     columns,
@@ -804,10 +804,10 @@ class DataList extends Component {
     };
 
     if (this.props.virtual === false) {
-      return <ItemList {...props}>{TableRow}</ItemList>;
+      return <ItemList {...props}>{ListItem}</ItemList>;
     }
 
-    return <VirtualList {...props}>{TableRow}</VirtualList>;
+    return <VirtualList {...props}>{ListItem}</VirtualList>;
   }
 }
 

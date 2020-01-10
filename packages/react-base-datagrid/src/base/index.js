@@ -568,7 +568,7 @@ class BaseDataGrid extends React.Component {
   }
 }
 
-const AutoSizerTable = forwardRef((props, ref) => {
+const AutoSizerTable = forwardRef(function AutoSizeTable(props, ref) {
   return (
     <ReactResizeDetector handleWidth handleHeight>
       {({ width, height }) => {
