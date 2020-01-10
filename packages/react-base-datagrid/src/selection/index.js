@@ -290,12 +290,13 @@ class SelectionGrid extends Component {
     rowKey,
     selectedRowKeys,
     selectedRows,
-    halfKeys = []
+    halfKeys = [],
+    callPropsFn = true
   }) => {
     let rfn = this.getRowSelection("onSelectChange");
     if (typeof rfn === "function") {
       rfn(selectedRowKeys, selectedRows, { halfKeys });
-    } else {
+    } else if (callPropsFn === true) {
       this.call_props_onSelectChange({
         rowData,
         rowIndex,
@@ -382,7 +383,8 @@ class SelectionGrid extends Component {
     rowKey,
     keys,
     rows,
-    halfKeys = []
+    halfKeys = [],
+    callPropsFn = true
   }) => {
     let rfn = this.getRowSelection("onCheckChange");
     let fn = this.getRowSelection("onChange");
@@ -391,7 +393,7 @@ class SelectionGrid extends Component {
       rfn(keys, rows), { halfKeys };
     } else if (typeof fn === "function") {
       fn(keys, rows, { halfKeys });
-    } else {
+    } else if (callPropsFn === true) {
       this.call_props_onSelectChange({
         rowData,
         rowIndex,
@@ -832,7 +834,8 @@ class SelectionGrid extends Component {
           rowKey: rowKey,
           keys: nextCheckedKeys,
           rows: nextCheckedRows,
-          halfKeys: nextState.halfCheckedKeys
+          halfKeys: nextState.halfCheckedKeys,
+          callPropsFn: false
         });
       }
 
@@ -924,7 +927,8 @@ class SelectionGrid extends Component {
           rowKey: rowKey,
           keys: nextCheckedKeys,
           rows: nextCheckedRows,
-          halfKeys: nextState.halfCheckedKeys
+          halfKeys: nextState.halfCheckedKeys,
+          callPropsFn: false
         });
       }
 
@@ -1302,7 +1306,8 @@ class SelectionGrid extends Component {
         rowKey: key,
         selectedRowKeys: nextState.selectedRowKeys,
         selectedRows: nextState.selectedRows,
-        halfKeys: nextHalflCheckedKeys
+        halfKeys: nextHalflCheckedKeys,
+        callPropsFn: false
       });
     }
 
@@ -1389,7 +1394,8 @@ class SelectionGrid extends Component {
         rowKey: key,
         selectedRowKeys: nextState.selectedRowKeys,
         selectedRows: nextState.selectedRows,
-        halfKeys: nextHalflCheckedKeys
+        halfKeys: nextHalflCheckedKeys,
+        callPropsFn: false
       });
     }
     this.setState(nextState);
