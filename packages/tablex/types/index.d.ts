@@ -159,6 +159,7 @@ export interface TableProps<T> {
   contextMenu?: (row: any) => React.ReactNode;
   orderNumber?: false | null | ColumnProps<T>;
   pagination?: PaginationProps | false | null;
+  resetScrollOffset?: boolean;
   loading?: boolean;
   settable?: boolean;
   striped?: boolean;
@@ -202,6 +203,7 @@ export interface TableProps<T> {
   expandRowHeight?: number | ((record: object, index: number) => number);
   defaultExpandedRowKeys?: string[] | number[];
   expandedRowKeys?: string[] | number[];
+  expandOnRowClick?: boolean;
   onExpandedRowsChange?: (expandedRowKeys: string[] | number[]) => void;
   onExpand?: (expanded: boolean, record: T) => void;
   loadChildrenData?: (record: object) => Promise<T> | void;

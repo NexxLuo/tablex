@@ -9,7 +9,8 @@ Expandable.defaultProps = {
   expandColumnKey: "",
   expandRowHeight: 100,
   defaultExpandedRowKeys: [],
-  indentSize: 20
+  indentSize: 20,
+  expandOnRowClick: false
 };
 
 Expandable.propTypes = {
@@ -24,6 +25,10 @@ Expandable.propTypes = {
 
   /** 展开的行键值 */
   expandedRowKeys: PropTypes.array,
+
+  /** 点击行时是否展开行 */
+  expandOnRowClick: PropTypes.bool,
+
   /**
    * 行展开事件
    * (expandedRowKeys:Array) => void

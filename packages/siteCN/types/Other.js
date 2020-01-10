@@ -7,6 +7,7 @@ const Other = () => {
 
 Other.defaultProps = {
   pagination: false,
+  resetScrollOffset: true,
   loading: false,
   striped: true,
   columnDropMenu: true
@@ -24,6 +25,9 @@ Other.propTypes = {
 
   /** 分页 */
   pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+
+  /** 分页发生改变后是否重置滚动条位置 */
+  resetScrollOffset: PropTypes.bool,
 
   /** 是否启用列标题配置项菜单 */
   columnDropMenu: PropTypes.bool,
