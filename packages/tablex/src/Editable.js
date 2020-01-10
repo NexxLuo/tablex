@@ -1891,13 +1891,15 @@ class EditableTable extends React.Component {
     let { flatData: data, rowKey } = this.state;
 
     let found = null;
-    let start = startIndex;
+    let start = 0;
 
     if (startRowKey) {
       let i = data.findIndex(d => d[rowKey] === startRowKey);
       if (i > -1) {
-        start = i;
+        start = i + 1;
       }
+    } else {
+      start = startIndex;
     }
 
     for (let i = start, len = data.length; i < len; i++) {
