@@ -43,8 +43,8 @@ class Table extends React.Component {
     }
   }
 
-  scrollTo = scrollOffset => {
-    this.listRef.current && this.listRef.current.scrollTo(scrollOffset);
+  scrollTo = scrollOffsetY => {
+    this.listRef.current && this.listRef.current.scrollTo(scrollOffsetY);
   };
 
   scrollToItem = (index, align) => {
