@@ -225,6 +225,10 @@ class Table extends React.Component {
     let { pagination } = this.state;
     let fn = this.state.pagination.onPageChange;
 
+    if (this.props.resetScrollOffset) {
+      this.scrollToFirst();
+    }
+
     if (typeof fn === "function") {
       fn(pageIndex, pageSize);
     } else {
@@ -893,6 +897,10 @@ class Table extends React.Component {
     this.innerTableRef && this.innerTableRef.resetScrollbarSize();
   }
 
+  scrollToFirst() {
+    this.innerTableRef && this.innerTableRef.scrollTo(0);
+  }
+
   getSummary = () => {
     let { summary = {} } = this.props;
     let { data } = this.state;
@@ -1141,6 +1149,7 @@ Table.defaultProps = {
   settable: true,
   columnDropMenu: true,
   pagination: false,
+  resetScrollOffset: true,
   loading: false,
   striped: true,
   contextMenuWrapperStyle: {},
@@ -1166,6 +1175,9 @@ Table.propTypes = {
 
   /** 分页 */
   pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+
+  /** 分页发生改变后是否重置滚动条位置 */
+  resetScrollOffset: PropTypes.bool,
 
   /** 是否启用列标题配置项菜单 */
   columnDropMenu: PropTypes.bool,
