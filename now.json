@@ -17,6 +17,7 @@
             "destination": "/packages/siteCN/index.html"
         }
     ],
+    "alias": ["tablex.nexxx.now.sh/packages/siteCN", "tablex"],
     "github": {
         "silent": false
     }
