@@ -30,6 +30,7 @@
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
-    "lerna": "^3.15.0"
+    "lerna": "^3.15.0",
+    "@now/next": "^2.3.8"
   }
 }
