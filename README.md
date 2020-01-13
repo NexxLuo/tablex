@@ -4,7 +4,7 @@
 
 基于 [react-window](https://github.com/bvaughn/react-window) 的表格组件
 
-Learn more at the [website](https://nexxluo.github.io/tablex)
+Learn more at the [website](https://tablex.now.sh/packages/website)
 
 
 ## Install
@@ -49,13 +49,9 @@ class Demo extends Component {
 13. 支持shift、拖拽方式快捷选择数据
 14. 支持表头行、列合并
 15. 支持自动行高度，行高随内容高度变化
+16. 支持数据分组
  
 ## Roadmap
 
-1. 数据分组
-2. 无限加载
+1. 无限加载
 
-
-## FAQ
-
-存在固定列时，联动滚动可能会存在少许延迟。此问题只会出现在开发环境，生产模式下不会存在此问题。
