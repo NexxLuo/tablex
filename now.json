@@ -3,18 +3,18 @@
     "version": 2,
     "builds": [
         {
-            "src": "./packages/siteCN/package.json",
+            "src": "./packages/website/package.json",
             "use": "@now/static-build",
             "config": {
-                "includeFiles": "./packages/siteCN/doc/**",
+                "includeFiles": "./packages/website/doc/**",
                 "distDir": "./.docz/dist"
             }
         }
     ],
     "rewrites": [
         {
-            "source": "/packages/siteCN/((?!index).*)",
-            "destination": "/packages/siteCN/index.html"
+            "source": "/packages/website/((?!index).*)",
+            "destination": "/packages/website/index.html"
         }
     ],
     "alias": ["tablex.now.sh"],

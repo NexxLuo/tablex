@@ -10,7 +10,6 @@
   "homepage": "https://nexxluo.github.io/tablex",
   "scripts": {
     "dev": "cd ./packages/react-base-datagrid && npm run dev",
-    "build": "cd ./packages/siteCN && npm run docb",
     "build:lib": "npm run build:base && npm run build:tablex",
     "build:base": "cd ./packages/react-base-datagrid && npm run build",
     "build:tablex": "cd ./packages/tablex && npm run build",
@@ -30,6 +29,6 @@
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
-    "lerna": "^3.15.0" 
+    "lerna": "^3.15.0"
   }
 }
