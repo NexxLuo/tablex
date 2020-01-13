@@ -2,17 +2,22 @@
     "name": "tablex",
     "version": 2,
     "builds": [
-      {
-        "src": "./packages/siteCN/package.json",
-        "use": "@now/static-build",
-        "config": {
-          "includeFiles": "./packages/siteCN/doc/**",
-          "distDir": "./.docz/dist"
+        {
+            "src": "./packages/siteCN/package.json",
+            "use": "@now/static-build",
+            "config": {
+                "includeFiles": "./packages/siteCN/doc/**",
+                "distDir": "./.docz/dist"
+            }
         }
-      }
     ],
-    "rewrites": [{ "source": "/*", "destination": "/index.html" }],
+    "rewrites": [
+        {
+            "source": "/packages/siteCN/((?!index).*)",
+            "destination": "/packages/siteCN/index.html"
+        }
+    ],
     "github": {
-      "silent": false
+        "silent": false
     }
-  }
+}
