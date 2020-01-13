@@ -1,6 +1,6 @@
 {
     "name": "tablex",
-    "version": 1,
+    "version": 2,
     "builds": [
       {
         "src": "./packages/siteCN/package.json",
