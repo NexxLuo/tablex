@@ -11,7 +11,7 @@
         }
       }
     ],
-    "rewrites": [{ "source": "/.*", "destination": "/packages/siteCN/index.html" }],
+    "rewrites": [{ "source": "/packages/siteCN/*", "destination": "/packages/siteCN/index.html" }],
     "github": {
       "silent": false
     }
