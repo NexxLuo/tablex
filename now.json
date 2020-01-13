@@ -1,0 +1,17 @@
+{
+    "name": "tablex",
+    "version": 1,
+    "builds": [
+      {
+        "src": "./packages/siteCN/package.json",
+        "use": "@now/static-build",
+        "config": {
+          "includeFiles": "./packages/siteCN/doc/**",
+          "distDir": "./.docz/dist"
+        }
+      }
+    ],
+    "github": {
+      "silent": true
+    }
+  }

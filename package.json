@@ -10,7 +10,8 @@
   "homepage": "https://nexxluo.github.io/tablex",
   "scripts": {
     "dev": "cd ./packages/react-base-datagrid && npm run dev",
-    "build": "npm run build:base && npm run build:tablex",
+    "build": "cd ./packages/siteCN && npm run docb",
+    "build:lib": "npm run build:base && npm run build:tablex",
     "build:base": "cd ./packages/react-base-datagrid && npm run build",
     "build:tablex": "cd ./packages/tablex && npm run build",
     "start": "cd ./packages/tablex && npm start",
