@@ -7,7 +7,7 @@
     "start": "docz dev",
     "dev": "docz dev",
     "build-d": "docz build",
-    "build": "DOCZ_BASE=/packages/siteCN docz build",
+    "build": "DOCZ_BASE=/packages/website docz build",
     "docdb": "set DOCZ_BASE=/components/table&& docz build",
     "docb": "set DOCZ_BASE=/tablex&& docz build ",
     "docd": "gh-pages -d ./.docz/dist"
