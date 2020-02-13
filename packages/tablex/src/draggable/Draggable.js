@@ -85,10 +85,6 @@ class Draggable extends React.Component {
 
     let { list, treeProps } = treeToList(data, rowKey);
 
-    list.forEach(d => {
-      delete d.children;
-    });
-
     let oldIndex = sourceInfo.treeIndex;
     let newIndex = targetInfo.treeIndex;
 
@@ -217,7 +213,6 @@ class Draggable extends React.Component {
   }
 }
 
- 
 const withDragDropContext = Cmp => {
   return class DraggableTable extends React.Component {
     render() {
