@@ -63,11 +63,10 @@ class Demo extends React.Component {
         dataIndex: "column3",
         key: "column3",
         title: "column3",
-        render:(v,r,i)=>{
+        render: (v, r, i) => {
+          let strArr = new Array(10 + i * 10).fill("a").join("");
 
-          let strArr=new Array(10+i*10).fill("a").join("");
-
-        return <div>{strArr}</div>
+          return <div>{strArr}</div>;
         }
       },
       {
@@ -528,48 +527,54 @@ class Demo extends React.Component {
     });
   };
 
+  getData = () => {
+    this.setState({ tableData: this.state.data });
+  };
+
   render() {
-    let { columns, data } = this.state;
-    console.log("columns:", columns);
+    let { columns, tableData, data: arr } = this.state;
+  
+    let data = tableData || [];
+
+    let tb = (
+      <Table
+        bordered={true}
+        autoRowHeight={true}
+        editable={true}
+        autoHeight={false}
+        virtual={true}
+        editAll={true}
+        ref="table"
+        rowKey="id"
+        columns={columns}
+        dataSource={data}
+        editTools={["edit", "add", "delete"]}
+        selectMode="multiple"
+        defaultAddCount={1}
+        isAppend={false}
+        validateTrigger="onChange"
+        onBeforeAdd={this.onBeforeAdd}
+        onBeforeEdit={this.onBeforeAdd}
+        onEditSave={this.onEditSave}
+        onCancel={this.onCancel}
+        rowSelection={{
+          type: "radio",
+          checkOnSelect: true,
+          selectOnCheck: true,
+          selectType: "none",
+          onChange: this.onSelectChange,
+          selectedRowKeys: this.state.selectedRowKeys
+        }}
+      />
+    );
+
+    
 
     return (
       <div style={{ height: 600 }}>
-        <Popover
-          trigger="click"
-          content={<div style={{ height: 300, width: 300 }}></div>}
-        >
-          <Button>click</Button>
-        </Popover>
+        <Button onClick={this.getData}>click</Button>
 
-        <Table
-          bordered={true}
-          autoRowHeight={true}
-          editable={true}
-          autoHeight={false}
-          virtual={true}
-          editAll={true}
-          ref="table"
-          rowKey="id"
-          columns={columns}
-          dataSource={data}
-          editTools={["edit", "add", "delete"]}
-          selectMode="multiple"
-          defaultAddCount={1}
-          isAppend={false}
-          validateTrigger="onChange"
-          onBeforeAdd={this.onBeforeAdd}
-          onBeforeEdit={this.onBeforeAdd}
-          onEditSave={this.onEditSave}
-          onCancel={this.onCancel}
-          rowSelection={{
-            type: "radio",
-            checkOnSelect: true,
-            selectOnCheck: true,
-            selectType: "none",
-            onChange: this.onSelectChange,
-            selectedRowKeys: this.state.selectedRowKeys
-          }}
-        />
+        {tb}
       </div>
     );
   }
