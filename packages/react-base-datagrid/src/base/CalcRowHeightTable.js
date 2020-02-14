@@ -4,6 +4,20 @@ import Table from "./Table";
 class ClacTable extends Component {
   containerRef = React.createRef(null);
 
+  state = { data: [] };
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    let nextState = {
+      needReset: false
+    };
+
+    if (nextProps.data !== prevState.data) {
+      nextState.needReset = true;
+      nextState.data = nextProps.data;
+    }
+
+    return nextState;
+  }
   resetSize = () => {
     let fn = this.props.onItemSizeChange;
     if (typeof fn === "function") {
@@ -26,7 +40,15 @@ class ClacTable extends Component {
   };
 
   componentDidMount() {
-    this.resetSize();
+    if (this.state.needReset) {
+      this.resetSize();
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.state.needReset) {
+      this.resetSize();
+    }
   }
 
   render() {
