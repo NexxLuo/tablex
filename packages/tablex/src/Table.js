@@ -318,7 +318,10 @@ class Table extends React.Component {
   onSort = dataIndex => {
     let sorted = this.state.sortedColumns || {};
 
-    let newSorted = { ...sorted };
+    let newSorted = {};
+    if (this.props.multipleSort) {
+      newSorted = { ...sorted };
+    }
 
     let col = sorted[dataIndex];
 
@@ -338,7 +341,13 @@ class Table extends React.Component {
       newSorted[dataIndex] = targetSort;
     }
 
-    this.setState({ sortedColumns: newSorted });
+    this.setState({ sortedColumns: newSorted }, () => {
+      let fn = this.props.onSort;
+      if (typeof fn === "function") {
+        let { sortedColumns, data } = this.state;
+        fn(sortedColumns, { data });
+      }
+    });
   };
 
   onTitleClick = ({ dataIndex }) => {
@@ -1154,7 +1163,8 @@ Table.defaultProps = {
   striped: true,
   contextMenuWrapperStyle: {},
   contextMenuStyle: {},
-  defaultGroupedColumnKey: []
+  defaultGroupedColumnKey: [],
+  multipleSort: true
 };
 
 Table.propTypes = {
@@ -1184,6 +1194,12 @@ Table.propTypes = {
 
   /** 是否可进行列排序 */
   sortable: PropTypes.bool,
+
+  /** 是否多列排序 */
+  multipleSort: PropTypes.bool,
+
+  /** 排序事件 */
+  onSort: PropTypes.func,
 
   /** 是否可进行属性配置 */
   settable: PropTypes.bool,

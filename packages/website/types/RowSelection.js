@@ -22,6 +22,8 @@ RowSelection.propTypes = {
   getCheckboxProps: PropTypes.func,
   /** 选中的行key */
   selectedRowKeys: PropTypes.array,
+  /** 复选框勾选中的行key */
+  checkedKeys: PropTypes.array,
   /** 选择模式，单选、复选、不可选 */
   type: PropTypes.oneOf(["checkbox", "radio", "none"]),
   /** 手动选择/取消选择某行的回调 */

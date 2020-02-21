@@ -10,7 +10,8 @@ Other.defaultProps = {
   resetScrollOffset: true,
   loading: false,
   striped: true,
-  columnDropMenu: true
+  columnDropMenu: true,
+  multipleSort: true
 };
 
 Other.propTypes = {
@@ -40,6 +41,12 @@ Other.propTypes = {
 
   /** 是否可进行列排序 */
   sortable: PropTypes.bool,
+
+  /** 是否可多列排序 */
+  multipleSort: PropTypes.bool,
+
+  /** 排序事件 */
+  onSort: PropTypes.func,
 
   /** 是否可进行属性配置 */
   settable: PropTypes.bool,

@@ -79,7 +79,7 @@ let fixedColumns = [
       };
 
       if (index % 20 === 0) {
-       // obj.props.rowSpan = 13;
+        // obj.props.rowSpan = 13;
         obj.children = value;
       }
 
@@ -99,12 +99,12 @@ let fixedColumns = [
             children: value,
             props: {}
           };
-    
+
           if (index % 5 === 0) {
-          //  obj.props.rowSpan = 3;
+            //  obj.props.rowSpan = 3;
             obj.children = value;
           }
-    
+
           return obj;
         }
       },
@@ -163,7 +163,7 @@ function createData(level, parentKey, maxLevel, index) {
 function createTreeData() {
   let data = [];
   for (let i = 0; i < 50; i++) {
-     let childrens = createData(0, i, 2);
+    let childrens = createData(0, i, 2);
     let d = {
       id: "" + i,
       level: 0,
@@ -316,9 +316,13 @@ class Demo extends Component {
           <Table
             loading={this.state.loading}
             editTools={["edit", "add", "delete"]}
-        
+            multipleSort={true}
+            onSort={a => {
+              // this.setState({data:[]})
+              console.log("onSort:", a);
+            }}
             tableId="preview_table"
-            sortable={false}
+            sortable={true}
             editable={true}
             isAppend={true}
             allowSaveEmpty={true}
