@@ -412,13 +412,13 @@ export function getParentElement(element, selector) {
       return el;
     }
 
-    let p = el.parentElement;
+    let p = el.parentElement || el.parentNode;
 
-    if (p !== null) {
+    if (p) {
       if (isMatched(p, tagName)) {
         return p;
       } else {
-        return getParent(el.parentElement, tagName);
+        return getParent(p, tagName);
       }
     } else {
       return null;
