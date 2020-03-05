@@ -518,6 +518,10 @@ const ListItem = memo(function TableRow({ data, index, style }) {
     }
   }
 
+  if (extraAttr.className) {
+    rowProps.className = rowProps.className + " " + extraAttr.className;
+  }
+
   //如果此行为rowspan的最后一行，额外添加占位行
   let rowExtraElements = [];
 

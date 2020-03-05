@@ -386,9 +386,6 @@ export function getParentElement(element, selector) {
       if (typeof elCls === "string") {
         let cls = elCls.toLowerCase().split(" ");
         matched = cls.indexOf(selectorClass) > -1;
-      } else {
-        // 某些元素的className并不是string类型，比如：svg
-        // console.log("className:", el.classList);
       }
     } else if (firstChar === "#") {
       let selectorID = str.split("#")[1] || "";
@@ -409,7 +406,7 @@ export function getParentElement(element, selector) {
     }
 
     if (isMatched(el, tagName)) {
-      return el;
+   //   return el;
     }
 
     let p = el.parentElement || el.parentNode;

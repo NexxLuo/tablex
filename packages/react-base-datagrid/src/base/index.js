@@ -7,7 +7,8 @@ import {
   addClass,
   removeClass,
   delegate,
-  isNumber
+  isNumber,
+  getParentElement
 } from "./utils";
 import ReactResizeDetector from "react-resize-detector";
 import CalcRowHeightTable from "./CalcRowHeightTable";
@@ -215,12 +216,19 @@ class BaseDataGrid extends React.Component {
 
     rows = containerEl.getElementsByClassName("tablex-table-row-" + rowIndex);
 
+    let rowp = getParentElement(target, ".tablex-container");
+
     for (let i = 0; i < rows.length; i++) {
       const r = rows[i];
-      if (e.type === "mouseout") {
-        removeClass(r, hoverCls);
-      } else if (e.type === "mouseover") {
-        addClass(r, hoverCls);
+
+      let p = getParentElement(r, ".tablex-container");
+
+      if (p === rowp) {
+        if (e.type === "mouseout") {
+          removeClass(r, hoverCls);
+        } else if (e.type === "mouseover") {
+          addClass(r, hoverCls);
+        }
       }
     }
   };
