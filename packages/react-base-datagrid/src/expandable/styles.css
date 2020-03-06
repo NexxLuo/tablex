@@ -29,9 +29,15 @@
   content: "+";
 }
 
-.tablex-bordered .tablex-table-row .tablex-row-expandedRowRender {
-  min-width: 100%;
+.tablex-container .tablex-table-row .tablex-row-expandedRowRender {
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  overflow: hidden;
 }
+
 
 @keyframes loadingCircle {
   100% {
