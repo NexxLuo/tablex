@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Table from "./Table";
-
+import { getParentElement } from "./utils";
 class ClacTable extends Component {
   containerRef = React.createRef(null);
 
@@ -27,11 +27,26 @@ class ClacTable extends Component {
 
       if (container) {
         let rows = container.querySelectorAll(".tablex-table-row");
+        let rowsContainer = getParentElement(container, ".tablex-container");
+
         for (let i = 0; i < rows.length; i++) {
           const row = rows[i];
-          let h = row.offsetHeight;
-          itemSize[i] = h;
-          totalSize = totalSize + h;
+          let p = getParentElement(row, ".tablex-container");
+
+          if (p === rowsContainer) {
+            let rowIndex = row.dataset.rowindex;
+
+            let h = row.offsetHeight;
+
+            let rc = row.firstChild;
+
+            if (rc && rc.classList.contains("tablex-row-expandedRowRender")) {
+              h = rc.offsetHeight;
+            }
+
+            itemSize[rowIndex] = h;
+            totalSize = totalSize + h;
+          }
         }
       }
 
