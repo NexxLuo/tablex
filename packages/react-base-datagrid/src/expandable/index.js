@@ -401,6 +401,13 @@ class TreeGrid extends Component {
     let { rowData, rowIndex } = params;
     let fn = this.props.expandedRowRender;
     let fnRow = this.props.rowRender;
+    let autoRowHeight = this.props.autoRowHeight;
+    let styles = {};
+    if (autoRowHeight === false) {
+      styles = {
+        height: "100%"
+      };
+    }
 
     if (typeof fn === "function") {
       if (rowData.__type === "__expandedRowRender") {
@@ -408,8 +415,9 @@ class TreeGrid extends Component {
         let nodeInfo = (treeProps || {})[rootKey];
         let root = dataMap[rootKey];
         let rootIndex = nodeInfo.index;
+
         return (
-          <div className="tablex-row-expandedRowRender">
+          <div className="tablex-row-expandedRowRender" style={styles}>
             {fn(root, rootIndex, params)}
           </div>
         );
