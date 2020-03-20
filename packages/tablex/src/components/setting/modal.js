@@ -409,7 +409,7 @@ class SettingModal extends React.Component {
             onClick={this.onOk}
             style={{ marginLeft: 20 }}
           >
-            {this.props.intl["settingReset"]}
+            {this.props.intl["settingOk"]}
           </Button>
           <Button
             type="gray"
@@ -442,6 +442,7 @@ SettingModal.defaultProps = {
     settingTitle: "表格配置",
     settingReset: "重置",
     settingOk: "确定",
+    settingCancel: "取消",
     settingWidth: "宽度：",
     settingFixed: "冻结：",
     settingFixedLeft: "左",

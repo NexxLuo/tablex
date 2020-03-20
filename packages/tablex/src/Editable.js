@@ -2231,6 +2231,7 @@ EditableTable.defaultProps = {
     settingTitle: "表格配置",
     settingReset: "重置",
     settingOk: "确定",
+    settingCancel: "取消",
     settingWidth: "宽度：",
     settingFixed: "冻结：",
     settingFixedLeft: "左",
