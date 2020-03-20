@@ -75,10 +75,6 @@ function orderNumberCellRender(value, rowData, index) {
   return index + 1;
 }
 
-function orderNumberHeadRender() {
-  return "序号";
-}
-
 /**
  * 表格
  */
@@ -174,7 +170,7 @@ class Table extends React.Component {
             width: 50,
             align: "center",
             render: orderNumberCellRender,
-            title: orderNumberHeadRender
+            title: nextProps.intl.orderNumberTitle
           };
           if (orderColumn instanceof Object) {
             orderNumberColumn = Object.assign(
@@ -783,6 +779,7 @@ class Table extends React.Component {
             onReset={this.resetConfig}
             configs={this.state.columnsConfig}
             columns={this.state.rawColumns}
+            intl={this.props.intl}
           />
         </div>
       );
@@ -793,6 +790,7 @@ class Table extends React.Component {
         <Pagination
           {...pageAttr}
           total={dataTotal}
+          intl={this.props.intl}
           onPageChange={this.onPageChange}
         />
       );
@@ -842,7 +840,7 @@ class Table extends React.Component {
         <div className="tablex__overlay__inner">
           <Spin
             spinning={true}
-            tip="数据加载中，请稍候..."
+            tip={this.props.intl.dataLoading}
             style={{
               margin: "auto",
               width: 300,
@@ -868,7 +866,7 @@ class Table extends React.Component {
         <div className="tablex__overlay__inner">
           <div className="tablex__emptydata">
             <EmptyIcon />
-            暂无数据
+            {this.props.intl.noDataMsg}
           </div>
         </div>
       </div>
@@ -1120,6 +1118,7 @@ class Table extends React.Component {
                 columns={settableColumns}
                 columnsConfig={this.state.columnsConfig}
                 onChange={this.onColumnChange}
+                intl={this.props.intl}
               />
             }
             arrowPointAtCenter={true}
@@ -1164,7 +1163,34 @@ Table.defaultProps = {
   contextMenuWrapperStyle: {},
   contextMenuStyle: {},
   defaultGroupedColumnKey: [],
-  multipleSort: true
+  multipleSort: true,
+  intl: {
+    orderNumberTitle: "序号",
+    dataLoading: "数据加载中，请稍候...",
+    noDataMsg: "暂无数据",
+    totalInfo: "显示 {0}-{1}，共 {2} 条",
+
+    settingTitle: "表格配置",
+    settingReset: "重置",
+    settingOk: "确定",
+    settingWidth: "宽度：",
+    settingFixed: "冻结：",
+    settingFixedLeft: "左",
+    settingFixedNone: "无",
+    settingFixedRight: "右",
+    settingVisible: "显示",
+    settingHidden: "隐藏",
+
+    columnMenuFixed: "列冻结",
+    columnMenuFixedLeft: "左侧",
+    columnMenuFixedRight: "右侧",
+    columnMenuFixedReset: "取消冻结",
+    columnMenuVisible: "显示/隐藏",
+    columnMenuGroup: "列分组",
+    columnMenuGroupAdd: "添加此列",
+    columnMenuGroupRemove: "取消此列",
+    columnMenuGroupReset: "重置所有"
+  }
 };
 
 Table.propTypes = {

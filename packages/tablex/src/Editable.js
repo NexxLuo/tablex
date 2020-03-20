@@ -313,7 +313,7 @@ class EditableTable extends React.Component {
         } else {
           validation[ck] = {
             valid: v.valid,
-            msg: v.valid ? "" : v.message || "输入不正确"
+            msg: v.valid ? "" : v.message || this.props.intl["editorInputError"]
           };
 
           if (!v.valid) bl = false;
@@ -1014,7 +1014,7 @@ class EditableTable extends React.Component {
     }
 
     if (bl === false) {
-      message.error("信息录入不正确，请检查");
+      message.error(this.props.intl["validateError"]);
       return false;
     }
 
@@ -1040,9 +1040,7 @@ class EditableTable extends React.Component {
     //
 
     if (!editType) {
-      console.error(
-        "未检测到编辑状态,如果使用了api.xxx进行编辑，请使用completeEdit、onComplete替代..."
-      );
+      console.error(this.props.intl["noEditTypeError"]);
       return;
     }
 
@@ -1067,7 +1065,7 @@ class EditableTable extends React.Component {
       }
 
       if (bl === false) {
-        message.error("信息录入不正确，请检查");
+        message.error(this.props.intl["validateError"]);
         return;
       }
     }
@@ -1124,7 +1122,7 @@ class EditableTable extends React.Component {
     }
 
     if (arr.length === 0) {
-      message.error("没有可编辑的数据");
+      message.error(this.props.intl["noEditableData"]);
       return false;
     }
 
@@ -1192,7 +1190,7 @@ class EditableTable extends React.Component {
     }
 
     if (selectedRowKeys.length <= 0) {
-      message.warn("请选择要删除的数据");
+      message.warn(this.props.intl["needSelectToDelete"]);
     } else {
       this.editType = "delete";
 
@@ -1324,23 +1322,22 @@ class EditableTable extends React.Component {
 
     let itemStyle = config.itemStyle || { marginRight: 5 };
 
-    let okText = config.okText || "确定";
+    let okText = config.okText || this.props.intl["editOkButton"];
     let okIcon = config.okIcon || "";
     okIcon = okIcon ? <Icon type={okIcon} /> : null;
-
-    let cancelText = config.cancelText || "取消";
+    let cancelText = config.cancelText || this.props.intl["editCancelButton"];
     let cancelIcon = config.cancelIcon || "";
     cancelIcon = cancelIcon ? <Icon type={cancelIcon} /> : null;
 
-    let addText = config.addText || "新增";
+    let addText = config.addText || this.props.intl["addButton"];
     let addIcon = config.addIcon || "";
     addIcon = addIcon ? <Icon type={addIcon} /> : null;
 
-    let editText = config.editText || "编辑";
+    let editText = config.editText || this.props.intl["editButton"];
     let editIcon = config.editIcon || "";
     editIcon = editIcon ? <Icon type={editIcon} /> : null;
 
-    let deleteText = config.deleteText || "删除";
+    let deleteText = config.deleteText || this.props.intl["deleteButton"];
     let deleteIcon = config.deleteIcon || "";
     deleteIcon = deleteIcon ? <Icon type={deleteIcon} /> : null;
 
@@ -1363,16 +1360,17 @@ class EditableTable extends React.Component {
         </Button>
       );
     } else {
+      let rangeUnitText = this.props.intl["addRangeRowText"];
       tools.forEach((d, i) => {
         let styles = { ...itemStyle };
 
         const menu = (
           <Menu onClick={e => this.addRange(e.item.props.value)}>
             <Menu.Item key="1" value={5}>
-              5 行
+              5 {rangeUnitText}
             </Menu.Item>
             <Menu.Item key="2" value={10}>
-              10 行
+              10 {rangeUnitText}
             </Menu.Item>
           </Menu>
         );
@@ -1418,9 +1416,9 @@ class EditableTable extends React.Component {
           buttons.push(
             <Popconfirm
               key={d}
-              title="确定删除选中的数据吗？"
-              okText="确定"
-              cancelText="取消"
+              title={this.props.intl["deleteConfirmTitle"]}
+              okText={this.props.intl["deleteConfirmOk"]}
+              cancelText={this.props.intl["deleteConfirmCancel"]}
               onConfirm={this.delete}
               disabled={!hasSelectedRows}
             >
@@ -1431,9 +1429,9 @@ class EditableTable extends React.Component {
                   e.stopPropagation();
                   if (!hasSelectedRows) {
                     if (hasData) {
-                      message.warn("请选择要删除的数据");
+                      message.warn(this.props.intl["noSelectToDelete"]);
                     } else {
-                      message.warn("没有可删除的数据");
+                      message.warn(this.props.intl["noDeletableData"]);
                     }
                   }
                 }}
@@ -2205,10 +2203,56 @@ EditableTable.defaultProps = {
   alwaysValidate: false,
   editorNoBorder: false,
   keyboardNavigation: true,
-  editorClickBubble: false
+  editorClickBubble: false,
+  intl: {
+    editorInputError: "输入不正确",
+    validateError: "信息录入不正确，请检查",
+    noEditTypeError:
+      "未检测到编辑状态,如果使用了api.xxx进行编辑，请使用completeEdit、onComplete替代...",
+    noEditableData: "没有可编辑的数据",
+    needSelectToDelete: "请选择要删除的数据",
+    editOkButton: "确定22",
+    editCancelButton: "取消",
+    addButton: "新增",
+    editButton: "编辑",
+    deleteButton: "删除",
+    addRangeRowText: "行",
+    deleteConfirmTitle: "确定删除选中的数据吗？",
+    deleteConfirmOk: "确定",
+    deleteConfirmCancel: "取消",
+    noSelectToDelete: "请选择要删除的数据",
+    noDeletableData: "没有可删除的数据",
+
+    orderNumberTitle: "序号",
+    dataLoading: "数据加载中，请稍候...",
+    noDataMsg: "暂无数据",
+    totalInfo: "显示 {0}-{1}，共 {2} 条",
+
+    settingTitle: "表格配置",
+    settingReset: "重置",
+    settingOk: "确定",
+    settingWidth: "宽度：",
+    settingFixed: "冻结：",
+    settingFixedLeft: "左",
+    settingFixedNone: "无",
+    settingFixedRight: "右",
+    settingVisible: "显示",
+    settingHidden: "隐藏",
+
+    columnMenuFixed: "列冻结",
+    columnMenuFixedLeft: "左侧",
+    columnMenuFixedRight: "右侧",
+    columnMenuFixedReset: "取消冻结",
+    columnMenuVisible: "显示/隐藏",
+    columnMenuGroup: "列分组",
+    columnMenuGroupAdd: "添加此列",
+    columnMenuGroupRemove: "取消此列",
+    columnMenuGroupReset: "重置所有"
+  }
 };
 
 EditableTable.propTypes = {
+  intl: PropTypes.object,
   /** 是否只读模式，只读模式下，将无法编辑，且无法触发选择事件 */
   readOnly: PropTypes.bool,
   /** 是否允许编辑 */

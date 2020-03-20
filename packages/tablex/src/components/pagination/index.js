@@ -100,11 +100,14 @@ class Pager extends React.Component {
       totalCount = 0;
     }
 
-    let totalInfo = (
-      <div className="tablex__pager__count">
-        显示 {start}-{end}，共 {totalCount} 条
-      </div>
-    );
+    let intlStr = this.props.intl.totalInfo;
+
+    intlStr = intlStr
+      .replace("{0}", start)
+      .replace("{1}", end)
+      .replace("{2}", totalCount);
+
+    let totalInfo = <div className="tablex__pager__count">{intlStr}</div>;
 
     return (
       <div className="tablex__pager">
@@ -125,7 +128,10 @@ Pager.defaultProps = {
   pageSizeOptions: ["10", "20", "30", "50", "100", "200"],
   showSizeChanger: true,
   showRefresh: false,
-  onPageChange: () => {}
+  onPageChange: () => {},
+  intl: {
+    totalInfo: "显示 {0}-{1}，共 {2} 条"
+  }
 };
 
 Pager.propTypes = {

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Modal,Button,InputNumber,Radio,Switch } from "../../widgets";
+import { Modal, Button, InputNumber, Radio, Switch } from "../../widgets";
 
 import { saveConfigs, removeConfigs, treeToList } from "./utils";
 import { SortableContainer, SortableElement } from "react-sortable-hoc";
@@ -81,7 +81,7 @@ class SortableItem extends Component {
           style={{ display: "inline-block", width: "70%", textAlign: "right" }}
         >
           <div style={itemStyles}>
-            宽度：
+            {this.props.intl["settingWidth"]}
             <InputNumber
               value={d.width}
               min={0}
@@ -91,23 +91,29 @@ class SortableItem extends Component {
             />
           </div>
           <div style={itemStyles}>
-            冻结：
+            {this.props.intl["settingFixed"]}
             <RadioGroup
               size="small"
               value={d.fixed || "none"}
               onChange={this.onChangeFixed}
             >
-              <RadioButton value="left">左</RadioButton>
-              <RadioButton value="none">无</RadioButton>
-              <RadioButton value="right">右</RadioButton>
+              <RadioButton value="left">
+                {this.props.intl["settingFixedLeft"]}
+              </RadioButton>
+              <RadioButton value="none">
+                {this.props.intl["settingFixedNone"]}
+              </RadioButton>
+              <RadioButton value="right">
+                {this.props.intl["settingFixedRight"]}
+              </RadioButton>
             </RadioGroup>
           </div>
 
           <div style={{ ...itemStyles, position: "relative", bottom: "2px" }}>
             <Switch
-              checkedChildren="显示"
+              checkedChildren={this.props.intl["settingVisible"]}
               checked={!d.hidden}
-              unCheckedChildren="隐藏"
+              unCheckedChildren={this.props.intl["settingHidden"]}
               onChange={this.onToggleVisible}
             />
           </div>
@@ -158,6 +164,7 @@ class SortableList extends Component {
             >
               <SortableItem
                 data={item}
+                intl={this.props.intl}
                 onChangeWidth={this.props.onChangeWidth}
                 onChangeFixed={this.props.onChangeFixed}
                 onToggleVisible={this.props.onToggleVisible}
@@ -371,10 +378,10 @@ class SettingModal extends React.Component {
 
     let attrs = {
       visible: visible,
-      title: "表格配置",
+      title: this.props.intl["settingTitle"],
       onOk: this.onOk,
       onCancel: this.onCancel,
-    
+
       width: "720px",
       zIndex: 99999,
       bodyStyle: {
@@ -394,7 +401,7 @@ class SettingModal extends React.Component {
             loading={this.state.resetLoading}
             onClick={this.reset}
           >
-            重置
+            {this.props.intl["settingReset"]}
           </Button>
           <Button
             loading={this.state.loading}
@@ -402,14 +409,14 @@ class SettingModal extends React.Component {
             onClick={this.onOk}
             style={{ marginLeft: 20 }}
           >
-            确定
+            {this.props.intl["settingReset"]}
           </Button>
           <Button
             type="gray"
             style={{ marginLeft: 20 }}
             onClick={this.onCancel}
           >
-            取消
+            {this.props.intl["settingCancel"]}
           </Button>
         </div>
       )
@@ -419,6 +426,7 @@ class SettingModal extends React.Component {
       <Modal {...attrs}>
         <SortableList
           items={leafs}
+          intl={this.props.intl}
           onSort={this.onSort}
           onChangeWidth={this.onChangeWidth}
           onChangeFixed={this.onChangeFixed}
@@ -428,5 +436,21 @@ class SettingModal extends React.Component {
     );
   }
 }
+
+SettingModal.defaultProps = {
+  intl: {
+    settingTitle: "表格配置",
+    settingReset: "重置",
+    settingOk: "确定",
+    settingWidth: "宽度：",
+    settingFixed: "冻结：",
+    settingFixedLeft: "左",
+    settingFixedNone: "无",
+    settingFixedRight: "右",
+    settingVisible: "显示",
+    settingHidden: "隐藏",
+    settingFixedNone: "表格配置"
+  }
+};
 
 export default SettingModal;

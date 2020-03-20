@@ -166,22 +166,26 @@ class HeadDropMenu extends React.Component {
           mode="vertical"
         >
           {pinable && (
-            <SubMenu key="sub1" title="列冻结" onTitleClick={this.onTitleClick}>
+            <SubMenu
+              key="sub1"
+              title={this.props.intl["columnMenuFixed"]}
+              onTitleClick={this.onTitleClick}
+            >
               <Menu.Item key="1" style={styles}>
-                左侧
+                {this.props.intl["columnMenuFixedLeft"]}
               </Menu.Item>
               <Menu.Item key="2" style={styles}>
-                右侧
+                {this.props.intl["columnMenuFixedRight"]}
               </Menu.Item>
               <Menu.Item key="3" style={styles}>
-                取消冻结
+                {this.props.intl["columnMenuFixedReset"]}
               </Menu.Item>
             </SubMenu>
           )}
           {filterable && (
             <SubMenu
               key="sub2"
-              title="显示/隐藏"
+              title={this.props.intl["columnMenuVisible"]}
               onTitleClick={this.onTitleClick}
             >
               <Menu.Item key="4" style={styles}>
@@ -190,15 +194,19 @@ class HeadDropMenu extends React.Component {
             </SubMenu>
           )}
           {groupable && (
-            <SubMenu key="sub3" title="列分组" onTitleClick={this.onTitleClick}>
+            <SubMenu
+              key="sub3"
+              title={this.props.intl["columnMenuGroup"]}
+              onTitleClick={this.onTitleClick}
+            >
               <Menu.Item key="6" style={styles}>
-                添加此列
+                {this.props.intl["columnMenuGroupAdd"]}
               </Menu.Item>
               <Menu.Item key="7" style={styles}>
-                取消此列
+                {this.props.intl["columnMenuGroupRemove"]}
               </Menu.Item>
               <Menu.Item key="8" style={styles}>
-                重置所有
+                {this.props.intl["columnMenuGroupReset"]}
               </Menu.Item>
             </SubMenu>
           )}
@@ -207,5 +215,21 @@ class HeadDropMenu extends React.Component {
     );
   }
 }
+
+HeadDropMenu.defaultProps = {
+  intl: {
+    settingTitle: "表格配置",
+    settingReset: "重置",
+    settingOk: "确定",
+    settingWidth: "宽度：",
+    settingFixed: "冻结：",
+    settingFixedLeft: "左",
+    settingFixedNone: "无",
+    settingFixedRight: "右",
+    settingVisible: "显示",
+    settingHidden: "隐藏",
+    settingFixedNone: "表格配置"
+  }
+};
 
 export default HeadDropMenu;
