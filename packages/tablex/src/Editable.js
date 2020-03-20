@@ -2211,7 +2211,7 @@ EditableTable.defaultProps = {
       "未检测到编辑状态,如果使用了api.xxx进行编辑，请使用completeEdit、onComplete替代...",
     noEditableData: "没有可编辑的数据",
     needSelectToDelete: "请选择要删除的数据",
-    editOkButton: "确定22",
+    editOkButton: "确定",
     editCancelButton: "取消",
     addButton: "新增",
     editButton: "编辑",
