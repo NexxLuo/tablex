@@ -11,10 +11,59 @@ Other.defaultProps = {
   loading: false,
   striped: true,
   columnDropMenu: true,
-  multipleSort: true
+  multipleSort: true,
+  intl: {
+    editorInputError: "输入不正确",
+    validateError: "信息录入不正确，请检查",
+    noEditTypeError:
+      "未检测到编辑状态,如果使用了api.xxx进行编辑，请使用completeEdit、onComplete替代...",
+    noEditableData: "没有可编辑的数据",
+    needSelectToDelete: "请选择要删除的数据",
+    editOkButton: "确定",
+    editCancelButton: "取消",
+    addButton: "新增",
+    editButton: "编辑",
+    deleteButton: "删除",
+    addRangeRowText: "行",
+    deleteConfirmTitle: "确定删除选中的数据吗？",
+    deleteConfirmOk: "确定",
+    deleteConfirmCancel: "取消",
+    noSelectToDelete: "请选择要删除的数据",
+    noDeletableData: "没有可删除的数据",
+
+    orderNumberTitle: "序号",
+    dataLoading: "数据加载中，请稍候...",
+    noDataMsg: "暂无数据",
+    totalInfo: "显示 {0}-{1}，共 {2} 条",
+
+    settingTitle: "表格配置",
+    settingReset: "重置",
+    settingOk: "确定",
+    settingCancel: "取消",
+    settingWidth: "宽度：",
+    settingFixed: "冻结：",
+    settingFixedLeft: "左",
+    settingFixedNone: "无",
+    settingFixedRight: "右",
+    settingVisible: "显示",
+    settingHidden: "隐藏",
+
+    columnMenuFixed: "列冻结",
+    columnMenuFixedLeft: "左侧",
+    columnMenuFixedRight: "右侧",
+    columnMenuFixedReset: "取消冻结",
+    columnMenuVisible: "显示/隐藏",
+    columnMenuGroup: "列分组",
+    columnMenuGroupAdd: "添加此列",
+    columnMenuGroupRemove: "取消此列",
+    columnMenuGroupReset: "重置所有"
+  }
 };
 
 Other.propTypes = {
+  /** 表格内部显示文案配置 */
+  intl: PropTypes.object,
+
   /** 数据是否加载中 */
   loading: PropTypes.bool,
 
