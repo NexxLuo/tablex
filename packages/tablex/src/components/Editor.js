@@ -3,16 +3,22 @@ import { Tooltip } from "../widgets";
 import "./Editor.css";
 
 class Editor extends React.Component {
-  state = {
-    focused: false
-  };
+  elementRef = React.createRef();
 
   onFocus = () => {
-    this.setState({ focused: true });
+    let el = this.elementRef.current;
+    if (el) {
+      el.classList.remove("not-focused");
+      el.classList.add("focused");
+    }
   };
 
   onBlur = () => {
-    this.setState({ focused: false });
+    let el = this.elementRef.current;
+    if (el) {
+      el.classList.remove("focused");
+      el.classList.add("not-focused");
+    }
   };
 
   onKeyDown = e => {
@@ -38,11 +44,7 @@ class Editor extends React.Component {
       cls.push("no-error");
     }
 
-    if (this.state.focused === false) {
-      cls.push("not-focused");
-    } else {
-      cls.push("focused");
-    }
+    cls.push("not-focused");
 
     return (
       <span
@@ -51,6 +53,7 @@ class Editor extends React.Component {
         onKeyDown={this.onKeyDown}
         onFocus={this.onFocus}
         onBlur={this.onBlur}
+        ref={this.elementRef}
       >
         <Tooltip placement="topLeft" title={message}>
           {children}
