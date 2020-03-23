@@ -1112,13 +1112,13 @@ class EditableTable extends React.Component {
    */
   editType = "";
 
-  //silent : 是否静默执行，为true时不执行事件
-  edit = (silent = false) => {
+  //quiet : 是否静默执行，为true时不执行事件
+  edit = (quiet = false) => {
     let arr = this.state.data || [];
 
     let bl = true;
 
-    if (!silent && typeof this.props.onBeforeEdit === "function") {
+    if (!quiet && typeof this.props.onBeforeEdit === "function") {
       bl = this.props.onBeforeEdit(arr);
     }
 
@@ -1135,7 +1135,7 @@ class EditableTable extends React.Component {
 
     this.editAll();
 
-    if (!silent && typeof this.props.onEdit === "function") {
+    if (!quiet && typeof this.props.onEdit === "function") {
       this.props.onEdit();
     }
   };
@@ -1250,12 +1250,12 @@ class EditableTable extends React.Component {
   };
 
   //silent : 是否静默执行，为true时不执行事件
-  addRange = (rowCount, silent = false) => {
+  addRange = (rowCount, quiet = false) => {
     let { rowTemplate, rowKey, defaultAddCount } = this.props;
 
     let bl = true;
 
-    if (!silent && typeof this.props.onBeforeAdd === "function") {
+    if (!quiet && typeof this.props.onBeforeAdd === "function") {
       bl = this.props.onBeforeAdd();
     }
 
@@ -1305,7 +1305,7 @@ class EditableTable extends React.Component {
       changedRows: []
     });
 
-    if (!silent && typeof this.props.onAdd === "function") {
+    if (!quiet && typeof this.props.onAdd === "function") {
       this.props.onAdd(insertedData, newData, "add");
     }
   };
@@ -1403,7 +1403,7 @@ class EditableTable extends React.Component {
 
         if (d === "edit") {
           buttons.push(
-            <Button key={d + "_1"} onClick={this.edit} style={styles}>
+            <Button key={d + "_1"} onClick={() => this.edit()} style={styles}>
               {editIcon}
               {editText}
             </Button>
