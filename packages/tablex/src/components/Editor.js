@@ -11,6 +11,7 @@ class Editor extends React.Component {
       el.classList.remove("not-focused");
       el.classList.add("focused");
     }
+    this.setState({focused:true});
   };
 
   onBlur = () => {
@@ -19,6 +20,8 @@ class Editor extends React.Component {
       el.classList.remove("focused");
       el.classList.add("not-focused");
     }
+    this.setState({focused:false});
+
   };
 
   onKeyDown = e => {
@@ -46,6 +49,7 @@ class Editor extends React.Component {
 
     cls.push("not-focused");
 
+    console.log("table editor render")
     return (
       <span
         className={cls.join(" ")}
