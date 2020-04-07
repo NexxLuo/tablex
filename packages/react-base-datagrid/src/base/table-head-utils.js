@@ -30,14 +30,22 @@ export function getColumnWidthStyle({ width, minWidth }) {
     styles.width = width || minWidth || 0;
   }
 
+  if (typeof styles.width === "number" && styles.width < 0) {
+    styles.width = 0;
+  }
+
   return styles;
 }
 
 export function isNumber(v) {
-  if (v === undefined || v === null || isNaN(v - 0)) {
+  if (typeof v !== "number") {
     return false;
   }
-  return true;
+  if (isNaN(v - 0)) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
 export function isFlexibleColumn(column) {

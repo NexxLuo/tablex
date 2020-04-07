@@ -27,11 +27,14 @@ export function getScrollbarWidth() {
 }
 
 export function isNumber(v) {
-  if (v === undefined || v === null || isNaN(v - 0)) {
+  if (typeof v !== "number") {
     return false;
   }
-
-  return true;
+  if (isNaN(v - 0)) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
 export function treeFilter(arr, fn) {
@@ -111,6 +114,10 @@ export function getColumnWidthStyle({ width, minWidth }) {
     styles.width = minWidth || DEFAULT_COLUMN_WIDTH;
   } else {
     styles.width = width || minWidth || 0;
+  }
+
+  if (typeof styles.width === "number" && styles.width < 0) {
+    styles.width = 0;
   }
 
   return styles;
@@ -406,7 +413,7 @@ export function getParentElement(element, selector) {
     }
 
     if (isMatched(el, tagName)) {
-   //   return el;
+      //   return el;
     }
 
     let p = el.parentElement || el.parentNode;

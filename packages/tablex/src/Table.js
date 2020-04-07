@@ -75,6 +75,17 @@ function orderNumberCellRender(value, rowData, index) {
   return index + 1;
 }
 
+function isNumber(v) {
+  if (typeof v !== "number") {
+    return false;
+  }
+  if (isNaN(v - 0)) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
 /**
  * 表格
  */
@@ -130,7 +141,9 @@ class Table extends React.Component {
         }
 
         if (depth > 0) {
-          d.width = d.width || DEFAULT_COLUMN_WIDTH;
+          if (!isNumber(d.width)) {
+            d.width = DEFAULT_COLUMN_WIDTH;
+          }
         }
 
         return true;
@@ -408,7 +421,11 @@ class Table extends React.Component {
   };
 
   onColumnResize = (width, columnKey) => {
-    this.onColumnChange(columnKey, { width });
+    let w = width;
+    if (w <= 0) {
+      w = 10;
+    }
+    this.onColumnChange(columnKey, { width: w });
   };
 
   onColumnChange = (key, config) => {
