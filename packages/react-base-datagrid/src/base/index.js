@@ -329,10 +329,16 @@ class BaseDataGrid extends React.Component {
 
     if (showHeader === true) {
       for (let i = 0; i < maxDepth + 1; i++) {
-        let h = headerRowHeight[i];
-        if (!isNumber(h)) {
-          h = HEADER_HEIGHT;
+        let h = HEADER_HEIGHT;
+
+        if (headerRowHeight instanceof Array) {
+          if (isNumber(headerRowHeight[i])) {
+            h = headerRowHeight[i];
+          }
+        } else if (isNumber(headerRowHeight)) {
+          h = headerRowHeight;
         }
+
         headerHeights.push(h);
         headerHeight = headerHeight + h;
       }
@@ -605,7 +611,7 @@ BaseDataGrid.defaultProps = {
     bottom: []
   },
   rowHeight: 40,
-  headerRowHeight: [],
+  headerRowHeight: 40,
   rowKey: "key",
   showHeader: true,
   hoverable: true,
@@ -644,7 +650,10 @@ BaseDataGrid.propTypes = {
   rowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
 
   /** 表头行高 */
-  headerRowHeight: PropTypes.arrayOf(PropTypes.number),
+  headerRowHeight: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.number
+  ]),
 
   /** 自定义行样式 */
   rowClassName: PropTypes.func,
