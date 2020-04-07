@@ -118,10 +118,10 @@ class BaseDataGrid extends React.Component {
     let containerEl = this.containerRef.current;
 
     if (containerEl) {
-      let cls = "tablex-forzen-scrolled";
-      let leftEl = containerEl.getElementsByClassName("tablex-forzen-left")[0];
+      let cls = "tablex-frozen-scrolled";
+      let leftEl = containerEl.getElementsByClassName("tablex-frozen-left")[0];
       let rightEl = containerEl.getElementsByClassName(
-        "tablex-forzen-right"
+        "tablex-frozen-right"
       )[0];
       if (leftEl) {
         if (scrollLeft > 0) {
@@ -494,14 +494,14 @@ class BaseDataGrid extends React.Component {
         {overlay}
         {hasLeft ? (
           <div
-            className="tablex-forzen-left"
+            className="tablex-frozen-left"
             style={{
               width: leftWidth,
               overflow: "hidden"
             }}
           >
             <div
-              className="tablex-forzen-left-scroll"
+              className="tablex-frozen-left-scroll"
               style={{
                 width: leftWidth + scrollbarY + 10,
                 height: "100%"
@@ -549,7 +549,7 @@ class BaseDataGrid extends React.Component {
 
         {hasRight ? (
           <div
-            className="tablex-forzen-right"
+            className="tablex-frozen-right"
             ref={this.rightWrapperRef}
             style={rightStyles}
           >
