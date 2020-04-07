@@ -27,6 +27,7 @@ const ColumnPlaceolder = ({ width, minWidth, flexible, height }) => {
 };
 
 const Column = ({
+  title,
   children,
   alignStyles,
   flexible,
@@ -56,9 +57,16 @@ const Column = ({
   let clsArr = ["tablex-table-head-cell"];
   className && clsArr.push(className);
 
+  let attr = {};
+
+  if (typeof title === "string" || typeof title === "number") {
+    attr.title = title;
+  }
+
   return (
     <div
       className={clsArr.join(" ")}
+      {...attr}
       {...headerCellProps}
       style={{ ...style, ...cellStyles }}
     >
@@ -234,7 +242,7 @@ const renderColumns = ({
           key={columnKey}
           className={columnClass}
           headerCellProps={headerCellProps}
-          title={titleElement}
+          title={d.title}
           flexible={flexible}
           alignStyles={alignStyles}
           width={columnWidth}
@@ -264,6 +272,7 @@ const renderColumns = ({
         alignStyles={alignStyles}
         onColumnResizeStop={onColumnResizeStop}
         style={columnStyle}
+        title={d.title}
       >
         {titleElement}
       </Column>
