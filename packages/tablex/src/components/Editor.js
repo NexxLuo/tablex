@@ -49,7 +49,6 @@ class Editor extends React.Component {
 
     cls.push("not-focused");
 
-    console.log("table editor render")
     return (
       <span
         className={cls.join(" ")}
