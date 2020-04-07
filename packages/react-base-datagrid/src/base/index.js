@@ -593,7 +593,12 @@ const AutoSizerTable = forwardRef(function AutoSizeTable(props, ref) {
           }
         }
         return (
-          <BaseDataGrid {...props} height={height} width={width} ref={ref} />
+          <BaseDataGrid
+            {...props}
+            height={Math.floor(height)}
+            width={width}
+            ref={ref}
+          />
         );
       }}
     </ReactResizeDetector>

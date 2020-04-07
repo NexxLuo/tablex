@@ -736,7 +736,7 @@ class Table extends React.Component {
 
     if (headerEl !== null || toolsBar != null) {
       header = (
-        <div className="tablex__container__header" style={{ height: 40 }}>
+        <div className="tablex__container__header">
           {headerEl}
           {toolsBar}
         </div>
@@ -744,8 +744,7 @@ class Table extends React.Component {
     }
 
     return {
-      header,
-      height: 40
+      header
     };
   };
 
@@ -755,7 +754,6 @@ class Table extends React.Component {
     let { settable, tableId } = this.props;
 
     let footer = null;
-    let footerHeight = 0;
 
     let footerExtraEl = null;
     let footerContentEl = null;
@@ -779,7 +777,6 @@ class Table extends React.Component {
         footerExtraEl = (
           <div className="tablex__container__footer__extra">{footerExtra}</div>
         );
-        footerHeight += 50;
       }
     }
 
@@ -819,7 +816,6 @@ class Table extends React.Component {
       footerEl !== null ||
       toolsBarEl !== null
     ) {
-      footerHeight += 50;
       footerContentEl = (
         <div className="tablex__container__footer__content">
           {settingButtonEl}
@@ -839,7 +835,7 @@ class Table extends React.Component {
       );
     }
 
-    return { footer, height: footerHeight };
+    return { footer };
   };
 
   loadingRender = ({ headerHeight }) => {
@@ -1080,17 +1076,8 @@ class Table extends React.Component {
     }
     let columnMenuState = columnMenu || {};
 
-    let { footer, height: footerHeight } = this.renderFooter();
-    let { header, height: headerHeight } = this.renderHeader();
-
-    let extraHeight = 0;
-
-    if (footer) {
-      extraHeight += footerHeight;
-    }
-    if (header) {
-      extraHeight += headerHeight;
-    }
+    let { footer } = this.renderFooter();
+    let { header } = this.renderHeader();
 
     let classNames = ["tablex__container"];
 
@@ -1100,7 +1087,7 @@ class Table extends React.Component {
 
     classNames = classNames.join(" ");
 
-    let bodyStyles = { height: "100%" };
+    let bodyStyles = {};
     let wrapperStyles = Object.assign(
       {
         height: "100%"
@@ -1111,10 +1098,6 @@ class Table extends React.Component {
     if (props.autoHeight === true) {
       bodyStyles.height = "auto";
       wrapperStyles.height = "auto";
-    } else {
-      if (extraHeight > 0) {
-        bodyStyles.height = `calc(100% - ${extraHeight}px)`;
-      }
     }
 
     return (
