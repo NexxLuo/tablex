@@ -678,8 +678,6 @@ BaseDataGrid.propTypes = {
       fixed: PropTypes.oneOf([false, "left", "right"]),
       resizable: PropTypes.bool,
       render: PropTypes.func,
-      validator: PropTypes.func,
-      editor: PropTypes.func,
       colSpan: PropTypes.number,
       rowSpan: PropTypes.number,
       onHeaderCell: PropTypes.func
