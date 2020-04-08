@@ -134,7 +134,7 @@ export interface TableProps<T> {
   columns?: ColumnProps<T>[];
   data?: T[];
   rowHeight?: number | ((record: object, index: number) => number);
-  headerRowHeight?: number[];
+  headerRowHeight?: number[] | number;
   minHeight?: number;
   maxHeight?: number;
   autoHeight?: boolean;
@@ -159,8 +159,8 @@ export interface TableProps<T> {
   contextMenu?: (row: any) => React.ReactNode;
   orderNumber?: false | null | ColumnProps<T>;
   pagination?: PaginationProps | false | null;
-  defaultGroupedColumnKey?:string[];
-  groupedColumnKey?:string[];
+  defaultGroupedColumnKey?: string[];
+  groupedColumnKey?: string[];
   resetScrollOffset?: boolean;
   loading?: boolean;
   settable?: boolean;

@@ -17,6 +17,7 @@ Table.defaultProps = {
   striped: true,
   bordered: true,
   rowHeight: 40,
+  headerRowHeight:40,
   virtual: true,
   autoHeight: false
 };
@@ -36,6 +37,12 @@ Table.propTypes = {
 
   /** 行高 */
   rowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
+
+  /** 表头行高 */
+  headerRowHeight: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.number
+  ]),
 
   /** 是否自动高度，为true时表格的高度将会随行数而变化 */
   autoHeight: PropTypes.bool,
