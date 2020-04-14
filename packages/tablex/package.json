@@ -10,11 +10,11 @@
   "homepage": "https://nexxluo.github.io/tablex",
   "scripts": {
     "start": "docz dev",
-    "dev": "father build --watch",
-    "build": "father build",
+    "dev": "father-build build --watch",
+    "build": "father-build build",
     "doc": "docz dev",
     "docb": "docz build",
-    "pub": "father build&&npm version patch&&npm publish",
+    "pub": "father-build build&&npm version patch&&npm publish",
     "docdb": "set DOCZ_BASE=/tablex&& docz build "
   },
   "main": "lib/index.js",
@@ -35,11 +35,11 @@
   ],
   "license": "ISC",
   "peerDependencies": {
+    "antd": "^3.20.3",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },
   "dependencies": {
-    "antd": "^3.20.3",
     "lodash": "^4.17.11",
     "prop-types": "^15.7.2",
     "react-base-datagrid": "1.9.0",
@@ -52,6 +52,6 @@
     "docz": "^1.2.0",
     "docz-plugin-css": "^0.11.0",
     "docz-theme-default": "^1.2.0",
-    "father": "^2.13.6"
+    "father-build": "^1.17.2"
   }
 }

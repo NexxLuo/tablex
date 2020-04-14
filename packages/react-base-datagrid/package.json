@@ -10,11 +10,11 @@
   "homepage": "https://nexxluo.github.io/tablex",
   "scripts": {
     "start": "docz dev",
-    "dev": "father build --watch",
-    "build": "father build",
+    "dev": "father-build build --watch",
+    "build": "father-build build",
     "doc": "docz dev",
     "docb": "docz build",
-    "pub": "father build&&npm version patch&&npm publish"
+    "pub": "father-build build&&npm version patch&&npm publish"
   },
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -45,6 +45,6 @@
     "docz": "^1.2.0",
     "docz-plugin-css": "^0.11.0",
     "docz-theme-default": "^1.2.0",
-    "father": "^2.13.6"
+    "father-build": "^1.17.2"
   }
 }
