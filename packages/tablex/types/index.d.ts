@@ -243,6 +243,7 @@ export interface TableProps<T> {
     deleted: any[];
     data: any[];
   }) => void;
+  onValidate?: (bl: boolean) => void;
 }
 
 export default class Table<T> extends React.Component<TableProps<T>, any> {}

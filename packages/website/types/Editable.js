@@ -116,7 +116,9 @@ Editable.propTypes = {
   /** 需要编辑的key */
   editKeys: PropTypes.array,
   /** 是否编辑所有数据,优先级大于editKeys */
-  editAll: PropTypes.bool
+  editAll: PropTypes.bool,
+  /** 验证事件 */
+  onValidate: PropTypes.func
 };
 
 export default Editable;

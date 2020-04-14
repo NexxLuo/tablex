@@ -11,7 +11,6 @@ class Editor extends React.Component {
       el.classList.remove("not-focused");
       el.classList.add("focused");
     }
-    this.setState({focused:true});
   };
 
   onBlur = () => {
@@ -20,8 +19,6 @@ class Editor extends React.Component {
       el.classList.remove("focused");
       el.classList.add("not-focused");
     }
-    this.setState({focused:false});
-
   };
 
   onKeyDown = e => {
@@ -40,8 +37,10 @@ class Editor extends React.Component {
 
   render() {
     let { children, valid, message } = this.props;
+    let msg = "";
     let cls = ["tablex-row-cell-editor"];
     if (valid === false) {
+      msg = message;
       cls.push("has-error");
     } else {
       cls.push("no-error");
@@ -58,7 +57,7 @@ class Editor extends React.Component {
         onBlur={this.onBlur}
         ref={this.elementRef}
       >
-        <Tooltip placement="topLeft" title={message}>
+        <Tooltip placement="topLeft" title={msg}>
           {children}
         </Tooltip>
       </span>

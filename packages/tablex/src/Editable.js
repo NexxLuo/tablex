@@ -313,7 +313,10 @@ class EditableTable extends React.Component {
         } else {
           validation[ck] = {
             valid: v.valid,
-            msg: v.valid ? "" : v.message || this.props.intl["editorInputError"]
+            msg:
+              v.message === null
+                ? ""
+                : v.message || this.props.intl["editorInputError"]
           };
 
           if (!v.valid) bl = false;
@@ -385,13 +388,20 @@ class EditableTable extends React.Component {
     });
   };
 
+  call_onValidate = v => {
+    let fn = this.props.onValidate;
+    if (typeof fn === "function") {
+      fn(v);
+    }
+  };
+
   //验证改变的数据行
   validate = async () => {
     let bl = true;
     let arr = this.getChangedRows();
 
     bl = await this.validateAsync(arr);
-
+    this.call_onValidate(bl);
     return bl;
   };
 
@@ -414,6 +424,7 @@ class EditableTable extends React.Component {
     }
 
     bl = await this.validateAsync(arr);
+    this.call_onValidate(bl);
 
     return bl;
   };
@@ -2323,8 +2334,10 @@ EditableTable.propTypes = {
   dataControled: PropTypes.bool,
   /** 需要编辑的key */
   editKeys: PropTypes.array,
-  /**  是否编辑所有数据,优先级大于editKeys */
-  editAll: PropTypes.bool
+  /** 是否编辑所有数据,优先级大于editKeys */
+  editAll: PropTypes.bool,
+  /** 验证事件 */
+  onValidate: PropTypes.func
 };
 
 export default EditableTable;
