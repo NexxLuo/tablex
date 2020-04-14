@@ -1,6 +1,6 @@
 {
   "name": "tablex",
-  "version": "1.14.3",
+  "version": "1.14.4",
   "description": "table virtualized tree-table ",
   "author": "nexx",
   "repository": {
@@ -49,6 +49,7 @@
     "react-sortable-hoc": "^1.9.1"
   },
   "devDependencies": {
+    "antd": "^3.20.3",
     "docz": "^1.2.0",
     "docz-plugin-css": "^0.11.0",
     "docz-theme-default": "^1.2.0",
