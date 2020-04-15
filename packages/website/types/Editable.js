@@ -31,6 +31,7 @@ Editable.defaultProps = {
   dataControled: false,
   alwaysValidate: false,
   editorNoBorder: false,
+  showValidateMessage: true,
   keyboardNavigation: true,
   editorClickBubble: false,
   editKeys: [],
@@ -52,6 +53,9 @@ Editable.propTypes = {
 
   /** 是否显示编辑时的input边框 */
   editorNoBorder: PropTypes.bool,
+
+  /** 验证失败时是否显示顶部message */
+  showValidateMessage: PropTypes.bool,
 
   /** 工具栏，工具按钮 ['edit', 'add','delete',{icon:"",text:"",props:{},handler:Function},Function] addSingle:单行新增 */
   editTools: PropTypes.array,

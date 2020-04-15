@@ -214,6 +214,7 @@ export interface TableProps<T> {
   editable?: boolean;
   keyboardNavigation?: boolean;
   editorClickBubble?: boolean;
+  showValidateMessage?: boolean;
   readOnly?: boolean;
   editTools?: EditTools;
   editToolsConfig?: EditToolsConfig;

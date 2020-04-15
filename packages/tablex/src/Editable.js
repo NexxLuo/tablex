@@ -996,7 +996,7 @@ class EditableTable extends React.Component {
   };
 
   completeEdit = async callBack => {
-    let { allowSaveEmpty, alwaysValidate } = this.props;
+    let { allowSaveEmpty, alwaysValidate, showValidateMessage } = this.props;
 
     //最终表格产生更改的数据
     let changedState = this.getModifiedData();
@@ -1025,7 +1025,7 @@ class EditableTable extends React.Component {
     }
 
     if (bl === false) {
-      message.error(this.props.intl["validateError"]);
+      showValidateMessage && message.error(this.props.intl["validateError"]);
       return false;
     }
 
@@ -2217,6 +2217,7 @@ EditableTable.defaultProps = {
   editorNoBorder: false,
   keyboardNavigation: true,
   editorClickBubble: false,
+  showValidateMessage: true,
   intl: {
     editorInputError: "输入不正确",
     validateError: "信息录入不正确，请检查",
@@ -2288,6 +2289,9 @@ EditableTable.propTypes = {
 
   /** 是否显示编辑时的input边框 */
   editorNoBorder: PropTypes.bool,
+
+  /** 验证失败时是否显示顶部message */
+  showValidateMessage: PropTypes.bool,
 
   /** 编辑确定事件 (changedRows,newRows,editType)=>void
    * @param {Array} changedRows-改变的数据行
