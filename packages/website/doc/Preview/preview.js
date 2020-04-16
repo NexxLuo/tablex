@@ -321,6 +321,10 @@ class Demo extends Component {
               // this.setState({data:[]})
               console.log("onSort:", a);
             }}
+            onRefresh={a => {
+              // this.setState({data:[]})
+              console.log("onRefresh:", a);
+            }}
             tableId="preview_table"
             sortable={true}
             editable={true}
@@ -329,6 +333,7 @@ class Demo extends Component {
             overscanCount={100}
             alwaysValidate={true}
             rowKey="id"
+            showRefresh={true}
             onEditSave={this.onEditSave}
             ref={this.tableRef}
             columns={fixedColumns}
