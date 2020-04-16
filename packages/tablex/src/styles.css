@@ -12,6 +12,11 @@
 .tablex__container__body {
   flex: auto;
   min-height: 0;
+  z-index: 1;
+}
+
+.table-tools-item,.tablex-pagination{
+  margin-right: 5px;
 }
 
 .tablex__container__header {
@@ -21,6 +26,7 @@
 .tablex__container__footer {
   padding: 5px 5px;
   border-bottom: 1px solid #eaeaea;
+  z-index: 2;
 }
 
 .tablex__container__header,

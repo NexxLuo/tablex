@@ -1333,7 +1333,7 @@ class EditableTable extends React.Component {
 
     let { isEditing } = this.state;
 
-    let itemStyle = config.itemStyle || { marginRight: 5 };
+    let itemStyle = config.itemStyle || {};
 
     let okText = config.okText || this.props.intl["editOkButton"];
     let okIcon = config.okIcon || "";
@@ -1361,13 +1361,19 @@ class EditableTable extends React.Component {
           loading={this.state.editSaveLoading}
           onClick={this.editSave}
           style={{ ...itemStyle }}
+          className="table-tools-item"
         >
           {okIcon}
           {okText}
         </Button>
       );
       buttons.push(
-        <Button key={"_btnCancel"} onClick={this.cancelEdit} style={itemStyle}>
+        <Button
+          key={"_btnCancel"}
+          onClick={this.cancelEdit}
+          style={itemStyle}
+          className="table-tools-item"
+        >
           {cancelIcon}
           {cancelText}
         </Button>
@@ -1394,6 +1400,7 @@ class EditableTable extends React.Component {
               key={d + "_1"}
               onClick={() => this.addRange(1)}
               style={styles}
+              className="table-tools-item"
             >
               {addIcon}
               {addText}
@@ -1404,7 +1411,12 @@ class EditableTable extends React.Component {
         if (d === "add") {
           buttons.push(
             <Dropdown key={d + "_1"} overlay={menu}>
-              <Button tool="add" style={styles} onClick={() => this.addRange()}>
+              <Button
+                tool="add"
+                style={styles}
+                onClick={() => this.addRange()}
+                className="table-tools-item"
+              >
                 {addIcon} {addText}
                 <Icon type="down" />
               </Button>
@@ -1414,7 +1426,12 @@ class EditableTable extends React.Component {
 
         if (d === "edit") {
           buttons.push(
-            <Button key={d + "_1"} onClick={() => this.edit()} style={styles}>
+            <Button
+              key={d + "_1"}
+              onClick={() => this.edit()}
+              style={styles}
+              className="table-tools-item"
+            >
               {editIcon}
               {editText}
             </Button>
@@ -1448,6 +1465,7 @@ class EditableTable extends React.Component {
                     }
                   }
                 }}
+                className="table-tools-item"
               >
                 {deleteIcon}
                 {deleteText}
@@ -1458,7 +1476,11 @@ class EditableTable extends React.Component {
 
         if (typeof d === "function") {
           buttons.push(
-            <span style={styles} key={"_fnTools_" + i}>
+            <span
+              style={styles}
+              className="table-tools-item"
+              key={"_fnTools_" + i}
+            >
               {d()}
             </span>
           );
@@ -1474,6 +1496,7 @@ class EditableTable extends React.Component {
               onClick={d.handler}
               style={styles}
               {...toolAttr}
+              className="table-tools-item"
             >
               {toolIcon}
               {d.text}
@@ -1583,8 +1606,6 @@ class EditableTable extends React.Component {
         return (
           <div
             style={{
-              backgroundColor: "#ffffff",
-              marginRight: 5,
               ...styles
             }}
           >
@@ -2195,7 +2216,7 @@ EditableTable.defaultProps = {
   toolBarStyle: {},
   editToolsConfig: {
     position: "bottom",
-    itemStyle: { marginRight: "5px" },
+    itemStyle: {},
     editText: "",
     editIcon: "",
     addText: "",
@@ -2280,7 +2301,7 @@ EditableTable.propTypes = {
   toolBarStyle: PropTypes.object,
   /** 工具栏，工具按钮 ['edit', 'add','delete',{icon:"",text:"",props:{},handler:Function},Function] addSingle:单行新增 */
   editTools: PropTypes.array,
-  /** 工具栏，工具按钮属性配置{ position: "bottom", itemStyle: { marginRight: "5px" }, editText: "", editIcon: "", addText: "", addIcon: "", deleteText: "", deleteIcon: "", okText: "", okIcon: "", cancelText: "", cancelIcon: "" } */
+  /** 工具栏，工具按钮属性配置{ position: "bottom", itemStyle: {}, editText: "", editIcon: "", addText: "", addIcon: "", deleteText: "", deleteIcon: "", okText: "", okIcon: "", cancelText: "", cancelIcon: "" } */
   editToolsConfig: PropTypes.object,
   /** 新增行时，是追加，还是清空当前页数据 */
   isAppend: PropTypes.bool,
