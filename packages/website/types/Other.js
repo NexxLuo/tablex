@@ -7,6 +7,7 @@ const Other = () => {
 
 Other.defaultProps = {
   pagination: false,
+  showRefresh: false,
   resetScrollOffset: true,
   loading: false,
   striped: true,
@@ -75,6 +76,12 @@ Other.propTypes = {
 
   /** 分页 */
   pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+
+  /** 是否显示底部刷新按钮 */
+  showRefresh: PropTypes.bool,
+
+  /** 刷新按钮事件 */
+  onRefresh: PropTypes.func,
 
   /** 分页发生改变后是否重置滚动条位置 */
   resetScrollOffset: PropTypes.bool,

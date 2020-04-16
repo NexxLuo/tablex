@@ -47,13 +47,11 @@ class Pager extends React.Component {
 
   onRefresh = () => {
     let { current, pageSize } = this.state;
-
     if (typeof this.props.onRefresh === "function") {
       this.props.onRefresh(current, pageSize);
-    } else {
-      if (typeof this.props.onPageChange === "function") {
-        this.props.onPageChange(current, pageSize);
-      }
+    }
+    if (typeof this.props.onPageChange === "function") {
+      this.props.onPageChange(current, pageSize);
     }
   };
 
@@ -127,7 +125,7 @@ Pager.defaultProps = {
   total: 0,
   pageSizeOptions: ["10", "20", "30", "50", "100", "200"],
   showSizeChanger: true,
-  showRefresh: false,
+  showRefresh: true,
   onPageChange: () => {},
   intl: {
     totalInfo: "显示 {0}-{1}，共 {2} 条"

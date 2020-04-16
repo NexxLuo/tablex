@@ -7,7 +7,7 @@ import ColumnDropMenu from "./components/ColumnDropMenu";
 import Setting, { getConfigs, setConfigs } from "./components/setting";
 import SortIcon from "./components/SortIndicator";
 import EmptyIcon from "./components/EmptyIcon";
-import { Spin, Popover } from "./widgets";
+import { Spin, Popover, Button } from "./widgets";
 
 import {
   treeToFlatten as treeToList,
@@ -248,6 +248,15 @@ class Table extends React.Component {
           pageSize
         }
       });
+    }
+  };
+
+  onRefresh = () => {
+    let fn = this.props.onRefresh;
+    if (typeof fn === "function") {
+      let { pagination } = this.state;
+      let p = pagination || {};
+      fn(p.current, p.pageSize);
     }
   };
 
@@ -751,7 +760,7 @@ class Table extends React.Component {
   renderFooter = () => {
     let { pagination: pageAttr, data } = this.state;
 
-    let { settable, tableId } = this.props;
+    let { settable, tableId, showRefresh } = this.props;
 
     let footer = null;
 
@@ -762,6 +771,7 @@ class Table extends React.Component {
     let toolsBarEl = null;
     let pagerEl = null;
     let settingButtonEl = null;
+    let refreshButtonEl = null;
 
     if (typeof this.props.footer === "function") {
       footerEl = this.props.footer();
@@ -786,7 +796,7 @@ class Table extends React.Component {
 
     if (settable === true && tableId) {
       settingButtonEl = (
-        <div key="_settingButton" style={{ marginRight: "5px" }}>
+        <div key="_settingButton" className="table-tools-item">
           <Setting
             tableId={tableId}
             onSave={this.saveConfig}
@@ -805,9 +815,21 @@ class Table extends React.Component {
           {...pageAttr}
           total={dataTotal}
           intl={this.props.intl}
+          showRefresh={showRefresh}
+          onRefresh={this.onRefresh}
           onPageChange={this.onPageChange}
         />
       );
+    } else {
+      if (showRefresh) {
+        refreshButtonEl = (
+          <Button
+            className="tablex-pagination-refresh table-tools-item"
+            icon="reload"
+            onClick={this.onRefresh}
+          />
+        );
+      }
     }
 
     if (
@@ -821,6 +843,7 @@ class Table extends React.Component {
           {settingButtonEl}
           {footerEl}
           {toolsBarEl}
+          {refreshButtonEl}
           {pagerEl}
         </div>
       );
@@ -1157,6 +1180,7 @@ Table.defaultProps = {
   settable: true,
   columnDropMenu: true,
   pagination: false,
+  showRefresh: false,
   resetScrollOffset: true,
   loading: false,
   striped: true,
@@ -1212,6 +1236,12 @@ Table.propTypes = {
 
   /** 分页 */
   pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+
+  /** 是否显示底部刷新按钮 */
+  showRefresh: PropTypes.bool,
+
+  /** 刷新按钮事件 */
+  onRefresh: PropTypes.func,
 
   /** 分页发生改变后是否重置滚动条位置 */
   resetScrollOffset: PropTypes.bool,
