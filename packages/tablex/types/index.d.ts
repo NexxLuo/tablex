@@ -10,6 +10,7 @@ export type EditTools = [
 
 export type EditToolsConfig = {
   position: "top" | "bottom";
+  props: object;
   itemStyle: object;
   editText: string;
   editIcon: string;

@@ -1329,6 +1329,9 @@ class EditableTable extends React.Component {
       return null;
     }
 
+    /** 按钮额外属性 */
+    let buttonProps = config.props || {};
+
     let buttons = [];
 
     let { isEditing } = this.state;
@@ -1359,8 +1362,9 @@ class EditableTable extends React.Component {
         <Button
           key={"_btnOk"}
           loading={this.state.editSaveLoading}
-          onClick={this.editSave}
           style={{ ...itemStyle }}
+          {...buttonProps["ok"]}
+          onClick={this.editSave}
           className="table-tools-item"
         >
           {okIcon}
@@ -1370,8 +1374,9 @@ class EditableTable extends React.Component {
       buttons.push(
         <Button
           key={"_btnCancel"}
-          onClick={this.cancelEdit}
           style={itemStyle}
+          {...buttonProps["cancel"]}
+          onClick={this.cancelEdit}
           className="table-tools-item"
         >
           {cancelIcon}
@@ -1398,9 +1403,10 @@ class EditableTable extends React.Component {
           buttons.push(
             <Button
               key={d + "_1"}
-              onClick={() => this.addRange(1)}
               style={styles}
+              {...buttonProps[d]}
               className="table-tools-item"
+              onClick={() => this.addRange(1)}
             >
               {addIcon}
               {addText}
@@ -1410,7 +1416,7 @@ class EditableTable extends React.Component {
 
         if (d === "add") {
           buttons.push(
-            <Dropdown key={d + "_1"} overlay={menu}>
+            <Dropdown key={d + "_1"} overlay={menu} {...buttonProps[d]}>
               <Button
                 tool="add"
                 style={styles}
@@ -1428,9 +1434,10 @@ class EditableTable extends React.Component {
           buttons.push(
             <Button
               key={d + "_1"}
-              onClick={() => this.edit()}
               style={styles}
+              {...buttonProps[d]}
               className="table-tools-item"
+              onClick={() => this.edit()}
             >
               {editIcon}
               {editText}
@@ -1455,6 +1462,7 @@ class EditableTable extends React.Component {
               <Button
                 style={styles}
                 loading={this.state.deleteLoading}
+                {...buttonProps[d]}
                 onClick={e => {
                   e.stopPropagation();
                   if (!hasSelectedRows) {
@@ -1524,7 +1532,7 @@ class EditableTable extends React.Component {
     let header = null;
 
     let { editToolsConfig = {} } = this.props;
-    let toolBarPosition = editToolsConfig.position;
+    let toolBarPosition = editToolsConfig.position || "bottom";
 
     if (toolBarPosition === "top") {
       header = this.createToolBar("top");
@@ -1535,7 +1543,7 @@ class EditableTable extends React.Component {
 
   footerToolsBar = () => {
     let { editToolsConfig = {} } = this.props;
-    let toolBarPosition = editToolsConfig.position;
+    let toolBarPosition = editToolsConfig.position || "bottom";
 
     let toolBar = null;
 
@@ -2216,6 +2224,7 @@ EditableTable.defaultProps = {
   toolBarStyle: {},
   editToolsConfig: {
     position: "bottom",
+    props: {},
     itemStyle: {},
     editText: "",
     editIcon: "",
@@ -2301,7 +2310,7 @@ EditableTable.propTypes = {
   toolBarStyle: PropTypes.object,
   /** 工具栏，工具按钮 ['edit', 'add','delete',{icon:"",text:"",props:{},handler:Function},Function] addSingle:单行新增 */
   editTools: PropTypes.array,
-  /** 工具栏，工具按钮属性配置{ position: "bottom", itemStyle: {}, editText: "", editIcon: "", addText: "", addIcon: "", deleteText: "", deleteIcon: "", okText: "", okIcon: "", cancelText: "", cancelIcon: "" } */
+  /** 工具栏，工具按钮属性配置{props:{}, position: "bottom", itemStyle: {}, editText: "", editIcon: "", addText: "", addIcon: "", deleteText: "", deleteIcon: "", okText: "", okIcon: "", cancelText: "", cancelIcon: "" } */
   editToolsConfig: PropTypes.object,
   /** 新增行时，是追加，还是清空当前页数据 */
   isAppend: PropTypes.bool,
