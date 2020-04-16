@@ -158,6 +158,11 @@ export interface TableProps<T> {
   frozenRender?: FrozenRenderProps;
 
   columnDropMenu?: boolean;
+  columnDropMenuOptions?: {
+    fixable: boolean;
+    filterable: boolean;
+    groupable: boolean;
+  };
   contextMenu?: (row: any) => React.ReactNode;
   orderNumber?: false | null | ColumnProps<T>;
   pagination?: PaginationProps | false | null;

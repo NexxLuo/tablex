@@ -515,10 +515,21 @@ class Table extends React.Component {
     return columns;
   };
 
+  hasDropMenu = () => {
+    let o = this.props.columnDropMenuOptions || {};
+
+    let columnDropMenu = this.state.columnDropMenu;
+    let hasOptions = false;
+    if (o.fixable || o.filterable || o.groupable) {
+      hasOptions = true;
+    }
+
+    return columnDropMenu && hasOptions;
+  };
+
   formatColumns = columns => {
     let {
       columnsConfig,
-      columnDropMenu,
       sortedColumns,
       sortable,
       groupedColumnKey
@@ -568,12 +579,13 @@ class Table extends React.Component {
     }
     let groupColumnName = {};
 
+    let hasDropMenu = this.hasDropMenu();
+
     cols.forEach(d => {
       let columnKey = d.key || d.dataIndex;
       let config = configs[columnKey] || {};
-      let dropMenu = columnDropMenu;
       if (typeof d.dropMenu === "boolean") {
-        dropMenu = d.dropMenu;
+        hasDropMenu = d.dropMenu;
       }
 
       let allowSort = sortable;
@@ -630,7 +642,7 @@ class Table extends React.Component {
           <div className="tablex__head__cell__title" {...titleCellAttr}>
             {title}
             {allowSort ? <SortIcon order={sort} /> : null}
-            {dropMenu === true ? (
+            {hasDropMenu === true ? (
               <span
                 className="tablex__head__cell__title__dropdown"
                 data-columnkey={columnKey}
@@ -1058,9 +1070,10 @@ class Table extends React.Component {
     let {
       columnMenu,
       columns: tableColumns,
-      prependColumns: tablePrependColumns,
-      columnDropMenu
+      prependColumns: tablePrependColumns
     } = this.state;
+
+    let hasDropMenu = this.hasDropMenu();
 
     let columns = this.formatColumns(tableColumns);
     let prependColumns = this.formatPrependColumns(tablePrependColumns);
@@ -1131,13 +1144,13 @@ class Table extends React.Component {
         </div>
         {footer}
 
-        {columnDropMenu === true ? (
+        {hasDropMenu === true ? (
           <Popover
             trigger="click"
             onVisibleChange={this.columnSettingMenuHide}
             content={
               <ColumnDropMenu
-                options={{ pinable: true, filterable: true, groupable: true }}
+                options={props.columnDropMenuOptions}
                 columns={settableColumns}
                 columnsConfig={this.state.columnsConfig}
                 onChange={this.onColumnChange}
@@ -1179,6 +1192,11 @@ Table.defaultProps = {
   sortable: true,
   settable: true,
   columnDropMenu: true,
+  columnDropMenuOptions: {
+    fixable: true,
+    filterable: true,
+    groupable: true
+  },
   pagination: false,
   showRefresh: false,
   resetScrollOffset: true,
@@ -1248,6 +1266,14 @@ Table.propTypes = {
 
   /** 是否启用列标题配置项菜单 */
   columnDropMenu: PropTypes.bool,
+
+  /** 列下拉配置项 */
+  columnDropMenuOptions: PropTypes.shape({
+    fixable: PropTypes.bool,
+    filterable: PropTypes.bool,
+    groupable: PropTypes.bool
+  }),
+
 
   /** 是否可进行列排序 */
   sortable: PropTypes.bool,

@@ -26,7 +26,6 @@ const MenuIcon = () => {
     <svg
       viewBox="64 64 896 896"
       focusable="false"
-      class=""
       data-icon="menu"
       width="1em"
       height="1em"
@@ -154,7 +153,7 @@ class HeadDropMenu extends React.Component {
   render() {
     let styles = { height: "auto", lineHeight: "normal", padding: "0px 10px" };
 
-    let { pinable, filterable, groupable } = this.props.options;
+    let { fixable, filterable, groupable } = this.props.options;
 
     return (
       <div className="tablex__column__dropMenu">
@@ -165,7 +164,7 @@ class HeadDropMenu extends React.Component {
           style={{ width: 160 }}
           mode="vertical"
         >
-          {pinable && (
+          {fixable && (
             <SubMenu
               key="sub1"
               title={this.props.intl["columnMenuFixed"]}

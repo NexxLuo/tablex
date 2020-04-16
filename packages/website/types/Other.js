@@ -12,6 +12,11 @@ Other.defaultProps = {
   loading: false,
   striped: true,
   columnDropMenu: true,
+  columnDropMenuOptions: {
+    fixable: true,
+    filterable: true,
+    groupable: true
+  },
   multipleSort: true,
   intl: {
     editorInputError: "输入不正确",
@@ -88,6 +93,13 @@ Other.propTypes = {
 
   /** 是否启用列标题配置项菜单 */
   columnDropMenu: PropTypes.bool,
+
+  /** 列下拉配置项 */
+  columnDropMenuOptions: PropTypes.shape({
+    fixable: PropTypes.bool,
+    filterable: PropTypes.bool,
+    groupable: PropTypes.bool
+  }),
 
   /** 根据此列进行数据分组 */
   groupedColumnKey: PropTypes.array,
