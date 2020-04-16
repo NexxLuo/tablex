@@ -325,7 +325,6 @@ class Demo extends Component {
               // this.setState({data:[]})
               console.log("onRefresh:", a);
             }}
-            tableId="preview_table"
             sortable={true}
             editable={true}
             isAppend={true}
@@ -333,7 +332,7 @@ class Demo extends Component {
             overscanCount={100}
             alwaysValidate={true}
             rowKey="id"
-            showRefresh={true}
+            showRefresh={false}
             onEditSave={this.onEditSave}
             ref={this.tableRef}
             columns={fixedColumns}
@@ -342,6 +341,11 @@ class Demo extends Component {
             selectOnRowClick={false}
             selectMode="multiple"
             defaultExpandedRowKeys={["0"]}
+            editToolsConfig={{
+              wrapper:(e)=>{
+                return e;
+              }
+            }}
             data={this.state.data}
             onExpand={(b, r) => {
               //  console.log("onExpand:", r);

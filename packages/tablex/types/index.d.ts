@@ -10,6 +10,7 @@ export type EditTools = [
 
 export type EditToolsConfig = {
   position: "top" | "bottom";
+  wrapper?: (el: React.ReactNode, type: any, api: object) => React.ReactNode;
   props: object;
   itemStyle: object;
   editText: string;

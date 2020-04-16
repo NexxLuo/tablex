@@ -1321,6 +1321,16 @@ class EditableTable extends React.Component {
     }
   };
 
+  editToolsWrapper = (el, o) => {
+    let config = this.props.editToolsConfig || {};
+
+    let wrapper = config.wrapper;
+    if (typeof wrapper === "function") {
+      return wrapper(el, o, this.api);
+    } else {
+      return el;
+    }
+  };
   editTools = () => {
     let tools = this.props.editTools || [];
     let config = this.props.editToolsConfig || {};
@@ -1331,6 +1341,8 @@ class EditableTable extends React.Component {
 
     /** 按钮额外属性 */
     let buttonProps = config.props || {};
+    /** 按钮hoc */
+    let wrapper = this.editToolsWrapper;
 
     let buttons = [];
 
@@ -1401,47 +1413,56 @@ class EditableTable extends React.Component {
 
         if (d === "addSingle") {
           buttons.push(
-            <Button
-              key={d + "_1"}
-              style={styles}
-              {...buttonProps[d]}
-              className="table-tools-item"
-              onClick={() => this.addRange(1)}
-            >
-              {addIcon}
-              {addText}
-            </Button>
+            wrapper(
+              <Button
+                key={d + "_1"}
+                style={styles}
+                {...buttonProps[d]}
+                className="table-tools-item"
+                onClick={() => this.addRange(1)}
+              >
+                {addIcon}
+                {addText}
+              </Button>,
+              d
+            )
           );
         }
 
         if (d === "add") {
           buttons.push(
-            <Dropdown key={d + "_1"} overlay={menu} {...buttonProps[d]}>
-              <Button
-                tool="add"
-                style={styles}
-                onClick={() => this.addRange()}
-                className="table-tools-item"
-              >
-                {addIcon} {addText}
-                <Icon type="down" />
-              </Button>
-            </Dropdown>
+            wrapper(
+              <Dropdown key={d + "_1"} overlay={menu} {...buttonProps[d]}>
+                <Button
+                  tool="add"
+                  style={styles}
+                  onClick={() => this.addRange()}
+                  className="table-tools-item"
+                >
+                  {addIcon} {addText}
+                  <Icon type="down" />
+                </Button>
+              </Dropdown>,
+              d
+            )
           );
         }
 
         if (d === "edit") {
           buttons.push(
-            <Button
-              key={d + "_1"}
-              style={styles}
-              {...buttonProps[d]}
-              className="table-tools-item"
-              onClick={() => this.edit()}
-            >
-              {editIcon}
-              {editText}
-            </Button>
+            wrapper(
+              <Button
+                key={d + "_1"}
+                style={styles}
+                {...buttonProps[d]}
+                className="table-tools-item"
+                onClick={() => this.edit()}
+              >
+                {editIcon}
+                {editText}
+              </Button>,
+              d
+            )
           );
         }
 
@@ -1451,46 +1472,52 @@ class EditableTable extends React.Component {
           let hasData = data.length > 0;
 
           buttons.push(
-            <Popconfirm
-              key={d}
-              title={this.props.intl["deleteConfirmTitle"]}
-              okText={this.props.intl["deleteConfirmOk"]}
-              cancelText={this.props.intl["deleteConfirmCancel"]}
-              onConfirm={this.delete}
-              disabled={!hasSelectedRows}
-            >
-              <Button
-                style={styles}
-                loading={this.state.deleteLoading}
-                {...buttonProps[d]}
-                onClick={e => {
-                  e.stopPropagation();
-                  if (!hasSelectedRows) {
-                    if (hasData) {
-                      message.warn(this.props.intl["noSelectToDelete"]);
-                    } else {
-                      message.warn(this.props.intl["noDeletableData"]);
-                    }
-                  }
-                }}
-                className="table-tools-item"
+            wrapper(
+              <Popconfirm
+                key={d}
+                title={this.props.intl["deleteConfirmTitle"]}
+                okText={this.props.intl["deleteConfirmOk"]}
+                cancelText={this.props.intl["deleteConfirmCancel"]}
+                onConfirm={this.delete}
+                disabled={!hasSelectedRows}
               >
-                {deleteIcon}
-                {deleteText}
-              </Button>
-            </Popconfirm>
+                <Button
+                  style={styles}
+                  loading={this.state.deleteLoading}
+                  {...buttonProps[d]}
+                  onClick={e => {
+                    e.stopPropagation();
+                    if (!hasSelectedRows) {
+                      if (hasData) {
+                        message.warn(this.props.intl["noSelectToDelete"]);
+                      } else {
+                        message.warn(this.props.intl["noDeletableData"]);
+                      }
+                    }
+                  }}
+                  className="table-tools-item"
+                >
+                  {deleteIcon}
+                  {deleteText}
+                </Button>
+              </Popconfirm>,
+              d
+            )
           );
         }
 
         if (typeof d === "function") {
           buttons.push(
-            <span
-              style={styles}
-              className="table-tools-item"
-              key={"_fnTools_" + i}
-            >
-              {d()}
-            </span>
+            wrapper(
+              <span
+                style={styles}
+                className="table-tools-item"
+                key={"_fnTools_" + i}
+              >
+                {d(this.api)}
+              </span>,
+              d
+            )
           );
         }
 
@@ -1499,16 +1526,19 @@ class EditableTable extends React.Component {
           toolIcon = toolIcon ? <Icon type={toolIcon} /> : null;
           let toolAttr = d.props || {};
           buttons.push(
-            <Button
-              key={"_objTools_" + i}
-              onClick={d.handler}
-              style={styles}
-              {...toolAttr}
-              className="table-tools-item"
-            >
-              {toolIcon}
-              {d.text}
-            </Button>
+            wrapper(
+              <Button
+                key={"_objTools_" + i}
+                onClick={d.handler}
+                style={styles}
+                {...toolAttr}
+                className="table-tools-item"
+              >
+                {toolIcon}
+                {d.text}
+              </Button>,
+              d
+            )
           );
         }
       });
@@ -2224,6 +2254,7 @@ EditableTable.defaultProps = {
   toolBarStyle: {},
   editToolsConfig: {
     position: "bottom",
+    wrapper: null,
     props: {},
     itemStyle: {},
     editText: "",
@@ -2310,7 +2341,7 @@ EditableTable.propTypes = {
   toolBarStyle: PropTypes.object,
   /** 工具栏，工具按钮 ['edit', 'add','delete',{icon:"",text:"",props:{},handler:Function},Function] addSingle:单行新增 */
   editTools: PropTypes.array,
-  /** 工具栏，工具按钮属性配置{props:{}, position: "bottom", itemStyle: {}, editText: "", editIcon: "", addText: "", addIcon: "", deleteText: "", deleteIcon: "", okText: "", okIcon: "", cancelText: "", cancelIcon: "" } */
+  /** 工具栏，工具按钮属性配置{wrapper:function,props:{}, position: "bottom", itemStyle: {}, editText: "", editIcon: "", addText: "", addIcon: "", deleteText: "", deleteIcon: "", okText: "", okIcon: "", cancelText: "", cancelIcon: "" } */
   editToolsConfig: PropTypes.object,
   /** 新增行时，是追加，还是清空当前页数据 */
   isAppend: PropTypes.bool,

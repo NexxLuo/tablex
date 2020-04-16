@@ -11,6 +11,7 @@ Editable.defaultProps = {
   editTools: ["edit", "add"],
   editToolsConfig: {
     position: "bottom",
+    wrapper: null,
     props: {},
     itemStyle: { marginLeft: "5px" },
     editText: "",
@@ -60,7 +61,7 @@ Editable.propTypes = {
 
   /** 工具栏，工具按钮 ['edit', 'add','delete',{icon:"",text:"",props:{},handler:Function},Function] addSingle:单行新增 */
   editTools: PropTypes.array,
-  /** 工具栏，工具按钮属性配置{ props:{},position: "bottom", itemStyle: { marginRight: "5px" }, editText: "", editIcon: "", addText: "", addIcon: "", deleteText: "", deleteIcon: "", okText: "", okIcon: "", cancelText: "", cancelIcon: "" } */
+  /** 工具栏，工具按钮属性配置{ wrapper:function,props:{},position: "bottom", itemStyle: { marginRight: "5px" }, editText: "", editIcon: "", addText: "", addIcon: "", deleteText: "", deleteIcon: "", okText: "", okIcon: "", cancelText: "", cancelIcon: "" } */
   editToolsConfig: PropTypes.object,
   /** 新增行时，是追加，还是清空当前页数据 */
   isAppend: PropTypes.bool,
