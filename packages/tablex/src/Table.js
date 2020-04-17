@@ -581,11 +581,12 @@ class Table extends React.Component {
     }
     let groupColumnName = {};
 
-    let hasDropMenu = this.hasDropMenu();
+    let table_hasDropMenu = this.hasDropMenu();
 
     cols.forEach(d => {
       let columnKey = d.key || d.dataIndex;
       let config = configs[columnKey] || {};
+      let hasDropMenu = table_hasDropMenu;
       if (typeof d.dropMenu === "boolean") {
         hasDropMenu = d.dropMenu;
       }
