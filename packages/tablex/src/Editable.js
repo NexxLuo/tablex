@@ -1418,7 +1418,7 @@ class EditableTable extends React.Component {
                 key={d + "_1"}
                 style={styles}
                 {...buttonProps[d]}
-                className="table-tools-item"
+                className="table-tools-item table-tools-addSingle"
                 onClick={() => this.addRange(1)}
               >
                 {addIcon}
@@ -1434,10 +1434,9 @@ class EditableTable extends React.Component {
             wrapper(
               <Dropdown key={d + "_1"} overlay={menu} {...buttonProps[d]}>
                 <Button
-                  tool="add"
                   style={styles}
                   onClick={() => this.addRange()}
-                  className="table-tools-item"
+                  className="table-tools-item table-tools-add"
                 >
                   {addIcon} {addText}
                   <Icon type="down" />
@@ -1455,7 +1454,7 @@ class EditableTable extends React.Component {
                 key={d + "_1"}
                 style={styles}
                 {...buttonProps[d]}
-                className="table-tools-item"
+                className="table-tools-item table-tools-edit"
                 onClick={() => this.edit()}
               >
                 {editIcon}
@@ -1495,7 +1494,7 @@ class EditableTable extends React.Component {
                       }
                     }
                   }}
-                  className="table-tools-item"
+                  className="table-tools-item table-tools-delete"
                 >
                   {deleteIcon}
                   {deleteText}

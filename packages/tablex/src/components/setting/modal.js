@@ -397,7 +397,7 @@ class SettingModal extends React.Component {
           className="tablex__setting__modal__footer"
         >
           <Button
-            type="purple"
+            className="table-setting-reset"
             loading={this.state.resetLoading}
             onClick={this.reset}
           >
@@ -405,14 +405,14 @@ class SettingModal extends React.Component {
           </Button>
           <Button
             loading={this.state.loading}
-            type="purple"
+            className="table-setting-ok"
             onClick={this.onOk}
             style={{ marginLeft: 20 }}
           >
             {this.props.intl["settingOk"]}
           </Button>
           <Button
-            type="gray"
+            className="table-setting-cancel"
             style={{ marginLeft: 20 }}
             onClick={this.onCancel}
           >
