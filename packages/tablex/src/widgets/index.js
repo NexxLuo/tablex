@@ -60,13 +60,7 @@ function RadioButton(props) {
   return <ARadio.Button {...props} />;
 }
 
-RadioGroup.defaultProps = {
-  prefixCls: "tablex-radio"
-};
 
-RadioButton.defaultProps = {
-  prefixCls: "tablex-radio-button"
-};
 
 Radio.Group = RadioGroup;
 Radio.Button = RadioButton;
@@ -106,6 +100,14 @@ function Popover(props) {
 function Select(props) {
   return <ASelect {...props} />;
 }
+
+RadioGroup.defaultProps = {
+  prefixCls: "tablex-radio"
+};
+
+RadioButton.defaultProps = {
+  prefixCls: "tablex-radio-button"
+};
 
 Button.defaultProps = {
   prefixCls: "tablex-btn"
