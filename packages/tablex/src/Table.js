@@ -3,7 +3,9 @@ import PropTypes from "prop-types";
 import BaseTable from "react-base-datagrid";
 import ContextMenu from "./components/ContextMenu";
 import Pagination from "./components/pagination";
-import ColumnDropMenu from "./components/ColumnDropMenu";
+import ColumnDropMenu, {
+  ColumnDropMenuButton
+} from "./components/ColumnDropMenu";
 import Setting, { getConfigs, setConfigs } from "./components/setting";
 import SortIcon from "./components/SortIndicator";
 import EmptyIcon from "./components/EmptyIcon";
@@ -375,15 +377,15 @@ class Table extends React.Component {
   columnSettingMenuShow = e => {
     e.stopPropagation();
 
-    e.target.className = "tablex__head__cell__title__dropdown opened";
+    let el = e.currentTarget;
 
-    let el = e.target;
+    el.className = "tablex__head__cell__title__dropdown opened";
 
     let head = getParentElement(el, ".tablex-table-head-container");
 
     let container = getParentElement(el, ".tablex__container__body");
 
-    let p = getParentElement(e.target, ".tablex-table-head-cell");
+    let p = getParentElement(el, ".tablex-table-head-cell");
 
     let containerTop = 0;
 
@@ -410,8 +412,8 @@ class Table extends React.Component {
 
     this.setState({
       columnMenu: {
-        columnKey: e.target.dataset.columnkey,
-        trigger: e.target,
+        columnKey: el.dataset.columnkey,
+        trigger: el,
         visible: true,
         offsetX: left,
         offsetY: top
@@ -643,8 +645,7 @@ class Table extends React.Component {
             {title}
             {allowSort ? <SortIcon order={sort} /> : null}
             {hasDropMenu === true ? (
-              <span
-                className="tablex__head__cell__title__dropdown"
+              <ColumnDropMenuButton
                 data-columnkey={columnKey}
                 onClick={this.columnSettingMenuShow}
               />
@@ -1273,7 +1274,6 @@ Table.propTypes = {
     filterable: PropTypes.bool,
     groupable: PropTypes.bool
   }),
-
 
   /** 是否可进行列排序 */
   sortable: PropTypes.bool,

@@ -15,7 +15,8 @@
   z-index: 1;
 }
 
-.table-tools-item,.tablex-pagination{
+.table-tools-item,
+.tablex-pagination {
   margin-right: 5px;
 }
 
@@ -64,22 +65,11 @@
   width: 16px;
   height: 16px;
   outline: none;
-  font-size: 0;
+  font-size: 12px;
   position: absolute;
-  top: 6px;
+  top: 3px;
   right: 0px;
-}
-
-.tablex__head__cell__title__dropdown::after {
-  content: "";
-  display: block;
-  width: 12px;
-  height: 10px;
-  border-top: 2px solid #ccc;
-  border-bottom: 2px solid #ccc;
-  background-color: #ccc;
-  padding: 2px 0;
-  background-clip: content-box;
+  color: #cccccc;
 }
 
 .tablex-table-head-cell:hover .tablex__head__cell__title__dropdown {
