@@ -161,6 +161,7 @@ class EditableTable extends React.Component {
     }
   }
 
+  /** align: auto、smart、center、end、start */
   scrollToRow(key, align) {
     if (this.innerTable) {
       this.innerTable.scrollToRow(key, align);
@@ -753,7 +754,11 @@ class EditableTable extends React.Component {
       nextState.editKeys = newEditKeys;
     }
 
-    this.setState(nextState);
+    this.setState(nextState, () => {
+      if (editting === true) {
+        this.scrollToRow(keys[0], "smart");
+      }
+    });
   };
 
   setRows = (arr = []) => {
@@ -1305,16 +1310,21 @@ class EditableTable extends React.Component {
     this.insertedData = insertedData;
     this.nextData = newData;
 
-    this.setState({
-      data: newData,
-      flatData: flatData.slice().concat(insertedData),
-      editKeys: keys,
-      isEditing: true,
-      isEditAll: false,
-      isAdding: false,
-      isAddingRange: true,
-      changedRows: []
-    });
+    this.setState(
+      {
+        data: newData,
+        flatData: flatData.slice().concat(insertedData),
+        editKeys: keys,
+        isEditing: true,
+        isEditAll: false,
+        isAdding: false,
+        isAddingRange: true,
+        changedRows: []
+      },
+      () => {
+        this.scrollToRow(keys[0], "smart");
+      }
+    );
 
     if (!quiet && typeof this.props.onAdd === "function") {
       this.props.onAdd(insertedData, newData, "add");
