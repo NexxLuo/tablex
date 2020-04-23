@@ -1157,8 +1157,7 @@ class EditableTable extends React.Component {
   };
 
   deleteRowsState = (rowKeys = []) => {
-    let { rowKey, selectedRowKeys, editKeys } = this.state;
-    let insertedData = this.insertedData;
+    let { selectedRowKeys, editKeys } = this.state;
 
     //删除的行key
     let keysMap = {};
@@ -1220,6 +1219,15 @@ class EditableTable extends React.Component {
       this.nextData = newData;
 
       let { editKeys: nextEditKeys } = this.deleteRowsState(deletedRowKeys);
+
+      //删除新增但未提交的行数据
+      let { newData: newInsertedData } = deleteData(
+        this.insertedData,
+        deletedRowKeys,
+        rowKey
+      );
+      this.insertedData = newInsertedData;
+      //
 
       let nextState = {
         deleteLoading: false,
@@ -1405,116 +1413,118 @@ class EditableTable extends React.Component {
           {cancelText}
         </Button>
       );
-    } else {
-      let rangeUnitText = this.props.intl["addRangeRowText"];
-      tools.forEach((d, i) => {
-        let styles = { ...itemStyle };
+    }
 
-        const menu = (
-          <Menu onClick={e => this.addRange(e.item.props.value)}>
-            <Menu.Item key="1" value={5}>
-              5 {rangeUnitText}
-            </Menu.Item>
-            <Menu.Item key="2" value={10}>
-              10 {rangeUnitText}
-            </Menu.Item>
-          </Menu>
+    let rangeUnitText = this.props.intl["addRangeRowText"];
+    tools.forEach((d, i) => {
+      let styles = { ...itemStyle };
+
+      const menu = (
+        <Menu onClick={e => this.addRange(e.item.props.value)}>
+          <Menu.Item key="1" value={5}>
+            5 {rangeUnitText}
+          </Menu.Item>
+          <Menu.Item key="2" value={10}>
+            10 {rangeUnitText}
+          </Menu.Item>
+        </Menu>
+      );
+
+      if (d === "addSingle") {
+        buttons.push(
+          wrapper(
+            <Button
+              key={d + "_1"}
+              style={styles}
+              {...buttonProps[d]}
+              className="table-tools-item table-tools-addSingle"
+              onClick={() => this.addRange(1)}
+            >
+              {addIcon}
+              {addText}
+            </Button>,
+            d
+          )
         );
+      }
 
-        if (d === "addSingle") {
-          buttons.push(
-            wrapper(
+      if (d === "add") {
+        buttons.push(
+          wrapper(
+            <Dropdown key={d + "_1"} overlay={menu} {...buttonProps[d]}>
               <Button
-                key={d + "_1"}
                 style={styles}
-                {...buttonProps[d]}
-                className="table-tools-item table-tools-addSingle"
-                onClick={() => this.addRange(1)}
+                onClick={() => this.addRange()}
+                className="table-tools-item table-tools-add"
               >
-                {addIcon}
-                {addText}
-              </Button>,
-              d
-            )
-          );
-        }
+                {addIcon} {addText}
+                <Icon type="down" />
+              </Button>
+            </Dropdown>,
+            d
+          )
+        );
+      }
 
-        if (d === "add") {
-          buttons.push(
-            wrapper(
-              <Dropdown key={d + "_1"} overlay={menu} {...buttonProps[d]}>
-                <Button
-                  style={styles}
-                  onClick={() => this.addRange()}
-                  className="table-tools-item table-tools-add"
-                >
-                  {addIcon} {addText}
-                  <Icon type="down" />
-                </Button>
-              </Dropdown>,
-              d
-            )
-          );
-        }
+      if (!isEditing && d === "edit") {
+        buttons.push(
+          wrapper(
+            <Button
+              key={d + "_1"}
+              style={styles}
+              {...buttonProps[d]}
+              className="table-tools-item table-tools-edit"
+              onClick={() => this.edit()}
+            >
+              {editIcon}
+              {editText}
+            </Button>,
+            d
+          )
+        );
+      }
 
-        if (d === "edit") {
-          buttons.push(
-            wrapper(
+      if (d === "delete") {
+        let { selectedRowKeys = [], data = [] } = this.state;
+        let hasSelectedRows = selectedRowKeys.length > 0;
+        let hasData = data.length > 0;
+
+        buttons.push(
+          wrapper(
+            <Popconfirm
+              key={d}
+              title={this.props.intl["deleteConfirmTitle"]}
+              okText={this.props.intl["deleteConfirmOk"]}
+              cancelText={this.props.intl["deleteConfirmCancel"]}
+              onConfirm={this.delete}
+              disabled={!hasSelectedRows}
+            >
               <Button
-                key={d + "_1"}
                 style={styles}
+                loading={this.state.deleteLoading}
                 {...buttonProps[d]}
-                className="table-tools-item table-tools-edit"
-                onClick={() => this.edit()}
-              >
-                {editIcon}
-                {editText}
-              </Button>,
-              d
-            )
-          );
-        }
-
-        if (d === "delete") {
-          let { selectedRowKeys = [], data = [] } = this.state;
-          let hasSelectedRows = selectedRowKeys.length > 0;
-          let hasData = data.length > 0;
-
-          buttons.push(
-            wrapper(
-              <Popconfirm
-                key={d}
-                title={this.props.intl["deleteConfirmTitle"]}
-                okText={this.props.intl["deleteConfirmOk"]}
-                cancelText={this.props.intl["deleteConfirmCancel"]}
-                onConfirm={this.delete}
-                disabled={!hasSelectedRows}
-              >
-                <Button
-                  style={styles}
-                  loading={this.state.deleteLoading}
-                  {...buttonProps[d]}
-                  onClick={e => {
-                    e.stopPropagation();
-                    if (!hasSelectedRows) {
-                      if (hasData) {
-                        message.warn(this.props.intl["noSelectToDelete"]);
-                      } else {
-                        message.warn(this.props.intl["noDeletableData"]);
-                      }
+                onClick={e => {
+                  e.stopPropagation();
+                  if (!hasSelectedRows) {
+                    if (hasData) {
+                      message.warn(this.props.intl["noSelectToDelete"]);
+                    } else {
+                      message.warn(this.props.intl["noDeletableData"]);
                     }
-                  }}
-                  className="table-tools-item table-tools-delete"
-                >
-                  {deleteIcon}
-                  {deleteText}
-                </Button>
-              </Popconfirm>,
-              d
-            )
-          );
-        }
+                  }
+                }}
+                className="table-tools-item table-tools-delete"
+              >
+                {deleteIcon}
+                {deleteText}
+              </Button>
+            </Popconfirm>,
+            d
+          )
+        );
+      }
 
+      if (!isEditing) {
         if (typeof d === "function") {
           buttons.push(
             wrapper(
@@ -1550,8 +1560,8 @@ class EditableTable extends React.Component {
             )
           );
         }
-      });
-    }
+      }
+    });
 
     if (buttons.length === 0) {
       return null;
