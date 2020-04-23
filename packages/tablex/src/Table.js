@@ -661,6 +661,8 @@ class Table extends React.Component {
 
     if (hasGroupColumn && firstColumn) {
       firstColumn.align = "left";
+      let oldRender = firstColumn.render;
+
       firstColumn.render = (value, row, index) => {
         if (row && row.__isGroupedHeadRow) {
           const obj = {
@@ -679,7 +681,12 @@ class Table extends React.Component {
           };
           return obj;
         } else {
-          return value;
+          let firstColumnValue = value;
+
+          if (typeof oldRender === "function") {
+            firstColumnValue = oldRender(value, row, index);
+          }
+          return firstColumnValue;
         }
       };
 
