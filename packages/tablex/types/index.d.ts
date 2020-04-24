@@ -228,9 +228,9 @@ export interface TableProps<T> {
   editTools?: EditTools;
   editToolsConfig?: EditToolsConfig;
   isAppend?: boolean;
+  ignoreEmptyRow?: boolean;
   defaultAddCount?: number;
 
-  allowSaveEmpty?: boolean;
   validateTrigger: ["onChange" | "onBlur" | "onSave"];
   onBeforeAdd?: () => boolean;
   onAdd?: (addedData: object[], newData: object[], string: "add") => void;
@@ -240,7 +240,6 @@ export interface TableProps<T> {
   onEdit?: () => void;
   onBeforeDelete?: (selectedKeys: string[]) => boolean;
   onDelete?: () => void;
-  alwaysValidate?: boolean;
   dataControled?: boolean;
   onEditSave?: (
     changedRows: object[],

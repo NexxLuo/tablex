@@ -1103,10 +1103,6 @@ class EditableTable extends React.Component {
       emptyDataMap: addedEmptyDataMap
     } = this.filterEmptyData(insertedData);
 
-    // let addedDataKeyMap = { ...notAddedEmptyData, ...addedEmptyData };
-
-    console.log("addedDataKeyMap:", addedDataKeyMap);
-
     //修改的数据，排除掉新增、删除的数据
     changedState.changed = changedRows.filter(d => {
       let bl = true;
@@ -1234,9 +1230,6 @@ class EditableTable extends React.Component {
         return;
       }
     }
-
-    console.log("editSave inserted:", inserted);
-    console.log("editSave changed:", changed);
 
     if (changedRows.length <= 0) {
       this.cancelEdit();

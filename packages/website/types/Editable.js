@@ -27,11 +27,10 @@ Editable.defaultProps = {
   },
   defaultAddCount: 1,
   isAppend: false,
+  ignoreEmptyRow: true,
   validateTrigger: "onSave",
   validateDelay: 300,
-  allowSaveEmpty: false,
   dataControled: false,
-  alwaysValidate: false,
   editorNoBorder: false,
   showValidateMessage: true,
   keyboardNavigation: true,
@@ -65,14 +64,10 @@ Editable.propTypes = {
   editToolsConfig: PropTypes.object,
   /** 新增行时，是追加，还是清空当前页数据 */
   isAppend: PropTypes.bool,
+  /** 新增时是否忽略空数据行,当所有editor列的值均为空时,此行则视为空数据行 */
+  ignoreEmptyRow: PropTypes.bool,
   /** 新增行时的默认条数 */
   defaultAddCount: PropTypes.number,
-
-  /** 当为false时，新增的行数据如果没有产生输入更改，将被忽略 */
-  allowSaveEmpty: PropTypes.bool,
-
-  /** true：每次都验证所有数据行，false：只验证产生更改的行 */
-  alwaysValidate: PropTypes.bool,
 
   /** 验证时机 */
   validateTrigger: PropTypes.oneOf(["onChange", "onBlur", "onSave"]),
