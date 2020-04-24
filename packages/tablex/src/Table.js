@@ -665,12 +665,14 @@ class Table extends React.Component {
 
       firstColumn.render = (value, row, index) => {
         if (row && row.__isGroupedHeadRow) {
+          let groupLable = groupColumnName[row.__groupColumnKey] || "";
+          if (groupLable) {
+            groupLable += ":";
+          }
           const obj = {
             children: (
               <span>
-                <label style={{ fontWeight: "bold" }}>
-                  {groupColumnName[row.__groupColumnKey] || ""}:
-                </label>
+                <label style={{ fontWeight: "bold" }}>{groupLable}</label>
                 {row.__groupName || ""}
                 <label style={{ fontWeight: "bold" }}>({row.__count})</label>
               </span>

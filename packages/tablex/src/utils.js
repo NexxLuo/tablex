@@ -623,3 +623,26 @@ export function getGroupedData({ groupedKey = [], data = [], keyField = "" }) {
   }
   return arr;
 }
+
+/**
+ * 根据key键值去重数据，重复项只保留第一条数据
+ * @param {*} data
+ * @param {*} key
+ */
+export function distinctData(data = [], key = "") {
+  let keyMap = {};
+
+  let arr = [];
+  for (let i = 0; i < data.length; i++) {
+    const d = data[i];
+    let rk = d[key];
+    let isExist = keyMap[rk] === true;
+
+    if (!isExist) {
+      keyMap[rk] = true;
+      arr.push(d);
+    }
+  }
+
+  return arr;
+}
