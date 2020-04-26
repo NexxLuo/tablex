@@ -1,91 +1,12 @@
 import React, { Component } from "react";
 import { Table } from "tablex";
-import { Checkbox, Input, Button, Table as AntdTable } from "antd";
-import Search from "antd/lib/input/Search";
-
-const generateColumns = (count = 10, prefix = "column-", props) =>
-  new Array(count).fill(0).map((column, columnIndex) => ({
-    ...props,
-    key: `${prefix}${columnIndex}`,
-    dataIndex: `${prefix}${columnIndex}`,
-    title: `Column ${columnIndex}`,
-    width: 150
-  }));
-
-const generateData = (columns, count = 20, prefix = "row-") =>
-  new Array(count).fill(0).map((row, rowIndex) => {
-    return columns.reduce(
-      (rowData, column, columnIndex) => {
-        rowData[column.dataIndex] = `Row ${rowIndex} - Col ${columnIndex}`;
-
-        if (rowIndex === 0) {
-          //rowData.children = [];
-        }
-
-        return rowData;
-      },
-      {
-        id: `${prefix}${rowIndex}`,
-        parentId: null
-      }
-    );
-  });
-
-const columns = generateColumns(10);
-
-function createData(level, parentKey, maxLevel, index) {
-  if (level > maxLevel) {
-    return;
-  }
-
-  let l = level;
-  let data = [];
-  for (let i = 0; i < 3; i++) {
-    let k = parentKey + "-" + level + "-" + i;
-    let d = {
-      id: k,
-      "column-1": "Edward King " + k,
-      age: 32,
-      level: level,
-      address: "London, Park Lane no. " + i
-    };
-
-    if (i === 2) {
-      d.children = createData(l + 1, k, maxLevel, i);
-    }
-
-    data.push(d);
-  }
-  return data;
-}
-
-function createTreeData() {
-  let data = [];
-  for (let i = 0; i < 50; i++) {
-    let childrens = createData(0, i, 2);
-    let d = {
-      id: "" + i,
-      level: 0,
-      "column-1": "Edward King " + i,
-      age: i,
-      address: "London, Park Lane no. " + i
-    };
-
-    if (i % 3 === 0) {
-      d.children = childrens;
-    }
-
-    data.push(d);
-  }
-
-  return data;
-}
+import { Input, Button } from "antd";
 
 class Demo extends React.Component {
   generateData(columns, count = 20, prefix = "Row") {
-    return new Array(count).fill(0).map((row, rowIndex) => {
+    return new Array(count).fill(0).map(function(row, rowIndex) {
       return columns.reduce(
-        (rowData, column, columnIndex) => {
+        function(rowData, column, columnIndex) {
           if (column.dataIndex !== "id") {
             rowData[column.dataIndex] = Math.floor(Math.random() * 100 + 1);
           } else {
@@ -184,48 +105,23 @@ class Demo extends React.Component {
     };
   }
 
-  contextMenu = row => {
-    console.log("contextMenu:", row && row.id);
-
-    if (row && row.id === "Row 4 - Col 0") {
-      return <div>asadasd</div>;
-    }
-    return null;
-  };
-
-  addData = () => {
+  addData() {
     let arr = new Array(5).fill(0).map((d, i) => {
       return {
         id: "addedData-" + i + "-" + new Date().getTime(),
         "column-1": i === 0 ? "" : "value-" + i,
         "column-2": i === 0 ? "" : "value2-" + i,
-        "column-3":  "value3-" + i
+        "column-3": "value3-" + i
       };
     });
 
-    console.log("arr:", arr);
     this.refs.tb.api.addRows(arr, true, false);
-  };
+  }
 
-
-  insertData= () => {
-    let arr = new Array(5).fill(0).map((d, i) => {
-      return {
-        id: "insertedData-" + i + "-" + new Date().getTime(),
-        "column-1": i === 0 ? "" : "value-" + i,
-        "column-2": i === 0 ? "" : "value2-" + i,
-        "column-3":  "value3-" + i
-      };
-    });
-
-    console.log("arr:", arr);
-    this.refs.tb.api.insertData({data:arr,editing:true});
-  };
-
-  onEditSave = (changedRows, newRows, type) => {
+  onEditSave(changedRows, newRows, type) {
     this.setState({ data: newRows });
     console.log("onEditSave");
-  };
+  }
 
   render() {
     let { columns, data } = this.state;
@@ -241,7 +137,7 @@ class Demo extends React.Component {
             selectMode="multiple"
             loading={false}
             data={data}
-            onEditSave={this.onEditSave}
+            onEditSave={this.onEditSave.bind(this)}
             ignoreEmptyRow={true}
             isAppend={true}
             validateTrigger="onChange"
@@ -251,12 +147,11 @@ class Demo extends React.Component {
               "edit",
               "add",
               "delete",
-              () => {
-                return <Button onClick={this.addData}>新增数据</Button>;
-              },
-              () => {
-                return <Button onClick={this.insertData}>插入数据</Button>;
-              }
+              function() {
+                return (
+                  <Button onClick={this.addData.bind(this)}>新增数据</Button>
+                );
+              }.bind(this)
             ]}
           />
         </div>
