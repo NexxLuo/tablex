@@ -207,6 +207,21 @@ class Demo extends React.Component {
     this.refs.tb.api.addRows(arr, true, false);
   };
 
+
+  insertData= () => {
+    let arr = new Array(5).fill(0).map((d, i) => {
+      return {
+        id: "insertedData-" + i + "-" + new Date().getTime(),
+        "column-1": i === 0 ? "" : "value-" + i,
+        "column-2": i === 0 ? "" : "value2-" + i,
+        "column-3":  "value3-" + i
+      };
+    });
+
+    console.log("arr:", arr);
+    this.refs.tb.api.insertData({data:arr,editing:true});
+  };
+
   onEditSave = (changedRows, newRows, type) => {
     this.setState({ data: newRows });
     console.log("onEditSave");
@@ -224,6 +239,7 @@ class Demo extends React.Component {
             editable={true}
             columns={columns}
             selectMode="multiple"
+            loading={false}
             data={data}
             onEditSave={this.onEditSave}
             ignoreEmptyRow={true}
@@ -237,6 +253,9 @@ class Demo extends React.Component {
               "delete",
               () => {
                 return <Button onClick={this.addData}>新增数据</Button>;
+              },
+              () => {
+                return <Button onClick={this.insertData}>插入数据</Button>;
               }
             ]}
           />
