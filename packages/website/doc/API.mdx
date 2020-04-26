@@ -87,7 +87,12 @@ api = {
      * 完成编辑，并提交数据更改
      * 每次调用此方法，都将会触发onComplete，可以在onComplete事件中统一对数据进行保存操作
      * */
-    completeEdit: ()=>{},
+    completeEdit: (callback)=>{},
+    /** 
+     * 仅提交编辑的数据更改
+     * 不会验证,也不会进入onComplete,且会保持编辑状态
+     * */
+    commitEdit:(callback)=>{},
     /** 
      * 取消编辑 
      * 调用此方法后，上次未提交的数据更改将被放弃
