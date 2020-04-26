@@ -309,7 +309,11 @@ class EditableTable extends React.Component {
 
     let validation = {};
 
-    if (this.props.ignoreEmptyRow === true && this.isEmptyRow(row)) {
+    if (
+      this.props.ignoreEmptyRow === true &&
+      this.editType === "add" &&
+      this.isEmptyRow(row)
+    ) {
       this.clearValidate(row);
       return true;
     }
