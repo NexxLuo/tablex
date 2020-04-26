@@ -902,8 +902,7 @@ class Table extends React.Component {
             tip={this.props.intl.dataLoading}
             style={{
               margin: "auto",
-              width: 300,
-              height: 50
+              transform: "translateY(-50%)"
             }}
           />
         </div>
@@ -924,8 +923,10 @@ class Table extends React.Component {
       >
         <div className="tablex__overlay__inner">
           <div className="tablex__emptydata">
-            <EmptyIcon />
-            {this.props.intl.noDataMsg}
+            <div className="tablex__emptydata__inner">
+              <EmptyIcon />
+              {this.props.intl.noDataMsg}
+            </div>
           </div>
         </div>
       </div>

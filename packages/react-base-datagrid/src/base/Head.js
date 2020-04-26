@@ -234,6 +234,12 @@ const renderColumns = ({
       titleElement = d.title;
     }
 
+    let renderFn = d.headCellRender;
+
+    if (typeof renderFn === "function") {
+      titleElement = renderFn({ column: d, title: titleElement });
+    }
+
     if (d.children instanceof Array && d.children.length > 0) {
       let flexible = hasFlexibleColumn(d.children);
 
@@ -242,7 +248,7 @@ const renderColumns = ({
           key={columnKey}
           className={columnClass}
           headerCellProps={headerCellProps}
-          title={d.title}
+          title={titleElement}
           flexible={flexible}
           alignStyles={alignStyles}
           width={columnWidth}
@@ -250,12 +256,6 @@ const renderColumns = ({
           style={columnStyle}
         ></ColumnGroup>
       );
-    }
-
-    let renderFn = d.headCellRender;
-
-    if (typeof renderFn === "function") {
-      titleElement = renderFn({ column: d, title: titleElement });
     }
 
     return (

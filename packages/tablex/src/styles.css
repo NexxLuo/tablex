@@ -102,7 +102,7 @@
 }
 
 .tablex__overlay__inner {
-  z-index: 3;
+  z-index: 20;
   position: absolute;
   left: 0;
   bottom: 0;
@@ -111,7 +111,7 @@
   margin: auto;
   width: 100%;
   text-align: center;
-  height: 70px;
+  height: 0px;
 }
 
 .tablex__emptydata {
@@ -123,10 +123,14 @@
   top: 0;
   margin: auto;
   width: 200px;
-  height: 70px;
   color: #c7c7c7;
   font-size: 14px;
   letter-spacing: 1px;
+  height: 0px;
+}
+
+.tablex__emptydata__inner{
+  transform: translateY(-50%);
 }
 
 .tablex-table .tablex-table-body .tablex-table-row.tablex-row-focused {
