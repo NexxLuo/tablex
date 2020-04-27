@@ -1,4 +1,5 @@
 import groupBy from "lodash/groupBy";
+import orderBy from "lodash/orderBy";
 
 export function getParentElement(element, selector) {
   function isMatched(el, str = "") {
@@ -583,7 +584,7 @@ function groupData({ groupedKey = "", data = [], keyField = "", prefix = "" }) {
       children: childrens
     };
 
-    obj[rowKey] = "__group_" + prefix + "-" + i;
+    obj[rowKey] = "__group_" + keyField + "-" + prefix + "-" + i;
 
     arr.push(obj);
   });
@@ -621,6 +622,50 @@ export function getGroupedData({ groupedKey = [], data = [], keyField = "" }) {
       });
     }
   }
+  return arr;
+}
+
+export function getPageData({ data: [], total, current, pageSize }) {
+  let pageIndex = current;
+
+  if ((current - 1) * pageSize >= total) {
+    pageIndex = Math.floor((total - 1) / pageSize) + 1;
+  }
+
+  let arr = data;
+
+  // 分页
+  // ---
+  // 当数据量少于等于每页数量时，直接设置数据
+  // 否则进行读取分页数据
+  if (data.length > pageSize) {
+    arr = data.filter((_, i) => {
+      return i >= (current - 1) * pageSize && i < current * pageSize;
+    });
+  }
+
+  return arr;
+}
+
+export function getOrderedData({ data: [], orders = {} }) {
+  let arr = data;
+  let orderColumns = [];
+  let orderTypes = [];
+
+  if (orders) {
+    Object.keys(orders).forEach(k => {
+      let v = orders[k];
+      if (v !== "none") {
+        orderColumns.push(k);
+        orderTypes.push(v);
+      }
+    });
+  }
+
+  if (orderColumns.length > 0) {
+    arr = orderBy(data, orderColumns, orderTypes);
+  }
+
   return arr;
 }
 
