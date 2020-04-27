@@ -675,6 +675,7 @@ class Table extends React.Component {
                 <label style={{ fontWeight: "bold" }}>{groupLable}</label>
                 {row.__groupName || ""}
                 <label style={{ fontWeight: "bold" }}>({row.__count})</label>
+                {this.getColumnGroupSummary(row.children || [])}
               </span>
             ),
             props: {
@@ -968,6 +969,63 @@ class Table extends React.Component {
     this.innerTableRef && this.innerTableRef.scrollTo(0);
   }
 
+  getColumnGroupSummary = (data = []) => {
+    let { style: wrapperStyle, className, data: summaryTypes = [], render } =
+      this.props.groupedColumnSummary || {};
+
+    let flatData = treeToList(data).list;
+
+    let arr = [];
+
+    summaryTypes.forEach((d, i) => {
+      let { dataIndex, title, type, style: itemStyle } = d;
+
+      let itemStyles = itemStyle || { marginLeft: 10 };
+
+      let fn = summaryMath[type];
+
+      let summaryValue = "";
+
+      if (typeof fn === "function") {
+        summaryValue = fn(flatData, dataIndex);
+        if (typeof summaryValue === "undefined") {
+          summaryValue = "";
+        }
+      }
+
+      let v = title + ":" + summaryValue;
+
+      if (typeof render === "function") {
+        let renderElement = render(v, summaryValue, {
+          dataIndex,
+          title,
+          type
+        });
+        if (renderElement === null) {
+          v = null;
+        } else if (renderElement !== undefined) {
+          v = renderElement;
+        }
+      }
+
+      arr.push(
+        <span style={itemStyles} key={type + "-" + i}>
+          {v}
+        </span>
+      );
+    });
+
+    if (arr.length > 0) {
+      return (
+        <span className={className} style={wrapperStyle}>
+          {arr}
+        </span>
+      );
+    } else {
+      return null;
+    }
+  };
+
   getSummary = () => {
     let { summary = {} } = this.props;
     let { data } = this.state;
@@ -976,8 +1034,11 @@ class Table extends React.Component {
 
     let { data: summaryTypes = [], title = {}, render, style = {} } = summary;
 
+    //title所在列
     let titleColumn = title.column || "";
+    //title自定义渲染
     let titleRender = title.render;
+    //title显示文本
     let titleText = title.text || "";
 
     let arr = [];
@@ -1300,6 +1361,14 @@ Table.propTypes = {
 
   /** 根据此列进行数据分组 */
   groupedColumnKey: PropTypes.array,
+
+  /** 数据分组列汇总 */
+  groupedColumnSummary: PropTypes.shape({
+    style: PropTypes.object,
+    className: PropTypes.string,
+    data: PropTypes.array,
+    render: PropTypes.func
+  }),
 
   /** 默认分组列 */
   defaultGroupedColumnKey: PropTypes.array,
