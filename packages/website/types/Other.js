@@ -111,7 +111,12 @@ Other.propTypes = {
   groupedColumnSummary: PropTypes.shape({
     style: PropTypes.object,
     className: PropTypes.string,
-    data: PropTypes.array,
+    data: PropTypes.shape({
+      title: PropTypes.string,
+      dataIndex: PropTypes.string,
+      style: PropTypes.object,
+      render: PropTypes.func
+    }),
     render: PropTypes.func
   }),
 
