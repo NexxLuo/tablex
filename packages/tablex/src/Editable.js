@@ -2174,7 +2174,9 @@ class EditableTable extends React.Component {
   };
 
   expandAll = (silent = false) => {
-    let { data, rowKey } = this.state;
+    let { rowKey } = this.state;
+
+    let data = this.getDataList();
 
     let nextKeys = [];
 
@@ -2191,7 +2193,9 @@ class EditableTable extends React.Component {
   };
 
   expandTo = (toDepth = 0, silent = false) => {
-    let { data, rowKey } = this.state;
+    let { rowKey } = this.state;
+
+    let data = this.getDataList();
 
     let nexExpandedRowKeys = [];
     let keyMap = {};
