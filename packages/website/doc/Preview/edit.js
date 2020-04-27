@@ -118,6 +118,10 @@ class Demo extends React.Component {
     this.refs.tb.api.addRows(arr, true, false);
   }
 
+  expandData(){
+    this.refs.tb.api.expandAll();
+  }
+
   onEditSave(changedRows, newRows, type) {
     this.setState({ data: newRows });
     console.log("onEditSave");
@@ -143,6 +147,35 @@ class Demo extends React.Component {
             validateTrigger="onChange"
             allowSaveEmpty={false}
             alwaysValidate={false}
+            defaultGroupedColumnKey={["id"]}
+            groupedColumnSummary={{
+              style: { float: "right" },
+              data: [
+                {
+                  title: "列1",
+                  dataIndex: "column-1",
+                  type: "min"
+                },
+                {
+                  title: "列2",
+                  dataIndex: "column-2",
+                  type: "max"
+                },
+                {
+                  title: "列3",
+                  dataIndex: "column-3",
+                  type: "sum"
+                },
+                {
+                  title: "列4",
+                  dataIndex: "column-4",
+                  type: "avg"
+                }
+              ],
+              render: (text, value, d) => {
+                return text;
+              }
+            }}
             editTools={[
               "edit",
               "add",
@@ -150,6 +183,11 @@ class Demo extends React.Component {
               function() {
                 return (
                   <Button onClick={this.addData.bind(this)}>新增数据</Button>
+                );
+              }.bind(this),
+              function() {
+                return (
+                  <Button onClick={this.expandData.bind(this)}>展开所有</Button>
                 );
               }.bind(this)
             ]}

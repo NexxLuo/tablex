@@ -170,6 +170,12 @@ export interface TableProps<T> {
   onRefresh?: (pageIndex, pageSize) => void;
   defaultGroupedColumnKey?: string[];
   groupedColumnKey?: string[];
+  groupedColumnSummary?: {
+    style?: object;
+    className?: string;
+    data: any[];
+    render?: (text: string, value: any, d: any) => React.ReactNode;
+  };
   resetScrollOffset?: boolean;
   loading?: boolean;
   settable?: boolean;

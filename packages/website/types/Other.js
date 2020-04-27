@@ -107,6 +107,14 @@ Other.propTypes = {
   /** 默认分组列 */
   defaultGroupedColumnKey: PropTypes.array,
 
+  /** 数据分组列汇总 */
+  groupedColumnSummary: PropTypes.shape({
+    style: PropTypes.object,
+    className: PropTypes.string,
+    data: PropTypes.array,
+    render: PropTypes.func
+  }),
+
   /** 是否可进行列排序 */
   sortable: PropTypes.bool,
 
