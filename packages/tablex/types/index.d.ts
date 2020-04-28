@@ -58,6 +58,7 @@ export interface ColumnProps<T> {
   ) => React.ReactNode;
   colSpan: number;
   rowSpan: number;
+  onCell: (row: object, rowIndex: number, extra: any) => object;
   onHeaderCell: (column: object) => object;
 }
 
@@ -129,6 +130,29 @@ export interface SummaryProps {
     type: string,
     index: number
   ) => React.ReactNode;
+}
+export interface RowSelectionProps {
+  areaSelectEnabled?: boolean;
+  checkStrictly: boolean;
+  columnTitle: string | Function | React.ReactNode;
+  columnWidth: number;
+  fixed: boolean;
+  getCheckboxProps: Function;
+  disabledCheckedKeys: Array<string>;
+  selectedRowKeys: Array<string>;
+  type: "checkbox" | "radio" | "none";
+  selectType: "single" | "multiple" | "none";
+  selectInverted: boolean;
+  showCheckbox: boolean;
+  selectOnCheck: boolean;
+  checkOnSelect: boolean;
+  onBeforeSelect: () => boolean;
+  onSelect: () => void;
+  onSelectAll: () => void;
+  onCheck: () => void;
+  onBeforeCheck: () => boolean;
+  onBeforeCheckAll: () => void;
+  onChange: () => void;
 }
 
 export interface TableProps<T> {
@@ -209,6 +233,8 @@ export interface TableProps<T> {
   onUnSelect?: (record: object, index: number, rowKey: string) => void;
   onSelectAll?: () => void;
   onUnSelectAll?: () => void;
+
+  rowSelection?: RowSelectionProps;
 
   expandColumnKey?: string;
   expandedRowRender?: (

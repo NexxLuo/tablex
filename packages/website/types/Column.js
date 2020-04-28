@@ -61,6 +61,9 @@ Column.propTypes = {
   /** 表头行合并 */
   rowSpan: PropTypes.number,
 
+  /** 设置单元格属性 */
+  onCell: PropTypes.func,
+
   /** 设置表头单元格属性 */
   onHeaderCell: PropTypes.func
 };
