@@ -26,6 +26,7 @@ export type EditToolsConfig = {
 };
 
 export interface ColumnProps<T> {
+  [propName: string]: any;
   title?: React.ReactNode | (() => React.ReactNode);
   titleRender?: ({ colunm: T }) => React.ReactNode;
   key?: React.Key;
@@ -164,8 +165,9 @@ export interface TableProps<T> {
   minHeight?: number;
   maxHeight?: number;
   autoHeight?: boolean;
+  className?: string;
 
-  rowClassName?: (record: T, index: number) => string;
+  rowClassName?: (record: any, index: number) => string;
   selectionColumn?: false | null | ColumnProps<T>;
   showHeader?: boolean;
   bordered?: boolean;
@@ -180,6 +182,7 @@ export interface TableProps<T> {
   }) => React.ReactNode;
   onRow?: (record: T, index: number) => object;
   frozenRender?: FrozenRenderProps;
+  onCell?: (row: object, rowIndex: number, extra: object) => object;
 
   columnDropMenu?: boolean;
   columnDropMenuOptions?: {
@@ -203,6 +206,7 @@ export interface TableProps<T> {
   resetScrollOffset?: boolean;
   loading?: boolean;
   settable?: boolean;
+  sortable?: boolean;
   striped?: boolean;
   tableId?: string;
   footerExtra?: () => React.ReactNode;
@@ -259,6 +263,7 @@ export interface TableProps<T> {
   readOnly?: boolean;
   editTools?: EditTools;
   editToolsConfig?: EditToolsConfig;
+  intl?: any;
   isAppend?: boolean;
   ignoreEmptyRow?: boolean;
   defaultAddCount?: number;
