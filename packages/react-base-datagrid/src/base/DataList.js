@@ -259,7 +259,7 @@ const TableCell = props => {
       if (typeof rowSpan !== "undefined") {
         if (rowSpan === 0) {
           cellElement = null;
-        } else {
+        } else if (rowSpan > 1) {
           let rowSpanEnd = rowIndex + rowSpan;
           let endRowKey = getRowKey(rowSpanEnd);
           let h = getRowsHeight(rowIndex, rowSpanEnd);
@@ -325,7 +325,7 @@ const TableCell = props => {
       if (typeof colSpan !== "undefined") {
         if (colSpan === 0) {
           cellElement = null;
-        } else {
+        } else if (colSpan > 1) {
           let colSpanEnd = columnIndex + colSpan;
           let columnsStyle = getColumnsWidth(columnIndex, colSpanEnd);
           let w = columnsStyle.width;
