@@ -268,7 +268,7 @@ export interface TableProps<T> {
   ignoreEmptyRow?: boolean;
   defaultAddCount?: number;
 
-  validateTrigger: ["onChange" | "onBlur" | "onSave"];
+  validateTrigger?: "onChange" | "onBlur" | "onSave";
   onBeforeAdd?: () => boolean;
   onAdd?: (addedData: object[], newData: object[], string: "add") => void;
   rowTemplate?: (index: number) => object;
