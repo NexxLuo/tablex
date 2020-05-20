@@ -601,8 +601,9 @@ class EditableTable extends React.Component {
   renderEditor = (value, row, index, column) => {
     let fn = column.editor;
     let rowKey = row[this.state.rowKey];
-    let columnKey = column.dataIndex;
-    let { valid, msg } = this.getValidate(row, columnKey) || {};
+    let columnDataIndex = column.dataIndex;
+    let columnKey = column.key;
+    let { valid, msg } = this.getValidate(row, columnDataIndex) || {};
 
     let rendered = fn(
       value,
@@ -614,7 +615,11 @@ class EditableTable extends React.Component {
       ins => {
         this.setEditorIns(row, column, ins);
       },
-      this.validate
+      {
+        columnDataIndex: columnDataIndex,
+        columnKey: columnKey,
+        validate: this.validate
+      }
     );
 
     let ed = rendered;
@@ -635,7 +640,7 @@ class EditableTable extends React.Component {
           message={msg}
           onClick={this.onClick}
           rowKey={rowKey}
-          columnKey={columnKey}
+          columnKey={columnDataIndex}
           onKeyDown={this.onKeyDown}
         >
           {ed}
