@@ -814,7 +814,10 @@ class Table extends React.Component {
       }
     }
 
-    const dataTotal = pageAttr.total || data.length;
+    let dataTotal = pageAttr.total;
+    if (data.length === 0) {
+      dataTotal = 0;
+    }
 
     let hasPager = this.hasPagination();
 
