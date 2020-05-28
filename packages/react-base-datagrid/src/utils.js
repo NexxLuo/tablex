@@ -1,4 +1,4 @@
-export function flatten(arr) {
+export function flatten(arr, removeChildren = false) {
   let treeList = arr || [];
 
   //末级节点
@@ -22,6 +22,10 @@ export function flatten(arr) {
     } else {
       leafs.push(d);
     }
+
+    if (removeChildren === true) {
+      delete d.children;
+    }
   }
 
   function getChildren(item, depth) {
@@ -37,6 +41,10 @@ export function flatten(arr) {
         getChildren(d, depth + 1);
       } else {
         leafs.push(d);
+      }
+
+      if (removeChildren === true) {
+        delete d.children;
       }
     }
   }

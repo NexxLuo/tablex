@@ -83,7 +83,7 @@ class Draggable extends React.Component {
 
     let { data, rowKey } = this.state;
 
-    let { list, treeProps } = treeToList(data, rowKey);
+    let { list, treeProps } = treeToList(data, rowKey, true);
 
     let oldIndex = sourceInfo.treeIndex;
     let newIndex = targetInfo.treeIndex;
@@ -107,6 +107,7 @@ class Draggable extends React.Component {
 
     let newList = arrayMove(list, oldIndex, newIndex);
 
+    console.log("newList:", JSON.parse(JSON.stringify(newList)));
     let newTreeData = getTreeFromFlatData({
       flatData: newList,
       getKey: n => n[rowKey],

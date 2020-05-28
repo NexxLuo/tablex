@@ -57,7 +57,7 @@ export function getParentElement(element, selector) {
   return getParent(element, selector);
 }
 
-export function treeToList(arr, idField = "id") {
+export function treeToList(arr, idField = "id", removeChildren = false) {
   let treeProps = {};
   let list = [];
 
@@ -78,6 +78,10 @@ export function treeToList(arr, idField = "id") {
 
     if (childrens.length > 0) {
       getChildren(d, 0, []);
+    }
+
+    if (removeChildren === true) {
+      delete d.children;
     }
 
     setTree(k, {
@@ -104,6 +108,10 @@ export function treeToList(arr, idField = "id") {
 
       if (c_childrens.length > 0) {
         getChildren(d, __depth, __path);
+      }
+
+      if (removeChildren === true) {
+        delete d.children;
       }
 
       setTree(k, {
