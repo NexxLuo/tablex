@@ -107,7 +107,6 @@ class Draggable extends React.Component {
 
     let newList = arrayMove(list, oldIndex, newIndex);
 
-    console.log("newList:", JSON.parse(JSON.stringify(newList)));
     let newTreeData = getTreeFromFlatData({
       flatData: newList,
       getKey: n => n[rowKey],
