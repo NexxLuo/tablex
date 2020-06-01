@@ -863,7 +863,8 @@ class Table extends React.Component {
       pagerEl !== null ||
       settingButtonEl !== null ||
       footerEl !== null ||
-      toolsBarEl !== null
+      toolsBarEl !== null ||
+      refreshButtonEl !== null
     ) {
       footerContentEl = (
         <div className="tablex__container__footer__content">
