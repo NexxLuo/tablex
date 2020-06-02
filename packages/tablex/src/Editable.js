@@ -1350,7 +1350,13 @@ class EditableTable extends React.Component {
   };
 
   delete = () => {
-    let { data, rowKey, selectedRowKeys = [], selectedRows = [],isEditing } = this.state;
+    let {
+      data,
+      rowKey,
+      selectedRowKeys = [],
+      selectedRows = [],
+      isEditing
+    } = this.state;
 
     let bl = true;
 
@@ -1397,7 +1403,7 @@ class EditableTable extends React.Component {
       let onEditSave = this.props.onEditSave;
 
       //don`t call onEditSave when table is Editing ,oterwise can`t rollback deleted data
-      if (isEditing!==true&&typeof onEditSave === "function") {
+      if (isEditing !== true && typeof onEditSave === "function") {
         this.setState({ deleteLoading: true });
 
         let fn = onEditSave(deletedRows, newData, this.editType);
@@ -1684,41 +1690,41 @@ class EditableTable extends React.Component {
         );
       }
 
-        if (typeof d === "function") {
-          buttons.push(
-            wrapper(
-              <span
-                style={styles}
-                className="table-tools-item"
-                key={"_fnTools_" + i}
-              >
-                {d(this.api)}
-              </span>,
-              d
-            )
-          );
-        }
+      if (typeof d === "function") {
+        buttons.push(
+          wrapper(
+            <span
+              style={styles}
+              className="table-tools-item"
+              key={"_fnTools_" + i}
+            >
+              {d(this.api)}
+            </span>,
+            d
+          )
+        );
+      }
 
-        if (typeof d === "object" && d !== null) {
-          let toolIcon = d.icon;
-          toolIcon = toolIcon ? <Icon type={toolIcon} /> : null;
-          let toolAttr = d.props || {};
-          buttons.push(
-            wrapper(
-              <Button
-                key={"_objTools_" + i}
-                onClick={d.handler}
-                style={styles}
-                {...toolAttr}
-                className="table-tools-item"
-              >
-                {toolIcon}
-                {d.text}
-              </Button>,
-              d
-            )
-          );
-        }
+      if (typeof d === "object" && d !== null) {
+        let toolIcon = d.icon;
+        toolIcon = toolIcon ? <Icon type={toolIcon} /> : null;
+        let toolAttr = d.props || {};
+        buttons.push(
+          wrapper(
+            <Button
+              key={"_objTools_" + i}
+              onClick={d.handler}
+              style={styles}
+              {...toolAttr}
+              className="table-tools-item"
+            >
+              {toolIcon}
+              {d.text}
+            </Button>,
+            d
+          )
+        );
+      }
     });
 
     if (buttons.length === 0) {
