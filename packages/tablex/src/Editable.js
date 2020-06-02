@@ -1683,7 +1683,6 @@ class EditableTable extends React.Component {
         );
       }
 
-      if (!isEditing) {
         if (typeof d === "function") {
           buttons.push(
             wrapper(
@@ -1719,7 +1718,6 @@ class EditableTable extends React.Component {
             )
           );
         }
-      }
     });
 
     if (buttons.length === 0) {
