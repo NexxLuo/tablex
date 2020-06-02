@@ -1350,7 +1350,7 @@ class EditableTable extends React.Component {
   };
 
   delete = () => {
-    let { data, rowKey, selectedRowKeys = [], selectedRows = [] } = this.state;
+    let { data, rowKey, selectedRowKeys = [], selectedRows = [],isEditing } = this.state;
 
     let bl = true;
 
@@ -1396,7 +1396,8 @@ class EditableTable extends React.Component {
 
       let onEditSave = this.props.onEditSave;
 
-      if (typeof onEditSave === "function") {
+      //don`t call onEditSave when table is Editing ,oterwise can`t rollback deleted data
+      if (isEditing!==true&&typeof onEditSave === "function") {
         this.setState({ deleteLoading: true });
 
         let fn = onEditSave(deletedRows, newData, this.editType);
