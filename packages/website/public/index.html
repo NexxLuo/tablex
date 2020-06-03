@@ -1,26 +1,48 @@
 <!DOCTYPE html>
 <html lang="{{ lang }}">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="description" content="{{ description }}" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>{{ title }}</title>
-    <script>
-      (function() {
-        var redirect = sessionStorage.redirect;
-        delete sessionStorage.redirect;
-        if (redirect && redirect != location.href) {
-          history.replaceState(null, null, redirect);
-        }
-      })();
-    </script>
-    {{
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="description" content="{{ description }}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>{{ title }}</title>
+
+  <!–[if IE]>
+
+    <style>
+      div[class^="Page__Container-"] {
+        height: 550px;
+      }
+
+      div[class^="Playground__Overlay-"] {
+        height: 100%;
+      }
+
+      div[class^="Playground__Wrapper-"] {
+        height: 100%;
+      }
+    </style>
+
+    <![endif]–>
+
+  <script>
+    (function () {
+      var redirect = sessionStorage.redirect;
+      delete sessionStorage.redirect;
+      if (redirect && redirect != location.href) {
+        history.replaceState(null, null, redirect);
+      }
+    })();
+  </script>
+  {{
       head
     }}
-  </head>
-  <body>
-    <div id="root"></div>
-    {{ footer }}
-  </body>
+</head>
+
+<body>
+  <div id="root"></div>
+  {{ footer }}
+</body>
+
 </html>
