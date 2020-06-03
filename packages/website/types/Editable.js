@@ -30,6 +30,8 @@ Editable.defaultProps = {
   ignoreEmptyRow: true,
   validateTrigger: "onSave",
   validateDelay: 300,
+  alwaysValidate: false,
+  validateNoEditting: false,
   dataControled: false,
   editorNoBorder: false,
   showValidateMessage: true,
@@ -71,6 +73,13 @@ Editable.propTypes = {
 
   /** 验证时机 */
   validateTrigger: PropTypes.oneOf(["onChange", "onBlur", "onSave"]),
+
+  /** 验证延时 */
+  validateDelay: PropTypes.bool,
+  /** 未修改数据时是否依然验证 */
+  alwaysValidate: PropTypes.bool,
+  /** 是否验证无编辑状态的列 */
+  validateNoEditting: PropTypes.bool,
 
   /** 新增按钮前置事件，返回false不进入新增状态 ()=>bool */
   onBeforeAdd: PropTypes.func,
