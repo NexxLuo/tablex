@@ -269,6 +269,9 @@ export interface TableProps<T> {
   defaultAddCount?: number;
 
   validateTrigger?: "onChange" | "onBlur" | "onSave";
+  validateDelay?:number;
+  alwaysValidate?:boolean;
+  validateNoEditting?:boolean;
   onBeforeAdd?: () => boolean;
   onAdd?: (addedData: object[], newData: object[], string: "add") => void;
   rowTemplate?: (index: number) => object;

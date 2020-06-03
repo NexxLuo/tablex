@@ -5,6 +5,7 @@ import cloneDeep from "lodash/cloneDeep";
 import merge from "lodash/merge";
 import Table from "./Table";
 import Editor from "./components/Editor";
+import Validator from "./components/Validator";
 import {
   treeToFlatten,
   treeToList,
@@ -56,7 +57,7 @@ class EditableTable extends React.Component {
     };
   }
 
-  rowsValidation = [];
+  rowsAttribute = [];
 
   isEditing = () => {
     return this.state.isEditing;
@@ -240,40 +241,40 @@ class EditableTable extends React.Component {
     let rowKey = this.props.rowKey;
     let key = row[rowKey];
 
-    let attrs = this.rowsValidation || [];
+    let attrs = this.rowsAttribute || [];
 
-    let i = attrs.findIndex(d => d[rowKey] === key);
+    let i = attrs.findIndex(d => d["rowKey"] === key);
 
     if (i > -1) {
       let fRow = attrs[i];
 
-      if (typeof fRow.__attribute === "undefined") {
-        fRow.__attribute = attr;
+      if (typeof fRow.attribute === "undefined") {
+        fRow.attribute = attr;
       } else {
-        fRow.__attribute = merge({}, fRow.__attribute, attr);
+        fRow.attribute = merge({}, fRow.attribute, attr);
       }
     } else {
-      let newAttr = Object.assign({}, row);
-      newAttr.__attribute = attr;
+      let newAttr = Object.assign({}, { rowKey: key });
+      newAttr.attribute = attr;
       attrs.push(newAttr);
     }
 
-    this.rowsValidation = attrs;
+    this.rowsAttribute = attrs;
   };
 
   getRowAttr = row => {
     let rowKey = this.props.rowKey;
     let key = row[rowKey];
 
-    let attrs = this.rowsValidation || [];
+    let attrs = this.rowsAttribute || [];
     let attr = {};
 
-    let i = attrs.findIndex(d => d[rowKey] === key);
+    let i = attrs.findIndex(d => d["rowKey"] === key);
     if (i > -1) {
       attr = attrs[i] || {};
     }
 
-    return Object.assign({}, attr.__attribute || {});
+    return Object.assign({}, attr.attribute || {});
   };
 
   getValidate = (row, key) => {
@@ -288,7 +289,7 @@ class EditableTable extends React.Component {
     let validation = {};
     for (let i = 0; i < columns.length; i++) {
       const c = columns[i];
-      const ck = c.dataIndex;
+      const ck = c.key;
       validation[ck] = {
         valid: true,
         msg: ""
@@ -297,6 +298,13 @@ class EditableTable extends React.Component {
     this.setRowAttr(row, {
       validation
     });
+  };
+
+  clearValidation = quiet => {
+    this.rowsAttribute = [];
+    if (quiet !== true) {
+      this.forceUpdate();
+    }
   };
 
   //进行异步验证的promise
@@ -318,11 +326,23 @@ class EditableTable extends React.Component {
       return true;
     }
 
+    let validateNoEditting = this.props.validateNoEditting;
+
     for (let i = 0; i < columns.length; i++) {
       const c = columns[i];
-      const ck = c.dataIndex;
+      const ck = c.key;
 
-      if (typeof c.validator === "function") {
+      let enabledValidate = false;
+      let hasEditor = typeof c.editor === "function";
+      let hasValidator = typeof c.validator === "function";
+
+      if (validateNoEditting === true) {
+        enabledValidate = hasValidator;
+      } else {
+        enabledValidate = hasValidator && hasEditor;
+      }
+
+      if (enabledValidate) {
         var v = c.validator(row[ck], row) || { valid: true, message: "" };
 
         if (v && v.constructor.name === "Promise") {
@@ -535,19 +555,19 @@ class EditableTable extends React.Component {
     };
   };
 
-  //验证当前所有数据行
+  //验证当前编辑状态中的数据行
   validateAll = async () => {
     let bl = true;
     let { editKeys, isEditAll, flatData } = this.state;
-    let rowKey = this.props.rowKey;
+    let { rowKey, validateNoEditting } = this.props;
 
     let allData = flatData;
 
     let arr = [];
 
-    if (isEditAll === true) {
+    if (validateNoEditting === true || isEditAll === true) {
       arr = allData;
-    } else {
+    } else if (editKeys.length > 0) {
       arr = allData.filter(d => {
         return editKeys.indexOf(d[rowKey]) > -1;
       });
@@ -559,6 +579,21 @@ class EditableTable extends React.Component {
     return bl;
   };
 
+  //验证当前所有数据，包括非编辑状态的数据
+  validateData = async () => {
+    let bl = true;
+    let { flatData } = this.state;
+
+    let arr = flatData;
+
+    bl = await this.validateAsync(arr);
+    this.call_onValidate(bl);
+
+    let a = this.rowsAttribute;
+
+    return bl;
+  };
+
   editorInstance = [];
   setEditorIns = (row, column, ins) => {
     if (ins === null) {
@@ -566,7 +601,7 @@ class EditableTable extends React.Component {
     }
 
     let rowKey = row[this.props.rowKey];
-    let columnKey = column.dataIndex;
+    let columnKey = column.key;
 
     let editorInstance = [].concat(this.editorInstance);
 
@@ -652,11 +687,30 @@ class EditableTable extends React.Component {
     return newRenderProps;
   };
 
+  renderValidator = (value, row, index, columnKey, fn) => {
+    let { valid, msg } = this.getValidate(row, columnKey) || {};
+
+    let rendered = value;
+
+    if (typeof fn === "function") {
+      rendered = fn(value, row, index);
+    }
+
+    return (
+      <Validator
+        valid={valid}
+        message={msg}
+        className="tablex-row-cell-validator"
+      >
+        {rendered}
+      </Validator>
+    );
+  };
+
   formatColumns = () => {
     let { columns, editKeys, isEditAll, isEditing } = this.state;
 
     let rowKey = this.props.rowKey;
-
     let columnArr = cloneDeep(columns);
 
     let arr = columnArr;
@@ -672,40 +726,34 @@ class EditableTable extends React.Component {
 
     let cols = treeToFlatten(arr).leafs;
 
-    if (isEditAll === true) {
-      cols.forEach(d => {
-        let editor = d.editor;
+    cols.forEach(d => {
+      let hasEditor = typeof d.editor === "function";
 
-        if (typeof editor === "function") {
-          d.render = (value, row, index) => {
-            return this.renderEditor(value, row, index, d);
-          };
-        }
-      });
-    } else if (editKeys.length > 0) {
-      cols.forEach(d => {
-        if (typeof d.editingVisible === "boolean") {
-          d.hidden = !d.editingVisible;
+      let renderFn = d.render;
+
+      d.render = (value, row, index) => {
+        let columnIsEditing = false;
+        if (isEditAll) {
+          columnIsEditing = true;
+        } else {
+          columnIsEditing = editKeys.findIndex(k => k === row[rowKey]) > -1;
         }
 
-        let editor = d.editor;
-
-        if (typeof editor === "function") {
-          let renderFn = d.render;
-          d.render = (value, row, index) => {
-            let bl = editKeys.findIndex(k => k === row[rowKey]) > -1;
-            if (bl) {
-              return this.renderEditor(value, row, index, d);
-            } else {
-              if (typeof renderFn === "function") {
-                return renderFn(value, row, index);
-              }
-              return value;
+        if (columnIsEditing && hasEditor) {
+          return this.renderEditor(value, row, index, d);
+        } else {
+          let rowAttr = this.getValidate(row, d.key);
+          if (typeof rowAttr.valid === "boolean") {
+            return this.renderValidator(value, row, index, d.key, renderFn);
+          } else {
+            if (typeof renderFn === "function") {
+              return renderFn(value, row, index);
             }
-          };
+            return value;
+          }
         }
-      });
-    }
+      };
+    });
 
     arr = orderBy(arr, ["order"], ["asc"]);
 
@@ -722,7 +770,7 @@ class EditableTable extends React.Component {
     let { keys, rows } = this.filterSelectedRowKeys();
 
     this.changedRows = [];
-    this.rowsValidation = [];
+    this.rowsAttribute = [];
     this.editType = "";
     this.deletedData = [];
     this.insertedData = [];
@@ -752,7 +800,7 @@ class EditableTable extends React.Component {
 
   commitEdit = callback => {
     this.changedRows = [];
-    this.rowsValidation = [];
+    this.rowsAttribute = [];
     this.editType = "";
     this.deletedData = [];
     this.insertedData = [];
@@ -796,7 +844,7 @@ class EditableTable extends React.Component {
     this.insertedData = [];
     this.deletedData = [];
     this.nextData = [];
-    this.rowsValidation = [];
+    this.rowsAttribute = [];
     this.setState(nextState);
   };
 
@@ -1232,7 +1280,11 @@ class EditableTable extends React.Component {
     let bl = true;
 
     if (editType && editType !== "delete") {
-      bl = await this.validate();
+      if (this.props.alwaysValidate === true) {
+        bl = await this.validateAll();
+      } else {
+        bl = await this.validate();
+      }
 
       if (bl === false) {
         message.error(this.props.intl["validateError"]);
@@ -2378,6 +2430,9 @@ class EditableTable extends React.Component {
     isEditing: this.isEditing.bind(this),
     validateChanged: this.validate.bind(this),
     validateAll: this.validateAll.bind(this),
+    validateData: this.validateData.bind(this),
+    clearValidation: this.clearValidation.bind(this),
+
     getData: () => this.state.data,
     getAllData: () => {
       return {
@@ -2463,6 +2518,8 @@ EditableTable.defaultProps = {
   ignoreEmptyRow: true,
   validateTrigger: "onSave",
   validateDelay: 300,
+  alwaysValidate: false,
+  validateNoEditting: false,
   dataControled: false,
   editorNoBorder: false,
   keyboardNavigation: true,
@@ -2553,6 +2610,13 @@ EditableTable.propTypes = {
 
   /** 验证时机 */
   validateTrigger: PropTypes.oneOf(["onChange", "onBlur", "onSave"]),
+
+  /** 验证延时 */
+  validateDelay: PropTypes.bool,
+  /** 未修改数据时是否依然验证 */
+  alwaysValidate: PropTypes.bool,
+  /** 是否验证无编辑状态的列 */
+  validateNoEditting: PropTypes.bool,
 
   /** 新增按钮前置事件，返回false不进入新增状态 ()=>bool */
   onBeforeAdd: PropTypes.func,

@@ -1,0 +1,44 @@
+.tablex-row-cell-validator2 {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-variant: tabular-nums;
+  list-style: none;
+  font-feature-settings: "tnum";
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 32px;
+  padding: 4px 11px;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: 4px;
+  transition: all 0.3s;
+  text-align: left;
+}
+
+.tablex-row-cell-validator2.has-error {
+  border: 1px solid red;
+}
+
+.tablex-row-cell-validator.has-error {
+  padding-left: 10px;
+}
+
+.tablex-row-cell-validator.has-error .tablex-row-cell-validator-msg {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 0 5px;
+  color: red;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.tablex-row-cell-validator.has-error .tablex-row-cell-validator-msg::after {
+  content: "!";
+}
