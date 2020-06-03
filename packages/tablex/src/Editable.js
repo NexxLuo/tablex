@@ -2612,7 +2612,7 @@ EditableTable.propTypes = {
   validateTrigger: PropTypes.oneOf(["onChange", "onBlur", "onSave"]),
 
   /** 验证延时 */
-  validateDelay: PropTypes.bool,
+  validateDelay: PropTypes.number,
   /** 未修改数据时是否依然验证 */
   alwaysValidate: PropTypes.bool,
   /** 是否验证无编辑状态的列 */
