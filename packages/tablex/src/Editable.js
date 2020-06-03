@@ -100,8 +100,21 @@ class EditableTable extends React.Component {
         nextState.selectedRowKeys = nextProps.selectedRowKeys;
       }
 
-      let columns = cloneDeep(nextProps.columns || []);
-      let columnList = treeToFlatten(columns).list;
+      let columnList = [];
+
+      //给列key设置缺省值
+      let columns = treeFilter(
+        cloneDeep(nextProps.columns || []),
+        (d, i, { depth, treeIndex }) => {
+          if (!d.key) {
+            d.key = d.dataIndex || depth + "-" + i + "-" + treeIndex;
+          }
+          columnList.push(d);
+          return true;
+        }
+      );
+      //
+
       nextState.columns = columns;
       nextState.columnList = columnList;
 
