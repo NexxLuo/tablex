@@ -8,24 +8,6 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <title>{{ title }}</title>
 
-  <!–[if IE]>
-
-    <style>
-      div[class^="Page__Container-"] {
-        height: 550px;
-      }
-
-      div[class^="Playground__Overlay-"] {
-        height: 100%;
-      }
-
-      div[class^="Playground__Wrapper-"] {
-        height: 100%;
-      }
-    </style>
-
-    <![endif]–>
-
   <script>
     (function () {
       var redirect = sessionStorage.redirect;
@@ -34,6 +16,36 @@
         history.replaceState(null, null, redirect);
       }
     })();
+
+
+
+    function isIE() {
+
+      var isIE11 = window.navigator.userAgent.indexOf('Trident') > -1 && window.navigator.userAgent.indexOf("rv:11.0") > -1;
+      var bl = window.navigator.userAgent.indexOf("MSIE") >= 1;
+
+      if (bl || isIE11) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+
+    if (isIE()) {
+      var style = document.createElement("style");
+      style.type = "text/css";
+      try {
+        style.appendChild(document.createTextNode('div[class^="Page__Container-"] {height: 550px;}'));
+        style.appendChild(document.createTextNode('div[class^="Playground__Overlay-"] {height: 100%;}'));
+        style.appendChild(document.createTextNode('div[class^="Playground__Wrapper-"] {height: 100%;}'));
+      } catch (ex) {
+      }
+      var head = document.getElementsByTagName("head")[0];
+      head.appendChild(style);
+    }
+
+
   </script>
   {{
       head
