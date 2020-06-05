@@ -271,6 +271,7 @@ export interface TableProps<T> {
   validateTrigger?: "onChange" | "onBlur" | "onSave";
   validateDelay?:number;
   alwaysValidate?:boolean;
+  alwaysSave?:boolean;
   validateNoEditting?:boolean;
   onBeforeAdd?: () => boolean;
   onAdd?: (addedData: object[], newData: object[], string: "add") => void;

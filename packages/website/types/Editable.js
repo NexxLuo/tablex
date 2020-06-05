@@ -31,6 +31,7 @@ Editable.defaultProps = {
   validateTrigger: "onSave",
   validateDelay: 300,
   alwaysValidate: false,
+  alwaysSave: false,
   validateNoEditting: false,
   dataControled: false,
   editorNoBorder: false,
@@ -78,6 +79,8 @@ Editable.propTypes = {
   validateDelay: PropTypes.number,
   /** 未修改数据时是否依然验证 */
   alwaysValidate: PropTypes.bool,
+    /** 处于编辑状态时，点击保存按钮是否始终都进行保存操作，默认情况下如果未修改数据将不会执行onEditSave */
+    alwaysSave: PropTypes.bool,
   /** 是否验证无编辑状态的列 */
   validateNoEditting: PropTypes.bool,
 
