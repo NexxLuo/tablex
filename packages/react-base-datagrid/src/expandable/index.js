@@ -144,6 +144,10 @@ class TreeGrid extends Component {
     return null;
   }
 
+  componentDidUpdate(){
+    this.resetAfterIndex(0)
+  }
+
   isLoadingChildren = key => {
     let { loadingKeys } = this.state;
     return loadingKeys.indexOf(key) > -1;
@@ -167,7 +171,6 @@ class TreeGrid extends Component {
 
     expanded === true ? this.expand(key) : this.collapse(key);
 
-    this.resetAfterIndex(index);
   };
 
   /**
