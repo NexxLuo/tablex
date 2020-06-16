@@ -744,7 +744,7 @@ class EditableTable extends React.Component {
 
       let renderFn = d.render;
 
-      d.render = (value, row, index) => {
+      d.render = (value, row, index, extra) => {
         let columnIsEditing = false;
         if (isEditAll) {
           columnIsEditing = true;
@@ -760,7 +760,7 @@ class EditableTable extends React.Component {
             return this.renderValidator(value, row, index, d.key, renderFn);
           } else {
             if (typeof renderFn === "function") {
-              return renderFn(value, row, index);
+              return renderFn(value, row, index, extra);
             }
             return value;
           }

@@ -663,7 +663,7 @@ class Table extends React.Component {
       firstColumn.align = "left";
       let oldRender = firstColumn.render;
 
-      firstColumn.render = (value, row, index) => {
+      firstColumn.render = (value, row, index, extra) => {
         if (row && row.__isGroupedHeadRow) {
           let groupLable = groupColumnName[row.__groupColumnKey] || "";
           if (groupLable) {
@@ -687,7 +687,7 @@ class Table extends React.Component {
           let firstColumnValue = value;
 
           if (typeof oldRender === "function") {
-            firstColumnValue = oldRender(value, row, index);
+            firstColumnValue = oldRender(value, row, index, extra);
           }
           return firstColumnValue;
         }
@@ -696,7 +696,7 @@ class Table extends React.Component {
       if (firstMiddleColumn && firstColumn !== firstMiddleColumn) {
         let renderFn = firstMiddleColumn.render;
 
-        firstMiddleColumn.render = (value, row, index) => {
+        firstMiddleColumn.render = (value, row, index, extra) => {
           if (row && row.__isGroupedHeadRow) {
             return {
               props: {
@@ -707,7 +707,7 @@ class Table extends React.Component {
           } else {
             let val = value;
             if (typeof renderFn === "function") {
-              val = renderFn && renderFn(value, row, index);
+              val = renderFn && renderFn(value, row, index, extra);
             }
             return val;
           }
@@ -717,7 +717,7 @@ class Table extends React.Component {
       if (firstRightColumn && firstColumn !== firstRightColumn) {
         let renderFn = firstRightColumn.render;
 
-        firstRightColumn.render = (value, row, index) => {
+        firstRightColumn.render = (value, row, index, extra) => {
           if (row && row.__isGroupedHeadRow) {
             return {
               props: {
@@ -728,7 +728,7 @@ class Table extends React.Component {
           } else {
             let val = value;
             if (typeof renderFn === "function") {
-              val = renderFn && renderFn(value, row, index);
+              val = renderFn && renderFn(value, row, index, extra);
             }
             return val;
           }
