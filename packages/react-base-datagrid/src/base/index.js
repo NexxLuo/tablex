@@ -253,6 +253,12 @@ class BaseDataGrid extends React.Component {
     }
   };
 
+  actions = {
+    resetAfterIndex: this.resetAfterIndex.bind(this),
+    scrollToRow: this.scrollToRow.bind(this),
+    scrollTo: this.scrollTo.bind(this)
+  };
+
   componentDidMount() {
     if (typeof this.props.innerRef === "function") {
       this.props.innerRef(this);
@@ -261,6 +267,15 @@ class BaseDataGrid extends React.Component {
       this.bindHoverClass();
     }
     this.setFrozenStyle();
+
+    let o = this.props.actions;
+
+    if (o && typeof o === "object") {
+      let actions = this.actions;
+      for (const k in actions) {
+        o[k] = actions[k];
+      }
+    }
   }
 
   componentDidUpdate() {
@@ -740,7 +755,10 @@ BaseDataGrid.propTypes = {
   innerRef: PropTypes.func,
 
   /** 获取 list ref */
-  listRef: PropTypes.func
+  listRef: PropTypes.func,
+
+  /** actions注册 */
+  actions: PropTypes.object
 };
 
 export default AutoSizerTable;

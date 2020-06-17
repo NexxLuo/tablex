@@ -269,10 +269,10 @@ export interface TableProps<T> {
   defaultAddCount?: number;
 
   validateTrigger?: "onChange" | "onBlur" | "onSave";
-  validateDelay?:number;
-  alwaysValidate?:boolean;
-  alwaysSave?:boolean;
-  validateNoEditting?:boolean;
+  validateDelay?: number;
+  alwaysValidate?: boolean;
+  alwaysSave?: boolean;
+  validateNoEditting?: boolean;
   onBeforeAdd?: () => boolean;
   onAdd?: (addedData: object[], newData: object[], string: "add") => void;
   rowTemplate?: (index: number) => object;
@@ -294,6 +294,7 @@ export interface TableProps<T> {
     data: any[];
   }) => void;
   onValidate?: (bl: boolean) => void;
+  actions?: any;
 }
 
 export default class Table<T> extends React.Component<TableProps<T>, any> {}

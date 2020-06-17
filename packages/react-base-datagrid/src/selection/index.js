@@ -347,21 +347,14 @@ class SelectionGrid extends Component {
 
   //
 
-  call_onCheck = ({ rowData, rowIndex, rowKey, keys, rows, halfKeys = [] }) => {
+  call_onCheck = ({ rowData, rows, halfKeys = [] }) => {
     let rfn = this.getRowSelection("onCheck");
     if (typeof rfn === "function") {
       rfn(rowData, true, rows, { halfKeys });
     }
   };
 
-  call_onUnCheck = ({
-    rowData,
-    rowIndex,
-    rowKey,
-    keys,
-    rows,
-    halfKeys = []
-  }) => {
+  call_onUnCheck = ({ rowData, rows, halfKeys = [] }) => {
     let rfn = this.getRowSelection("onCheck");
     if (typeof rfn === "function") {
       rfn(rowData, false, rows, { halfKeys });
@@ -678,52 +671,6 @@ class SelectionGrid extends Component {
     return bl;
   };
 
-  insertSelected({ key, rowIndex, rowData }) {
-    let {
-      selectedRowKeys,
-      selectedRows,
-      rowKey,
-      flatData,
-      halfCheckedKeys,
-      disabledCheckedKeys,
-      treeProps,
-      checkStrictly
-    } = this.state;
-
-    let keys = selectedRowKeys.slice();
-    let rows = selectedRows.slice();
-
-    if (this.isSingleCheck()) {
-      keys = [key];
-      rows = [rowData];
-    } else if (!this.isMultipleCheck()) {
-      return {
-        keys: keys,
-        rows: rows,
-        halfKeys: halfCheckedKeys
-      };
-    }
-
-    let data = flatData.slice();
-
-    let { includes: nextKeys } = addToCheckeds({
-      keys: [key],
-      treeProps: treeProps,
-      strictly: checkStrictly,
-      prevIncludes: keys,
-      prevHalf: [],
-      excludeKeys: []
-    });
-
-    //记录上一次选中的行数据，避免翻页情况下的数据丢失
-    let nextRows = filterDataByKeys(data.concat(rows), rowKey, nextKeys).data;
-
-    return {
-      keys: nextKeys,
-      rows: nextRows
-    };
-  }
-
   /** 移除选中行 */
   deleteSelected({ key, rowIndex, rowData }) {
     let {
@@ -808,7 +755,7 @@ class SelectionGrid extends Component {
           keys: nextCheckedKeys,
           rows: nextCheckedRows,
           halfKeys: nextHalfCheckedKeys
-        } = this.insertChecked({ key: rowKey, rowIndex, rowData });
+        } = this.insertChecked({ key: rowKey, rowData });
 
         if (this.isMultipleSelect()) {
           nextState.selectedRowKeys = nextCheckedKeys;
@@ -1136,7 +1083,7 @@ class SelectionGrid extends Component {
     }
   };
 
-  insertChecked({ key, rowIndex, rowData }) {
+  insertChecked({ key, rowData }) {
     let {
       checkedKeys,
       checkedRows,
@@ -1182,7 +1129,7 @@ class SelectionGrid extends Component {
   }
 
   /** 移除复选行 */
-  deleteChecked({ key, rowIndex, rowData }) {
+  deleteChecked({ key }) {
     let {
       checkedKeys,
       checkedRows,
@@ -1242,7 +1189,7 @@ class SelectionGrid extends Component {
       keys: nextKeys,
       rows: nextRows,
       halfKeys: nextHalflCheckedKeys
-    } = this.insertChecked({ key, rowIndex, rowData });
+    } = this.insertChecked({ key, rowData });
 
     this.call_onCheck({
       rowData,
@@ -1846,6 +1793,157 @@ class SelectionGrid extends Component {
     };
   };
 
+  getDataByKeys = (keys, data, keyField) => {
+    let keysMap = {};
+
+    let matched = [];
+
+    keys.forEach(k => {
+      keysMap[k] = true;
+    });
+
+    data.forEach(d => {
+      if (keysMap[d[keyField]]) {
+        matched.push(d);
+      }
+    });
+
+    return matched;
+  };
+
+  selectAll = silent => {
+    let { flatData, rowKey } = this.state;
+
+    let nextKeys = [];
+
+    for (let i = 0; i < flatData.length; i++) {
+      nextKeys.push(flatData[i][rowKey]);
+    }
+
+    if (silent === false) {
+      this.addAllSelected({
+        keys: nextKeys,
+        rows: flatData,
+        changedRows: [],
+        quiet: false
+      });
+    }
+
+    return nextKeys;
+  };
+
+  unSelectAll = silent => {
+    if (silent === false) {
+      this.removeAllSelected({
+        keys: [],
+        rows: [],
+        changedRows: [],
+        quiet: false
+      });
+    }
+    return [];
+  };
+
+  selectToggle = (row, silent = false) => {
+    let { rowKey, selectedRowKeys, flatData, treeProps } = this.state;
+
+    let keys = selectedRowKeys;
+
+    let keysMap = {};
+
+    let nextKeys = [];
+    let nextRows = [];
+
+    if (row) {
+      let triggerKey = row[rowKey];
+
+      let isExist = keys.indexOf(triggerKey) > -1;
+
+      let childrenKeys = [];
+
+      let treeNode = treeProps[triggerKey];
+
+      if (treeNode) {
+        childrenKeys = treeNode.childrens || [];
+      }
+
+      //已选中的行key
+      for (let i = 0; i < keys.length; i++) {
+        keysMap[keys[i]] = true;
+      }
+      if (isExist) {
+        keysMap[triggerKey] = false;
+      } else {
+        keysMap[triggerKey] = true;
+      }
+
+      //当前子级key
+      for (let i = 0; i < childrenKeys.length; i++) {
+        const k = childrenKeys[i];
+        if (isExist) {
+          keysMap[k] = false;
+        } else {
+          keysMap[k] = true;
+        }
+      }
+
+      for (const d in keysMap) {
+        if (keysMap[d] === true) {
+          nextKeys.push(d);
+        }
+      }
+    }
+
+    if (silent === false) {
+      nextRows = this.getDataByKeys(nextKeys, flatData, rowKey);
+      this.setState(
+        {
+          selectedRowKeys: nextKeys,
+          selectedRows: nextRows
+        },
+        () => {
+          this.call_onSelectChange({
+            rowData: null,
+            rowIndex: -1,
+            rowKey: "",
+            selectedRowKeys: nextKeys,
+            selectedRows: nextRows,
+            halfKeys: this.state.halfCheckedKeys
+          });
+        }
+      );
+    }
+    return nextKeys;
+  };
+
+  getSelections = () => {
+    let { selectedRowKeys, flatData, rowKey } = this.state;
+    let rows = this.getDataByKeys(selectedRowKeys, flatData, rowKey);
+
+    return {
+      keys: selectedRowKeys,
+      data: rows
+    };
+  };
+
+  actions = {
+    selectAll: this.selectAll.bind(this),
+    unSelectAll: this.unSelectAll.bind(this),
+    selectToggle: this.selectToggle.bind(this),
+    getSelections: this.getSelections.bind(this)
+  };
+
+  componentDidMount() {
+    let o = this.props.actions;
+
+    if (o && typeof o === "object") {
+      let actions = this.actions;
+      for (const k in actions) {
+        o[k] = actions[k];
+      }
+    }
+  }
+
   render() {
     let { columns, prependColumns } = this.state;
     let props = this.props;
@@ -1957,7 +2055,10 @@ SelectionGrid.propTypes = {
   onUnSelectAll: PropTypes.func,
 
   /** 多选模式是否级联控制checkbox选中状态 */
-  checkStrictly: PropTypes.bool
+  checkStrictly: PropTypes.bool,
+
+  /** actions注册 */
+  actions: PropTypes.object
 };
 
 export default SelectionGrid;

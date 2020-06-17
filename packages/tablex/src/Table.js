@@ -1403,6 +1403,9 @@ Table.propTypes = {
     render: PropTypes.func
   }),
 
+  /** actions注册 */
+  actions: PropTypes.object,
+
   /** 表格全局id，通过此id记忆表格配置，由于采用localStorage存储配置，需保证id唯一 */
   tableId: function(props, propName, componentName) {
     let count = 0;

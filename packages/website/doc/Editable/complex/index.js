@@ -210,27 +210,27 @@ class Demo extends Component {
   };
 
   scrollToItem = index => {
-    if (this.refs.tb) {
-      this.refs.tb.scrollToItem(index, "center");
+    if (this.actions) {
+      this.actions.scrollToItem(index, "center");
     }
   };
 
   expandTo = (depth = 1) => {
-    this.refs.tb.expandTo(depth);
+    this.actions.expandTo(depth);
   };
 
   expandAll = () => {
-    this.refs.tb.expandAll();
+    this.actions.expandAll();
   };
   collapseAll = () => {
-    this.refs.tb.collapseAll();
+    this.actions.collapseAll();
   };
 
   rowKey = "id";
   deleteRow = row => {
     let rowKey = this.rowKey;
     let key = row[rowKey];
-    this.refs.tb.api.deleteData([key]);
+    this.actions.deleteData([key]);
   };
 
   copiedRow = null;
@@ -264,7 +264,7 @@ class Demo extends Component {
       let sourceRow = JSON.parse(copiedRow);
       sourceRow[rowKey] = "copied_row_" + sourceRow[rowKey];
 
-      this.refs.tb.api.insertData({
+      this.actions.insertData({
         data: [sourceRow],
         parentKey: targetRow[rowKey],
         editing: true,
@@ -283,11 +283,11 @@ class Demo extends Component {
   };
 
   selectAll = rowData => {
-    this.refs.tb.selectToggle(rowData);
+    this.actions.selectToggle(rowData);
   };
 
   expandToggle = rowData => {
-    this.refs.tb.expandToggle(rowData);
+    this.actions.expandToggle(rowData);
   };
 
   onMenuClick = ({ key, item }) => {
@@ -331,7 +331,7 @@ class Demo extends Component {
     let searchedIndex = -1;
     let searchedKey = "";
 
-    let f = this.refs.tb.findData(d => d.name.indexOf(v) > -1, {
+    let f = this.actions.findData(d => d.name.indexOf(v) > -1, {
       startIndex: this.searchIndex,
       startRowKey: this.searchedKey,
       focused: true
@@ -343,7 +343,7 @@ class Demo extends Component {
     }
 
     if (searchedIndex > -1) {
-      this.searchIndex = searchedIndex+1 ;
+      this.searchIndex = searchedIndex + 1;
       this.searchedKey = searchedKey;
     } else {
       this.searchIndex = -1;
@@ -358,7 +358,7 @@ class Demo extends Component {
       return;
     }
 
-    this.refs.tb.filterData(d => {
+    this.actions.filterData(d => {
       return d.name.indexOf(v) > -1;
     });
 
@@ -401,6 +401,11 @@ class Demo extends Component {
     );
   };
 
+  actions = {};
+  componentDidMount() {
+    console.log("actions:", this.actions);
+  }
+
   render() {
     return (
       <div style={{ height: "100%" }}>
@@ -417,6 +422,7 @@ class Demo extends Component {
           contextMenu={this.contentMenu}
           validateTrigger="onChange"
           isAppend={true}
+          actions={this.actions}
           header={() => (
             <div>
               <Button onClick={this.getData}>获取数据</Button>

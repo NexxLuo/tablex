@@ -144,8 +144,8 @@ class TreeGrid extends Component {
     return null;
   }
 
-  componentDidUpdate(){
-    this.resetAfterIndex(0)
+  componentDidUpdate() {
+    this.resetAfterIndex(0);
   }
 
   isLoadingChildren = key => {
@@ -162,6 +162,15 @@ class TreeGrid extends Component {
     return row.children instanceof Array === true;
   };
 
+  onExpandedRowsChange = keys => {
+    this.setState({
+      expandedRowKeys: keys.slice()
+    });
+    if (typeof this.props.onExpandedRowsChange === "function") {
+      this.props.onExpandedRowsChange(keys);
+    }
+  };
+
   onExpand = (expanded, key, index) => {
     if (typeof this.props.onExpand === "function") {
       let { data, rowKey } = this.state;
@@ -170,7 +179,6 @@ class TreeGrid extends Component {
     }
 
     expanded === true ? this.expand(key) : this.collapse(key);
-
   };
 
   /**
@@ -484,6 +492,163 @@ class TreeGrid extends Component {
     };
   };
 
+  getDataByKeys = (keys, data, keyField) => {
+    let keysMap = {};
+
+    let matched = [];
+
+    keys.forEach(k => {
+      keysMap[k] = true;
+    });
+
+    data.forEach(d => {
+      if (keysMap[d[keyField]]) {
+        matched.push(d);
+      }
+    });
+
+    return matched;
+  };
+
+  collapseAll = (silent = false) => {
+    if (silent === false) {
+      this.onExpandedRowsChange([]);
+    }
+    return [];
+  };
+
+  expandAll = (silent = false) => {
+    let { rowKey, flatData } = this.state;
+
+    let nextKeys = [];
+
+    for (let i = 0; i < flatData.length; i++) {
+      const d = flatData[i];
+      let key = d[rowKey];
+
+      if (d.children instanceof Array) {
+        nextKeys.push(key);
+      }
+    }
+
+    if (silent === false) {
+      this.onExpandedRowsChange(nextKeys);
+    }
+
+    return nextKeys;
+  };
+
+  expandTo = (toDepth = 0, silent = false) => {
+    let { rowKey, treeProps, flatData } = this.state;
+
+    let nexExpandedRowKeys = [];
+
+    for (let i = 0; i < flatData.length; i++) {
+      const d = flatData[i];
+      let key = d[rowKey];
+      let depth = (treeProps[key] || {}).depth;
+
+      if (depth <= toDepth) {
+        nexExpandedRowKeys.push(key);
+      }
+    }
+
+    if (silent === false) {
+      this.onExpandedRowsChange(nexExpandedRowKeys);
+    }
+
+    return nexExpandedRowKeys;
+  };
+
+  expandToggle = (row, silent = false) => {
+    let { rowKey, expandedRowKeys, treeProps } = this.state;
+
+    let keys = expandedRowKeys;
+
+    let keysMap = {};
+
+    let nextKeys = [];
+
+    if (row) {
+      let triggerKey = row[rowKey];
+
+      let isExist = keys.indexOf(triggerKey) > -1;
+
+      let childrenKeys = [];
+
+      let treeNode = treeProps[triggerKey];
+
+      if (treeNode) {
+        childrenKeys = treeNode.childrens || [];
+      }
+
+      //已展开的行key
+      for (let i = 0; i < keys.length; i++) {
+        keysMap[keys[i]] = true;
+      }
+      if (isExist) {
+        keysMap[triggerKey] = false;
+      } else {
+        keysMap[triggerKey] = true;
+      }
+
+      //当前子级key
+      for (let i = 0; i < childrenKeys.length; i++) {
+        const k = childrenKeys[i];
+        if (isExist) {
+          keysMap[k] = false;
+        } else {
+          keysMap[k] = true;
+        }
+      }
+
+      for (const d in keysMap) {
+        if (keysMap[d] === true) {
+          nextKeys.push(d);
+        }
+      }
+    }
+
+    if (silent === false) {
+      this.onExpandedRowsChange(nextKeys);
+    }
+    return nextKeys;
+  };
+
+  getExpanded = () => {
+    let { expandedRowKeys, flatData, rowKey } = this.state;
+    let rows = this.getDataByKeys(expandedRowKeys, flatData, rowKey);
+
+    return {
+      keys: expandedRowKeys,
+      data: rows
+    };
+  };
+
+  actions = {
+    /** 折叠所有 */
+    collapseAll: this.collapseAll.bind(this),
+    /** 展开所有 */
+    expandAll: this.expandAll.bind(this),
+    /** 展开至指定层级 */
+    expandTo: this.expandTo.bind(this),
+    /** 切换节点展开、折叠状态 */
+    expandToggle: this.expandToggle.bind(this),
+
+    getExpanded: this.getExpanded.bind(this)
+  };
+
+  componentDidMount() {
+    let o = this.props.actions;
+    if (o && typeof o === "object") {
+      let actions = this.actions;
+
+      for (const k in actions) {
+        o[k] = actions[k];
+      }
+    }
+  }
+
   render() {
     let { data, flatData, disabledSelectKeys, treeProps, isTree } = this.state;
     let props = this.props;
@@ -574,7 +739,10 @@ TreeGrid.propTypes = {
    * 展开时加载children的方法
    * (row:object) => Promise
    * */
-  loadChildrenData: PropTypes.func
+  loadChildrenData: PropTypes.func,
+
+  /** actions注册 */
+  actions: PropTypes.object
 };
 
 export default TreeGrid;

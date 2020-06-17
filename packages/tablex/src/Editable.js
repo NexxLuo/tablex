@@ -1945,54 +1945,6 @@ class EditableTable extends React.Component {
     }
   };
 
-  toggleSelectOrExpand = (node, type = 0) => {
-    let { rowKey } = this.state;
-    let keysName = ["expandedRowKeys", "selectedRowKeys"][type];
-
-    let keys = this.state[keysName];
-
-    if (node) {
-      let triggerKey = node[rowKey];
-
-      let isExist = keys.indexOf(triggerKey) > -1;
-
-      let nextKeys = [];
-
-      let keysMap = {};
-
-      for (let i = 0; i < keys.length; i++) {
-        keysMap[keys[i]] = true;
-      }
-
-      treeFilter([node], d => {
-        let k = d[rowKey];
-
-        if (isExist) {
-          keysMap[k] = false;
-        } else {
-          if (keysMap[k] !== true) {
-            if (type === 0) {
-              if (d.children instanceof Array) {
-                keysMap[k] = true;
-              }
-            } else {
-              keysMap[k] = true;
-            }
-          }
-        }
-        return true;
-      });
-
-      for (const d in keysMap) {
-        if (keysMap[d] === true) {
-          nextKeys.push(d);
-        }
-      }
-
-      return { nextKeys, triggerKey };
-    }
-  };
-
   nextData = [];
   insertedData = [];
   insertData = ({
@@ -2246,155 +2198,6 @@ class EditableTable extends React.Component {
     return found;
   };
 
-  collapseAll = (silent = false) => {
-    if (silent === false) {
-      this.onExpandedRowsChange([]);
-    }
-    return [];
-  };
-
-  expandAll = (silent = false) => {
-    let { rowKey } = this.state;
-
-    //getDataList;
-    let data = this.state.data;
-
-    let nextKeys = [];
-
-    treeFilter(data, d => {
-      nextKeys.push(d[rowKey]);
-      return true;
-    });
-
-    if (silent === false) {
-      this.onExpandedRowsChange(nextKeys);
-    }
-
-    return nextKeys;
-  };
-
-  expandTo = (toDepth = 0, silent = false) => {
-    let { rowKey } = this.state;
-
-    let data = this.state.data;
-
-    let nexExpandedRowKeys = [];
-    let keyMap = {};
-
-    treeFilter(data, (d, i, { depth }) => {
-      if (depth <= toDepth) {
-        keyMap[d[rowKey]] = depth;
-        nexExpandedRowKeys.push(d[rowKey]);
-      }
-      return true;
-    });
-
-    if (silent === false) {
-      this.onExpandedRowsChange(nexExpandedRowKeys);
-    }
-
-    return nexExpandedRowKeys;
-  };
-
-  expandToggle = (node, silent = false) => {
-    let { nextKeys } = this.toggleSelectOrExpand(node, 0);
-    if (silent === false) {
-      this.onExpandedRowsChange(nextKeys);
-    }
-    return nextKeys;
-  };
-
-  selectAll = silent => {
-    let { data, rowKey } = this.state;
-
-    let nextKeys = [];
-
-    treeFilter(data, d => {
-      nextKeys.push(d[rowKey]);
-      return true;
-    });
-
-    if (silent === false) {
-      this.onSelectChange(nextKeys, null, "", {});
-    }
-
-    return nextKeys;
-  };
-
-  unSelectAll = silent => {
-    if (silent === false) {
-      this.onSelectChange([], [], null, {});
-    }
-    return [];
-  };
-
-  selectToggle = (node, silent = false) => {
-    let { nextKeys, triggerKey } = this.toggleSelectOrExpand(node, 1);
-
-    if (silent === false) {
-      let nextRows = [];
-
-      let keysMap = {};
-
-      for (let i = 0; i < nextKeys.length; i++) {
-        keysMap[nextKeys[i]] = true;
-      }
-
-      let { data, rowKey } = this.state;
-
-      treeFilter(data, d => {
-        let k = d[rowKey];
-
-        if (keysMap[k] === true) {
-          nextRows.push(d);
-        }
-
-        return true;
-      });
-
-      this.onSelectChange(nextKeys, nextRows, triggerKey, {});
-    }
-    return nextKeys;
-  };
-
-  getDataByKeys = (keys, data, keyField) => {
-    let keysMap = {};
-
-    let matched = [];
-
-    keys.forEach(k => {
-      keysMap[k] = true;
-    });
-
-    data.forEach(d => {
-      if (keysMap[d[keyField]]) {
-        matched.push(d);
-      }
-    });
-
-    return matched;
-  };
-
-  getSelections = () => {
-    let { selectedRowKeys, flatData, rowKey } = this.state;
-    let rows = this.getDataByKeys(selectedRowKeys, flatData, rowKey);
-
-    return {
-      keys: selectedRowKeys,
-      data: rows
-    };
-  };
-
-  getExpanded = () => {
-    let { expandedRowKeys, flatData, rowKey } = this.state;
-    let rows = this.getDataByKeys(expandedRowKeys, flatData, rowKey);
-
-    return {
-      keys: expandedRowKeys,
-      data: rows
-    };
-  };
-
   api = {
     /** 添加n行数据-同默认按钮动作 */
     addRange: this.addRange.bind(this),
@@ -2430,20 +2233,9 @@ class EditableTable extends React.Component {
     findData: this.findData.bind(this),
     /** 筛选数据 */
     filterData: this.filterData.bind(this),
-    /** 折叠所有 */
-    collapseAll: this.collapseAll.bind(this),
-    /** 展开所有 */
-    expandAll: this.expandAll.bind(this),
-    /** 展开至指定层级 */
-    expandTo: this.expandTo.bind(this),
-    /** 切换节点展开、折叠状态 */
-    expandToggle: this.expandToggle.bind(this),
-    /** 选中所有 */
-    selectAll: this.selectAll.bind(this),
-    /** 取消所有选中 */
-    unSelectAll: this.unSelectAll.bind(this),
-    /** 切换节点选中状态 */
-    selectToggle: this.selectToggle.bind(this),
+
+    /** 滚动到指定行 */
+    scrollToItem: this.scrollToItem.bind(this),
 
     reset: this.reset.bind(this),
     isEditing: this.isEditing.bind(this),
@@ -2460,16 +2252,18 @@ class EditableTable extends React.Component {
         addedData: this.getInsertedData(), //添加的行数据
         currData: this.getDataRows() //当前表格状态显示的数据
       };
-    },
-
-    /** 滚动到指定行 */
-    scrollToItem: this.scrollToItem.bind(this),
-    /** 滚动到指定行 */
-    scrollToRow: this.scrollToRow.bind(this),
-
-    getSelections: this.getSelections.bind(this),
-    getExpanded: this.getExpanded.bind(this)
+    }
   };
+
+  componentDidMount() {
+    let o = this.props.actions;
+    if (o && typeof o === "object") {
+      let actions = this.api;
+      for (const k in actions) {
+        o[k] = actions[k];
+      }
+    }
+  }
 
   render() {
     let columns = this.formatColumns();
@@ -2488,7 +2282,8 @@ class EditableTable extends React.Component {
       headerToolsBar: this.headerToolsBar,
       footerToolsBar: this.footerToolsBar,
       innerRef: this.innerTableRef,
-      rowClassName: this.rowClassName
+      rowClassName: this.rowClassName,
+      actions: this.api
     };
 
     if (props.readOnly === true) {
@@ -2676,7 +2471,10 @@ EditableTable.propTypes = {
   /** 是否编辑所有数据,优先级大于editKeys */
   editAll: PropTypes.bool,
   /** 验证事件 */
-  onValidate: PropTypes.func
+  onValidate: PropTypes.func,
+
+  /** actions注册 */
+  actions: PropTypes.object
 };
 
 export default EditableTable;

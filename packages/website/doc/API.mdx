@@ -8,8 +8,6 @@ import { CompleteEditFlow } from "./API";
 
 # API
 
-> Table提供了一些API，可对表格进行快捷操作。通过获取Table的ref进行方法调用，如：tableRef.api.expandAll()
- 
 
 ## 树形、平级数据转换
 
@@ -29,13 +27,30 @@ let treeData = unflatten(flatData,"id","parentId");
 ## 编辑
 
 
+> Table提供了一些内置action，可对表格进行快捷操作。可通过actions属性进行调用，如下：
+
+```javascript
+class Demo extends React.Component {
+  actions = {};
+  callApi = () => {
+    //通过actions调用
+    this.actions.edit();
+  };
+
+  render() {
+    return <Table actions={this.actions}></Table>;
+  }
+}
+```
+ 
+
 ### 手动触发默认的编辑动作
 
 
-> 以下api均同内置的编辑按钮组行为一致，可通过以下api手动触发
+> 以下action均同内置的编辑按钮组行为一致，可通过调用以下action手动触发
  
 ```javascript
-api = {
+actions = {
      /** 添加n行数据,这将会调用rowTemplate函数-同默认按钮动作 */
     addRange: (n:number)=>{},
     /** 添加数据行-同默认按钮动作 */
@@ -52,12 +67,12 @@ api = {
 ```
 
 
-### 使用内置api自定义编辑
+### 使用内置action自定义编辑
 
-> 使用api自定义编辑时与表格内置的编辑按钮组具有不同的行为，请勿混用
+> 使用以下action自定义编辑时与表格内置的编辑按钮组具有不同的行为，请勿混用
  
 ```javascript
-api = {
+actions = {
     /** 编辑指定行
      * @rowKeys 数据行key集合
      */
@@ -121,7 +136,7 @@ api = {
 ## 其他
  
 ```javascript
-api= {
+actions = {
    /** 查找数据行 */
     findData: (fn:(d)=>boolean)=>{},
     /** 筛选数据 */
