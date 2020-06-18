@@ -433,8 +433,8 @@ export function deleteData(data, keys, rowKey) {
       if (k in keysMap) {
         deletedRowKeys.push(k);
         deletedRows.push(d);
-      } else {
         delete d.children;
+      } else {
         newFlatData.push(d);
       }
     }
