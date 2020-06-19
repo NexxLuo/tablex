@@ -459,7 +459,6 @@ class EditableTable extends React.Component {
   validate = async () => {
     let bl = true;
     let arr = this.getChangedRows();
-
     bl = await this.validateAsync(arr);
     this.call_onValidate(bl);
     return bl;
@@ -890,7 +889,6 @@ class EditableTable extends React.Component {
 
     //新增的但值为空的数据
     let { emptyDataMap } = this.filterEmptyData(this.insertedData);
-
     //排除掉删除的数据、新增数据中的空数据
     let data = arr.filter(d => {
       let bl = true;
@@ -988,7 +986,10 @@ class EditableTable extends React.Component {
     if (editting === true) {
       nextState.isEditing = true;
       nextState.editKeys = newEditKeys;
-      this.addToChanged(rows);
+      //addAsChanged为true时，才将新增行添加至修改行中;否则无论是否手动修改了值，都将进入验证
+      if (this.props.addAsChanged === true) {
+        this.addToChanged(rows);
+      }
     }
 
     this.setState(nextState, () => {
@@ -1552,7 +1553,10 @@ class EditableTable extends React.Component {
     this.insertedData = insertedData;
     this.nextData = newData;
 
-    this.addToChanged(insertedData);
+    //addAsChanged为true时，才将新增行添加至修改行中;否则无论是否手动修改了值，都将进入验证
+    if (this.props.addAsChanged === true) {
+      this.addToChanged(insertedData);
+    }
 
     this.setState(
       {
@@ -2334,6 +2338,7 @@ EditableTable.defaultProps = {
   validateDelay: 300,
   alwaysValidate: false,
   alwaysSave: false,
+  addAsChanged: false,
   validateNoEditting: false,
   dataControled: false,
   editorNoBorder: false,
@@ -2428,10 +2433,12 @@ EditableTable.propTypes = {
 
   /** 验证延时 */
   validateDelay: PropTypes.number,
-  /** 未修改数据时是否依然验证 */
+  /** 未修改数据时是否依然验证，为true时也会验证新增的数据，和addAsChanged区别是不会根据ignoreEmptyRow进行数据忽略 */
   alwaysValidate: PropTypes.bool,
   /** 处于编辑状态时，点击保存按钮是否始终都进行保存操作，默认情况下如果未修改数据将不会执行onEditSave */
   alwaysSave: PropTypes.bool,
+  /** 新增的数据是否添加至已修改数据中，设置为true可使新增数据始终进验证，但依然会根据ignoreEmptyRow进行数据忽略 */
+  addAsChanged: PropTypes.bool,
   /** 是否验证无编辑状态的列 */
   validateNoEditting: PropTypes.bool,
 

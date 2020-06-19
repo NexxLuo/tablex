@@ -32,6 +32,7 @@ Editable.defaultProps = {
   validateDelay: 300,
   alwaysValidate: false,
   alwaysSave: false,
+  addAsChanged: false,
   validateNoEditting: false,
   dataControled: false,
   editorNoBorder: false,
@@ -81,6 +82,8 @@ Editable.propTypes = {
   alwaysValidate: PropTypes.bool,
   /** 处于编辑状态时，点击保存按钮是否始终都进行保存操作，默认情况下如果未修改数据将不会执行onEditSave */
   alwaysSave: PropTypes.bool,
+  /** 新增的数据是否添加至已修改数据中，设置为true可使新增数据始终进验证，但依然会根据ignoreEmptyRow进行数据忽略 */
+  addAsChanged: PropTypes.bool,
   /** 是否验证无编辑状态的列 */
   validateNoEditting: PropTypes.bool,
 
