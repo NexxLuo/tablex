@@ -1951,14 +1951,17 @@ class EditableTable extends React.Component {
 
   nextData = [];
   insertedData = [];
-  insertData = ({
-    data = [],
-    parentKey = "",
-    editing = false,
-    prepend = false,
-    scrollTo = true,
-    startIndex = -1
-  }) => {
+  insertData = (
+    {
+      data = [],
+      parentKey = "",
+      editing = false,
+      prepend = false,
+      scrollTo = true,
+      startIndex = -1
+    },
+    callback
+  ) => {
     let { data: source, rowKey, editKeys, expandedRowKeys } = this.state;
 
     let insertedData = this.insertedData;
@@ -1993,21 +1996,26 @@ class EditableTable extends React.Component {
       nextState.isAddingRange = true;
     }
 
-    this.setState(nextState, () => {
-      if (scrollTo === true) {
-        this.scrollToRow(insertedRowKeys[0], "start");
-      }
-    });
-
-    return {
+    let res = {
       data: newData,
       inserted: insertedRows,
       insertedKeys: insertedRowKeys
     };
+
+    this.setState(nextState, () => {
+      if (scrollTo === true) {
+        this.scrollToRow(insertedRowKeys[0], "start");
+      }
+      if (typeof callback === "function") {
+        callback(res);
+      }
+    });
+
+    return res;
   };
 
   deletedData = [];
-  deleteData = rowKeys => {
+  deleteData = (rowKeys, callback) => {
     let { data, rowKey, selectedRowKeys } = this.state;
 
     let keys = rowKeys;
@@ -2031,17 +2039,30 @@ class EditableTable extends React.Component {
       editKeys: nextEditKeys
     } = this.deleteRowsState(deletedRowKeys);
 
-    this.setState({
-      selectedRowKeys: nextSelectedRowKeys,
-      editKeys: nextEditKeys,
-      data: newData,
-      flatData: newFlatData
-    });
+    let res = {
+      deleted: deletedRows,
+      deletedKeys: deletedRowKeys,
+      data: newData
+    };
 
-    return { deleted: deletedRows, deletedKeys: deletedRowKeys, data: newData };
+    this.setState(
+      {
+        selectedRowKeys: nextSelectedRowKeys,
+        editKeys: nextEditKeys,
+        data: newData,
+        flatData: newFlatData
+      },
+      () => {
+        if (typeof callback === "function") {
+          callback(res);
+        }
+      }
+    );
+
+    return res;
   };
 
-  modifyData = (rows = [], silent = false) => {
+  modifyData = (rows = [], silent = false, callback) => {
     let { data } = this.state;
 
     let insertedData = this.insertedData;
@@ -2102,7 +2123,11 @@ class EditableTable extends React.Component {
     this.nextData = data.slice();
 
     if (silent === false) {
-      this.forceUpdate();
+      this.forceUpdate(() => {
+        if (typeof callback === "function") {
+          callback(modifiedData);
+        }
+      });
     }
 
     return modifiedData;
