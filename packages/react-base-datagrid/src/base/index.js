@@ -285,7 +285,6 @@ class BaseDataGrid extends React.Component {
   }
 
   resetAfterIndex(index, shouldForceUpdate) {
-    this.resetAutoSize();
     this.middleRef.current &&
       this.middleRef.current.resetAfterIndex(index, shouldForceUpdate);
     this.leftRef.current &&
@@ -387,7 +386,9 @@ class BaseDataGrid extends React.Component {
   onItemSizeChange = (sizes, totalSize) => {
     this.memorizedSize = sizes;
     this.memorizedTotalSize = totalSize;
+    //二次加载后重设行高
     this.forceUpdate(() => {
+      this.resetAutoSize();
       this.resetAfterIndex(0);
     });
   };
