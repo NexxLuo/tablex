@@ -115,10 +115,29 @@ class Demo extends React.Component {
       };
     });
 
-    this.refs.tb.api.addRows(arr, true, false);
+    this.refs.tb.api.addRows(arr)
   }
 
-  expandData(){
+  insertData() {
+    let arr = new Array(5).fill(0).map((d, i) => {
+      return {
+        id: "addedData-" + i + "-" + new Date().getTime(),
+        "column-1": i === 0 ? "" : "value-" + i,
+        "column-2": i === 0 ? "" : "value2-" + i,
+        "column-3": "value3-" + i
+      };
+    });
+
+    this.refs.tb.api.insertData({ data: arr }, () => {
+      this.refs.tb.api.deleteData([arr[0].id]);
+    });
+  }
+
+  deleteData() {
+    this.refs.tb.api.deleteData();
+  }
+
+  expandData() {
     this.refs.tb.api.expandAll();
   }
 
@@ -146,9 +165,10 @@ class Demo extends React.Component {
             isAppend={true}
             validateTrigger="onChange"
             allowSaveEmpty={false}
+            addAsChanged={true}
             alwaysValidate={false}
-            defaultGroupedColumnKey={["id"]}
-            groupedColumnSummary={{
+            defaultGroupedColumnKey2={["id"]}
+            groupedColumnSummary2={{
               style: { float: "right" },
               data: [
                 {
@@ -183,6 +203,16 @@ class Demo extends React.Component {
               function() {
                 return (
                   <Button onClick={this.addData.bind(this)}>新增数据</Button>
+                );
+              }.bind(this),
+              function() {
+                return (
+                  <Button onClick={this.insertData.bind(this)}>插入数据</Button>
+                );
+              }.bind(this),
+              function() {
+                return (
+                  <Button onClick={this.deleteData.bind(this)}>删除数据</Button>
                 );
               }.bind(this),
               function() {
