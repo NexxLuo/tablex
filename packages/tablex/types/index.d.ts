@@ -263,6 +263,7 @@ export interface TableProps<T> {
   readOnly?: boolean;
   editTools?: EditTools;
   editToolsConfig?: EditToolsConfig;
+  edittingToolsShowType: 0 | 1 | 2 | 3;
   intl?: any;
   isAppend?: boolean;
   ignoreEmptyRow?: boolean;
@@ -272,7 +273,7 @@ export interface TableProps<T> {
   validateDelay?: number;
   alwaysValidate?: boolean;
   alwaysSave?: boolean;
-  addAsChanged?:boolean;
+  addAsChanged?: boolean;
   validateNoEditting?: boolean;
   onBeforeAdd?: () => boolean;
   onAdd?: (addedData: object[], newData: object[], string: "add") => void;

@@ -1656,6 +1656,22 @@ class EditableTable extends React.Component {
     }
 
     let rangeUnitText = this.props.intl["addRangeRowText"];
+
+    let edittingToolsShowType = 0;
+
+    if (isEditing) {
+      edittingToolsShowType = this.props.edittingToolsShowType || 0;
+    } else {
+      edittingToolsShowType = 3;
+    }
+
+    let showTypes = {
+      "0": [], //不显示任何按钮
+      "1": [1], //只显示内置的编辑按钮
+      "2": [2], //只显示自定义按钮
+      "3": [1, 2] //显示所有按钮
+    }[edittingToolsShowType];
+
     tools.forEach((d, i) => {
       let styles = { ...itemStyle };
 
@@ -1670,134 +1686,137 @@ class EditableTable extends React.Component {
         </Menu>
       );
 
-      if (d === "addSingle") {
-        buttons.push(
-          wrapper(
-            <Button
-              key={d + "_1"}
-              style={styles}
-              {...buttonProps[d]}
-              className="table-tools-item table-tools-addSingle"
-              onClick={() => this.addRange(1)}
-            >
-              {addIcon}
-              {addText}
-            </Button>,
-            d
-          )
-        );
-      }
-
-      if (d === "add") {
-        buttons.push(
-          wrapper(
-            <Dropdown key={d + "_1"} overlay={menu} {...buttonProps[d]}>
+      if (showTypes.indexOf(1) > -1) {
+        if (d === "addSingle") {
+          buttons.push(
+            wrapper(
               <Button
+                key={d + "_1"}
                 style={styles}
-                onClick={() => this.addRange()}
-                className="table-tools-item table-tools-add"
-              >
-                {addIcon} {addText}
-                <Icon type="down" />
-              </Button>
-            </Dropdown>,
-            d
-          )
-        );
-      }
-
-      if (!isEditing && d === "edit") {
-        buttons.push(
-          wrapper(
-            <Button
-              key={d + "_1"}
-              style={styles}
-              {...buttonProps[d]}
-              className="table-tools-item table-tools-edit"
-              onClick={() => this.edit()}
-            >
-              {editIcon}
-              {editText}
-            </Button>,
-            d
-          )
-        );
-      }
-
-      if (d === "delete") {
-        let { selectedRowKeys = [], data = [] } = this.state;
-        let hasSelectedRows = selectedRowKeys.length > 0;
-        let hasData = data.length > 0;
-
-        buttons.push(
-          wrapper(
-            <Popconfirm
-              key={d}
-              title={this.props.intl["deleteConfirmTitle"]}
-              okText={this.props.intl["deleteConfirmOk"]}
-              cancelText={this.props.intl["deleteConfirmCancel"]}
-              onConfirm={this.delete}
-              disabled={!hasSelectedRows}
-            >
-              <Button
-                style={styles}
-                loading={this.state.deleteLoading}
                 {...buttonProps[d]}
-                onClick={e => {
-                  e.stopPropagation();
-                  if (!hasSelectedRows) {
-                    if (hasData) {
-                      message.warn(this.props.intl["noSelectToDelete"]);
-                    } else {
-                      message.warn(this.props.intl["noDeletableData"]);
-                    }
-                  }
-                }}
-                className="table-tools-item table-tools-delete"
+                className="table-tools-item table-tools-addSingle"
+                onClick={() => this.addRange(1)}
               >
-                {deleteIcon}
-                {deleteText}
-              </Button>
-            </Popconfirm>,
-            d
-          )
-        );
-      }
+                {addIcon}
+                {addText}
+              </Button>,
+              d
+            )
+          );
+        }
 
-      if (typeof d === "function") {
-        buttons.push(
-          wrapper(
-            <span
-              style={styles}
-              className="table-tools-item"
-              key={"_fnTools_" + i}
-            >
-              {d(this.api)}
-            </span>,
-            d
-          )
-        );
-      }
+        if (d === "add") {
+          buttons.push(
+            wrapper(
+              <Dropdown key={d + "_1"} overlay={menu} {...buttonProps[d]}>
+                <Button
+                  style={styles}
+                  onClick={() => this.addRange()}
+                  className="table-tools-item table-tools-add"
+                >
+                  {addIcon} {addText}
+                  <Icon type="down" />
+                </Button>
+              </Dropdown>,
+              d
+            )
+          );
+        }
 
-      if (typeof d === "object" && d !== null) {
-        let toolIcon = d.icon;
-        toolIcon = toolIcon ? <Icon type={toolIcon} /> : null;
-        let toolAttr = d.props || {};
-        buttons.push(
-          wrapper(
-            <Button
-              key={"_objTools_" + i}
-              onClick={d.handler}
-              style={styles}
-              {...toolAttr}
-              className="table-tools-item"
-            >
-              {toolIcon}
-              {d.text}
-            </Button>,
-            d
-          )
-        );
+        if (!isEditing && d === "edit") {
+          buttons.push(
+            wrapper(
+              <Button
+                key={d + "_1"}
+                style={styles}
+                {...buttonProps[d]}
+                className="table-tools-item table-tools-edit"
+                onClick={() => this.edit()}
+              >
+                {editIcon}
+                {editText}
+              </Button>,
+              d
+            )
+          );
+        }
+
+        if (d === "delete") {
+          let { selectedRowKeys = [], data = [] } = this.state;
+          let hasSelectedRows = selectedRowKeys.length > 0;
+          let hasData = data.length > 0;
+
+          buttons.push(
+            wrapper(
+              <Popconfirm
+                key={d}
+                title={this.props.intl["deleteConfirmTitle"]}
+                okText={this.props.intl["deleteConfirmOk"]}
+                cancelText={this.props.intl["deleteConfirmCancel"]}
+                onConfirm={this.delete}
+                disabled={!hasSelectedRows}
+              >
+                <Button
+                  style={styles}
+                  loading={this.state.deleteLoading}
+                  {...buttonProps[d]}
+                  onClick={e => {
+                    e.stopPropagation();
+                    if (!hasSelectedRows) {
+                      if (hasData) {
+                        message.warn(this.props.intl["noSelectToDelete"]);
+                      } else {
+                        message.warn(this.props.intl["noDeletableData"]);
+                      }
+                    }
+                  }}
+                  className="table-tools-item table-tools-delete"
+                >
+                  {deleteIcon}
+                  {deleteText}
+                </Button>
+              </Popconfirm>,
+              d
+            )
+          );
+        }
+      }
+      if (showTypes.indexOf(2) > -1) {
+        if (typeof d === "function") {
+          buttons.push(
+            wrapper(
+              <span
+                style={styles}
+                className="table-tools-item"
+                key={"_fnTools_" + i}
+              >
+                {d(this.api)}
+              </span>,
+              d
+            )
+          );
+        }
+
+        if (typeof d === "object" && d !== null) {
+          let toolIcon = d.icon;
+          toolIcon = toolIcon ? <Icon type={toolIcon} /> : null;
+          let toolAttr = d.props || {};
+          buttons.push(
+            wrapper(
+              <Button
+                key={"_objTools_" + i}
+                onClick={d.handler}
+                style={styles}
+                {...toolAttr}
+                className="table-tools-item"
+              >
+                {toolIcon}
+                {d.text}
+              </Button>,
+              d
+            )
+          );
+        }
       }
     });
 
@@ -2356,6 +2375,7 @@ EditableTable.defaultProps = {
     cancelText: "",
     cancelIcon: ""
   },
+  edittingToolsShowType: 1,
   defaultAddCount: 1,
   isAppend: false,
   ignoreEmptyRow: true,
@@ -2434,6 +2454,13 @@ EditableTable.propTypes = {
   editTools: PropTypes.array,
   /** 工具栏，工具按钮属性配置{wrapper:function,props:{}, position: "bottom", itemStyle: {}, editText: "", editIcon: "", addText: "", addIcon: "", deleteText: "", deleteIcon: "", okText: "", okIcon: "", cancelText: "", cancelIcon: "" } */
   editToolsConfig: PropTypes.object,
+  /** 工具栏，控制编辑状态时显示哪些按钮
+   *  0:不显示任何按钮
+      1:只显示内置的编辑按钮
+      2:只显示自定义按钮
+      3:显示所有按钮
+   */
+  edittingToolsShowType: PropTypes.oneOf([0, 1, 2, 3]),
   /** 新增行时，是追加，还是清空当前页数据 */
   isAppend: PropTypes.bool,
   /** 新增行时的默认条数 */

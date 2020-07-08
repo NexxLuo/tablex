@@ -25,6 +25,7 @@ Editable.defaultProps = {
     cancelText: "",
     cancelIcon: ""
   },
+  edittingToolsShowType: 1,
   defaultAddCount: 1,
   isAppend: false,
   ignoreEmptyRow: true,
@@ -66,6 +67,13 @@ Editable.propTypes = {
   editTools: PropTypes.array,
   /** 工具栏，工具按钮属性配置{ wrapper:function,props:{},position: "bottom", itemStyle: { marginRight: "5px" }, editText: "", editIcon: "", addText: "", addIcon: "", deleteText: "", deleteIcon: "", okText: "", okIcon: "", cancelText: "", cancelIcon: "" } */
   editToolsConfig: PropTypes.object,
+  /** 工具栏，控制编辑状态时显示哪些按钮
+   *  0:不显示任何按钮
+      1:只显示内置的编辑按钮
+      2:只显示自定义按钮
+      3:显示所有按钮
+   */
+  edittingToolsShowType: PropTypes.oneOf([0, 1, 2, 3]),
   /** 新增行时，是追加，还是清空当前页数据 */
   isAppend: PropTypes.bool,
   /** 新增时是否忽略空数据行,当所有editor列的值均为空时,此行则视为空数据行 */
