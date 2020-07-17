@@ -2043,11 +2043,14 @@ class EditableTable extends React.Component {
       keys = selectedRowKeys;
     }
 
+
     let { newData, newFlatData, deletedRows, deletedRowKeys } = deleteData(
       data,
       keys,
       rowKey
     );
+
+
 
     let deletedData = this.deletedData;
     this.deletedData = deletedData.slice().concat(deletedRows);

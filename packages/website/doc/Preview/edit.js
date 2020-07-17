@@ -11,7 +11,7 @@ class Demo extends React.Component {
             rowData[column.dataIndex] = Math.floor(Math.random() * 100 + 1);
           } else {
             rowData[column.dataIndex] =
-              prefix + " " + rowIndex + " - Col " + columnIndex;
+              prefix + "-" + rowIndex + "-col-" + columnIndex;
           }
 
           return rowData;
@@ -95,6 +95,11 @@ class Demo extends React.Component {
 
     let data = this.generateData(columns, 10);
 
+    data[1].children = this.generateData(columns, 1, "children");
+
+    console.log("data:",data[1].children);
+
+
     this.state = {
       data: data,
       columns: columns,
@@ -115,7 +120,7 @@ class Demo extends React.Component {
       };
     });
 
-    this.refs.tb.api.addRows(arr)
+    this.refs.tb.api.addRows(arr);
   }
 
   insertData() {
@@ -134,7 +139,8 @@ class Demo extends React.Component {
   }
 
   deleteData() {
-    this.refs.tb.api.deleteData();
+    let keys = ["children-0-col-0"];//Row-1-col-0
+    this.refs.tb.api.deleteData(keys);
   }
 
   expandData() {

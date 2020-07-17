@@ -435,6 +435,8 @@ export function deleteData(data, keys, rowKey) {
         deletedRows.push(d);
         delete d.children;
       } else {
+        //平级数据移除children,避免无法删除最后一个子级
+        delete d.children;
         newFlatData.push(d);
       }
     }
