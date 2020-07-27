@@ -89,7 +89,6 @@ class EditableTable extends React.Component {
         nextState.isEditing = nextIsEditing;
         nextState.isControledEdit = true;
       }
-
       //
 
       if ("expandedRowKeys" in nextProps) {
@@ -986,10 +985,6 @@ class EditableTable extends React.Component {
     if (editting === true) {
       nextState.isEditing = true;
       nextState.editKeys = newEditKeys;
-      //addAsChanged为true时，才将新增行添加至修改行中;否则无论是否手动修改了值，都将进入验证
-      if (this.props.addAsChanged === true) {
-        this.addToChanged(rows);
-      }
     }
 
     this.setState(nextState, () => {
@@ -1193,8 +1188,11 @@ class EditableTable extends React.Component {
       }
 
       //排除掉未修改的数据
-      if (changedRowsKeyMap[k] !== true) {
-        bl = false;
+      //addAsChanged不为true时，需要将未修改的数据进行排除
+      if (this.props.addAsChanged !== true) {
+        if (changedRowsKeyMap[k] !== true) {
+          bl = false;
+        }
       }
 
       //排除掉空数据行
@@ -1553,18 +1551,12 @@ class EditableTable extends React.Component {
     this.insertedData = insertedData;
     this.nextData = newData;
 
-    //addAsChanged为true时，才将新增行添加至修改行中;否则无论是否手动修改了值，都将进入验证
-    if (this.props.addAsChanged === true) {
-      this.addToChanged(insertedData);
-    }
-
     this.setState(
       {
         data: newData,
         flatData: flatData.slice().concat(insertedData),
         editKeys: keys,
         isEditing: true,
-        isEditAll: false,
         isAdding: false,
         isAddingRange: true,
         changedRows: []
@@ -2043,14 +2035,11 @@ class EditableTable extends React.Component {
       keys = selectedRowKeys;
     }
 
-
     let { newData, newFlatData, deletedRows, deletedRowKeys } = deleteData(
       data,
       keys,
       rowKey
     );
-
-
 
     let deletedData = this.deletedData;
     this.deletedData = deletedData.slice().concat(deletedRows);

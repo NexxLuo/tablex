@@ -97,8 +97,7 @@ class Demo extends React.Component {
 
     data[1].children = this.generateData(columns, 1, "children");
 
-    console.log("data:",data[1].children);
-
+    console.log("data:", data[1].children);
 
     this.state = {
       data: data,
@@ -133,13 +132,13 @@ class Demo extends React.Component {
       };
     });
 
-    this.refs.tb.api.insertData({ data: arr }, () => {
-      this.refs.tb.api.deleteData([arr[0].id]);
+    this.refs.tb.api.insertData({ data: arr ,editing:true}, () => {
+      // this.refs.tb.api.completeEdit();
     });
   }
 
   deleteData() {
-    let keys = ["children-0-col-0"];//Row-1-col-0
+    let keys = ["children-0-col-0"]; //Row-1-col-0
     this.refs.tb.api.deleteData(keys);
   }
 
@@ -149,7 +148,14 @@ class Demo extends React.Component {
 
   onEditSave(changedRows, newRows, type) {
     this.setState({ data: newRows });
-    console.log("onEditSave");
+    console.log("onEditSave:",changedRows);
+  }
+
+  completeEdit(){
+    this.refs.tb.api.completeEdit();
+  }
+  onComplete(a) {
+    console.log("onComplete:",a);
   }
 
   render() {
@@ -165,14 +171,19 @@ class Demo extends React.Component {
             columns={columns}
             selectMode="multiple"
             loading={false}
+            onAdd={()=>{
+              this.forceUpdate()
+            }}
             data={data}
             onEditSave={this.onEditSave.bind(this)}
-            ignoreEmptyRow={true}
+            onComplete={this.onComplete.bind(this)}
+            ignoreEmptyRow={false}
             isAppend={true}
             validateTrigger="onChange"
             allowSaveEmpty={false}
-            addAsChanged={true}
+            addAsChanged={false}
             alwaysValidate={false}
+            alwaysSave={false}
             defaultGroupedColumnKey2={["id"]}
             groupedColumnSummary2={{
               style: { float: "right" },
@@ -214,6 +225,11 @@ class Demo extends React.Component {
               function() {
                 return (
                   <Button onClick={this.insertData.bind(this)}>插入数据</Button>
+                );
+              }.bind(this),
+              function() {
+                return (
+                  <Button onClick={this.completeEdit.bind(this)}>完成编辑</Button>
                 );
               }.bind(this),
               function() {
