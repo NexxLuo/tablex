@@ -1,7 +1,7 @@
 import { css } from "docz-plugin-css";
 import { css as scss } from "styled-components";
 const path = require("path");
-
+const isDev = process.env.NODE_ENV === "development";
 export default {
   title: "Table",
   indexHtml: "./public/index.html",
@@ -41,19 +41,20 @@ export default {
     config.resolve.alias
       .set("react", path.resolve("node_modules/react"))
       .set("react-dom", path.resolve("node_modules/react-dom"));
+    if (!isDev) {
+      config.module
+        .rule("js_node_modules")
+        .test(/\.(js)$/)
+        .include.add(path.resolve("node_modules"))
+        .end()
+        .use("babel")
+        .loader(path.resolve("node_modules/babel-loader"))
+        .options({
+          presets: [["@babel/preset-env", { modules: false }]]
+        });
 
-    config.module
-      .rule("js_node_modules")
-      .test(/\.(js)$/)
-      .include.add(path.resolve("node_modules"))
-      .end()
-      .use("babel")
-      .loader(path.resolve("node_modules/babel-loader"))
-      .options({
-        presets: [["@babel/preset-env", { modules: false }]]
-      });
-
-    config.module.rule("js_node_modules").before("js");
+      config.module.rule("js_node_modules").before("js");
+    }
   },
   menu: [
     "介绍",
