@@ -559,6 +559,13 @@ class Table extends React.Component {
         bl = !d.hidden;
       }
 
+      if (typeof config.order === "number") {
+        needSortColumn = true;
+        d.__order = config.order;
+      } else {
+        d.__order = i;
+      }
+
       return bl;
     });
 
