@@ -178,6 +178,18 @@ class Demo extends React.Component {
     console.log("getData 2:", r2);
   }
 
+  filterData(){
+    let r1 = this.refs.tb.api.filterData((d,i)=>{
+
+      return d["column-2"]%2===0;
+
+      console.log("d:",d)
+
+    });
+
+  //  this.setState({data:this.state.data.slice()})
+  }
+
   render() {
     let { columns, data } = this.state;
 
@@ -263,6 +275,11 @@ class Demo extends React.Component {
               function() {
                 return (
                   <Button onClick={this.getData.bind(this)}>获取数据</Button>
+                );
+              }.bind(this),
+              function() {
+                return (
+                  <Button onClick={this.filterData.bind(this)}>过滤数据</Button>
                 );
               }.bind(this),
               function() {
