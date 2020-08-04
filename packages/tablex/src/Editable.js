@@ -1275,6 +1275,15 @@ class EditableTable extends React.Component {
     }
     //
 
+    //确定按钮保存前置事件
+    if (typeof this.props.onBeforeSave === "function") {
+      let allowSave = this.props.onBeforeSave();
+      if (allowSave === false) {
+        return;
+      }
+    }
+    //
+
     if (!editType) {
       console.error(this.props.intl["noEditTypeError"]);
       return;
@@ -2471,6 +2480,11 @@ EditableTable.propTypes = {
    * @param {string} editType-编辑类型;"edit":编辑;"add":新增;"delete":删除
    */
   onEditSave: PropTypes.func,
+
+  /**
+   * 默认确定按钮保存前置事件,返回false取消保存
+   */
+  onBeforeSave: PropTypes.func,
 
   /** 验证时机 */
   validateTrigger: PropTypes.oneOf(["onChange", "onBlur", "onSave"]),

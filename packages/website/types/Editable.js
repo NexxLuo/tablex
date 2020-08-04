@@ -133,6 +133,12 @@ Editable.propTypes = {
    * @param {string} editType-编辑类型;"edit":编辑;"add":新增;"delete":删除
    */
   onEditSave: PropTypes.func,
+
+  /**
+   * 默认确定按钮保存前置事件,返回false取消保存
+   */
+  onBeforeSave: PropTypes.func,
+
   /** api.completeEdit 触发此事件
    * @param {changed:[],inserted:[],deleted:[],data:[]} --包含修改、新增、删除的数据，以及最新的表格数据data
    */

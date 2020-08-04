@@ -132,9 +132,20 @@ class Demo extends React.Component {
       };
     });
 
-    this.refs.tb.api.insertData({ data: arr ,editing:true}, () => {
-      // this.refs.tb.api.completeEdit();
-    });
+    this.refs.tb.api.insertData({ data: arr, editing: true });
+
+    let r1 = this.refs.tb.api.getAllData();
+    let r2 = this.refs.tb.api.getDataState();
+
+    this.refs.tb.api.editAll();
+
+
+    this.setState({isEdit:true,data:this.state.data.slice()})
+
+    
+    console.log("getData 1:", r1);
+    console.log("getData 2:", r2);
+
   }
 
   deleteData() {
@@ -148,14 +159,23 @@ class Demo extends React.Component {
 
   onEditSave(changedRows, newRows, type) {
     this.setState({ data: newRows });
-    console.log("onEditSave:",changedRows);
+    console.log("onEditSave:", changedRows);
   }
 
-  completeEdit(){
+  completeEdit() {
     this.refs.tb.api.completeEdit();
   }
   onComplete(a) {
-    console.log("onComplete:",a);
+    console.log("onComplete:", a);
+  }
+
+  getData() {
+   
+    let r1 = this.refs.tb.api.getAllData();
+    let r2 = this.refs.tb.api.getDataState();
+
+    console.log("getData 1:", r1);
+    console.log("getData 2:", r2);
   }
 
   render() {
@@ -168,11 +188,12 @@ class Demo extends React.Component {
             rowKey="id"
             ref="tb"
             editable={true}
+            edittingToolsShowType={3}
             columns={columns}
             selectMode="multiple"
             loading={false}
-            onAdd={()=>{
-              this.forceUpdate()
+            onAdd={() => {
+              this.forceUpdate();
             }}
             data={data}
             onEditSave={this.onEditSave.bind(this)}
@@ -181,7 +202,7 @@ class Demo extends React.Component {
             isAppend={true}
             validateTrigger="onChange"
             allowSaveEmpty={false}
-            addAsChanged={false}
+            addAsChanged={true}
             alwaysValidate={false}
             alwaysSave={false}
             defaultGroupedColumnKey2={["id"]}
@@ -229,12 +250,19 @@ class Demo extends React.Component {
               }.bind(this),
               function() {
                 return (
-                  <Button onClick={this.completeEdit.bind(this)}>完成编辑</Button>
+                  <Button onClick={this.completeEdit.bind(this)}>
+                    完成编辑
+                  </Button>
                 );
               }.bind(this),
               function() {
                 return (
                   <Button onClick={this.deleteData.bind(this)}>删除数据</Button>
+                );
+              }.bind(this),
+              function() {
+                return (
+                  <Button onClick={this.getData.bind(this)}>获取数据</Button>
                 );
               }.bind(this),
               function() {

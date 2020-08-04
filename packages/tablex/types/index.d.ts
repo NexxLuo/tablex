@@ -289,6 +289,7 @@ export interface TableProps<T> {
     newRows: object[],
     editType: "add" | "edit" | "delete"
   ) => Promise<T> | void;
+  onBeforeSave?: () => boolean;
   onComplete?: (modifiedData: {
     changed: any[];
     inserted: any[];
