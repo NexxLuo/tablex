@@ -1308,7 +1308,9 @@ class EditableTable extends React.Component {
       }
 
       if (bl === false) {
-        message.error(this.props.intl["validateError"]);
+        if(this.props.showValidateMessage){
+          message.error(this.props.intl["validateError"]);
+        }
         return;
       }
     }
