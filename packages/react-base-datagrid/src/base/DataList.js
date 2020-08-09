@@ -600,6 +600,11 @@ class DataList extends Component {
     this.columnRowSpanPlaceholders = {}; //{columnKey:{rowKey:{ start: 0, end: 0, colspan:2,rowspan:2,width,height, columnKey: "", rowSpanStyle: {}}}}
   }
 
+  componentDidUpdate() {
+    //此处处理每次数据源变更后可能导致合并数据不正确的问题
+    this.columnRowSpan = {};
+  }
+
   innerElementType = ({ children, style }) => {
     let { columns = [], innerStyle = {} } = this.props;
     let w = 0;
