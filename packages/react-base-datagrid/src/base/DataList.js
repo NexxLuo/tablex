@@ -532,25 +532,27 @@ const ListItem = memo(function TableRow({ data, index, style }) {
       let o = rowCellSpan[ck];
       let startIndex = o.start;
       let startRow = rows[startIndex];
-      let el = (
-        <RowPlaceholder
-          key={"RowPlaceholder_" + index + ck}
-          {...rowProps}
-          rowClassName={rowClassName}
-          columns={columns}
-          rowHeight={style.height}
-          row={startRow}
-          rowKey={rowKey}
-          index={startIndex}
-          endIndex={index}
-          endRowKey={k}
-          onRow={onRow}
-          columnSpanKey={ck}
-          columnRowSpan={columnRowSpan}
-          columnRowSpanPlaceholders={columnRowSpanPlaceholders}
-        ></RowPlaceholder>
-      );
-      rowExtraElements.push(el);
+      if (startRow) {
+        let el = (
+          <RowPlaceholder
+            key={"RowPlaceholder_" + index + ck}
+            {...rowProps}
+            rowClassName={rowClassName}
+            columns={columns}
+            rowHeight={style.height}
+            row={startRow}
+            rowKey={rowKey}
+            index={startIndex}
+            endIndex={index}
+            endRowKey={k}
+            onRow={onRow}
+            columnSpanKey={ck}
+            columnRowSpan={columnRowSpan}
+            columnRowSpanPlaceholders={columnRowSpanPlaceholders}
+          ></RowPlaceholder>
+        );
+        rowExtraElements.push(el);
+      }
     });
   }
   //
