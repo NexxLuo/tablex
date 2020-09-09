@@ -1277,10 +1277,20 @@ class EditableTable extends React.Component {
 
     //确定按钮保存前置事件
     if (typeof this.props.onBeforeSave === "function") {
-      let allowSave = this.props.onBeforeSave();
-      if (allowSave === false) {
+      let res = this.props.onBeforeSave();
+      if (res === false) {
         return;
       }
+    }
+
+    if (typeof this.props.onBeforeSaveAsync === "function") {
+      this.setState({ editSaveLoading: true });
+      let res = await this.props.onBeforeSaveAsync();
+      if (res === false) {
+        this.setState({ editSaveLoading: false });
+        return;
+      }
+      this.setState({ editSaveLoading: false });
     }
     //
 
@@ -1308,7 +1318,7 @@ class EditableTable extends React.Component {
       }
 
       if (bl === false) {
-        if(this.props.showValidateMessage){
+        if (this.props.showValidateMessage) {
           message.error(this.props.intl["validateError"]);
         }
         return;
