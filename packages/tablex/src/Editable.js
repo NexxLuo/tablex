@@ -658,9 +658,7 @@ class EditableTable extends React.Component {
       values => {
         this.editChange(values, row, index);
       },
-      ins => {
-        this.setEditorIns(row, column, ins);
-      },
+      ins => {},
       {
         columnDataIndex: columnDataIndex,
         columnKey: columnKey,
@@ -688,6 +686,9 @@ class EditableTable extends React.Component {
           rowKey={rowKey}
           columnKey={columnDataIndex}
           onKeyDown={this.onKeyDown}
+          ref={ins => {
+            this.setEditorIns(row, column, ins);
+          }}
         >
           {ed}
         </Editor>
@@ -1009,19 +1010,36 @@ class EditableTable extends React.Component {
       return;
     }
 
-    if (editor.input && typeof editor.input.select === "function") {
-      setTimeout(() => {
-        editor.input.select();
-      }, 1);
-    } else if (typeof editor.focus === "function") {
-      editor.focus();
-    } else {
-      let el = ReactDom.findDOMNode(editor);
+    let el = ReactDom.findDOMNode(editor);
 
-      if (el) {
-        let inputEl = el.getElementsByTagName("input")[0];
-        inputEl && inputEl.focus();
-        el.focus();
+    //如果自定义李编辑焦点控件，则优先其focus
+    let editorEL = el.getElementsByClassName("table-editor-focusable")[0];
+    if (editorEL) {
+      editorEL.focus();
+      return;
+    }
+    //
+
+    if (el) {
+      let selectEl = el.getElementsByClassName("ant-select-enabled")[0];
+
+      if (selectEl) {
+        selectEl.click();
+        return;
+      }
+
+      let inputEl = el.getElementsByTagName("input")[0];
+
+      if (inputEl) {
+        inputEl.focus();
+        return;
+      }
+
+      let buttonEL = el.getElementsByTagName("button")[0];
+
+      if (buttonEL) {
+        buttonEL.focus();
+        return;
       }
     }
   };
