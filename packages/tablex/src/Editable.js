@@ -1012,15 +1012,14 @@ class EditableTable extends React.Component {
 
     let el = ReactDom.findDOMNode(editor);
 
-    //如果自定义李编辑焦点控件，则优先其focus
-    let editorEL = el.getElementsByClassName("table-editor-focusable")[0];
-    if (editorEL) {
-      editorEL.focus();
-      return;
-    }
-    //
-
     if (el) {
+      //如果自定义李编辑焦点控件，则优先其focus
+      let editorEL = el.getElementsByClassName("table-editor-focusable")[0];
+      if (editorEL) {
+        editorEL.focus();
+        return;
+      }
+      //
       let selectEl = el.getElementsByClassName("ant-select-enabled")[0];
 
       if (selectEl) {
