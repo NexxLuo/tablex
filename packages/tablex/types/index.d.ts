@@ -298,6 +298,13 @@ export interface TableProps<T> {
   }) => void;
   onValidate?: (bl: boolean) => void;
   actions?: any;
+  columnOptions?: {
+    [columnKey: string]: {
+      visible?: boolean;
+      disabled?: boolean;
+      required?: boolean;
+    };
+  };
 }
 
 export default class Table<T> extends React.Component<TableProps<T>, any> {}

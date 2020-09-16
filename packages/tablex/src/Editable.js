@@ -53,7 +53,8 @@ class EditableTable extends React.Component {
       selectedRowKeys: [],
       selectedRows: [],
       expandedRowKeys: [],
-      focusedRowKeys: []
+      focusedRowKeys: [],
+      columnOptions: {}
     };
   }
 
@@ -70,7 +71,8 @@ class EditableTable extends React.Component {
         dataControled: nextProps.dataControled || false,
         readOnly: nextProps.readOnly,
         rawColumns: nextProps.columns || [],
-        isAppend: nextProps.isAppend
+        isAppend: nextProps.isAppend,
+        columnOptions: nextProps.columnOptions || {}
       };
 
       //处理编辑状态受控
@@ -108,8 +110,20 @@ class EditableTable extends React.Component {
           if (!d.key) {
             d.key = d.dataIndex || depth + "-" + i + "-" + treeIndex;
           }
-          columnList.push(d);
-          return true;
+
+          //控制编辑器可见权限
+          let visible = true;
+          let options = nextState.columnOptions[d.key] || {};
+          if (options.visible === false) {
+            visible = false;
+          }
+          //
+
+          if (visible === true) {
+            columnList.push(d);
+            return true;
+          }
+          return false;
         }
       );
       //
@@ -323,7 +337,7 @@ class EditableTable extends React.Component {
   validatorAsync = [];
 
   validateRow = row => {
-    let { columnList: columns } = this.state;
+    let { columnList: columns, columnOptions } = this.state;
 
     let bl = true;
 
@@ -353,6 +367,24 @@ class EditableTable extends React.Component {
       } else {
         enabledValidate = hasValidator && hasEditor;
       }
+
+      //根据编辑器配置进行前置必填验证
+      let options = columnOptions[ck] || {};
+      if (options.required === true) {
+        let rv = row[ck];
+        if (rv === undefined || rv === null || rv === "") {
+          validation[ck] = {
+            valid: false,
+            msg: this.props.intl["editorRequiredError"]
+          };
+
+          this.setRowAttr(row, {
+            validation
+          });
+          return false;
+        }
+      }
+      //
 
       if (enabledValidate) {
         var v = c.validator(row[ck], row) || { valid: true, message: "" };
@@ -720,7 +752,7 @@ class EditableTable extends React.Component {
   };
 
   formatColumns = () => {
-    let { columns, editKeys, isEditAll, isEditing } = this.state;
+    let { columns, editKeys, isEditAll, isEditing, columnOptions } = this.state;
 
     let rowKey = this.props.rowKey;
     let columnArr = cloneDeep(columns);
@@ -740,6 +772,13 @@ class EditableTable extends React.Component {
 
     cols.forEach(d => {
       let hasEditor = typeof d.editor === "function";
+
+      //控制编辑器权限
+      let options = columnOptions[d.key] || {};
+      if (options.disabled === true) {
+        hasEditor = false;
+      }
+      //
 
       let renderFn = d.render;
 
@@ -2422,6 +2461,7 @@ EditableTable.defaultProps = {
   showValidateMessage: true,
   intl: {
     editorInputError: "输入不正确",
+    editorRequiredError: "请输入必填项",
     validateError: "信息录入不正确，请检查",
     noEditTypeError:
       "未检测到编辑状态,如果使用了api.xxx进行编辑，请使用completeEdit、onComplete替代...",
@@ -2568,7 +2608,10 @@ EditableTable.propTypes = {
   onValidate: PropTypes.func,
 
   /** actions注册 */
-  actions: PropTypes.object
+  actions: PropTypes.object,
+
+  /** 编辑器属性控制 {[columnKey]:{visible:boolean,disabled:boolean,required:boolean}} */
+  columnOptions: PropTypes.object
 };
 
 export default EditableTable;

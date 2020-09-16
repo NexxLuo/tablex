@@ -150,7 +150,9 @@ Editable.propTypes = {
   /** 验证事件 */
   onValidate: PropTypes.func,
   /** actions注册 */
-  actions: PropTypes.object
+  actions: PropTypes.object,
+  /** 编辑器属性控制 {[columnKey]:{visible:boolean,disabled:boolean,required:boolean}} */
+  columnOptions: PropTypes.object
 };
 
 export default Editable;

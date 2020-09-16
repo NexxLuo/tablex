@@ -139,13 +139,10 @@ class Demo extends React.Component {
 
     this.refs.tb.api.editAll();
 
+    this.setState({ isEdit: true, data: this.state.data.slice() });
 
-    this.setState({isEdit:true,data:this.state.data.slice()})
-
-    
     console.log("getData 1:", r1);
     console.log("getData 2:", r2);
-
   }
 
   deleteData() {
@@ -170,7 +167,6 @@ class Demo extends React.Component {
   }
 
   getData() {
-   
     let r1 = this.refs.tb.api.getAllData();
     let r2 = this.refs.tb.api.getDataState();
 
@@ -178,16 +174,14 @@ class Demo extends React.Component {
     console.log("getData 2:", r2);
   }
 
-  filterData(){
-    let r1 = this.refs.tb.api.filterData((d,i)=>{
+  filterData() {
+    let r1 = this.refs.tb.api.filterData((d, i) => {
+      return d["column-2"] % 2 === 0;
 
-      return d["column-2"]%2===0;
-
-      console.log("d:",d)
-
+      console.log("d:", d);
     });
 
-  //  this.setState({data:this.state.data.slice()})
+    //  this.setState({data:this.state.data.slice()})
   }
 
   render() {
@@ -199,6 +193,10 @@ class Demo extends React.Component {
           <Table
             rowKey="id"
             ref="tb"
+            columnOptions={{
+              "column-1": { visible: true },
+              "column-2": { required: true }
+            }}
             editable={true}
             edittingToolsShowType={3}
             columns={columns}
