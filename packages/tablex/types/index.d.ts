@@ -305,6 +305,7 @@ export interface TableProps<T> {
       required?: boolean;
     };
   };
+  singleRowEdit?: boolean;
 }
 
 export default class Table<T> extends React.Component<TableProps<T>, any> {}

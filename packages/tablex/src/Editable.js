@@ -907,9 +907,17 @@ class EditableTable extends React.Component {
     this.reset();
   };
 
-  editRows = keys => {
+  editRows = (keys, callback) => {
     this.editType = "edit";
-    this.setState({ isEditAll: false, editKeys: keys, isEditing: true });
+
+    if (typeof this.props.onEditRowChange === "function") {
+      this.props.onEditRowChange();
+    }
+    this.setState({ isEditAll: false, editKeys: keys, isEditing: true }, () => {
+      if (typeof callback === "function") {
+        callback();
+      }
+    });
   };
 
   getChangedRows = () => {
@@ -1141,8 +1149,49 @@ class EditableTable extends React.Component {
     return nextEditor;
   };
 
+  getNextRow = (keyCode, rowKey) => {
+    let key = this.props.rowKey;
+
+    let dataList = this.getDataList();
+
+    let rows = [].concat(dataList);
+    let nextRow = null;
+
+    if (keyCode === 38) {
+      //top
+      let currIndex = rows.findIndex(d => d[key] === rowKey);
+      nextRow = rows[currIndex - 1];
+    }
+
+    if (keyCode === 40) {
+      //bottom
+      let currIndex = rows.findIndex(d => d[key] === rowKey);
+      nextRow = rows[currIndex + 1];
+    }
+
+    return nextRow;
+  };
+
+  focusNextEditor = (keyCode, rowKey, columnKey) => {
+    let nextRow = this.getNextRow(keyCode, rowKey, columnKey);
+    if (nextRow) {
+      let nextRowKey = nextRow[this.state.rowKey];
+      this.editRows([nextRowKey], () => {
+        let nextEditor = this.getNextEditor(keyCode, rowKey, columnKey);
+        this.focusInput(nextEditor);
+      });
+    } else {
+      let nextEditor = this.getNextEditor(keyCode, rowKey, columnKey);
+      this.focusInput(nextEditor);
+    }
+  };
   onKeyDown = (e, rowKey, columnKey) => {
     if (this.props.keyboardNavigation !== true) {
+      return;
+    }
+
+    if (this.props.singleRowEdit === true) {
+      this.focusNextEditor(e.keyCode, rowKey, columnKey);
       return;
     }
 
@@ -1622,6 +1671,10 @@ class EditableTable extends React.Component {
       insertedData.push(row);
     }
 
+    if (this.props.singleRowEdit === true) {
+      keys = [keys[0]];
+    }
+
     let newData = distinctData(data.slice().concat(insertedData), rowKey);
 
     this.changedRows = [];
@@ -1640,12 +1693,12 @@ class EditableTable extends React.Component {
       },
       () => {
         this.scrollToRow(keys[0], "start");
+
+        if (!quiet && typeof this.props.onAdd === "function") {
+          this.props.onAdd(insertedData, newData, "add");
+        }
       }
     );
-
-    if (!quiet && typeof this.props.onAdd === "function") {
-      this.props.onAdd(insertedData, newData, "add");
-    }
   };
 
   editToolsWrapper = (el, o) => {
@@ -1696,7 +1749,7 @@ class EditableTable extends React.Component {
     let deleteIcon = config.deleteIcon || "";
     deleteIcon = deleteIcon ? <Icon type={deleteIcon} /> : null;
 
-    if (isEditing) {
+    if (this.props.singleRowEdit !== true && isEditing) {
       buttons.push(
         <Button
           key={"_btnOk"}
@@ -1769,7 +1822,8 @@ class EditableTable extends React.Component {
                 {addIcon}
                 {addText}
               </Button>,
-              d
+              d,
+              addText
             )
           );
         }
@@ -1787,12 +1841,13 @@ class EditableTable extends React.Component {
                   <Icon type="down" />
                 </Button>
               </Dropdown>,
-              d
+              d,
+              addText
             )
           );
         }
 
-        if (!isEditing && d === "edit") {
+        if (this.props.singleRowEdit !== true && !isEditing && d === "edit") {
           buttons.push(
             wrapper(
               <Button
@@ -1805,7 +1860,8 @@ class EditableTable extends React.Component {
                 {editIcon}
                 {editText}
               </Button>,
-              d
+              d,
+              editText
             )
           );
         }
@@ -1845,7 +1901,8 @@ class EditableTable extends React.Component {
                   {deleteText}
                 </Button>
               </Popconfirm>,
-              d
+              d,
+              deleteText
             )
           );
         }
@@ -1882,7 +1939,8 @@ class EditableTable extends React.Component {
                 {toolIcon}
                 {d.text}
               </Button>,
-              d
+              d,
+              d.text
             )
           );
         }
@@ -1971,6 +2029,26 @@ class EditableTable extends React.Component {
     }
 
     return arr.join(" ");
+  };
+
+  onRow = (rowData, rowIndex, extra) => {
+    let fn = this.props.onRow;
+    let rowKey = this.state.rowKey;
+
+    let o = {};
+    if (typeof fn === "function") {
+      o = fn(rowData, rowIndex, extra) || {};
+    }
+
+    return {
+      ...o,
+      onClick: e => {
+        this.editRows([rowData[rowKey]]);
+        if (typeof o.onClick === "function") {
+          o.onClick(e);
+        }
+      }
+    };
   };
 
   createToolBar = pos => {
@@ -2403,6 +2481,10 @@ class EditableTable extends React.Component {
       actions: this.api
     };
 
+    if (props.singleRowEdit === true) {
+      newProps.onRow = this.onRow;
+    }
+
     if (props.readOnly === true) {
       newProps.selectMode = "none";
     }
@@ -2459,6 +2541,7 @@ EditableTable.defaultProps = {
   keyboardNavigation: true,
   editorClickBubble: false,
   showValidateMessage: true,
+  singleRowEdit: false,
   intl: {
     editorInputError: "输入不正确",
     editorRequiredError: "请输入必填项",
@@ -2611,7 +2694,10 @@ EditableTable.propTypes = {
   actions: PropTypes.object,
 
   /** 编辑器属性控制 {[columnKey]:{visible:boolean,disabled:boolean,required:boolean}} */
-  columnOptions: PropTypes.object
+  columnOptions: PropTypes.object,
+  /** 是否单行编辑模式,单行编辑模式时，点击行即可编辑 */
+  singleRowEdit: PropTypes.bool,
+  onEditRowChange: PropTypes.func
 };
 
 export default EditableTable;

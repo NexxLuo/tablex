@@ -152,7 +152,9 @@ Editable.propTypes = {
   /** actions注册 */
   actions: PropTypes.object,
   /** 编辑器属性控制 {[columnKey]:{visible:boolean,disabled:boolean,required:boolean}} */
-  columnOptions: PropTypes.object
+  columnOptions: PropTypes.object,
+  /** 是否单行编辑模式,单行编辑模式时，点击行即可编辑 */
+  singleRowEdit: PropTypes.bool
 };
 
 export default Editable;
