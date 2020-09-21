@@ -717,7 +717,7 @@ class EditableTable extends React.Component {
           onClick={this.onClick}
           rowKey={rowKey}
           columnKey={columnDataIndex}
-          onKeyDown={this.onKeyDown}
+          onKeyUp={this.onKeyUp}
           ref={ins => {
             this.setEditorIns(row, column, ins);
           }}
@@ -1185,7 +1185,7 @@ class EditableTable extends React.Component {
       this.focusInput(nextEditor);
     }
   };
-  onKeyDown = (e, rowKey, columnKey) => {
+  onKeyUp = (e, rowKey, columnKey) => {
     if (this.props.keyboardNavigation !== true) {
       return;
     }

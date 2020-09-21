@@ -21,10 +21,10 @@ class Editor extends React.Component {
     }
   };
 
-  onKeyDown = e => {
-    let { onKeyDown, rowKey, columnKey } = this.props;
-    if (typeof onKeyDown === "function") {
-      onKeyDown(e, rowKey, columnKey);
+  onKeyUp = e => {
+    let { onKeyUp, rowKey, columnKey } = this.props;
+    if (typeof onKeyUp === "function") {
+      onKeyUp(e, rowKey, columnKey);
     }
   };
 
@@ -52,7 +52,7 @@ class Editor extends React.Component {
       <span
         className={cls.join(" ")}
         onClick={this.onClick}
-        onKeyDown={this.onKeyDown}
+        onKeyUp={this.onKeyUp}
         onFocus={this.onFocus}
         onBlur={this.onBlur}
         ref={this.elementRef}
