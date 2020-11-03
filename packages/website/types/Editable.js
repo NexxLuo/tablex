@@ -65,6 +65,8 @@ Editable.propTypes = {
 
   /** 工具栏，工具按钮 ['edit', 'add','delete',{icon:"",text:"",props:{},handler:Function},Function] addSingle:单行新增 */
   editTools: PropTypes.array,
+  /** 额外的工具栏按钮渲染 */
+  extraTools: PropTypes.func,
   /** 工具栏，工具按钮属性配置{ wrapper:function,props:{},position: "bottom", itemStyle: { marginRight: "5px" }, editText: "", editIcon: "", addText: "", addIcon: "", deleteText: "", deleteIcon: "", okText: "", okIcon: "", cancelText: "", cancelIcon: "" } */
   editToolsConfig: PropTypes.object,
   /** 工具栏，控制编辑状态时显示哪些按钮

@@ -244,6 +244,10 @@ class Demo extends React.Component {
                 return text;
               }
             }}
+            extraTools={(a)=>{
+              return <Button onClick={()=>{console.log("a:",a)}}>extraTools</Button>
+            }}
+            editToolsConfig={{position:"top"}}
             editTools={[
               "edit",
               "add",

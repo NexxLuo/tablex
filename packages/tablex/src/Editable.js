@@ -2052,10 +2052,16 @@ class EditableTable extends React.Component {
   };
 
   createToolBar = pos => {
-    let { editable, readOnly, toolBarStyle } = this.props;
+    let { editable, readOnly, toolBarStyle, extraTools } = this.props;
     let styles = {};
     if (pos === "top") {
       styles.margin = "0 0 5px 0";
+    }
+
+    let extras = null;
+
+    if (typeof extraTools === "function") {
+      extras = extraTools(this);
     }
 
     styles = Object.assign(styles, toolBarStyle);
@@ -2071,14 +2077,39 @@ class EditableTable extends React.Component {
             }}
           >
             {tools}
+            {extras}
           </div>
         );
       } else {
+        if (extras === null) {
+          return null;
+        } else {
+          return (
+            <div
+              style={{
+                ...styles
+              }}
+            >
+              {extras}
+            </div>
+          );
+        }
+      }
+    } else {
+      if (extras === null) {
         return null;
+      } else {
+        return (
+          <div
+            style={{
+              ...styles
+            }}
+          >
+            {extras}
+          </div>
+        );
       }
     }
-
-    return null;
   };
 
   getDataRows = () => {
@@ -2481,7 +2512,7 @@ class EditableTable extends React.Component {
       actions: this.api
     };
 
-    if (props.singleRowEdit === true) {
+    if (props.singleRowEdit === true && props.editable && !props.readOnly) {
       newProps.onRow = this.onRow;
     }
 
@@ -2607,6 +2638,8 @@ EditableTable.propTypes = {
   editTools: PropTypes.array,
   /** 工具栏，工具按钮属性配置{wrapper:function,props:{}, position: "bottom", itemStyle: {}, editText: "", editIcon: "", addText: "", addIcon: "", deleteText: "", deleteIcon: "", okText: "", okIcon: "", cancelText: "", cancelIcon: "" } */
   editToolsConfig: PropTypes.object,
+  /** 额外的工具栏按钮渲染 */
+  extraTools: PropTypes.func,
   /** 工具栏，控制编辑状态时显示哪些按钮
    *  0:不显示任何按钮
       1:只显示内置的编辑按钮

@@ -263,6 +263,7 @@ export interface TableProps<T> {
   readOnly?: boolean;
   editTools?: EditTools;
   editToolsConfig?: EditToolsConfig;
+  extraTools?: (ins: any) => React.ReactNode;
   edittingToolsShowType: 0 | 1 | 2 | 3;
   intl?: any;
   isAppend?: boolean;
