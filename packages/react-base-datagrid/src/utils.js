@@ -52,8 +52,7 @@ export function flatten(arr, removeChildren = false) {
   return { list, leafs, roots };
 }
 
-export function unflatten(flatData = [], idField, pidField) {
-  let rootKey = "";
+export function unflatten(flatData = [], idField, pidField, rootKey = "") {
   function getKey(node) {
     return node[idField] || "";
   }
