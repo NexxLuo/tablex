@@ -892,12 +892,22 @@ export function getSelectionConfigFromProps(props) {
       if (rowSelection.checkOnSelect === true) {
         selectionProps.checkedKeys = rowSelection.selectedRowKeys;
       }
+    } else if ("selectedRowKeys" in props) {
+      selectionProps.selectedRowKeys = props.selectedRowKeys;
+      if (rowSelection.checkOnSelect === true) {
+        selectionProps.checkedKeys = props.selectedRowKeys;
+      }
     }
 
     if ("checkedKeys" in rowSelection) {
       selectionProps.checkedKeys = rowSelection.checkedKeys;
       if (rowSelection.selectOnCheck === true) {
         selectionProps.selectedRowKeys = rowSelection.checkedKeys;
+      }
+    } else if ("selectedRowKeys" in props) {
+      selectionProps.checkedKeys = props.selectedRowKeys;
+      if (rowSelection.selectOnCheck === true) {
+        selectionProps.selectedRowKeys = props.selectedRowKeys;
       }
     }
 

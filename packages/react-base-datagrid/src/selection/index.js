@@ -249,16 +249,16 @@ class SelectionGrid extends Component {
     let rfn = this.getRowSelection("onSelect");
     if (typeof rfn === "function") {
       rfn(rowData, true, selectedRows, { halfKeys });
-    } else {
-      this.call_props_onSelect({
-        rowData,
-        rowIndex,
-        rowKey,
-        selectedRowKeys,
-        selectedRows,
-        halfKeys
-      });
     }
+
+    this.call_props_onSelect({
+      rowData,
+      rowIndex,
+      rowKey,
+      selectedRowKeys,
+      selectedRows,
+      halfKeys
+    });
   };
 
   call_onUnSelect = ({
@@ -272,16 +272,16 @@ class SelectionGrid extends Component {
     let rfn = this.getRowSelection("onUnSelect");
     if (typeof rfn === "function") {
       rfn(rowData, false, selectedRows, { halfKeys });
-    } else {
-      this.call_props_onUnSelect({
-        rowData,
-        rowIndex,
-        rowKey,
-        selectedRowKeys,
-        selectedRows,
-        halfKeys
-      });
     }
+
+    this.call_props_onUnSelect({
+      rowData,
+      rowIndex,
+      rowKey,
+      selectedRowKeys,
+      selectedRows,
+      halfKeys
+    });
   };
 
   call_onSelectChange = ({
@@ -296,7 +296,9 @@ class SelectionGrid extends Component {
     let rfn = this.getRowSelection("onSelectChange");
     if (typeof rfn === "function") {
       rfn(selectedRowKeys, selectedRows, { halfKeys });
-    } else if (callPropsFn === true) {
+    }
+
+    if (callPropsFn) {
       this.call_props_onSelectChange({
         rowData,
         rowIndex,
@@ -312,24 +314,23 @@ class SelectionGrid extends Component {
     let rfn = this.getRowSelection("onSelectAll");
     if (typeof rfn === "function") {
       rfn(true, selectedRows, changedRows);
-    } else {
-      this.call_props_onSelectAll({
-        selectedRowKeys,
-        selectedRows
-      });
     }
+    this.call_props_onSelectAll({
+      selectedRowKeys,
+      selectedRows
+    });
   };
 
   call_onUnSelectAll = ({ selectedRowKeys, selectedRows, changedRows }) => {
     let rfn = this.getRowSelection("onSelectAll");
     if (typeof rfn === "function") {
       rfn(false, selectedRows, changedRows);
-    } else {
-      this.call_props_onUnSelectAll({
-        selectedRowKeys,
-        selectedRows
-      });
     }
+
+    this.call_props_onUnSelectAll({
+      selectedRowKeys,
+      selectedRows
+    });
   };
 
   call_onBeforeSelect = params => {
@@ -386,7 +387,9 @@ class SelectionGrid extends Component {
       rfn(keys, rows), { halfKeys };
     } else if (typeof fn === "function") {
       fn(keys, rows, { halfKeys });
-    } else if (callPropsFn === true) {
+    }
+
+    if (callPropsFn === true) {
       this.call_props_onSelectChange({
         rowData,
         rowIndex,

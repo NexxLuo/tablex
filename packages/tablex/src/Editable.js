@@ -1590,6 +1590,7 @@ class EditableTable extends React.Component {
       let nextState = {
         deleteLoading: false,
         selectedRowKeys: [],
+        selectedRows: [],
         editKeys: nextEditKeys,
         data: newData,
         flatData: newFlatData
@@ -2330,10 +2331,15 @@ class EditableTable extends React.Component {
     return modifiedData;
   };
 
-  filterData = (fn, silent = false) => {
+  filterData = (fn, silent = false, source) => {
     let { rowKey, rawData: treeData } = this.state;
+    let dataSource = treeData;
 
-    let { list: flatData, treeProps } = treeToList(treeData, rowKey);
+    if (source instanceof Array) {
+      dataSource = source;
+    }
+
+    let { list: flatData, treeProps } = treeToList(dataSource, rowKey);
 
     let matches = [];
     let matchesMap = {};
