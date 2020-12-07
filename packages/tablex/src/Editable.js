@@ -54,6 +54,7 @@ class EditableTable extends React.Component {
       selectedRows: [],
       expandedRowKeys: [],
       focusedRowKeys: [],
+      focusedRowIndex: -1,
       columnOptions: {}
     };
   }
@@ -186,7 +187,7 @@ class EditableTable extends React.Component {
     }
 
     if (index < 0) {
-      this.setState({ focusedRowKeys: [] });
+      this.setState({ focusedRowKeys: [], focusedRowIndex: -1 });
     }
   }
 
@@ -2395,8 +2396,17 @@ class EditableTable extends React.Component {
     return newTreeData;
   };
 
-  findData = (fn, { startIndex = 0, startRowKey = "", focused = true }) => {
-    let { flatData: data, rowKey } = this.state;
+  findData = (
+    fn,
+    { startIndex = 0, startRowKey = "", focused = true, source }
+  ) => {
+    let { flatData, rowKey, focusedRowIndex } = this.state;
+
+    let data = flatData;
+
+    if (source instanceof Array) {
+      data = source;
+    }
 
     let found = null;
     let start = 0;
@@ -2407,7 +2417,11 @@ class EditableTable extends React.Component {
         start = i + 1;
       }
     } else {
-      start = startIndex;
+      if (startIndex > -1) {
+        start = startIndex;
+      } else if (focusedRowIndex > -1) {
+        start = focusedRowIndex + 1;
+      }
     }
 
     for (let i = start, len = data.length; i < len; i++) {
@@ -2422,9 +2436,12 @@ class EditableTable extends React.Component {
     }
 
     if (focused === true && found && found.index > -1) {
-      this.setState({ focusedRowKeys: [found.row[rowKey]] }, () => {
-        this.scrollToItem(found.index, "center");
-      });
+      this.setState(
+        { focusedRowKeys: [found.row[rowKey]], focusedRowIndex: found.index },
+        () => {
+          this.scrollToItem(found.index, "center");
+        }
+      );
     }
 
     return found;
