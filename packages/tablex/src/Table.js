@@ -1039,11 +1039,14 @@ class Table extends React.Component {
 
   getSummary = () => {
     let { summary = {} } = this.props;
-    let { data } = this.state;
 
-    let flatData = treeToList(data).list;
-
-    let { data: summaryTypes = [], title = {}, render, style = {} } = summary;
+    let {
+      data: summaryTypes = [],
+      title = {},
+      render,
+      style = {},
+      custom = false
+    } = summary;
 
     //title所在列
     let titleColumn = title.column || "";
@@ -1054,47 +1057,83 @@ class Table extends React.Component {
 
     let arr = [];
 
-    summaryTypes.forEach((s, i) => {
-      let r = {
-        key: "summary_" + i
-      };
+    //如果为完全自定义，则不执行自身逻辑
+    if (custom) {
+      summaryTypes.forEach((s, i) => {
+        let r = {
+          key: "summary_" + i
+        };
 
-      for (const k in s) {
-        let dataIndex = k;
-        let type = s[k];
+        for (const k in s) {
+          let dataIndex = k;
+          let type = s[k];
+          let summaryValue = "";
+          let v = summaryValue;
+          if (typeof render === "function") {
+            v = render(summaryValue, k, type, i);
+            if (typeof v === "undefined" || v === null) {
+              v = "";
+            }
+          }
+          r[dataIndex] = v;
+        }
 
-        let fn = summaryMath[type];
-
-        let summaryValue = "";
-
-        if (typeof fn === "function") {
-          summaryValue = fn(flatData, dataIndex);
-          if (typeof summaryValue === "undefined") {
-            summaryValue = "";
+        if (titleColumn) {
+          r[titleColumn] = titleText;
+          if (typeof titleRender === "function") {
+            r[titleColumn] = titleRender(s, i);
           }
         }
 
-        let v = summaryValue;
+        arr.push(r);
+      });
+    } else {
+      let { data } = this.state;
 
-        if (typeof render === "function") {
-          v = render(summaryValue, k, type, i);
-          if (typeof v === "undefined" || v === null) {
-            summaryValue = "";
+      let flatData = treeToList(data).list;
+
+      summaryTypes.forEach((s, i) => {
+        let r = {
+          key: "summary_" + i
+        };
+
+        for (const k in s) {
+          let dataIndex = k;
+          let type = s[k];
+
+          let fn = summaryMath[type];
+
+          let summaryValue = "";
+
+          if (typeof fn === "function") {
+            summaryValue = fn(flatData, dataIndex);
+            if (typeof summaryValue === "undefined") {
+              summaryValue = "";
+            }
+          }
+
+          let v = summaryValue;
+
+          if (typeof render === "function") {
+            v = render(summaryValue, k, type, i);
+            if (typeof v === "undefined" || v === null) {
+              v = "";
+            }
+          }
+
+          r[dataIndex] = v;
+        }
+
+        if (titleColumn) {
+          r[titleColumn] = titleText;
+          if (typeof titleRender === "function") {
+            r[titleColumn] = titleRender(s, i);
           }
         }
 
-        r[dataIndex] = v;
-      }
-
-      if (titleColumn) {
-        r[titleColumn] = titleText;
-        if (typeof titleRender === "function") {
-          r[titleColumn] = titleRender(s, i);
-        }
-      }
-
-      arr.push(r);
-    });
+        arr.push(r);
+      });
+    }
 
     let frozenRender = {
       rowHeight: 40,
