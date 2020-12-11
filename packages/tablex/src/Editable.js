@@ -912,7 +912,7 @@ class EditableTable extends React.Component {
     this.editType = "edit";
 
     if (typeof this.props.onEditRowChange === "function") {
-      this.props.onEditRowChange();
+      this.props.onEditRowChange(keys);
     }
     this.setState({ isEditAll: false, editKeys: keys, isEditing: true }, () => {
       if (typeof callback === "function") {
