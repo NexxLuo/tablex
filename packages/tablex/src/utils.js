@@ -419,6 +419,7 @@ export function deleteData(data, keys, rowKey) {
 
   let deletedRows = [];
   let deletedRowKeys = [];
+  let deletedRowKeysMap = {};
 
   let keysMap = {};
 
@@ -426,21 +427,46 @@ export function deleteData(data, keys, rowKey) {
     keysMap[keys[i]] = true;
   }
 
+  let isTree = false;
   for (let i = 0; i < flatData.length; i++) {
     let d = Object.assign({}, flatData[i]);
     if (d) {
+      if (d.hasOwnProperty("children")) {
+        isTree = true;
+      }
       let k = d[rowKey];
       if (k in keysMap) {
         deletedRowKeys.push(k);
         deletedRows.push(d);
+        deletedRowKeysMap[k] = true;
         delete d.children;
       } else {
-        //平级数据移除children,避免无法删除最后一个子级
-        delete d.children;
         newFlatData.push(d);
       }
     }
   }
+
+  //树行数据，如果children被全部删除则删除children属性
+  if (isTree) {
+    for (let i = 0; i < newFlatData.length; i++) {
+      let d = newFlatData[i];
+      let childrens = d.children;
+      if (childrens instanceof Array) {
+        let bl = childrens.length > 0;
+        for (let j = 0; j < childrens.length; j++) {
+          let ck = childrens[j][rowKey];
+          if (!deletedRowKeysMap[ck]) {
+            bl = false;
+            break;
+          }
+        }
+        if (bl) {
+          delete d.children;
+        }
+      }
+    }
+  }
+  //
 
   //此处改变了数据引用
   let newData = getTreeFromFlatData({
