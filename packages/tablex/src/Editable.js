@@ -1416,7 +1416,8 @@ class EditableTable extends React.Component {
 
     let bl = true;
 
-    if (editType && editType !== "delete") {
+    //有可能编辑的同时又进行了删除操作,故此处editType为删除时依然进行验证
+    if (editType) {
       if (this.props.alwaysValidate === true) {
         bl = await this.validateAll();
       } else {
@@ -1574,7 +1575,9 @@ class EditableTable extends React.Component {
         selectedRowKeys,
         rowKey
       );
-      this.deletedData = deletedRows;
+
+      let deletedData = this.deletedData;
+      this.deletedData = deletedData.slice().concat(deletedRows);
       this.nextData = newData;
 
       let { editKeys: nextEditKeys } = this.deleteRowsState(deletedRowKeys);
