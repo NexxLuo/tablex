@@ -1839,6 +1839,7 @@ class EditableTable extends React.Component {
               <Dropdown key={d + "_1"} overlay={menu} {...buttonProps[d]}>
                 <Button
                   style={styles}
+                  {...buttonProps[d]}
                   onClick={() => this.addRange()}
                   className="table-tools-item table-tools-add"
                 >
