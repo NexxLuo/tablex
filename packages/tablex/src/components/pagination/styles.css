@@ -4,6 +4,8 @@
   align-items: center;
   flex: auto;
   font-size: 0;
+  overflow: hidden;
+  padding-left: 1px;
 }
 
 .tablex__pager__number {
@@ -18,6 +20,8 @@
 
 .tablex__pager__count {
   font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tablex__pager .tablex-pagination-simple {

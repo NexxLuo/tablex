@@ -105,7 +105,11 @@ class Pager extends React.Component {
       .replace("{1}", end)
       .replace("{2}", totalCount);
 
-    let totalInfo = <div className="tablex__pager__count">{intlStr}</div>;
+    let totalInfo = (
+      <div className="tablex__pager__count" title={intlStr}>
+        {intlStr}
+      </div>
+    );
 
     return (
       <div className="tablex__pager">
