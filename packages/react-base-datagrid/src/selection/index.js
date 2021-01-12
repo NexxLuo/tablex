@@ -73,7 +73,8 @@ class SelectionGrid extends Component {
       treeProps,
       prependColumns = [],
       selectedRowKeys,
-      selectOnRowClick
+      selectOnRowClick,
+      clearPrevSelections
     } = nextProps;
 
     let nextState = {};
@@ -105,9 +106,16 @@ class SelectionGrid extends Component {
         nextState.checkStrictly = selectionProps.checkStrictly;
       }
 
+      let _filterSelectionData = [];
+      if (clearPrevSelections === true) {
+        _filterSelectionData = data;
+      } else {
+        _filterSelectionData = data.slice().concat(prevState.selectedRows);
+      }
+
       if ("selectedRowKeys" in selectionProps) {
         let { data: selectedData, keys } = filterDataByKeys(
-          data.slice().concat(prevState.selectedRows),
+          _filterSelectionData,
           rowKey,
           selectionProps.selectedRowKeys
         );
@@ -121,7 +129,7 @@ class SelectionGrid extends Component {
 
       if ("checkedKeys" in selectionProps) {
         let { data: checkedData, keys } = filterDataByKeys(
-          data.slice().concat(prevState.checkedRows),
+          _filterSelectionData,
           rowKey,
           selectionProps.checkedKeys
         );
@@ -1980,7 +1988,8 @@ SelectionGrid.defaultProps = {
   checkStrictly: true,
   rowSelectClassName: "tablex__row--selected",
   selectionColumn: true,
-  selectOnRowClick: true
+  selectOnRowClick: true,
+  clearPrevSelections: false
 };
 
 SelectionGrid.propTypes = {
@@ -2059,6 +2068,9 @@ SelectionGrid.propTypes = {
 
   /** 多选模式是否级联控制checkbox选中状态 */
   checkStrictly: PropTypes.bool,
+
+  /** 外部导致表格刷新时是否清除上一次的选中数据，比如：翻页时是否保留原选中数据 */
+  clearPrevSelections: PropTypes.bool,
 
   /** actions注册 */
   actions: PropTypes.object
