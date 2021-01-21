@@ -56,6 +56,9 @@ const Column = ({
 
   let clsArr = ["tablex-table-head-cell"];
   className && clsArr.push(className);
+  if (headerCellProps && headerCellProps.className) {
+    clsArr.push(headerCellProps.className);
+  }
 
   let attr = {};
 
@@ -65,9 +68,9 @@ const Column = ({
 
   return (
     <div
-      className={clsArr.join(" ")}
       {...attr}
       {...headerCellProps}
+      className={clsArr.join(" ")}
       style={{ ...style, ...cellStyles }}
     >
       <div className="tablex-table-head-cell-inner" style={alignStyles}>
@@ -107,6 +110,9 @@ const ColumnGroup = ({
 
   let clsArr = ["tablex-table-head-group-cell"];
   className && clsArr.push(className);
+  if (headerCellProps && headerCellProps.className) {
+    clsArr.push(headerCellProps.className);
+  }
 
   let attr = {};
 
