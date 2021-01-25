@@ -247,11 +247,13 @@ class Table extends React.Component {
   }
 
   componentDidMount() {
-    let { pagination } = this.state;
-    if (typeof pagination === "object" && pagination) {
-      let fn = this.state.pagination.onMount;
-      if (typeof fn === "function") {
+    let fn = this.props.onMount;
+    if (typeof fn === "function") {
+      let { pagination } = this.state;
+      if (typeof pagination === "object" && pagination) {
         fn(pagination.current, pagination.pageSize);
+      } else {
+        fn();
       }
     }
   }
