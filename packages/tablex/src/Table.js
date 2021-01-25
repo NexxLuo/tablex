@@ -101,10 +101,18 @@ class Table extends React.Component {
     let configs = {};
     let configedGroupedColumnKey = props.defaultGroupedColumnKey;
 
+    let sorted = [];
+
     if (props.tableId) {
       configs = getConfigs(props.tableId) || {};
       if ("groupedColumnKey" in configs) {
         configedGroupedColumnKey = configs.groupedColumnKey;
+      }
+
+      if (props.memorizeSortedColumns === true) {
+        if ("sortedColumns" in configs) {
+          sorted = configs.sortedColumns;
+        }
       }
     }
 
@@ -118,7 +126,7 @@ class Table extends React.Component {
       sortable: false,
       columnsConfig: configs.columnsConfig || null,
       groupedColumnKey: configedGroupedColumnKey || [],
-      sortedColumns: null,
+      sortedColumns: sorted,
       columnMenu: null
     };
   }
@@ -210,6 +218,16 @@ class Table extends React.Component {
         ...nextProps.pagination
       };
       newPagination.current = newPagination.current || 1;
+
+      //如果开启了pageSize记忆才使用记忆配置中的pageSize
+      if (nextProps.memorizePageSize === true) {
+        let savedConfigs = getConfigs(nextProps.tableId) || {};
+        if (typeof savedConfigs.pageSize === "number") {
+          newPagination.pageSize = savedConfigs.pageSize;
+        }
+      }
+      //
+
       newPagination.pageSize = newPagination.pageSize || 10;
 
       if (nextProps.pagination !== false && nextProps.pagination !== null) {
@@ -226,6 +244,16 @@ class Table extends React.Component {
     }
 
     return nextState;
+  }
+
+  componentDidMount() {
+    let { pagination } = this.state;
+    if (typeof pagination === "object" && pagination) {
+      let fn = this.state.pagination.onMount;
+      if (typeof fn === "function") {
+        fn(pagination.current, pagination.pageSize);
+      }
+    }
   }
 
   hasPagination() {
@@ -253,6 +281,32 @@ class Table extends React.Component {
     }
   };
 
+  onShowSizeChange = (pageIndex, pageSize) => {
+    let { pagination } = this.state;
+    let fn = this.state.pagination.onPageChange;
+    let fn_sizeChange = this.state.pagination.onShowSizeChange;
+
+    if (this.props.resetScrollOffset) {
+      this.scrollToFirst();
+    }
+
+    setConfigs(this.props.tableId, {
+      pageSize: pageSize
+    });
+
+    if (typeof fn_sizeChange === "function") {
+      fn_sizeChange(pageIndex, pageSize);
+    } else if (typeof fn === "function") {
+      fn(pageIndex, pageSize);
+    } else {
+      this.setState({
+        pagination: {
+          ...pagination,
+          pageSize
+        }
+      });
+    }
+  };
   onRefresh = () => {
     let fn = this.props.onRefresh;
     if (typeof fn === "function") {
@@ -360,6 +414,10 @@ class Table extends React.Component {
     } else {
       newSorted[dataIndex] = targetSort;
     }
+
+    setConfigs(this.props.tableId, {
+      sortedColumns: newSorted
+    });
 
     this.setState({ sortedColumns: newSorted }, () => {
       let fn = this.props.onSort;
@@ -755,7 +813,8 @@ class Table extends React.Component {
     this.setState(
       {
         columnsConfig: {},
-        groupedColumnKey: this.props.defaultGroupedColumnKey
+        groupedColumnKey: this.props.defaultGroupedColumnKey,
+        sortedColumns: []
       },
       this.resetScrollbarSize
     );
@@ -852,6 +911,7 @@ class Table extends React.Component {
           showRefresh={showRefresh}
           onRefresh={this.onRefresh}
           onPageChange={this.onPageChange}
+          onShowSizeChange={this.onShowSizeChange}
         />
       );
     } else {
@@ -1329,6 +1389,8 @@ Table.defaultProps = {
   contextMenuStyle: {},
   defaultGroupedColumnKey: [],
   multipleSort: true,
+  memorizeSortedColumns: false,
+  memorizePageSize: false,
   intl: {
     orderNumberTitle: "序号",
     dataLoading: "数据加载中，请稍候...",
@@ -1452,6 +1514,10 @@ Table.propTypes = {
   /** actions注册 */
   actions: PropTypes.object,
 
+  /** 是否记忆排序列 */
+  memorizeSortedColumns: PropTypes.bool,
+  /** 是否记忆pageSize */
+  memorizePageSize: PropTypes.bool,
   /** 表格全局id，通过此id记忆表格配置，由于采用localStorage存储配置，需保证id唯一 */
   tableId: function(props, propName, componentName) {
     let count = 0;

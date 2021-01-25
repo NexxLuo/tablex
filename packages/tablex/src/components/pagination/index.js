@@ -38,10 +38,6 @@ class Pager extends React.Component {
   onShowSizeChange = (pageIndex, pageSize) => {
     if (typeof this.props.onShowSizeChange === "function") {
       this.props.onShowSizeChange(pageIndex, pageSize);
-    } else {
-      if (typeof this.props.onPageChange === "function") {
-        this.props.onPageChange(pageIndex, pageSize);
-      }
     }
   };
 

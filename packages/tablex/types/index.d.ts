@@ -81,6 +81,7 @@ export interface PaginationProps {
   showSizeChanger?: boolean;
   pageSizeOptions?: string[];
   onShowSizeChange?: (current: number, size: number) => void;
+  onMount?: (current: number, size: number) => void;
   showQuickJumper?: boolean | { goButton?: React.ReactNode };
   showTotal?: (total: number, range: [number, number]) => React.ReactNode;
   size?: string;
@@ -213,6 +214,8 @@ export interface TableProps<T> {
   summary?: SummaryProps;
   emptyRenderer?: ({ headerHeight: number }) => React.ReactNode;
   loadingRender?: ({ headerHeight: number }) => React.ReactNode;
+  memorizeSortedColumns?: boolean;
+  memorizePageSize?: boolean;
 
   selectMode?: "multiple" | "single" | "none";
   checkStrictly?: boolean;

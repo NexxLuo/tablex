@@ -18,6 +18,8 @@ Other.defaultProps = {
     groupable: true
   },
   multipleSort: true,
+  memorizeSortedColumns: false,
+  memorizePageSize: false,
   intl: {
     editorInputError: "输入不正确",
     validateError: "信息录入不正确，请检查",
@@ -134,6 +136,11 @@ Other.propTypes = {
 
   /** 奇偶行颜色间隔 */
   striped: PropTypes.bool,
+
+  /** 是否记忆排序列 */
+  memorizeSortedColumns: PropTypes.bool,
+  /** 是否记忆pageSize */
+  memorizePageSize: PropTypes.bool,
 
   /** 表格全局id，通过此id记忆表格配置，由于采用localStorage存储配置，需保证id唯一 */
   tableId: function(props, propName, componentName) {
