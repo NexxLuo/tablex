@@ -602,7 +602,7 @@ const AutoSizerTable = forwardRef(function AutoSizeTable(props, ref) {
   return (
     <ReactResizeDetector handleWidth handleHeight>
       {({ width, height }) => {
-        if (!height) {
+        if (height === undefined || height === null) {
           if (props.autoHeight === true) {
           } else {
             return <div></div>;
