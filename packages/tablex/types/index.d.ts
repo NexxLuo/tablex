@@ -215,6 +215,7 @@ export interface TableProps<T> {
   loadingRender?: ({ headerHeight: number }) => React.ReactNode;
   memorizeSortedColumns?: boolean;
   memorizePageSize?: boolean;
+  onMount?: (pageIndex, pageSize) => void;
 
   selectMode?: "multiple" | "single" | "none";
   checkStrictly?: boolean;

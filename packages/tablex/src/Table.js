@@ -1520,6 +1520,9 @@ Table.propTypes = {
   memorizeSortedColumns: PropTypes.bool,
   /** 是否记忆pageSize */
   memorizePageSize: PropTypes.bool,
+  /** 表格加载完成时的回调，如果启用了分页会传递pageIndex、pageSize */
+  onMount: PropTypes.func,
+
   /** 表格全局id，通过此id记忆表格配置，由于采用localStorage存储配置，需保证id唯一 */
   tableId: function(props, propName, componentName) {
     let count = 0;
