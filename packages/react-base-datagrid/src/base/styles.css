@@ -193,6 +193,7 @@
 .tablex-container {
   display: flex;
   flex-direction: row;
+  overflow: hidden;
 }
 
 .tablex-container .tablex-main {
@@ -224,17 +225,22 @@
   box-shadow: -6px 0 6px -4px rgba(0, 0, 0, 0.15);
 }
 
-.tablex-container
+.tablex-container.tablex-bordered .tablex-main {
+  margin-right: -1px;
+}
+
+.tablex-container.tablex-bordered
   .tablex-frozen-right
   .tablex-table-head
   > .tablex-head-row
-  > .tablex-table-head-cell:last-child,
-.tablex-container
+  > .tablex-table-head-cell,
+.tablex-container.tablex-bordered
   .tablex-frozen-right
   .tablex-table
   .tablex-table-row
-  .tablex-table-row-cell:last-child {
+  .tablex-table-row-cell {
   border-right: none;
+  border-left: 1px solid #eeeeee;
 }
 
 .tablex-table-rows-frozen {
