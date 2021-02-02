@@ -246,6 +246,12 @@ class Table extends React.Component {
     return nextState;
   }
 
+  actions = {
+    getColumnConfigs: () => {
+      return this.state.columnsConfig;
+    }
+  };
+
   componentDidMount() {
     let fn = this.props.onMount;
     if (typeof fn === "function") {
@@ -254,6 +260,14 @@ class Table extends React.Component {
         fn(pagination.current, pagination.pageSize);
       } else {
         fn();
+      }
+    }
+
+    let o = this.props.actions;
+    if (o && typeof o === "object") {
+      let actions = this.actions;
+      for (const k in actions) {
+        o[k] = actions[k];
       }
     }
   }
