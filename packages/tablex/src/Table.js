@@ -249,6 +249,9 @@ class Table extends React.Component {
   actions = {
     getColumnConfigs: () => {
       return this.state.columnsConfig;
+    },
+    getColumns: (includeHidden = true) => {
+      return this.formatColumns(includeHidden);
     }
   };
 
@@ -603,8 +606,9 @@ class Table extends React.Component {
     return columnDropMenu && hasOptions;
   };
 
-  formatColumns = columns => {
+  formatColumns = (includeHidden = false) => {
     let {
+      columns,
       columnsConfig,
       sortedColumns,
       sortable,
@@ -627,10 +631,16 @@ class Table extends React.Component {
         maxDepth = depth;
       }
 
-      if ("hidden" in config) {
-        bl = !config.hidden;
+      if (includeHidden) {
+        if ("hidden" in config) {
+          d.hidden = config.hidden;
+        }
       } else {
-        bl = !d.hidden;
+        if ("hidden" in config) {
+          bl = !config.hidden;
+        } else {
+          bl = !d.hidden;
+        }
       }
 
       if (typeof config.order === "number") {
@@ -1274,7 +1284,7 @@ class Table extends React.Component {
 
     let hasDropMenu = this.hasDropMenu();
 
-    let columns = this.formatColumns(tableColumns);
+    let columns = this.formatColumns();
     let prependColumns = this.formatPrependColumns(tablePrependColumns);
     let settableColumns = tableColumns.filter(d => d.settable !== false);
 
