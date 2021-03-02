@@ -905,9 +905,11 @@ export function getSelectionConfigFromProps(props) {
         selectionProps.selectedRowKeys = rowSelection.checkedKeys;
       }
     } else if ("selectedRowKeys" in props) {
-      selectionProps.checkedKeys = props.selectedRowKeys;
-      if (rowSelection.selectOnCheck === true) {
-        selectionProps.selectedRowKeys = props.selectedRowKeys;
+      if (!selectionProps.hasOwnProperty("selectedRowKeys")) {
+        selectionProps.checkedKeys = props.selectedRowKeys;
+        if (rowSelection.selectOnCheck === true) {
+          selectionProps.selectedRowKeys = props.selectedRowKeys;
+        }
       }
     }
 
