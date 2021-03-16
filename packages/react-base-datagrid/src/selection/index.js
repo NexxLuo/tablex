@@ -113,7 +113,10 @@ class SelectionGrid extends Component {
         _filterSelectionData = data.slice().concat(prevState.selectedRows);
       }
 
-      if ("selectedRowKeys" in selectionProps) {
+      if (
+        "selectedRowKeys" in selectionProps &&
+        selectionProps.selectedRowKeys instanceof Array
+      ) {
         let { data: selectedData, keys } = filterDataByKeys(
           _filterSelectionData,
           rowKey,
