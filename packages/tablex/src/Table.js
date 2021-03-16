@@ -21,9 +21,32 @@ import orderBy from "lodash/orderBy";
 import cloneDeep from "lodash/cloneDeep";
 import maxBy from "lodash/maxBy";
 import minBy from "lodash/minBy";
-import sumBy from "lodash/sumBy";
 
 const DEFAULT_COLUMN_WIDTH = 100;
+
+function toNumber(v) {
+  let value = 0;
+  let temp = Number(v);
+  if (!isNaN(temp)) {
+    value = temp;
+  }
+  return value;
+}
+
+function sumBy(items) {
+  let value = 0;
+  let values = [];
+
+  if (items instanceof Array) {
+    values = items;
+  }
+
+  value = values.reduce((a, b) => {
+    return toNumber(a) + toNumber(b);
+  }, 0);
+
+  return value;
+}
 
 let summaryMath = {
   max: (items, key) => {
