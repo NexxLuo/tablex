@@ -21,6 +21,7 @@ import orderBy from "lodash/orderBy";
 import cloneDeep from "lodash/cloneDeep";
 import maxBy from "lodash/maxBy";
 import minBy from "lodash/minBy";
+import sumBy from "lodash/sumBy";
 
 const DEFAULT_COLUMN_WIDTH = 100;
 
@@ -33,26 +34,11 @@ function toNumber(v) {
   return value;
 }
 
-function sumBy(items) {
-  let value = 0;
-  let values = [];
-
-  if (items instanceof Array) {
-    values = items;
-  }
-
-  value = values.reduce((a, b) => {
-    return toNumber(a) + toNumber(b);
-  }, 0);
-
-  return value;
-}
-
 let summaryMath = {
   max: (items, key) => {
     let r =
       maxBy(items, function(o) {
-        return o[key];
+        return toNumber(o[key]);
       }) || {};
 
     return r[key];
@@ -60,14 +46,14 @@ let summaryMath = {
   min: (items, key) => {
     let r =
       minBy(items, function(o) {
-        return o[key];
+        return toNumber(o[key]);
       }) || {};
 
     return r[key];
   },
   average: (items, key) => {
     let sum = sumBy(items, function(o) {
-      return o[key];
+      return toNumber(o[key]);
     });
 
     if (sum === undefined) {
@@ -78,7 +64,7 @@ let summaryMath = {
   },
   avg: (items, key) => {
     let sum = sumBy(items, function(o) {
-      return o[key];
+      return toNumber(o[key]);
     });
 
     if (sum === undefined) {
@@ -89,7 +75,7 @@ let summaryMath = {
   },
   sum: (items, key) => {
     let r = sumBy(items, function(o) {
-      return o[key];
+      return toNumber(o[key]);
     });
 
     return r;
