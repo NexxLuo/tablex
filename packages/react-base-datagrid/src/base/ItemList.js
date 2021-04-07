@@ -1,6 +1,5 @@
 import React from "react";
 
-
 class ItemList extends React.Component {
   outterElement = null;
 
@@ -12,7 +11,7 @@ class ItemList extends React.Component {
     this.outterElement = ins;
   };
 
-  resetAfterIndex() { }
+  resetAfterIndex() {}
 
   scrollUpdateWasRequested = false;
   scrollTo = scrollOffset => {
@@ -22,8 +21,7 @@ class ItemList extends React.Component {
     }
   };
 
-  scrollToItem = (index, align = 'auto') => {
-
+  scrollToItem = (index, align = "auto") => {
     let el = this.outterElement;
 
     if (el) {
@@ -45,36 +43,32 @@ class ItemList extends React.Component {
 
       const maxOffset = itemOffset;
 
+      const minOffset = Math.max(0, itemOffset - size + itemSize);
 
-      const minOffset = Math.max(
-        0,
-        itemOffset - size + itemSize
-      );
-
-      if (align === 'smart') {
+      if (align === "smart") {
         if (
           scrollOffset >= minOffset - size &&
           scrollOffset <= maxOffset + size
         ) {
-          align = 'auto';
+          align = "auto";
         } else {
-          align = 'center';
+          align = "center";
         }
       }
 
       let toOffset = el.scrollTop;
 
       switch (align) {
-        case 'start':
+        case "start":
           toOffset = maxOffset;
           break;
-        case 'end':
+        case "end":
           toOffset = minOffset;
           break;
-        case 'center':
+        case "center":
           toOffset = Math.round(minOffset + (maxOffset - minOffset) / 2);
           break;
-        case 'auto':
+        case "auto":
         default:
           if (scrollOffset >= minOffset && scrollOffset <= maxOffset) {
             toOffset = scrollOffset;
@@ -85,14 +79,9 @@ class ItemList extends React.Component {
           }
       }
 
-
-      this.scrollTo(toOffset)
+      this.scrollTo(toOffset);
     }
-
-
-
-
-  }
+  };
 
   onScroll = e => {
     let { onScroll } = this.props;
@@ -146,7 +135,9 @@ class ItemList extends React.Component {
         onScroll={this.onScroll}
       >
         {innerElementType({
-          style: {},
+          style: {
+            height: "100%"
+          },
           children: itemsArr
         })}
       </div>
