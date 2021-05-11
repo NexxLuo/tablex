@@ -237,7 +237,11 @@ class Table extends React.Component {
       currRef = this.extraTopRef;
       styles.top = -1;
     } else {
-      styles.bottom = scrollbarX === 0 ? -1 : scrollbarX;
+      if (typeof scrollbarX === "number") {
+        styles.bottom = scrollbarX === 0 ? -1 : scrollbarX;
+      } else {
+        styles.bottom = 0;
+      }
       currRef = this.extraBottomRef;
     }
 

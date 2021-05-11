@@ -2041,19 +2041,34 @@ class EditableTable extends React.Component {
     let fn = this.props.onRow;
     let rowKey = this.state.rowKey;
 
+    let type = this.props.singleRowEditTrigger || "onDoubleClick";
+
     let o = {};
     if (typeof fn === "function") {
       o = fn(rowData, rowIndex, extra) || {};
     }
 
-    return {
-      ...o,
-      onClick: e => {
+    let resetProps = {};
+
+    if (type === "onClick") {
+      resetProps.onClick = e => {
         this.editRows([rowData[rowKey]]);
         if (typeof o.onClick === "function") {
           o.onClick(e);
         }
-      }
+      };
+    } else {
+      resetProps.onDoubleClick = e => {
+        this.editRows([rowData[rowKey]]);
+        if (typeof o.onDoubleClick === "function") {
+          o.onDoubleClick(e);
+        }
+      };
+    }
+
+    return {
+      ...o,
+      ...resetProps
     };
   };
 
@@ -2600,6 +2615,7 @@ EditableTable.defaultProps = {
   editorClickBubble: false,
   showValidateMessage: true,
   singleRowEdit: false,
+  singleRowEditTrigger: "onDoubleClick",
   intl: {
     editorInputError: "输入不正确",
     editorRequiredError: "请输入必填项",
@@ -2757,6 +2773,8 @@ EditableTable.propTypes = {
   columnOptions: PropTypes.object,
   /** 是否单行编辑模式,单行编辑模式时，点击行即可编辑 */
   singleRowEdit: PropTypes.bool,
+  /** 单行编辑模式时,进入编辑触发方式，单击还是双击 */
+  singleRowEditTrigger: PropTypes.oneOf(["onClick", "onDoubleClick"]),
   onEditRowChange: PropTypes.func
 };
 
