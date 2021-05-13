@@ -533,7 +533,7 @@ class BaseDataGrid extends React.Component {
                 {...attrs}
                 headStyle={{ width: leftWidth }}
                 containerHeight={tableHeight - scrollbarX}
-                scrollbarX={null}
+                scrollbarX={scrollbarX > 0 ? null : 0}
                 columns={left}
                 style={{ overflowX: "hidden" }}
                 innerStyle={{ width: leftWidth }}
@@ -579,7 +579,7 @@ class BaseDataGrid extends React.Component {
             <Table
               {...attrs}
               containerHeight={tableHeight - scrollbarX}
-              scrollbarX={null}
+              scrollbarX={scrollbarX > 0 ? null : 0}
               headStyle={{ width: rightWidth }}
               columns={right}
               style={{ overflowX: "hidden" }}
