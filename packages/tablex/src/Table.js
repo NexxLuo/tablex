@@ -1140,7 +1140,8 @@ class Table extends React.Component {
       title = {},
       render,
       style = {},
-      custom = false
+      custom = false,
+      onCell
     } = summary;
 
     //title所在列
@@ -1234,7 +1235,8 @@ class Table extends React.Component {
       rowHeight: 40,
       rowKey: "key",
       bottom: arr,
-      onCell: (row, rowIndex, { columnKey }) => {
+      onCell: (row, rowIndex, extra) => {
+        let { columnKey } = extra;
         let styles = Object.assign({}, style);
         if (
           columnKey === "__checkbox_column" ||
@@ -1242,8 +1244,12 @@ class Table extends React.Component {
         ) {
           styles.border = "none";
         }
+        let _o = {};
+        if (typeof onCell === "function") {
+          _o = onCell(row, rowIndex, extra) || {};
+        }
 
-        return { style: styles };
+        return { style: styles, ..._o };
       }
     };
 
