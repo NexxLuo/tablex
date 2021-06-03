@@ -233,15 +233,17 @@ class EditableTable extends React.Component {
 
     let changedRowsKeyMap = {};
     nextChangedRows.forEach(d => {
-      changedRowsKeyMap[d[rowKey]] = true;
+      changedRowsKeyMap[d[rowKey]] = d;
     });
 
     for (const key in rowsMap) {
-      if (changedRowsKeyMap[key] !== true) {
+      let prev = changedRowsKeyMap[key];
+      if (prev) {
+        Object.assign(changedRowsKeyMap[key], rowsMap[key]);
+      } else {
         nextChangedRows.push(rowsMap[key]);
       }
     }
-
     this.changedRows = nextChangedRows;
   };
 
@@ -262,6 +264,8 @@ class EditableTable extends React.Component {
       this.validateRows(modifiedData);
       this.updateComponent();
     }
+
+    console.log("editChange:", this.changedRows);
   };
 
   setRowAttr = (row, attr = {}) => {
@@ -491,6 +495,7 @@ class EditableTable extends React.Component {
   validate = async () => {
     let bl = true;
     let arr = this.getChangedRows();
+    console.log("getChangedRows:", arr);
     bl = await this.validateAsync(arr);
     this.call_onValidate(bl);
     return bl;
@@ -2337,6 +2342,7 @@ class EditableTable extends React.Component {
         modifiedData.push(modifiedDataKeyMap[k]);
       }
     }
+    console.log("modifyData:", modifiedDataKeyMap, modifiedData);
 
     this.nextData = data.slice();
 
