@@ -45,10 +45,20 @@ export const ColumnDropMenuButton = props => {
 };
 
 class HeadDropMenu extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      openKeys: []
+    };
+    this.stateRef = React.createRef(null);
+    this.stateRef.current = {
+      isOnClick: false
+    };
+  }
+
   onChange = (columnKey, config) => {
     if (typeof this.props.onChange === "function") {
       this.props.onChange(columnKey, config);
-    } else {
     }
   };
 
@@ -149,6 +159,10 @@ class HeadDropMenu extends React.Component {
     domEvent.stopPropagation();
   }
 
+  onItemClick = () => {
+    this.stateRef.current.isOnClick = true;
+  };
+
   render() {
     let styles = { height: "auto", lineHeight: "normal", padding: "0px 10px" };
 
@@ -162,6 +176,15 @@ class HeadDropMenu extends React.Component {
           selectable={false}
           style={{ width: 160 }}
           mode="vertical"
+          openKeys={this.state.openKeys}
+          onOpenChange={keys => {
+            if (this.stateRef.current.isOnClick === true && keys.length === 0) {
+              this.stateRef.current.isOnClick = false;
+              return;
+            }
+            this.stateRef.current.isOnClick = false;
+            this.setState({ openKeys: keys });
+          }}
         >
           {fixable && (
             <SubMenu
@@ -186,7 +209,7 @@ class HeadDropMenu extends React.Component {
               title={this.props.intl["columnMenuVisible"]}
               onTitleClick={this.onTitleClick}
             >
-              <Menu.Item key="4" style={styles}>
+              <Menu.Item key="4" style={styles} onClick={this.onItemClick}>
                 {this.columnsFilter()}
               </Menu.Item>
             </SubMenu>
