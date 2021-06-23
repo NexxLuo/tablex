@@ -187,15 +187,13 @@ class BaseDataGrid extends React.Component {
     this.outerRef(ins);
     this.mainScrollerIns = ins;
     this.resetScrollbarSize();
-    if (this.headInstance === null) {
-      this.headInstance = ins;
-      if (ins) {
-        if (this.props.showHeader !== false) {
-          ins.addEventListener("scroll", this.onDataListScroll);
-        }
+    this.headInstance = ins;
+    if (ins) {
+      if (this.props.showHeader !== false) {
+        ins.removeEventListener("scroll", this.onDataListScroll);
+        ins.addEventListener("scroll", this.onDataListScroll);
       }
     }
-
     if (typeof this.props.scrollRef === "function") {
       this.props.scrollRef(ins);
     }
