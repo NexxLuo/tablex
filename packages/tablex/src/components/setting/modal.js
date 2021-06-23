@@ -377,7 +377,6 @@ class SettingModal extends React.Component {
 
     let leafs = columnsLeafs.filter(d => d.settable !== false);
 
-    console.log("leafs:", leafs);
     let attrs = {
       visible: visible,
       title: this.props.intl["settingTitle"],
