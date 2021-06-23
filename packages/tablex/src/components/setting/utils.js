@@ -130,29 +130,38 @@ export function treeToList(arr) {
 
     const childrens = d.children || [];
 
+    let titlePath = [];
+    if (typeof d.title === "string" && d.title) {
+      titlePath.push(d.title);
+    }
+
     list.push(d);
     roots.push(d);
 
     if (childrens.length > 0) {
-      getChildren(d);
+      getChildren(d, titlePath);
     } else {
-      leafs.push(d);
+      leafs.push({ ...d, titlePath });
     }
   }
 
-  function getChildren(d) {
+  function getChildren(d, titlePath = []) {
     const tempArr = d.children || [];
 
     for (let i = 0; i < tempArr.length; i++) {
       const d = tempArr[i];
       const childrens = d.children || [];
+      let title = "";
+      if (typeof d.title === "string" && d.title) {
+        title = d.title;
+      }
 
       list.push(d);
-
+      let _titlePath = [...titlePath, title];
       if (childrens.length > 0) {
-        getChildren(d);
+        getChildren(d, _titlePath);
       } else {
-        leafs.push(d);
+        leafs.push({ ...d, titlePath: _titlePath });
       }
     }
   }

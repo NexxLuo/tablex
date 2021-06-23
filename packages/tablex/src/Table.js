@@ -1449,7 +1449,7 @@ Table.defaultProps = {
     settingFixedRight: "右",
     settingVisible: "显示",
     settingHidden: "隐藏",
-
+    settingTips: "*可上下拖动对列进行排序",
     columnMenuFixed: "列冻结",
     columnMenuFixedLeft: "左侧",
     columnMenuFixedRight: "右侧",

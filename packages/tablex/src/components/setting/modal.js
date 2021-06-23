@@ -56,7 +56,7 @@ class SortableItem extends Component {
     if (typeof TitleComponent === "function") {
       titleElement = <TitleComponent column={d} />;
     } else {
-      titleElement = d.title;
+      titleElement = d.titlePath.join("/");
     }
 
     return (
@@ -72,7 +72,8 @@ class SortableItem extends Component {
           style={{
             display: "inline-block",
             width: "30%",
-            fontWeight: "bold"
+            fontWeight: "bold",
+            verticalAlign: "middle"
           }}
         >
           {titleElement}
@@ -376,6 +377,7 @@ class SettingModal extends React.Component {
 
     let leafs = columnsLeafs.filter(d => d.settable !== false);
 
+    console.log("leafs:", leafs);
     let attrs = {
       visible: visible,
       title: this.props.intl["settingTitle"],
@@ -396,6 +398,9 @@ class SettingModal extends React.Component {
           style={{ textAlign: "center" }}
           className="tablex__setting__modal__footer"
         >
+          <span style={{ float: "left", fontSize: 13, color: "#1890ff" }}>
+            {this.props.intl["settingTips"] ?? "*可上下拖动对列进行排序"}
+          </span>
           <Button
             className="table-setting-reset"
             loading={this.state.resetLoading}
@@ -450,7 +455,7 @@ SettingModal.defaultProps = {
     settingFixedRight: "右",
     settingVisible: "显示",
     settingHidden: "隐藏",
-    settingFixedNone: "表格配置"
+    settingTips: "*可上下拖动对列进行排序"
   }
 };
 
