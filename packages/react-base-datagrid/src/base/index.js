@@ -159,11 +159,8 @@ class BaseDataGrid extends React.Component {
     let ms = this.mainScrollerIns;
     if (ms) {
       let { scrollbarX, scrollbarY } = this.state;
-      let X =
-        (ms.offsetHeight - ms.clientHeight) * (window.devicePixelRatio || 1);
-      let Y =
-        (ms.offsetWidth - ms.clientWidth) * (window.devicePixelRatio || 1);
-
+      let X = ms.offsetHeight - ms.clientHeight;
+      let Y = ms.offsetWidth - ms.clientWidth;
       if (scrollbarX !== X || scrollbarY !== Y) {
         this.setState({
           scrollbarX: X,
