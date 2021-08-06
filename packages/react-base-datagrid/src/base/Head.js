@@ -6,7 +6,7 @@ import {
   isFlexibleColumn,
   treeFilter,
   getColumnsWidth,
-  getColumnHeight
+  getColumnHeight,
 } from "./table-head-utils";
 
 const HEADER_HEIGHT = 40;
@@ -36,10 +36,12 @@ const Column = ({
   height,
   onColumnResizeStop,
   columnKey,
+  columnIndex,
+  containerRef,
   resizable,
   headerCellProps,
   className = "",
-  style = {}
+  style = {},
 }) => {
   let widthStyles = getColumnWidthStyle({ width, minWidth });
 
@@ -80,6 +82,8 @@ const Column = ({
         <Resizer
           width={width}
           columnKey={columnKey}
+          columnIndex={columnIndex}
+          containerRef={containerRef}
           onResizeStop={onColumnResizeStop}
         />
       )}
@@ -95,7 +99,7 @@ const ColumnGroup = ({
   height,
   width,
   headerCellProps,
-  style = {}
+  style = {},
 }) => {
   let styles = {};
   if (flexible) {
@@ -141,7 +145,8 @@ const renderColumns = ({
   columnDepth,
   currentDepth,
   onColumnResizeStop,
-  headerRowHeight
+  headerRowHeight,
+  containerRef,
 }) => {
   return columns.map((d, i) => {
     let columnKey = d.key || d.dataIndex || i;
@@ -173,7 +178,7 @@ const renderColumns = ({
       columns: columns,
       start: i,
       end: columnWidthEndIndex,
-      maxDepth: columnDepth
+      maxDepth: columnDepth,
     });
 
     let isInColspan = false;
@@ -188,7 +193,7 @@ const renderColumns = ({
     columnHeight = getColumnHeight({
       depth: currentDepth,
       rowspan: rowSpan,
-      rowHeights: headerRowHeight
+      rowHeights: headerRowHeight,
     });
 
     if (rowSpan > 1) {
@@ -270,6 +275,8 @@ const renderColumns = ({
         className={columnClass}
         headerCellProps={headerCellProps}
         columnKey={columnKey}
+        columnIndex={i}
+        containerRef={containerRef}
         flexible={flexible}
         width={columnWidth}
         minWidth={d.minWidth}
@@ -293,7 +300,8 @@ class TableHead extends React.Component {
       maxDepth,
       onColumnResizeStop,
       headerRowHeight = [],
-      columnsLeafs
+      columnsLeafs,
+      containerRef,
     } = this.props;
 
     let rows = [];
@@ -414,7 +422,8 @@ class TableHead extends React.Component {
             currentDepth: i,
             onColumnResizeStop,
             columnsLeafs,
-            headerRowHeight
+            headerRowHeight,
+            containerRef,
           })}
         </div>
       );
@@ -427,7 +436,7 @@ class TableHead extends React.Component {
     let { columnsLeafs } = this.props;
 
     let w = 0;
-    columnsLeafs.forEach(d => {
+    columnsLeafs.forEach((d) => {
       let cw = getColumnWidthStyle(d).width;
       w = w + cw;
     });

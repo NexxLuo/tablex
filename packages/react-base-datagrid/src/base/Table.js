@@ -9,6 +9,7 @@ class Table extends React.Component {
   listRef = React.createRef();
   extraTopRef = React.createRef();
   extraBottomRef = React.createRef();
+  containerRef = React.createRef();
 
   constructor(props) {
     super(props);
@@ -19,7 +20,7 @@ class Table extends React.Component {
       columns: [],
       columnsLeafs: [],
       rowKey: "",
-      showHeader: true
+      showHeader: true,
     };
   }
 
@@ -37,13 +38,13 @@ class Table extends React.Component {
         rawColumns: columns,
         columns: columnsRoots,
         columnsLeafs: columnsLeafs,
-        showHeader
+        showHeader,
       };
       return nextState;
     }
   }
 
-  scrollTo = scrollOffsetY => {
+  scrollTo = (scrollOffsetY) => {
     this.listRef.current && this.listRef.current.scrollTo(scrollOffsetY);
   };
 
@@ -54,7 +55,7 @@ class Table extends React.Component {
   //align : auto、smart、center、end、start
   scrollToRow = (key, align) => {
     let { data, rowKey } = this.state;
-    let index = data.findIndex(d => d[rowKey] === key);
+    let index = data.findIndex((d) => d[rowKey] === key);
 
     if (index > -1) {
       this.listRef.current && this.listRef.current.scrollToItem(index, align);
@@ -65,7 +66,7 @@ class Table extends React.Component {
     this.listRef.current.resetAfterIndex(index, shouldForceUpdate);
   }
 
-  extraScrollTo = scrollOffset => {
+  extraScrollTo = (scrollOffset) => {
     this.extraTopRef.current &&
       this.extraTopRef.current.scrollTo({ scrollOffset });
     this.extraBottomRef.current &&
@@ -80,7 +81,7 @@ class Table extends React.Component {
       components,
       headStyle,
       headerHeight,
-      headerRowHeight
+      headerRowHeight,
     } = this.props;
 
     let { columns, showHeader, columnsLeafs } = this.state;
@@ -88,7 +89,7 @@ class Table extends React.Component {
     let styles = Object.assign(
       { ...headStyle },
       {
-        height: headerHeight
+        height: headerHeight,
       }
     );
 
@@ -107,6 +108,7 @@ class Table extends React.Component {
         maxDepth={columnsDepth}
         onColumnResizeStop={onColumnResizeStop}
         headerRowHeight={headerRowHeight}
+        containerRef={this.containerRef}
       />
     );
 
@@ -115,7 +117,7 @@ class Table extends React.Component {
         className: "tablex-table-head-container",
         children: innerElement,
         style: styles,
-        ref: headRef
+        ref: headRef,
       };
 
       return <OutterComponent {...componentProps} />;
@@ -134,12 +136,12 @@ class Table extends React.Component {
     let {
       top: frozenTopData = [],
       bottom: frozenBottomData = [],
-      rowHeight: frozenRowHeight = 40
+      rowHeight: frozenRowHeight = 40,
     } = frozenRender;
 
     let placeholders = {
       top: 0,
-      bottom: 0
+      bottom: 0,
     };
 
     let placeholderRowHeight = frozenRowHeight;
@@ -160,7 +162,7 @@ class Table extends React.Component {
       containerHeight,
       headerHeight,
       components,
-      frozenRender = {}
+      frozenRender = {},
     } = this.props;
 
     let props = this.props;
@@ -191,7 +193,7 @@ class Table extends React.Component {
     if (typeof OutterComponent === "function") {
       let componentProps = {
         className: "tablex-table-body",
-        children: innerElement
+        children: innerElement,
       };
 
       return <OutterComponent {...componentProps} />;
@@ -205,7 +207,11 @@ class Table extends React.Component {
     );
 
     return (
-      <div className="tablex-table-body" style={{ position: "relative" }}>
+      <div
+        className="tablex-table-body"
+        style={{ position: "relative" }}
+        ref={this.containerRef}
+      >
         {innerElement}
         {topList}
         {bottomList}
@@ -228,7 +234,7 @@ class Table extends React.Component {
 
     let styles = {
       height: height,
-      right: scrollbarY
+      right: scrollbarY,
     };
 
     let currRef = null;

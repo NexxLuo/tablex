@@ -171,6 +171,7 @@
   cursor: col-resize;
   background-color: transparent;
   border-right: 2px solid transparent;
+  z-index: 100;
 }
 
 .tablex-table .tablex-table-head-container .resize-handle:hover {

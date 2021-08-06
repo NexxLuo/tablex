@@ -25,7 +25,6 @@ class Resizer extends React.Component {
   offsetWidth = 0;
 
   componentDidMount() {
-    this.indicatorRef;
     let el = this.indicatorRef.current;
 
     if (el) {
@@ -65,7 +64,7 @@ class Resizer extends React.Component {
     }
   };
 
-  onMouseMove = e => {
+  onMouseMove = (e) => {
     this.endX = e.clientX;
 
     this.setPosition();
@@ -89,7 +88,7 @@ class Resizer extends React.Component {
     };
   }
 
-  onMouseUp = e => {
+  onMouseUp = (e) => {
     this.endX = e.clientX;
 
     document.body.removeEventListener("mousemove", this.onMouseMove);
@@ -102,7 +101,7 @@ class Resizer extends React.Component {
     this.onResizeStop();
   };
 
-  onMouseDown = e => {
+  onMouseDown = (e) => {
     this.startX = e.clientX;
     this.endX = e.clientX;
 
@@ -142,12 +141,46 @@ class Resizer extends React.Component {
     }
   };
 
+  onDoubleClick = () => {
+    let { columnIndex, columnKey, onResizeStop } = this.props;
+    let containerEl = this.props.containerRef.current;
+
+    if (containerEl) {
+      let rows = containerEl.getElementsByClassName("tablex-table-row");
+
+      let maxWidth = 0;
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const cell = row.getElementsByClassName("tablex-table-row-cell")[
+          columnIndex
+        ];
+        if (cell) {
+          const inner = cell.getElementsByClassName(
+            "tablex-table-row-cell-inner"
+          )[0];
+          if (inner) {
+            let scrollWidth = inner.scrollWidth + 10;
+            if (scrollWidth > maxWidth) {
+              maxWidth = scrollWidth;
+            }
+          }
+        }
+      }
+      if (maxWidth > 0) {
+        if (typeof onResizeStop === "function") {
+          onResizeStop(maxWidth, columnKey);
+        }
+      }
+    }
+  };
+
   render() {
     return (
       <div
         ref={this.indicatorRef}
         className="resize-handle"
         onMouseDown={this.onMouseDown}
+        onDoubleClick={this.onDoubleClick}
       />
     );
   }
