@@ -873,7 +873,7 @@ class EditableTable extends React.Component {
     }
   };
 
-  reset = () => {
+  reset = callback => {
     let nextState = {
       editSaveLoading: false,
       isEditAll: false,
@@ -883,7 +883,7 @@ class EditableTable extends React.Component {
       editKeys: []
     };
 
-    let { sourceData } = this.state;
+    let { sourceData, editKeys, rowKey } = this.state;
 
     let { keys, rows } = this.filterSelectedRowKeys(true);
     nextState.selectedRowKeys = keys;
@@ -899,15 +899,23 @@ class EditableTable extends React.Component {
     this.deletedData = [];
     this.nextData = [];
     this.rowsAttribute = [];
-    this.setState(nextState);
+
+    let prevEditKeys = [...editKeys];
+
+    this.setState(nextState, () => {
+      if (typeof callback === "function") {
+        let prevEditRows = this.getRowsByKeys(prevEditKeys, sourceData, rowKey);
+        callback(prevEditKeys, prevEditRows, sourceData);
+      }
+    });
   };
 
   //取消编辑
-  cancelEdit = () => {
+  cancelEdit = callback => {
     if (typeof this.props.onCancel === "function") {
       this.props.onCancel(this.state.sourceData);
     }
-    this.reset();
+    this.reset(callback);
   };
 
   editRows = (keys, callback) => {
@@ -2151,6 +2159,24 @@ class EditableTable extends React.Component {
     }
 
     return arr;
+  };
+
+  getRowsByKeys = (keys, data, keyField) => {
+    let keysMap = {};
+
+    let matched = [];
+
+    keys.forEach(k => {
+      keysMap[k] = true;
+    });
+
+    data.forEach(d => {
+      if (keysMap[d[keyField]]) {
+        matched.push(d);
+      }
+    });
+
+    return matched;
   };
 
   updateRows = callback => {
