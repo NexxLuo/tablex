@@ -872,8 +872,8 @@ export function getSelectionConfigFromProps(props) {
     }
   } else {
     if (selectMode === "multiple") {
-      selectionColumn = defaultSelectionColumn;
       if (c !== false && c !== null) {
+        selectionColumn = defaultSelectionColumn;
         showSelectioColumn = true;
         if (c instanceof Object) {
           resetSelectionColumn = c;
