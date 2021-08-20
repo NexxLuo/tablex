@@ -31,15 +31,20 @@ function createColumns(count) {
   let arr = [];
 
   for (let i = 0; i < count; i++) {
+    let attrs = {};
+    if (i === 0) {
+      attrs.fixed = 'left';
+    }
     arr.push({
       title: 'column-' + i,
       key: 'column-' + i,
       dataIndex: 'column-' + i,
       width: 100,
-      render: (value,row,rowIndex) => {
+      ...attrs,
+      render: (value, row, rowIndex) => {
         let s = {};
 
-        if (rowIndex==3) {
+        if (rowIndex == 3) {
           s = { height: 60 };
         }
         return (
@@ -241,7 +246,9 @@ class Demo extends Component {
           columns={this.state.columns}
           selectMode="multiple"
           checkStrictly={false}
+          virtual={true}
           data={this.state.treeData}
+          autoRowHeight={true}
           orderNumber={{ resizable: true }}
           contextMenu={this.contentMenu}
           validateTrigger="onChange"

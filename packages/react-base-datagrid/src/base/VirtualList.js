@@ -1,11 +1,12 @@
-import React, { Component, Fragment, memo } from "react";
+import React, { createRef } from "react";
 
 import { Virtuoso } from "react-virtuoso";
 
 class ItemList extends React.Component {
   outterElement = null;
+  listRef = createRef(null);
 
-  outerRef = (ins) => {
+  outerRef = ins => {
     let { outerRef } = this.props;
     if (typeof outerRef === "function") {
       outerRef(ins);
@@ -16,85 +17,36 @@ class ItemList extends React.Component {
   resetAfterIndex() {}
 
   scrollUpdateWasRequested = false;
-  scrollTo = (scrollOffset) => {
-    if (this.outterElement) {
+  scrollTo = scrollOffset => {
+    let list = this.listRef.current;
+    if (list) {
       this.scrollUpdateWasRequested = true;
-      this.outterElement.scrollTop = scrollOffset;
+      list.scrollTo({ top: scrollOffset });
     }
   };
 
   scrollToItem = (index, align = "auto") => {
-    let el = this.outterElement;
+    let list = this.listRef.current;
 
-    if (el) {
-      let items = el.getElementsByClassName("tablex-table-row");
-
-      let itemCount = items.length;
-
-      index = Math.max(0, Math.min(index, itemCount - 1));
-
-      let item = items[index];
-      if (!item) {
-        return;
-      }
-
-      let scrollOffset = el.scrollTop;
-      let size = this.props.height;
-      let itemSize = item.offsetHeight;
-      let itemOffset = item.offsetTop;
-
-      const maxOffset = itemOffset;
-
-      const minOffset = Math.max(0, itemOffset - size + itemSize);
-
-      if (align === "smart") {
-        if (
-          scrollOffset >= minOffset - size &&
-          scrollOffset <= maxOffset + size
-        ) {
-          align = "auto";
-        } else {
-          align = "center";
-        }
-      }
-
-      let toOffset = el.scrollTop;
-
-      switch (align) {
-        case "start":
-          toOffset = maxOffset;
-          break;
-        case "end":
-          toOffset = minOffset;
-          break;
-        case "center":
-          toOffset = Math.round(minOffset + (maxOffset - minOffset) / 2);
-          break;
-        case "auto":
-        default:
-          if (scrollOffset >= minOffset && scrollOffset <= maxOffset) {
-            toOffset = scrollOffset;
-          } else if (scrollOffset < minOffset) {
-            toOffset = minOffset;
-          } else {
-            toOffset = maxOffset;
-          }
-      }
-
-      this.scrollTo(toOffset);
+    if (list) {
+      list.scrollToIndex(index, align);
     }
   };
 
-  onScroll = (e) => {
+  onScroll = e => {
     let { onScroll } = this.props;
+    console.log("onScroll:", e);
 
-    if (typeof onScroll === "function") {
+    if (
+      typeof onScroll === "function" &&
+      this.scrollUpdateWasRequested === false
+    ) {
       onScroll({
         scrollOffset: e.target.scrollTop,
-        scrollUpdateWasRequested: this.scrollUpdateWasRequested,
+        scrollUpdateWasRequested: this.scrollUpdateWasRequested
       });
-      this.scrollUpdateWasRequested = false;
     }
+    this.scrollUpdateWasRequested = false;
   };
 
   render() {
@@ -106,7 +58,7 @@ class ItemList extends React.Component {
       itemSize,
       itemKey,
       itemCount,
-      itemData,
+      itemData
     } = this.props;
 
     return (
@@ -116,15 +68,17 @@ class ItemList extends React.Component {
           height: height,
           overflow: "auto",
           direction: "ltr",
-          ...style,
+          ...style
         }}
         ref={this.outerRef}
         onScroll={this.onScroll}
       >
         <Virtuoso
+          ref={this.listRef}
           style={{ height }}
           totalCount={itemCount}
-          itemContent={(index) => {
+          onScroll={this.onScroll}
+          itemContent={index => {
             let h = itemSize(index);
             let k = itemKey(index, itemData);
             return (
@@ -132,7 +86,7 @@ class ItemList extends React.Component {
                 key={k}
                 data={itemData}
                 index={index}
-                style={{}}
+                style={{ minHeight: h }}
               ></Children>
             );
           }}
