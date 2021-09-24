@@ -1,99 +1,107 @@
-import React, { createRef } from "react";
+import React, { useImperativeHandle } from "react";
+import ReactDOM from "react-dom";
 
-import { Virtuoso } from "react-virtuoso";
+import "./styles.css";
 
-class ItemList extends React.Component {
-  outterElement = null;
-  listRef = createRef(null);
+import { useVirtual } from "react-virtual";
 
-  outerRef = ins => {
-    let { outerRef } = this.props;
-    if (typeof outerRef === "function") {
-      outerRef(ins);
+function VirtualList(props, ref) {
+  let {
+    style,
+    height,
+    innerElementType,
+    itemSize,
+    itemKey,
+    itemCount,
+    itemData
+  } = props;
+
+  const parentRef = React.useRef();
+
+  const stateRef = React.useRef({
+    current: {
+      scrollUpdateWasRequested: false
     }
-    this.outterElement = ins;
-  };
+  });
 
-  resetAfterIndex() {}
+  let rows = itemData.data;
 
-  scrollUpdateWasRequested = false;
-  scrollTo = scrollOffset => {
-    let list = this.listRef.current;
-    if (list) {
-      this.scrollUpdateWasRequested = true;
-      list.scrollTo({ top: scrollOffset });
+  const rowVirtualizer = useVirtual({
+    size: itemCount,
+    parentRef
+  });
+
+  useImperativeHandle(ref, () => ({
+    resetAfterIndex: () => {},
+    scrollTo: scrollOffset => {
+      rowVirtualizer.scrollToOffset(scrollOffset);
+      stateRef.current.scrollUpdateWasRequested = true;
+    },
+    scrollToItem: (index, align = "auto") => {
+      rowVirtualizer.scrollToIndex(index);
+      stateRef.current.scrollUpdateWasRequested = true;
     }
-  };
+  }));
 
-  scrollToItem = (index, align = "auto") => {
-    let list = this.listRef.current;
+  function onScroll(e) {
+    let { onScroll } = props;
 
-    if (list) {
-      list.scrollToIndex(index, align);
-    }
-  };
+    let scrollUpdateWasRequested = stateRef.current.scrollUpdateWasRequested;
 
-  onScroll = e => {
-    let { onScroll } = this.props;
-    console.log("onScroll:", e);
-
-    if (
-      typeof onScroll === "function" &&
-      this.scrollUpdateWasRequested === false
-    ) {
+    if (typeof onScroll === "function") {
       onScroll({
         scrollOffset: e.target.scrollTop,
-        scrollUpdateWasRequested: this.scrollUpdateWasRequested
+        scrollUpdateWasRequested: scrollUpdateWasRequested
       });
     }
-    this.scrollUpdateWasRequested = false;
-  };
 
-  render() {
-    let Children = this.props.children;
-    let {
-      style,
-      height,
-      innerElementType,
-      itemSize,
-      itemKey,
-      itemCount,
-      itemData
-    } = this.props;
+    stateRef.current.scrollUpdateWasRequested = false;
+  }
 
-    return (
+  let Children = props.children;
+
+  return (
+    <div
+      ref={parentRef}
+      style={{
+        position: "relative",
+        height: height,
+        overflow: "auto",
+        direction: "ltr",
+        ...style
+      }}
+      onScroll={onScroll}
+    >
       <div
         style={{
-          position: "relative",
-          height: height,
-          overflow: "auto",
-          direction: "ltr",
-          ...style
+          height: `${rowVirtualizer.totalSize}px`,
+          width: "100%",
+          position: "relative"
         }}
-        ref={this.outerRef}
-        onScroll={this.onScroll}
       >
-        <Virtuoso
-          ref={this.listRef}
-          style={{ height }}
-          totalCount={itemCount}
-          onScroll={this.onScroll}
-          itemContent={index => {
-            let h = itemSize(index);
-            let k = itemKey(index, itemData);
-            return (
-              <Children
-                key={k}
-                data={itemData}
-                index={index}
-                style={{ minHeight: h }}
-              ></Children>
-            );
-          }}
-        />
+        {rowVirtualizer.virtualItems.map(virtualRow => {
+          let index = virtualRow.index;
+          let h = itemSize(index);
+          let k = itemKey(index, itemData);
+          return (
+            <div
+              key={k}
+              ref={virtualRow.measureRef}
+              style={{
+                position: "absolute",
+                top: `${virtualRow.start}px`,
+                left: 0,
+                width: "100%",
+                minHeight: h
+              }}
+            >
+              <Children data={itemData} index={index} style={{}}></Children>
+            </div>
+          );
+        })}
       </div>
-    );
-  }
+    </div>
+  );
 }
 
-export default ItemList;
+export default React.forwardRef(VirtualList);

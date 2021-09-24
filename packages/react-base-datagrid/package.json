@@ -42,9 +42,6 @@
     "react-window": "^1.8.4"
   },
   "devDependencies": {
-    "docz": "^1.2.0",
-    "docz-plugin-css": "^0.11.0",
-    "docz-theme-default": "^1.2.0",
     "father-build": "^1.17.2"
   }
 }

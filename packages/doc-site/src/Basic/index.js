@@ -68,7 +68,7 @@ class Demo extends Component {
 
   getData = () => {
     let columns = createColumns(50);
-    let arr = createData(columns, 500);
+    let arr = createData(columns, 50);
     this.setState({ treeData: arr, columns: columns });
     console.log('columns:', columns);
   };
