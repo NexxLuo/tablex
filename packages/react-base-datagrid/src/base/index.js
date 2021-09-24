@@ -314,6 +314,23 @@ class BaseDataGrid extends React.Component {
     }
   };
 
+  getFrozenHeight = () => {
+    let h = 0;
+    let { frozenRender = {} } = this.props;
+    let top = frozenRender.top;
+    let bottom = frozenRender.bottom;
+    let rh = frozenRender.rowHeight;
+    if (typeof rh === "number") {
+      if (top instanceof Array) {
+        h = h + top.length * rh;
+      }
+      if (bottom instanceof Array) {
+        h = h + bottom.length * rh;
+      }
+    }
+    return h;
+  };
+
   getTableHeight = () => {
     let {
       rowHeight,
@@ -394,21 +411,15 @@ class BaseDataGrid extends React.Component {
   };
 
   render() {
-    let { className, overlayRenderer, bordered } = this.props;
+    let { className, overlayRenderer, bordered, autoHeight } = this.props;
 
     let props = this.props;
 
     let { data, rowKey, scrollbarX, scrollbarY, formattedColumns } = this.state;
 
     let memorizedSize = this.memorizedSize;
-    let {
-      middle,
-      left,
-      leftWidth,
-      right,
-      rightWidth,
-      maxDepth
-    } = formattedColumns;
+    let { middle, left, leftWidth, right, rightWidth, maxDepth } =
+      formattedColumns;
 
     let hasLeft = left.length > 0;
     let hasRight = right.length > 0;
@@ -491,6 +502,12 @@ class BaseDataGrid extends React.Component {
 
     cls = cls.join(" ");
 
+    let sideTableScrollbarX = scrollbarX > 0 ? scrollbarX : 0;
+    if (autoHeight === true) {
+      sideTableScrollbarX = null;
+      tableHeight = tableHeight + this.getFrozenHeight();
+    }
+
     return (
       <div className={cls} ref={this.containerRef}>
         {needCalcRowHeight ? (
@@ -528,7 +545,7 @@ class BaseDataGrid extends React.Component {
                 {...attrs}
                 headStyle={{ width: leftWidth }}
                 containerHeight={tableHeight - scrollbarX}
-                scrollbarX={scrollbarX > 0 ? null : 0}
+                scrollbarX={sideTableScrollbarX}
                 columns={left}
                 style={{ overflowX: "hidden" }}
                 innerStyle={{ width: leftWidth }}
@@ -574,7 +591,7 @@ class BaseDataGrid extends React.Component {
             <Table
               {...attrs}
               containerHeight={tableHeight - scrollbarX}
-              scrollbarX={scrollbarX > 0 ? null : 0}
+              scrollbarX={sideTableScrollbarX}
               headStyle={{ width: rightWidth }}
               columns={right}
               style={{ overflowX: "hidden" }}
