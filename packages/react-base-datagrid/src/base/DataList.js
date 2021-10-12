@@ -185,7 +185,8 @@ const TableCell = props => {
     onCell,
     cellRenderExtra,
     columnStyle,
-    rowHeight
+    rowHeight,
+    extra
   } = props;
 
   let value = row[dataIndex];
@@ -228,15 +229,20 @@ const TableCell = props => {
       rowData: row,
       rowKey: rowKey,
       rowIndex: rowIndex,
-      columnKey: columnKey
+      columnKey: columnKey,
+      extra: extra
     });
   }
 
   let extraAttr = {};
   if (typeof onCell === "function") {
     extraAttr =
-      onCell(row, rowIndex, Object.assign({ columnKey }, cellExtra || {})) ||
-      {};
+      onCell(
+        row,
+        rowIndex,
+        Object.assign({ columnKey }, cellExtra || {}),
+        extra
+      ) || {};
   }
 
   let cellRender = render;
