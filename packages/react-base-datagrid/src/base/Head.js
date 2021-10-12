@@ -6,7 +6,7 @@ import {
   isFlexibleColumn,
   treeFilter,
   getColumnsWidth,
-  getColumnHeight,
+  getColumnHeight
 } from "./table-head-utils";
 
 const HEADER_HEIGHT = 40;
@@ -41,7 +41,7 @@ const Column = ({
   resizable,
   headerCellProps,
   className = "",
-  style = {},
+  style = {}
 }) => {
   let widthStyles = getColumnWidthStyle({ width, minWidth });
 
@@ -99,7 +99,7 @@ const ColumnGroup = ({
   height,
   width,
   headerCellProps,
-  style = {},
+  style = {}
 }) => {
   let styles = {};
   if (flexible) {
@@ -126,6 +126,7 @@ const ColumnGroup = ({
 
   return (
     <div
+      {...headerCellProps}
       className={clsArr.join(" ")}
       style={{ ...style, ...cellStyles }}
       {...attr}
@@ -146,7 +147,7 @@ const renderColumns = ({
   currentDepth,
   onColumnResizeStop,
   headerRowHeight,
-  containerRef,
+  containerRef
 }) => {
   return columns.map((d, i) => {
     let columnKey = d.key || d.dataIndex || i;
@@ -178,7 +179,7 @@ const renderColumns = ({
       columns: columns,
       start: i,
       end: columnWidthEndIndex,
-      maxDepth: columnDepth,
+      maxDepth: columnDepth
     });
 
     let isInColspan = false;
@@ -193,7 +194,7 @@ const renderColumns = ({
     columnHeight = getColumnHeight({
       depth: currentDepth,
       rowspan: rowSpan,
-      rowHeights: headerRowHeight,
+      rowHeights: headerRowHeight
     });
 
     if (rowSpan > 1) {
@@ -301,7 +302,7 @@ class TableHead extends React.Component {
       onColumnResizeStop,
       headerRowHeight = [],
       columnsLeafs,
-      containerRef,
+      containerRef
     } = this.props;
 
     let rows = [];
@@ -423,7 +424,7 @@ class TableHead extends React.Component {
             onColumnResizeStop,
             columnsLeafs,
             headerRowHeight,
-            containerRef,
+            containerRef
           })}
         </div>
       );
@@ -436,7 +437,7 @@ class TableHead extends React.Component {
     let { columnsLeafs } = this.props;
 
     let w = 0;
-    columnsLeafs.forEach((d) => {
+    columnsLeafs.forEach(d => {
       let cw = getColumnWidthStyle(d).width;
       w = w + cw;
     });
