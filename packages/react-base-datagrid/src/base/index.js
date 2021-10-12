@@ -277,6 +277,10 @@ class BaseDataGrid extends React.Component {
     if (this.state.needResetScrollbar === true) {
       this.resetScrollbarSize();
     }
+    let fn = this.props.onComponentDidUpdate;
+    if (typeof fn === "function") {
+      fn(this);
+    }
   }
 
   resetAfterIndex(index, shouldForceUpdate) {
@@ -773,7 +777,10 @@ BaseDataGrid.propTypes = {
   listRef: PropTypes.func,
 
   /** actions注册 */
-  actions: PropTypes.object
+  actions: PropTypes.object,
+
+  /** componentDidUpdate事件 */
+  onComponentDidUpdate: PropTypes.func
 };
 
 export default AutoSizerTable;
