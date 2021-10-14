@@ -11,7 +11,7 @@ import {
 
 const HEADER_HEIGHT = 40;
 
-const ColumnPlaceolder = ({ width, minWidth, flexible, height }) => {
+const ColumnPlaceolder = ({ width, minWidth, flexible, height, columnKey }) => {
   let widthStyles = getColumnWidthStyle({ width, minWidth });
 
   if (flexible) {
@@ -23,7 +23,13 @@ const ColumnPlaceolder = ({ width, minWidth, flexible, height }) => {
 
   let clsArr = ["tablex-table-head-cell tablex-table-head-cell-placeholder"];
 
-  return <div className={clsArr.join(" ")} style={cellStyles}></div>;
+  return (
+    <div
+      className={clsArr.join(" ")}
+      style={cellStyles}
+      data-columnkey={columnKey}
+    ></div>
+  );
 };
 
 const Column = ({
@@ -214,6 +220,7 @@ const renderColumns = ({
           width={columnWidth}
           minWidth={d.minWidth}
           height={columnHeight}
+          columnKey={columnKey}
         ></ColumnPlaceolder>
       );
     }
