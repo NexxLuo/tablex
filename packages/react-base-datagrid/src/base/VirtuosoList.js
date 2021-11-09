@@ -81,7 +81,6 @@ class ItemList extends React.Component {
           ...style
         }}
         ref={this.outerRef}
-        onScroll={this.onScroll}
       >
         <Virtuoso
           ref={this.listRef}
