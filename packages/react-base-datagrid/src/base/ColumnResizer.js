@@ -64,7 +64,7 @@ class Resizer extends React.Component {
     }
   };
 
-  onMouseMove = (e) => {
+  onMouseMove = e => {
     this.endX = e.clientX;
 
     this.setPosition();
@@ -77,18 +77,18 @@ class Resizer extends React.Component {
   }
 
   setSelectEvent() {
-    document.body.onselectstart = function() {
+    document.body.onselectstart = function () {
       return false;
     };
   }
 
   resetSelectEvent() {
-    document.body.onselectstart = function() {
+    document.body.onselectstart = function () {
       return true;
     };
   }
 
-  onMouseUp = (e) => {
+  onMouseUp = e => {
     this.endX = e.clientX;
 
     document.body.removeEventListener("mousemove", this.onMouseMove);
@@ -101,7 +101,7 @@ class Resizer extends React.Component {
     this.onResizeStop();
   };
 
-  onMouseDown = (e) => {
+  onMouseDown = e => {
     this.startX = e.clientX;
     this.endX = e.clientX;
 
@@ -159,9 +159,19 @@ class Resizer extends React.Component {
             "tablex-table-row-cell-inner"
           )[0];
           if (inner) {
-            let scrollWidth = inner.scrollWidth + 10;
-            if (scrollWidth > maxWidth) {
-              maxWidth = scrollWidth;
+            if (inner.scrollWidth > inner.clientWidth) {
+              let scrollWidth = inner.scrollWidth + 2;
+              if (scrollWidth > maxWidth) {
+                maxWidth = scrollWidth;
+              }
+            } else {
+              let child = inner.firstChild;
+              if (child) {
+                let offsetWidth = child.offsetWidth + 2 + 10;
+                if (offsetWidth > maxWidth) {
+                  maxWidth = offsetWidth;
+                }
+              }
             }
           }
         }
