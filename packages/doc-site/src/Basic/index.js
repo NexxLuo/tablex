@@ -6,18 +6,18 @@ import 'antd/dist/antd.css';
 
 const { Search } = Input;
 
-function createData(columns, count = 10) {
+function createData(columns, count = 10, prefix = '') {
   let arr = [];
   for (let i = 0; i < count; i++) {
     let row = {
-      id: 'row-' + i,
+      id: prefix + 'row-' + i,
     };
 
     for (let j = 0; j < columns.length; j++) {
       let c = columns[j];
       let dataIndex = c?.dataIndex;
       if (dataIndex) {
-        row[dataIndex] = 'row,' + i + ';column,' + j;
+        row[dataIndex] =  prefix +'row,' + i + ';column,' + j;
       }
     }
 
@@ -41,17 +41,13 @@ function createColumns(count) {
       dataIndex: 'column-' + i,
       width: 100,
       ...attrs,
-      render: (value, row, rowIndex) => {
+      render: (value, row, rowIndex, a, b) => {
         let s = {};
 
-        if (rowIndex == 3) {
+        if (rowIndex == 3 && i == 3) {
           s = { height: 60 };
         }
-        return (
-          <div style={s}>
-            <Input defaultValue={value}></Input>
-          </div>
-        );
+        return <div style={s}>{value}</div>;
       },
     });
   }
@@ -67,8 +63,10 @@ class Demo extends Component {
   };
 
   getData = () => {
-    let columns = createColumns(50);
-    let arr = createData(columns, 50);
+    let columns = createColumns(20);
+    let arr = createData(columns, 1000);
+
+    arr[1].children = createData(columns, 10, 'children-');
     this.setState({ treeData: arr, columns: columns });
     console.log('columns:', columns);
   };
@@ -244,6 +242,7 @@ class Demo extends Component {
           ref="tb"
           loading={this.state.loading}
           columns={this.state.columns}
+          autoRowHeight={true}
           selectMode="multiple"
           checkStrictly={false}
           virtual={true}
