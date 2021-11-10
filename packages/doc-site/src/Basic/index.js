@@ -47,7 +47,7 @@ function createColumns(count) {
         if (rowIndex == 3 && i == 3) {
           s = { height: 60 };
         }
-        return <div style={s}>{value}</div>;
+        return <span style={s}>{value}</span>;
       },
     });
   }
@@ -64,7 +64,7 @@ class Demo extends Component {
 
   getData = () => {
     let columns = createColumns(20);
-    let arr = createData(columns, 1000);
+    let arr = createData(columns, 100);
 
     arr[1].children = createData(columns, 10, 'children-');
     this.setState({ treeData: arr, columns: columns });
@@ -247,7 +247,7 @@ class Demo extends Component {
           checkStrictly={false}
           virtual={true}
           data={this.state.treeData}
-          autoRowHeight={true}
+          autoRowHeight={false}
           orderNumber={{ resizable: true }}
           contextMenu={this.contentMenu}
           validateTrigger="onChange"
