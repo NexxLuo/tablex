@@ -166,7 +166,7 @@ class Resizer extends React.Component {
               }
             } else {
               let child = inner.firstChild;
-              if (child) {
+              if (child && child.offsetWidth !== child.clientWidth) {
                 let offsetWidth = child.offsetWidth + 2 + 10;
                 if (offsetWidth > maxWidth) {
                   maxWidth = offsetWidth;
