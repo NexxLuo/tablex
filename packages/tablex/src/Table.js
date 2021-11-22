@@ -1141,7 +1141,8 @@ class Table extends React.Component {
       render,
       style = {},
       custom = false,
-      onCell
+      onCell,
+      rowHeight = 30
     } = summary;
 
     //title所在列
@@ -1232,7 +1233,7 @@ class Table extends React.Component {
     }
 
     let frozenRender = {
-      rowHeight: 40,
+      rowHeight: rowHeight,
       rowKey: "key",
       bottom: arr,
       onCell: (row, rowIndex, extra) => {
@@ -1549,7 +1550,8 @@ Table.propTypes = {
     style: PropTypes.object,
     title: PropTypes.object,
     data: PropTypes.array,
-    render: PropTypes.func
+    render: PropTypes.func,
+    rowHeight: PropTypes.number
   }),
 
   /** actions注册 */
