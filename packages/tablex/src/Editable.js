@@ -918,11 +918,11 @@ class EditableTable extends React.Component {
     this.reset(callback);
   };
 
-  editRows = (keys, callback) => {
+  editRows = (keys, callback, e) => {
     this.editType = "edit";
 
     if (typeof this.props.onEditRowChange === "function") {
-      this.props.onEditRowChange(keys);
+      this.props.onEditRowChange(keys, e);
     }
     this.setState({ isEditAll: false, editKeys: keys, isEditing: true }, () => {
       if (typeof callback === "function") {
@@ -2062,14 +2062,14 @@ class EditableTable extends React.Component {
 
     if (type === "onClick") {
       resetProps.onClick = e => {
-        this.editRows([rowData[rowKey]]);
+        this.editRows([rowData[rowKey]], null, e);
         if (typeof o.onClick === "function") {
           o.onClick(e);
         }
       };
     } else {
       resetProps.onDoubleClick = e => {
-        this.editRows([rowData[rowKey]]);
+        this.editRows([rowData[rowKey]], null, e);
         if (typeof o.onDoubleClick === "function") {
           o.onDoubleClick(e);
         }
