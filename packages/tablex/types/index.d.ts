@@ -125,6 +125,7 @@ export interface SummaryProps {
   style?: object;
   title?: { text: string; column: string; render?: () => React.ReactNode };
   data: any[];
+  fixed?: boolean;
   render?: (
     value: any,
     dataIndex: string,

@@ -83,7 +83,7 @@ let summaryMath = {
 };
 
 function orderNumberCellRender(value, rowData, index) {
-  return index + 1;
+  return value || index + 1;
 }
 
 function isNumber(v) {
@@ -414,6 +414,10 @@ class Table extends React.Component {
       });
     }
 
+    let summaryData = this.getSummaryData(false);
+    if (arr.length > 0 && summaryData.length > 0) {
+      return [...arr, ...summaryData];
+    }
     return arr;
   };
 
@@ -1132,18 +1136,21 @@ class Table extends React.Component {
     }
   };
 
-  getSummary = () => {
-    let { summary = {} } = this.props;
+  getSummaryData = _fixed => {
+    let arr = [];
+    let { summary = {}, rowKey } = this.props;
 
     let {
       data: summaryTypes = [],
       title = {},
       render,
-      style = {},
       custom = false,
-      onCell,
-      rowHeight = 30
+      fixed = true
     } = summary;
+
+    if (fixed === true && _fixed === false) {
+      return arr;
+    }
 
     //title所在列
     let titleColumn = title.column || "";
@@ -1152,14 +1159,16 @@ class Table extends React.Component {
     //title显示文本
     let titleText = title.text || "";
 
-    let arr = [];
-
     //如果为完全自定义，则不执行自身逻辑
     if (custom) {
       summaryTypes.forEach((s, i) => {
         let r = {
           key: "summary_" + i
         };
+
+        if (_fixed === false) {
+          r[rowKey] = r.key;
+        }
 
         for (const k in s) {
           let dataIndex = k;
@@ -1193,6 +1202,10 @@ class Table extends React.Component {
         let r = {
           key: "summary_" + i
         };
+
+        if (_fixed === false) {
+          r[rowKey] = r.key;
+        }
 
         for (const k in s) {
           let dataIndex = k;
@@ -1231,6 +1244,20 @@ class Table extends React.Component {
         arr.push(r);
       });
     }
+
+    return arr;
+  };
+
+  getSummary = () => {
+    let { summary = {} } = this.props;
+
+    let { style = {}, onCell, rowHeight = 30, fixed = true } = summary;
+
+    if (fixed === false) {
+      return null;
+    }
+
+    let arr = this.getSummaryData(true);
 
     let frozenRender = {
       rowHeight: rowHeight,
@@ -1320,7 +1347,10 @@ class Table extends React.Component {
     }
 
     if (props.summary) {
-      newProps.frozenRender = this.getSummary();
+      let _summary = this.getSummary();
+      if (_summary !== null) {
+        newProps.frozenRender = _summary;
+      }
     }
 
     if (props.striped === true) {
@@ -1547,6 +1577,7 @@ Table.propTypes = {
 
   /** 汇总信息渲染 */
   summary: PropTypes.shape({
+    fixed: PropTypes.bool,
     style: PropTypes.object,
     title: PropTypes.object,
     data: PropTypes.array,
