@@ -387,7 +387,13 @@ const TableCell = props => {
   }
 
   return (
-    <div {...extraAttr} className={cls.join(" ")} style={cellStyles}>
+    <div
+      {...extraAttr}
+      className={cls.join(" ")}
+      style={cellStyles}
+      data-columnkey={columnKey}
+      data-rowindex={rowIndex}
+    >
       {prepend}
       <div className="tablex-table-row-cell-inner" style={alignStyles}>
         {cellElement}
