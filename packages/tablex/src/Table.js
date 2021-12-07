@@ -103,6 +103,7 @@ function isNumber(v) {
 class Table extends React.Component {
   dropdown_button_ref = React.createRef();
   contextmenu_ref = React.createRef();
+  containerRef = React.createRef();
 
   constructor(props) {
     super(props);
@@ -255,12 +256,90 @@ class Table extends React.Component {
     return nextState;
   }
 
+  matchColumnContentWidth = () => {
+    let containerEl = this.containerRef.current;
+
+    let bl = false;
+    let newConfigs = {};
+    if (containerEl) {
+      let { leafs } = treeToList(this.state.columns);
+
+      let columnsConfig = this.state.columnsConfig;
+      newConfigs = { ...columnsConfig };
+
+      leafs.forEach(d => {
+        let columnKey = d.key;
+
+        let rows = containerEl.getElementsByClassName("tablex-table-row");
+
+        let maxWidth = 0;
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i];
+          const cells = row.getElementsByClassName("tablex-table-row-cell");
+          let cell = null;
+          for (let j = 0; j < cells.length; j++) {
+            const _cell = cells[j];
+            if (_cell?.dataset?.columnkey === columnKey) {
+              cell = _cell;
+              break;
+            }
+          }
+
+          if (cell) {
+            const inner = cell.getElementsByClassName(
+              "tablex-table-row-cell-inner"
+            )[0];
+            if (inner) {
+              if (inner.scrollWidth > inner.clientWidth) {
+                let scrollWidth = inner.scrollWidth + 2;
+                if (scrollWidth > maxWidth) {
+                  maxWidth = scrollWidth;
+                }
+              } else {
+                let child = inner.firstChild;
+                if (child && child.offsetWidth !== child.clientWidth) {
+                  let offsetWidth = child.offsetWidth + 2 + 10;
+                  if (offsetWidth > maxWidth) {
+                    maxWidth = offsetWidth;
+                  }
+                }
+              }
+            }
+          }
+        }
+        if (maxWidth > 0) {
+          let config = {
+            width: maxWidth
+          };
+          let prevConfig = newConfigs[columnKey] || {};
+          let nextConfig = {
+            [columnKey]: Object.assign({}, prevConfig, config)
+          };
+          newConfigs = { ...newConfigs, ...nextConfig };
+          bl = true;
+        }
+      });
+    }
+
+    if (bl) {
+      this.setState(
+        {
+          columnsConfig: newConfigs
+        },
+        this.resetScrollbarSize
+      );
+    }
+  };
+
   actions = {
     getColumnConfigs: () => {
       return this.state.columnsConfig;
     },
     getColumns: (includeHidden = true) => {
       return this.formatColumns(includeHidden);
+    },
+    matchColumnContentWidth: () => {
+      return this.matchColumnContentWidth();
     }
   };
 
@@ -1394,7 +1473,11 @@ class Table extends React.Component {
     return (
       <div className={classNames} style={wrapperStyles}>
         {header}
-        <div className="tablex__container__body" style={bodyStyles}>
+        <div
+          className="tablex__container__body"
+          style={bodyStyles}
+          ref={this.containerRef}
+        >
           <BaseTable {...props} {...newProps} />
         </div>
         {footer}
