@@ -270,7 +270,26 @@ class Table extends React.Component {
       leafs.forEach(d => {
         let columnKey = d.key;
 
+        let headRows = containerEl.getElementsByClassName("tablex-head-row");
         let rows = containerEl.getElementsByClassName("tablex-table-row");
+
+        let minWidths = {};
+        for (let i = 0; i < headRows.length; i++) {
+          const headRow = headRows[i];
+          let headCells = headRow.getElementsByClassName(
+            "tablex-table-head-cell"
+          );
+          for (let j = 0; j < headCells.length; j++) {
+            const headCell = headCells[j];
+            let ck = headCell.dataset.columnkey;
+            const inner = headCell.getElementsByClassName(
+              "tablex__head__cell__title__inner"
+            )[0];
+            if (inner && ck) {
+              minWidths[ck] = inner.offsetWidth + 40;
+            }
+          }
+        }
 
         let maxWidth = 0;
         for (let i = 0; i < rows.length; i++) {
@@ -306,6 +325,16 @@ class Table extends React.Component {
               }
             }
           }
+        }
+
+        //最小宽度不能小于列头标题真实宽度
+        let minWidth = minWidths[columnKey];
+        if (
+          typeof minWidth === "number" &&
+          minWidth > 0 &&
+          minWidth > maxWidth
+        ) {
+          maxWidth = minWidth;
         }
         if (maxWidth > 0) {
           let config = {
@@ -826,7 +855,7 @@ class Table extends React.Component {
       d.headCellRender = ({ title }) => {
         return (
           <div className="tablex__head__cell__title" {...titleCellAttr}>
-            {title}
+            <span className="tablex__head__cell__title__inner">{title}</span>
             {allowSort ? <SortIcon order={sort} /> : null}
             {hasDropMenu === true ? (
               <ColumnDropMenuButton

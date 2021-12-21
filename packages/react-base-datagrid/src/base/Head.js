@@ -80,6 +80,7 @@ const Column = ({
       {...headerCellProps}
       className={clsArr.join(" ")}
       style={{ ...style, ...cellStyles }}
+      data-columnkey={columnKey}
     >
       <div className="tablex-table-head-cell-inner" style={alignStyles}>
         {children}
