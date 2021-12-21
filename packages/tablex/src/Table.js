@@ -256,7 +256,7 @@ class Table extends React.Component {
     return nextState;
   }
 
-  matchColumnContentWidth = () => {
+  matchColumnContentWidth = fn => {
     let containerEl = this.containerRef.current;
 
     let bl = false;
@@ -336,6 +336,14 @@ class Table extends React.Component {
         ) {
           maxWidth = minWidth;
         }
+
+        if (typeof fn === "function") {
+          let res = fn(d, maxWidth);
+          if (typeof res === "number") {
+            maxWidth = res;
+          }
+        }
+
         if (maxWidth > 0) {
           let config = {
             width: maxWidth
@@ -367,8 +375,8 @@ class Table extends React.Component {
     getColumns: (includeHidden = true) => {
       return this.formatColumns(includeHidden);
     },
-    matchColumnContentWidth: () => {
-      return this.matchColumnContentWidth();
+    matchColumnContentWidth: fn => {
+      return this.matchColumnContentWidth(fn);
     }
   };
 
@@ -855,7 +863,12 @@ class Table extends React.Component {
       d.headCellRender = ({ title }) => {
         return (
           <div className="tablex__head__cell__title" {...titleCellAttr}>
-            <span className="tablex__head__cell__title__inner">{title}</span>
+            <span
+              className="tablex__head__cell__title__inner"
+              style={{ display: "inline-block" }}
+            >
+              {title}
+            </span>
             {allowSort ? <SortIcon order={sort} /> : null}
             {hasDropMenu === true ? (
               <ColumnDropMenuButton
