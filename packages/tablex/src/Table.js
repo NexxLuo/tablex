@@ -281,11 +281,14 @@ class Table extends React.Component {
           );
           for (let j = 0; j < headCells.length; j++) {
             const headCell = headCells[j];
+            const title = headCell.getElementsByClassName(
+              "tablex__head__cell__title"
+            )[0];
             let ck = headCell.dataset.columnkey;
             const inner = headCell.getElementsByClassName(
               "tablex__head__cell__title__inner"
             )[0];
-            if (inner && ck) {
+            if (inner && title && ck && title.scrollWidth > title.clientWidth) {
               minWidths[ck] = inner.offsetWidth + 40;
             }
           }
