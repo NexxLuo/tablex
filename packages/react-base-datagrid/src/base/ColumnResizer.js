@@ -144,11 +144,41 @@ class Resizer extends React.Component {
   onDoubleClick = () => {
     let { columnIndex, columnKey, onResizeStop } = this.props;
     let containerEl = this.props.containerRef.current;
+    let outterContainer = this.props.outterRef.current;
 
     if (containerEl) {
       let rows = containerEl.getElementsByClassName("tablex-table-row");
 
       let maxWidth = 0;
+
+      let headRows = [];
+
+      if (outterContainer) {
+        headRows = outterContainer.getElementsByClassName("tablex-head-row");
+      }
+
+      let minWidths = {};
+      for (let i = 0; i < headRows.length; i++) {
+        const headRow = headRows[i];
+        let headCells = headRow.getElementsByClassName(
+          "tablex-table-head-cell"
+        );
+        for (let j = 0; j < headCells.length; j++) {
+          const headCell = headCells[j];
+          const title = headCell.getElementsByClassName(
+            "tablex__head__cell__title"
+          )[0];
+          let ck = headCell.dataset.columnkey;
+          const inner = headCell.getElementsByClassName(
+            "tablex__head__cell__title__inner"
+          )[0];
+
+          if (inner && title && ck && title.scrollWidth >= title.clientWidth) {
+            minWidths[ck] = inner.offsetWidth + 40;
+          }
+        }
+      }
+
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
         const cell = row.getElementsByClassName("tablex-table-row-cell")[
@@ -176,6 +206,13 @@ class Resizer extends React.Component {
           }
         }
       }
+
+      //最小宽度不能小于列头标题真实宽度
+      let minWidth = minWidths[columnKey];
+      if (typeof minWidth === "number" && minWidth > 0 && minWidth > maxWidth) {
+        maxWidth = minWidth;
+      }
+
       if (maxWidth > 0) {
         if (typeof onResizeStop === "function") {
           onResizeStop(maxWidth, columnKey);

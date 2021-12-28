@@ -44,6 +44,7 @@ const Column = ({
   columnKey,
   columnIndex,
   containerRef,
+  outterRef,
   resizable,
   headerCellProps,
   className = "",
@@ -91,6 +92,7 @@ const Column = ({
           columnKey={columnKey}
           columnIndex={columnIndex}
           containerRef={containerRef}
+          outterRef={outterRef}
           onResizeStop={onColumnResizeStop}
         />
       )}
@@ -154,7 +156,8 @@ const renderColumns = ({
   currentDepth,
   onColumnResizeStop,
   headerRowHeight,
-  containerRef
+  containerRef,
+  outterRef
 }) => {
   return columns.map((d, i) => {
     let columnKey = d.key || d.dataIndex || i;
@@ -286,6 +289,7 @@ const renderColumns = ({
         columnKey={columnKey}
         columnIndex={i}
         containerRef={containerRef}
+        outterRef={outterRef}
         flexible={flexible}
         width={columnWidth}
         minWidth={d.minWidth}
@@ -310,7 +314,8 @@ class TableHead extends React.Component {
       onColumnResizeStop,
       headerRowHeight = [],
       columnsLeafs,
-      containerRef
+      containerRef,
+      outterRef
     } = this.props;
 
     let rows = [];
@@ -432,7 +437,8 @@ class TableHead extends React.Component {
             onColumnResizeStop,
             columnsLeafs,
             headerRowHeight,
-            containerRef
+            containerRef,
+            outterRef
           })}
         </div>
       );
