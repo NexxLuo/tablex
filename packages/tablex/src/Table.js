@@ -288,7 +288,7 @@ class Table extends React.Component {
             const inner = headCell.getElementsByClassName(
               "tablex__head__cell__title__inner"
             )[0];
-            if (inner && title && ck && title.scrollWidth > title.clientWidth) {
+            if (inner && title && ck && title.scrollWidth >= title.clientWidth) {
               minWidths[ck] = inner.offsetWidth + 40;
             }
           }
