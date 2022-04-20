@@ -4,7 +4,7 @@ import Table from "../Editable";
 import DraggableRow from "./DraggableRow";
 import ReactDom from "react-dom";
 import { DndProvider } from "react-dnd";
-import HTML5Backend from "react-dnd-html5-backend";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 import DragIcon from "./DragIcon";
 import { treeToList, getTreeFromFlatData } from "../utils";
