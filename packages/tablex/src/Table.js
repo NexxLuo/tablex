@@ -37,7 +37,7 @@ function toNumber(v) {
 let summaryMath = {
   max: (items, key) => {
     let r =
-      maxBy(items, function(o) {
+      maxBy(items, function (o) {
         return toNumber(o[key]);
       }) || {};
 
@@ -45,14 +45,14 @@ let summaryMath = {
   },
   min: (items, key) => {
     let r =
-      minBy(items, function(o) {
+      minBy(items, function (o) {
         return toNumber(o[key]);
       }) || {};
 
     return r[key];
   },
   average: (items, key) => {
-    let sum = sumBy(items, function(o) {
+    let sum = sumBy(items, function (o) {
       return toNumber(o[key]);
     });
 
@@ -63,7 +63,7 @@ let summaryMath = {
     }
   },
   avg: (items, key) => {
-    let sum = sumBy(items, function(o) {
+    let sum = sumBy(items, function (o) {
       return toNumber(o[key]);
     });
 
@@ -74,7 +74,7 @@ let summaryMath = {
     }
   },
   sum: (items, key) => {
-    let r = sumBy(items, function(o) {
+    let r = sumBy(items, function (o) {
       return toNumber(o[key]);
     });
 
@@ -903,7 +903,7 @@ class Table extends React.Component {
                 <label style={{ fontWeight: "bold" }}>{groupLable}</label>
                 {row.__groupName || ""}
                 <label style={{ fontWeight: "bold" }}>({row.__count})</label>
-                {this.getColumnGroupSummary(row.children || [])}
+                {this.getColumnGroupSummary(row.children || [], row)}
               </span>
             ),
             props: {
@@ -1203,7 +1203,7 @@ class Table extends React.Component {
     this.innerTableRef && this.innerTableRef.scrollTo(0);
   }
 
-  getColumnGroupSummary = (data = []) => {
+  getColumnGroupSummary = (data = [], row) => {
     let { style: wrapperStyle, className, data: summaryTypes = [], render } =
       this.props.groupedColumnSummary || {};
 
@@ -1233,7 +1233,8 @@ class Table extends React.Component {
         let renderElement = render(v, summaryValue, {
           dataIndex,
           title,
-          type
+          type,
+          row: row
         });
         if (renderElement === null) {
           v = null;
@@ -1724,7 +1725,7 @@ Table.propTypes = {
   onMount: PropTypes.func,
 
   /** 表格全局id，通过此id记忆表格配置，由于采用localStorage存储配置，需保证id唯一 */
-  tableId: function(props, propName, componentName) {
+  tableId: function (props, propName, componentName) {
     let count = 0;
     let v = props[propName];
 
