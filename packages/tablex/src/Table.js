@@ -502,6 +502,7 @@ class Table extends React.Component {
   getData = () => {
     let { data, sortedColumns, groupedColumnKey } = this.state;
     let rowKey = this.props.rowKey;
+    let fn = this.props.getGroupColumnValue;
     let arr = data;
 
     let orderColumns = [];
@@ -529,7 +530,8 @@ class Table extends React.Component {
       arr = getGroupedData({
         groupedKey: groupedColumnKey,
         data: arr,
-        keyField: rowKey
+        keyField: rowKey,
+        getValue: fn
       });
     }
 
@@ -1674,6 +1676,9 @@ Table.propTypes = {
 
   /** 根据此列进行数据分组 */
   groupedColumnKey: PropTypes.array,
+
+  /** 列分组时可通过此方法自定义列值 */
+  getGroupColumnValue: PropTypes.func,
 
   /** 数据分组列汇总 */
   groupedColumnSummary: PropTypes.shape({

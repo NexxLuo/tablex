@@ -298,9 +298,9 @@ export function treeFind({
     const extraInfo = isPseudoRoot
       ? null
       : {
-          path: selfPath,
-          treeIndex: currentIndex
-        };
+        path: selfPath,
+        treeIndex: currentIndex
+      };
 
     // Nodes with with children that aren't lazy
     const hasChildren =
@@ -483,7 +483,7 @@ export function deleteData(data, keys, rowKey) {
   //此处，保证返回的数据均属于同一个引用
   let newDataToFlat = [];
 
-  treeFilter(newData, function(d) {
+  treeFilter(newData, function (d) {
     newDataToFlat.push(d);
     return true;
   });
@@ -579,7 +579,7 @@ export function insertData({
   let newDataInserted = [];
   let newDataInsertedKeys = [];
 
-  treeFilter(newData, function(d) {
+  treeFilter(newData, function (d) {
     newDataToFlat.push(d);
     let k = d[rowKey];
     if (insertRowsKeyMap[k] === true) {
@@ -598,13 +598,24 @@ export function insertData({
   };
 }
 
-function groupData({ groupedKey = "", data = [], keyField = "", prefix = "" }) {
+function groupData({ groupedKey = "", data = [], keyField = "", prefix = "", getValue }) {
   let rows = data;
 
   let key = groupedKey;
   let rowKey = keyField;
 
-  let g = groupBy(rows, key);
+  let fn = (item) => {
+    return getValue(item, key);
+  }
+
+  let g = {};
+
+  if (typeof getValue === "function") {
+    g = groupBy(rows, fn)
+  } else {
+    g = groupBy(rows, key)
+  }
+
   let arr = [];
   Object.keys(g).forEach((k, i) => {
     let childrens = g[k] || [];
@@ -629,14 +640,14 @@ function groupData({ groupedKey = "", data = [], keyField = "", prefix = "" }) {
 }
 
 /** 根据多个字段对数据进行分组 */
-export function getGroupedData({ groupedKey = [], data = [], keyField = "" }) {
+export function getGroupedData({ groupedKey = [], data = [], keyField = "", getValue }) {
   let arr = data;
 
   for (let i = 0; i < groupedKey.length; i++) {
     const k = groupedKey[i];
 
     if (i > 0) {
-      treeFilter(arr, function(d, j, { depth, treeIndex }) {
+      treeFilter(arr, function (d, j, { depth, treeIndex }) {
         if (depth === i - 1) {
           let childrens = d.children;
           if (childrens instanceof Array) {
@@ -644,7 +655,8 @@ export function getGroupedData({ groupedKey = [], data = [], keyField = "" }) {
               groupedKey: k,
               data: childrens,
               keyField: keyField,
-              prefix: k + "-children-" + treeIndex
+              prefix: k + "-children-" + treeIndex,
+              getValue
             });
           }
         }
@@ -654,7 +666,8 @@ export function getGroupedData({ groupedKey = [], data = [], keyField = "" }) {
       arr = groupData({
         groupedKey: k,
         data: arr,
-        keyField: keyField
+        keyField: keyField,
+        getValue
       });
     }
   }
