@@ -380,6 +380,9 @@ class Table extends React.Component {
     },
     matchColumnContentWidth: fn => {
       return this.matchColumnContentWidth(fn);
+    },
+    getSummaryData: () => {
+      return this.getSummaryData(true)
     }
   };
 
