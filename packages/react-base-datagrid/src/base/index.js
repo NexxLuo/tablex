@@ -621,9 +621,11 @@ const AutoSizerTable = forwardRef(function AutoSizeTable(props, ref) {
     <ReactResizeDetector handleWidth handleHeight>
       {({ width, height }) => {
         if (height === undefined || height === null) {
-          if (props.autoHeight === true) {
-          } else {
-            return <div></div>;
+          if (props.renderInTimeWhenNotDetectHeight !== true) {
+            if (props.autoHeight === true) {
+            } else {
+              return <div></div>;
+            }
           }
         }
         return (
@@ -657,6 +659,7 @@ BaseDataGrid.defaultProps = {
   bordered: true,
   virtual: true,
   autoHeight: false,
+  renderInTimeWhenDetectHeight: false,
   scrollOptimize: false
 };
 
@@ -666,6 +669,9 @@ BaseDataGrid.propTypes = {
 
   /** 是否自动高度，为true时表格的高度将会随行数而变化 */
   autoHeight: PropTypes.bool,
+
+  /** 在还未监测到高度时是否依然即时渲染表格，为true时可能会造成表格高度闪动 */
+  renderInTimeWhenNotDetectHeight: PropTypes.bool,
 
   /** 表格区域最小高度 */
   minHeight: PropTypes.number,
