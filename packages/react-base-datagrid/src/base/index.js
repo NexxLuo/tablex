@@ -506,11 +506,16 @@ class BaseDataGrid extends React.Component {
 
     cls = cls.join(" ");
 
-    let sideTableScrollbarX = scrollbarX > 0 ? scrollbarX : 0;
+    let sideTableScrollbarX = null;
+    if (scrollbarX === 0) {
+      sideTableScrollbarX = 0;
+    }
+
     if (autoHeight === true) {
-      sideTableScrollbarX = null;
       tableHeight = tableHeight + this.getFrozenHeight();
     }
+
+    let sideTableHeight = tableHeight - scrollbarX;
 
     return (
       <div className={cls} ref={this.containerRef}>
@@ -548,7 +553,7 @@ class BaseDataGrid extends React.Component {
               <Table
                 {...attrs}
                 headStyle={{ width: leftWidth }}
-                containerHeight={tableHeight - scrollbarX}
+                containerHeight={sideTableHeight}
                 scrollbarX={sideTableScrollbarX}
                 columns={left}
                 style={{ overflowX: "hidden" }}
@@ -594,7 +599,7 @@ class BaseDataGrid extends React.Component {
           >
             <Table
               {...attrs}
-              containerHeight={tableHeight - scrollbarX}
+              containerHeight={sideTableHeight}
               scrollbarX={sideTableScrollbarX}
               headStyle={{ width: rightWidth }}
               columns={right}
