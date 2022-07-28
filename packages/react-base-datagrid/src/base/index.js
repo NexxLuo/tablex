@@ -627,10 +627,11 @@ const AutoSizerTable = forwardRef(function AutoSizeTable(props, ref) {
       {({ width, height }) => {
         if (height === undefined || height === null) {
           if (props.renderInTimeWhenNotDetectHeight !== true) {
-            if (props.autoHeight === true) {
-            } else {
-              return <div></div>;
-            }
+            height = 100;
+          }
+          if (props.autoHeight === true) {
+          } else {
+            return <div></div>;
           }
         }
         return (
