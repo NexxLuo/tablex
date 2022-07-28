@@ -62,8 +62,8 @@ function createColumns(count) {
         );
       },
 
-      validator: (value, row) => {
-        console.log("vallue:",value)
+      validator2: (value, row) => {
+        console.log('vallue:', value);
         if (value !== 'a') {
           return { valid: false, message: '输入错误' };
         } else {
@@ -81,6 +81,8 @@ class Demo extends Component {
     loading: false,
     treeData: [],
     columns: [],
+    pageIndex: 1,
+    pageSize: 10,
   };
 
   getData = () => {
@@ -268,7 +270,20 @@ class Demo extends Component {
           virtual={true}
           data={this.state.treeData}
           validateNoEditting={true}
-          autoRowHeight={false}
+          onEditSave={(a,b)=>{
+            this.setState({treeData:b})
+          }}
+          pagination={{
+            pageSize: this.state.pageSize,
+            current: this.state.pageIndex,
+            onPageChange: (i, s) => {
+              console.log('onPageChange:',i,s);
+              this.setState({
+                pageIndex: i,
+                pageSize: s,
+              });
+            },
+          }}
           orderNumber={{ resizable: true }}
           contextMenu={this.contentMenu}
           validateTrigger="onChange"
