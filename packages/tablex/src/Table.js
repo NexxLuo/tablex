@@ -37,7 +37,7 @@ function toNumber(v) {
 let summaryMath = {
   max: (items, key) => {
     let r =
-      maxBy(items, function (o) {
+      maxBy(items, function(o) {
         return toNumber(o[key]);
       }) || {};
 
@@ -45,14 +45,14 @@ let summaryMath = {
   },
   min: (items, key) => {
     let r =
-      minBy(items, function (o) {
+      minBy(items, function(o) {
         return toNumber(o[key]);
       }) || {};
 
     return r[key];
   },
   average: (items, key) => {
-    let sum = sumBy(items, function (o) {
+    let sum = sumBy(items, function(o) {
       return toNumber(o[key]);
     });
 
@@ -63,7 +63,7 @@ let summaryMath = {
     }
   },
   avg: (items, key) => {
-    let sum = sumBy(items, function (o) {
+    let sum = sumBy(items, function(o) {
       return toNumber(o[key]);
     });
 
@@ -74,7 +74,7 @@ let summaryMath = {
     }
   },
   sum: (items, key) => {
-    let r = sumBy(items, function (o) {
+    let r = sumBy(items, function(o) {
       return toNumber(o[key]);
     });
 
@@ -288,7 +288,12 @@ class Table extends React.Component {
             const inner = headCell.getElementsByClassName(
               "tablex__head__cell__title__inner"
             )[0];
-            if (inner && title && ck && title.scrollWidth >= title.clientWidth) {
+            if (
+              inner &&
+              title &&
+              ck &&
+              title.scrollWidth >= title.clientWidth
+            ) {
               minWidths[ck] = inner.offsetWidth + 40;
             }
           }
@@ -382,7 +387,7 @@ class Table extends React.Component {
       return this.matchColumnContentWidth(fn);
     },
     getSummaryData: () => {
-      return this.getSummaryData(true)
+      return this.getSummaryData(true);
     }
   };
 
@@ -489,14 +494,16 @@ class Table extends React.Component {
       current = this.getMaxCurrent(state.pagination.total || data.length);
     }
 
-    // 分页
-    // ---
-    // 当数据量少于等于每页数量时，直接设置数据
-    // 否则进行读取分页数据
-    if (data.length > pageSize) {
-      data = data.filter((_, i) => {
-        return i >= (current - 1) * pageSize && i < current * pageSize;
-      });
+    if (!this.props.shouldHoldPage) {
+      // 分页
+      // ---
+      // 当数据量少于等于每页数量时，直接设置数据
+      // 否则进行读取分页数据
+      if (data.length > pageSize) {
+        data = data.filter((_, i) => {
+          return i >= (current - 1) * pageSize && i < current * pageSize;
+        });
+      }
     }
 
     return data;
@@ -1048,7 +1055,14 @@ class Table extends React.Component {
       }
     }
 
-    let dataTotal = pageAttr.total;
+    let dataTotal = 0;
+
+    if (this.props.shouldHoldPage) {
+      dataTotal = pageAttr.total;
+    } else {
+      dataTotal = pageAttr.total ?? data.length;
+    }
+
     if (data.length === 0) {
       dataTotal = 0;
     }
@@ -1733,7 +1747,7 @@ Table.propTypes = {
   onMount: PropTypes.func,
 
   /** 表格全局id，通过此id记忆表格配置，由于采用localStorage存储配置，需保证id唯一 */
-  tableId: function (props, propName, componentName) {
+  tableId: function(props, propName, componentName) {
     let count = 0;
     let v = props[propName];
 

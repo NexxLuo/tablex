@@ -2143,6 +2143,17 @@ class EditableTable extends React.Component {
     }
   };
 
+  shouldHoldPage = () => {
+    let bl = false;
+    let { isAdding, isAddingRange, isAppend } = this.state;
+    if (isAdding === true || isAddingRange === true) {
+      if (isAppend === true) {
+        bl = true;
+      }
+    }
+    return bl;
+  };
+
   getDataRows = () => {
     let { data, isAdding, isAddingRange, isAppend } = this.state;
     let insertedData = this.insertedData;
@@ -2570,6 +2581,7 @@ class EditableTable extends React.Component {
 
     let newProps = {
       data: arr,
+      shouldHoldPage: this.shouldHoldPage(),
       columns,
       onSelectChange: this.onSelectChange,
       onExpandedRowsChange: this.onExpandedRowsChange,
