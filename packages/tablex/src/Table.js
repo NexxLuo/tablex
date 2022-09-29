@@ -770,6 +770,9 @@ class Table extends React.Component {
       groupedColumnKey
     } = this.state;
 
+    let { data: summaryTypes = [] } =
+      this.props.groupedColumnSummary || {};
+
     let configs = columnsConfig || {};
 
     let arr = [];
@@ -822,6 +825,7 @@ class Table extends React.Component {
     let rightColumnsCount = 0;
     let middleColumnsCount = 0;
     let hasGroupColumn = false;
+    let hasGroupColumnSummary = false;
     if (groupedColumnKey instanceof Array && groupedColumnKey.length > 0) {
       hasGroupColumn = true;
     }
@@ -905,86 +909,145 @@ class Table extends React.Component {
           </div>
         );
       };
+
+      if (hasGroupColumn) {
+        let isGroupedSummary = summaryTypes.findIndex(_d => _d.dataIndex === columnKey) > -1
+        if (isGroupedSummary) {
+          hasGroupColumnSummary = true;
+          let oldRender = d.render;
+          d.render = (value, row, index, extra) => {
+            if (row && row.__isGroupedHeadRow) {
+              const obj = {
+                children: (
+                  <span>
+                    {this.getColumnGroupSummary(row.children || [], row, columnKey)}
+                  </span>
+                ),
+              };
+              return obj;
+            } else {
+              let columnValue = value;
+              if (typeof oldRender === "function") {
+                columnValue = oldRender(value, row, index, extra);
+              }
+              return columnValue;
+            }
+          };
+        }
+      }
     });
 
     //数据分组的首行，进行相应的列合并
+    //根据条件进行合并
     let firstColumn = firstLeftColumn || firstMiddleColumn || firstRightColumn;
 
     if (hasGroupColumn && firstColumn) {
       firstColumn.align = "left";
       let oldRender = firstColumn.render;
 
-      firstColumn.render = (value, row, index, extra) => {
-        if (row && row.__isGroupedHeadRow) {
-          let groupLable = groupColumnName[row.__groupColumnKey] || "";
-          if (groupLable) {
-            groupLable += ":";
+      if (hasGroupColumnSummary) {
+        firstColumn.render = (value, row, index, extra) => {
+          if (row && row.__isGroupedHeadRow) {
+            let groupLable = groupColumnName[row.__groupColumnKey] || "";
+            if (groupLable) {
+              groupLable += ":";
+            }
+            const obj = {
+              children: (
+                <span>
+                  <label style={{ fontWeight: "bold" }}>{groupLable}</label>
+                  {row.__groupName || ""}
+                  <label style={{ fontWeight: "bold" }}>({row.__count})</label>
+                  {this.getColumnGroupSummary(row.children || [], row, firstColumn.dataIndex)}
+                </span>
+              )
+            };
+            return obj;
+          } else {
+            let firstColumnValue = value;
+
+            if (typeof oldRender === "function") {
+              firstColumnValue = oldRender(value, row, index, extra);
+            }
+            return firstColumnValue;
           }
-          const obj = {
-            children: (
-              <span>
-                <label style={{ fontWeight: "bold" }}>{groupLable}</label>
-                {row.__groupName || ""}
-                <label style={{ fontWeight: "bold" }}>({row.__count})</label>
-                {this.getColumnGroupSummary(row.children || [], row)}
-              </span>
-            ),
-            props: {
-              colSpan: cols.length - leftColumnsCount - rightColumnsCount + 1
+        };
+      } else {
+        firstColumn.render = (value, row, index, extra) => {
+          if (row && row.__isGroupedHeadRow) {
+            let groupLable = groupColumnName[row.__groupColumnKey] || "";
+            if (groupLable) {
+              groupLable += ":";
+            }
+            const obj = {
+              children: (
+                <span>
+                  <label style={{ fontWeight: "bold" }}>{groupLable}</label>
+                  {row.__groupName || ""}
+                  <label style={{ fontWeight: "bold" }}>({row.__count})</label>
+                  {this.getColumnGroupSummary(row.children || [], row, firstColumn.dataIndex)}
+                </span>
+              ),
+              props: {
+                colSpan: cols.length - leftColumnsCount - rightColumnsCount + 1
+              }
+            };
+            return obj;
+          } else {
+            let firstColumnValue = value;
+
+            if (typeof oldRender === "function") {
+              firstColumnValue = oldRender(value, row, index, extra);
+            }
+            return firstColumnValue;
+          }
+        };
+
+
+
+        if (firstMiddleColumn && firstColumn !== firstMiddleColumn) {
+          let renderFn = firstMiddleColumn.render;
+
+          firstMiddleColumn.render = (value, row, index, extra) => {
+            if (row && row.__isGroupedHeadRow) {
+              return {
+                props: {
+                  colSpan: middleColumnsCount
+                },
+                children: null
+              };
+            } else {
+              let val = value;
+              if (typeof renderFn === "function") {
+                val = renderFn && renderFn(value, row, index, extra);
+              }
+              return val;
             }
           };
-          return obj;
-        } else {
-          let firstColumnValue = value;
-
-          if (typeof oldRender === "function") {
-            firstColumnValue = oldRender(value, row, index, extra);
-          }
-          return firstColumnValue;
         }
-      };
 
-      if (firstMiddleColumn && firstColumn !== firstMiddleColumn) {
-        let renderFn = firstMiddleColumn.render;
+        if (firstRightColumn && firstColumn !== firstRightColumn) {
+          let renderFn = firstRightColumn.render;
 
-        firstMiddleColumn.render = (value, row, index, extra) => {
-          if (row && row.__isGroupedHeadRow) {
-            return {
-              props: {
-                colSpan: middleColumnsCount
-              },
-              children: null
-            };
-          } else {
-            let val = value;
-            if (typeof renderFn === "function") {
-              val = renderFn && renderFn(value, row, index, extra);
+          firstRightColumn.render = (value, row, index, extra) => {
+            if (row && row.__isGroupedHeadRow) {
+              return {
+                props: {
+                  colSpan: rightColumnsCount
+                },
+                children: null
+              };
+            } else {
+              let val = value;
+              if (typeof renderFn === "function") {
+                val = renderFn && renderFn(value, row, index, extra);
+              }
+              return val;
             }
-            return val;
-          }
-        };
+          };
+        }
       }
 
-      if (firstRightColumn && firstColumn !== firstRightColumn) {
-        let renderFn = firstRightColumn.render;
-
-        firstRightColumn.render = (value, row, index, extra) => {
-          if (row && row.__isGroupedHeadRow) {
-            return {
-              props: {
-                colSpan: rightColumnsCount
-              },
-              children: null
-            };
-          } else {
-            let val = value;
-            if (typeof renderFn === "function") {
-              val = renderFn && renderFn(value, row, index, extra);
-            }
-            return val;
-          }
-        };
-      }
     }
     //
 
@@ -1233,7 +1296,7 @@ class Table extends React.Component {
     this.innerTableRef && this.innerTableRef.scrollTo(0);
   }
 
-  getColumnGroupSummary = (data = [], row) => {
+  getColumnGroupSummary = (data = [], row, columnKey) => {
     let { style: wrapperStyle, className, data: summaryTypes = [], render } =
       this.props.groupedColumnSummary || {};
 
@@ -1244,40 +1307,36 @@ class Table extends React.Component {
     summaryTypes.forEach((d, i) => {
       let { dataIndex, title, type, style: itemStyle } = d;
 
-      let itemStyles = itemStyle || { marginLeft: 10 };
-
-      let fn = summaryMath[type];
-
-      let summaryValue = "";
-
-      if (typeof fn === "function") {
-        summaryValue = fn(flatData, dataIndex);
-        if (typeof summaryValue === "undefined") {
-          summaryValue = "";
+      if (columnKey === dataIndex) {
+        let itemStyles = itemStyle || {};
+        let fn = summaryMath[type];
+        let summaryValue = "";
+        if (typeof fn === "function") {
+          summaryValue = fn(flatData, dataIndex);
+          if (typeof summaryValue === "undefined") {
+            summaryValue = "";
+          }
         }
-      }
-
-      let v = title + ":" + summaryValue;
-
-      if (typeof render === "function") {
-        let renderElement = render(v, summaryValue, {
-          dataIndex,
-          title,
-          type,
-          row: row
-        });
-        if (renderElement === null) {
-          v = null;
-        } else if (renderElement !== undefined) {
-          v = renderElement;
+        let v = summaryValue;
+        if (typeof render === "function") {
+          let renderElement = render(v, summaryValue, {
+            dataIndex,
+            title,
+            type,
+            row: row
+          });
+          if (renderElement === null) {
+            v = null;
+          } else if (renderElement !== undefined) {
+            v = renderElement;
+          }
         }
+        arr.push(
+          <span style={itemStyles} key={type + "-" + i}>
+            {v}
+          </span>
+        );
       }
-
-      arr.push(
-        <span style={itemStyles} key={type + "-" + i}>
-          {v}
-        </span>
-      );
     });
 
     if (arr.length > 0) {
