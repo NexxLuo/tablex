@@ -37,7 +37,7 @@ function toNumber(v) {
 let summaryMath = {
   max: (items, key) => {
     let r =
-      maxBy(items, function(o) {
+      maxBy(items, function (o) {
         return toNumber(o[key]);
       }) || {};
 
@@ -45,14 +45,14 @@ let summaryMath = {
   },
   min: (items, key) => {
     let r =
-      minBy(items, function(o) {
+      minBy(items, function (o) {
         return toNumber(o[key]);
       }) || {};
 
     return r[key];
   },
   average: (items, key) => {
-    let sum = sumBy(items, function(o) {
+    let sum = sumBy(items, function (o) {
       return toNumber(o[key]);
     });
 
@@ -63,7 +63,7 @@ let summaryMath = {
     }
   },
   avg: (items, key) => {
-    let sum = sumBy(items, function(o) {
+    let sum = sumBy(items, function (o) {
       return toNumber(o[key]);
     });
 
@@ -74,7 +74,7 @@ let summaryMath = {
     }
   },
   sum: (items, key) => {
-    let r = sumBy(items, function(o) {
+    let r = sumBy(items, function (o) {
       return toNumber(o[key]);
     });
 
@@ -316,6 +316,17 @@ class Table extends React.Component {
             const inner = cell.getElementsByClassName(
               "tablex-table-row-cell-inner"
             )[0];
+
+
+            const expandIcon = cell.getElementsByClassName(
+              "tablex-row-expand"
+            )[0];
+
+            let expandIconWidth = 0;
+            if (expandIcon) {
+              expandIconWidth = expandIcon.offsetLeft + expandIcon.clientWidth
+            }
+
             if (inner) {
               if (inner.scrollWidth > inner.clientWidth) {
                 let scrollWidth = inner.scrollWidth + 2;
@@ -331,6 +342,7 @@ class Table extends React.Component {
                   }
                 }
               }
+              maxWidth = maxWidth + expandIconWidth;
             }
           }
         }
@@ -1747,7 +1759,7 @@ Table.propTypes = {
   onMount: PropTypes.func,
 
   /** 表格全局id，通过此id记忆表格配置，由于采用localStorage存储配置，需保证id唯一 */
-  tableId: function(props, propName, componentName) {
+  tableId: function (props, propName, componentName) {
     let count = 0;
     let v = props[propName];
 

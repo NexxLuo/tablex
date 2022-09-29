@@ -188,6 +188,17 @@ class Resizer extends React.Component {
           const inner = cell.getElementsByClassName(
             "tablex-table-row-cell-inner"
           )[0];
+
+          const expandIcon = cell.getElementsByClassName(
+            "tablex-row-expand"
+          )[0];
+
+          let expandIconWidth = 0;
+
+          if (expandIcon) {
+            expandIconWidth = expandIcon.offsetLeft + expandIcon.clientWidth
+          }
+
           if (inner) {
             if (inner.scrollWidth > inner.clientWidth) {
               let scrollWidth = inner.scrollWidth + 2;
@@ -203,6 +214,7 @@ class Resizer extends React.Component {
                 }
               }
             }
+            maxWidth = maxWidth + expandIconWidth;
           }
         }
       }
