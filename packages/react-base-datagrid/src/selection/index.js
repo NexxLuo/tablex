@@ -395,7 +395,7 @@ class SelectionGrid extends Component {
     let fn = this.getRowSelection("onChange");
 
     if (typeof rfn === "function") {
-      rfn(keys, rows), { halfKeys };
+      rfn(keys, rows, { halfKeys });
     } else if (typeof fn === "function") {
       fn(keys, rows, { halfKeys });
     }
