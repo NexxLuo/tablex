@@ -148,13 +148,27 @@ export interface RowSelectionProps {
   showCheckbox: boolean;
   selectOnCheck: boolean;
   checkOnSelect: boolean;
-  onBeforeSelect: () => boolean;
-  onSelect: () => void;
-  onSelectAll: () => void;
-  onCheck: () => void;
-  onBeforeCheck: () => boolean;
-  onBeforeCheckAll: () => void;
-  onChange: () => void;
+  onBeforeSelect: (params: any) => boolean;
+  onSelect: (
+    row: any,
+    selected: boolean,
+    selectedRows: any[],
+    extra: any
+  ) => void;
+  onUnSelect: (
+    row: any,
+    selected: boolean,
+    selectedRows: any[],
+    extra: any
+  ) => void;
+  onSelectChange: (keys: string[], rows: any[], extra: any) => void;
+  onSelectAll: (selected: boolean, rows: any[], changed: any[]) => void;
+  onCheck: (row: any, checked: boolean, checkedRows: any[], extra: any) => void;
+  onBeforeCheck: (params: any) => boolean;
+  onCheckChange: (keys: string[], rows: any[], extra: any) => void;
+  onCheckAll: (checked: boolean, rows: any[], changed: any[]) => void;
+  onBeforeCheckAll: (params: any) => boolean;
+  onChange: (keys: string[], rows: any[], extra: any) => void;
 }
 
 export interface TableProps<T> {
@@ -166,6 +180,7 @@ export interface TableProps<T> {
   minHeight?: number;
   maxHeight?: number;
   autoHeight?: boolean;
+  autoRowHeight?: boolean;
   className?: string;
 
   rowClassName?: (record: any, index: number) => string;
