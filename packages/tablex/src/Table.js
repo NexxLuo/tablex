@@ -329,20 +329,19 @@ class Table extends React.Component {
 
             if (inner) {
               if (inner.scrollWidth > inner.clientWidth) {
-                let scrollWidth = inner.scrollWidth + 2;
+                let scrollWidth = inner.scrollWidth + 2 + expandIconWidth;
                 if (scrollWidth > maxWidth) {
                   maxWidth = scrollWidth;
                 }
               } else {
                 let child = inner.firstChild;
                 if (child && child.offsetWidth !== child.clientWidth) {
-                  let offsetWidth = child.offsetWidth + 2 + 10;
+                  let offsetWidth = child.offsetWidth + 2 + 10 + expandIconWidth;
                   if (offsetWidth > maxWidth) {
                     maxWidth = offsetWidth;
                   }
                 }
               }
-              maxWidth = maxWidth + expandIconWidth;
             }
           }
         }
