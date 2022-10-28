@@ -266,6 +266,7 @@ export interface TableProps<T> {
     indent: number,
     expanded: boolean
   ) => React.ReactNode;
+  onSetExpandedRowRender?: (record: T, index: number) => boolean;
   expandRowHeight?: number | ((record: object, index: number) => number);
   defaultExpandedRowKeys?: string[] | number[];
   expandedRowKeys?: string[] | number[];

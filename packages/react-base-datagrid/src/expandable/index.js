@@ -6,7 +6,7 @@ import { getDataListWithExpanded, getTreeProps } from "./utils";
 import ExpandIcon from "./ExpandIcon";
 import "./styles.css";
 
-function formatExpandRenderData(data, rowKey, render) {
+function formatExpandRenderData(data, rowKey, render, onSet) {
   let nextData = data;
 
   let keys = [];
@@ -14,18 +14,27 @@ function formatExpandRenderData(data, rowKey, render) {
   if (typeof render === "function") {
     let arr = [];
     data.forEach((d, i) => {
-      let key = "__expandedRowRender_" + d[rowKey];
-      keys.push(key);
-      arr.push(
-        Object.assign({}, d, {
-          children: [
-            {
-              __type: "__expandedRowRender",
-              [rowKey]: key
-            }
-          ]
-        })
-      );
+      let bl = true;
+      if (typeof onSet === "function") {
+        bl = onSet(d, i)
+      }
+      if (bl === false) {
+        arr.push(d);
+      } else {
+        let key = "__expandedRowRender_" + d[rowKey];
+        keys.push(key);
+        arr.push(
+          Object.assign({}, d, {
+            children: [
+              {
+                __type: "__expandedRowRender",
+                [rowKey]: key
+              }
+            ]
+          })
+        );
+      }
+
     });
 
     nextData = arr;
@@ -75,14 +84,16 @@ class TreeGrid extends Component {
       expandedRowRender,
       expandedRowKeys,
       disabledSelectKeys,
-      indentSize
+      indentSize,
+      onSetExpandedRowRender
     } = nextProps;
 
     //如果存在自定义展开行渲染，需要进行数据源处理
     let { data: nextData, keys } = formatExpandRenderData(
       data,
       rowKey,
-      expandedRowRender
+      expandedRowRender,
+      onSetExpandedRowRender
     );
 
     if (prevState.prevProps !== nextProps) {
@@ -98,7 +109,7 @@ class TreeGrid extends Component {
 
       if (data !== prevState.rawData) {
         let dataMap = {};
-        let { treeProps, list } = getTreeProps(nextData, rowKey, function(d) {
+        let { treeProps, list } = getTreeProps(nextData, rowKey, function (d) {
           dataMap[d[rowKey]] = d;
         });
 
@@ -288,7 +299,7 @@ class TreeGrid extends Component {
         if (childrens) {
           row.children = childrens;
           let dataMap = {};
-          let { treeProps, list } = getTreeProps(rawData, rowKey, function(d) {
+          let { treeProps, list } = getTreeProps(rawData, rowKey, function (d) {
             dataMap[d[rowKey]] = d;
           });
 
@@ -708,6 +719,9 @@ TreeGrid.propTypes = {
 
   /** 展开行渲染 */
   expandedRowRender: PropTypes.func,
+
+  /** 展开行渲染事件，可通过此事件条件处理哪些行可展开,返回false将不可展开 */
+  onSetExpandedRowRender: PropTypes.func,
 
   /** 展开行高度 */
   expandRowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),

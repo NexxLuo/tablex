@@ -247,7 +247,14 @@ class Demo extends Component {
           checkStrictly={false}
           virtual={true}
           data={this.state.treeData}
-          autoRowHeight={false}
+          expandedRowRender={()=><div>asdasd</div>}
+          onSetExpandedRowRender={(d,i)=>{
+
+            if ((i+1)%4===0) {
+              return false
+            }
+
+          }}
           orderNumber={{ resizable: true }}
           contextMenu={this.contentMenu}
           validateTrigger="onChange"
