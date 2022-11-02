@@ -18,8 +18,8 @@ import ASelect from "antd/lib/select";
 
 import "./style.css";
 
-import "antd/es/select/style/css"; // 加载 CSS
-import "antd/es/popconfirm/style/css"; // 加载 CSS
+import "antd/lib/select/style/css"; // 加载 CSS
+import "antd/lib/popconfirm/style/css"; // 加载 CSS
 
 
 function Button(props) {
