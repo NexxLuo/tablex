@@ -47,6 +47,7 @@ export interface ColumnProps<T> {
   editingVisible?: boolean;
   settable?: boolean;
   sortable?: boolean;
+  resizable?: boolean;
   dropMenu?: boolean;
   validator?: (text: any, record: T, index: number) => ValidateResult;
   editor?: (
@@ -57,16 +58,16 @@ export interface ColumnProps<T> {
     ref: (ins: any) => void,
     validate: () => void
   ) => React.ReactNode;
-  colSpan: number;
-  rowSpan: number;
-  onCell: (row: object, rowIndex: number, extra: any) => object;
-  onHeaderCell: (column: object) => object;
+  colSpan?: number;
+  rowSpan?: number;
+  onCell?: (row: object, rowIndex: number, extra: any) => object;
+  onHeaderCell?: (column: object) => object;
 }
 
 export interface TableComponents {
-  row?: React.ReactType;
-  head?: React.ReactType;
-  body?: React.ReactType;
+  row?: React.ElementType;
+  head?: React.ElementType;
+  body?: React.ElementType;
 }
 
 export interface PaginationProps {
@@ -182,6 +183,7 @@ export interface TableProps<T> {
   autoHeight?: boolean;
   autoRowHeight?: boolean;
   className?: string;
+  virtual?: boolean;
 
   rowClassName?: (record: any, index: number) => string;
   selectionColumn?: false | null | ColumnProps<T>;
@@ -213,6 +215,7 @@ export interface TableProps<T> {
   onRefresh?: (pageIndex, pageSize) => void;
   defaultGroupedColumnKey?: string[];
   groupedColumnKey?: string[];
+  autoRowSpanColumns?: string[];
   groupedColumnSummary?: {
     style?: object;
     className?: string;
@@ -284,7 +287,7 @@ export interface TableProps<T> {
   editTools?: EditTools;
   editToolsConfig?: EditToolsConfig;
   extraTools?: (ins: any) => React.ReactNode;
-  edittingToolsShowType: 0 | 1 | 2 | 3;
+  edittingToolsShowType?: 0 | 1 | 2 | 3;
   intl?: any;
   isAppend?: boolean;
   ignoreEmptyRow?: boolean;
@@ -329,4 +332,20 @@ export interface TableProps<T> {
   singleRowEdit?: boolean;
 }
 
-export default class Table<T> extends React.Component<TableProps<T>, any> {}
+declare class Table<T> extends React.Component<TableProps<T>, any> {}
+
+export declare function flatten(
+  arr: any[],
+  removeChildren?: boolean
+): { list: any[]; leafs: any[]; roots: any[] };
+
+export declare function unflatten(
+  flatData: any[],
+  idField: string,
+  pidField: string,
+  rootKey?: string
+): any[];
+
+export default Table;
+
+export { Table };
