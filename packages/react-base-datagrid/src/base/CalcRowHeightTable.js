@@ -77,6 +77,7 @@ class ClacTable extends Component {
       >
         <Table
           data={data}
+          disabledRowSpan={true}
           rowKey={rowKey}
           containerHeight={1}
           headerHeight={0}

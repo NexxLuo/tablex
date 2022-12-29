@@ -120,12 +120,19 @@ const RowPlaceholder = props => {
     columnRowSpanPlaceholders
   } = props;
 
-  let extraAttr = onRow(row, index, {}, {}) || {};
+  let extraAttr = {};
+
+  if (typeof onRow === "function") {
+    extraAttr = onRow(row, index, {}, {}) || {}
+  }
 
   let cls = ["tablex-table-row tablex-table-row-placeholder"];
   cls.push("tablex-table-row-placeholder-" + endIndex);
 
-  let rc = rowClassName({ rowData: row, rowIndex: index });
+  let rc = "";
+  if (typeof rowClassName === "function") {
+    rc = rowClassName({ rowData: row, rowIndex: index });
+  }
   if (rc) {
     cls.push(rc);
   }
@@ -186,7 +193,8 @@ const TableCell = props => {
     cellRenderExtra,
     columnStyle,
     rowHeight,
-    extra
+    extra,
+    disabledRowSpan
   } = props;
 
   let value = row[dataIndex];
@@ -262,14 +270,13 @@ const TableCell = props => {
 
       cellElement = children;
 
-      if (typeof rowSpan !== "undefined") {
+      if (typeof rowSpan !== "undefined" && disabledRowSpan !== true) {
         if (rowSpan === 0) {
           cellElement = null;
         } else if (rowSpan > 1) {
           let rowSpanEnd = rowIndex + rowSpan;
           let endRowKey = getRowKey(rowSpanEnd);
           let h = getRowsHeight(rowIndex, rowSpanEnd);
-
           if (columnRowSpan[columnKey]) {
             columnRowSpan[columnKey][rowKey] = {
               start: rowIndex,
@@ -421,7 +428,8 @@ const ListItem = memo(function TableRow({ data, index, style }) {
     placeholders,
     columnRowSpan,
     columnRowSpanPlaceholders,
-    autoItemSize
+    autoItemSize,
+    disabledRowSpan
   } = data;
   let row = rows[index];
 
@@ -474,6 +482,7 @@ const ListItem = memo(function TableRow({ data, index, style }) {
         columnRowSpan={columnRowSpan}
         columnRowSpanPlaceholders={columnRowSpanPlaceholders}
         onCell={onCell}
+        disabledRowSpan={disabledRowSpan}
         {...d}
       />
     );
@@ -537,7 +546,7 @@ const ListItem = memo(function TableRow({ data, index, style }) {
   //如果此行为rowspan的最后一行，额外添加占位行
   let rowExtraElements = [];
 
-  if (columnRowSpanPlaceholders[k]) {
+  if (disabledRowSpan !== true && columnRowSpanPlaceholders[k]) {
     let rowCellSpan = columnRowSpanPlaceholders[k];
 
     Object.keys(rowCellSpan).forEach(ck => {
@@ -666,7 +675,6 @@ class DataList extends Component {
 
   getRowsHeight = (start, end) => {
     let { data, rowHeight, memorizedSize = {} } = this.props;
-
     let endIndex = end > data.length ? data.length : end;
 
     let rowsHeight = 0;
@@ -780,14 +788,15 @@ class DataList extends Component {
       onCell,
       overscanCount = 2,
       autoItemSize,
-      virtual
+      virtual,
+      disabledRowSpan
     } = this.props;
 
     let itemData = createItemData(data, columns, rowKey);
 
     itemData.placeholders = placeholders;
-
     itemData.onRow = onRow;
+    itemData.disabledRowSpan = disabledRowSpan;
     itemData.rowClassName = rowClassName;
     itemData.rowComponent = rowComponent;
     itemData.onRowComponent = onRowComponent;
