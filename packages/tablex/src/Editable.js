@@ -693,7 +693,7 @@ class EditableTable extends React.Component {
       values => {
         this.editChange(values, row, index);
       },
-      ins => {},
+      ins => { },
       {
         columnDataIndex: columnDataIndex,
         columnKey: columnKey,
@@ -754,8 +754,77 @@ class EditableTable extends React.Component {
     );
   };
 
+  getAutoRowSpanStore = () => {
+
+    let data = this.state.data;
+    let columns = this.props.autoRowSpanColumns;
+
+    let store = {};
+
+    if (columns instanceof Array && columns.length > 0) {
+
+      for (let i = 0; i < data.length; i++) {
+        const row = data[i];
+        const prev = data[i - 1];
+
+        for (let j = 0; j < columns.length; j++) {
+          const columnKey = columns[j];
+
+
+          if (prev) {
+            if (prev[columnKey] === row[columnKey]) {
+              let spanIndex = i;
+              for (let k = i; k > -1; k--) {
+                if (store[k]?.[columnKey]) {
+                  spanIndex = k;
+                  break;
+                }
+              }
+
+              let prevSpan = store[spanIndex]?.[columnKey];
+
+
+              if (prevSpan) {
+                store[spanIndex][columnKey] = prevSpan + 1
+              } else {
+                if (store[i]) {
+                  store[i][columnKey] = 1
+                } else {
+                  store[i] = {
+                    [columnKey]: 1
+                  }
+                }
+              }
+            } else {
+              if (store[i]) {
+                store[i][columnKey] = 1
+              } else {
+                store[i] = {
+                  [columnKey]: 1
+                }
+              }
+            }
+          } else {
+            if (store[i]) {
+              store[i][columnKey] = 1
+            } else {
+              store[i] = {
+                [columnKey]: 1
+              }
+            }
+          }
+        }
+      }
+
+    }
+
+    return store;
+  }
+
   formatColumns = () => {
     let { columns, editKeys, isEditAll, isEditing, columnOptions } = this.state;
+
+    let rowSpanStore = this.getAutoRowSpanStore();
 
     let rowKey = this.props.rowKey;
     let columnArr = cloneDeep(columns);
@@ -796,15 +865,28 @@ class EditableTable extends React.Component {
         if (columnIsEditing && hasEditor) {
           return this.renderEditor(value, row, index, d);
         } else {
+
+          let el = value;
           let rowAttr = this.getValidate(row, d.key);
           if (typeof rowAttr.valid === "boolean") {
-            return this.renderValidator(value, row, index, d.key, renderFn);
+            el = this.renderValidator(value, row, index, d.key, renderFn);
           } else {
             if (typeof renderFn === "function") {
-              return renderFn(value, row, index, extra);
+              el = renderFn(value, row, index, extra);
             }
-            return value;
           }
+
+          if (rowSpanStore[index]) {
+            let columnRowSpan = rowSpanStore[index][d.dataIndex];
+            if (typeof columnRowSpan === "number") {
+              return {
+                props: { rowSpan: columnRowSpan - 1 },
+                children: el
+              }
+            }
+          }
+
+          return el;
         }
       };
     });
@@ -2815,7 +2897,9 @@ EditableTable.propTypes = {
   singleRowEdit: PropTypes.bool,
   /** 单行编辑模式时,进入编辑触发方式，单击还是双击 */
   singleRowEditTrigger: PropTypes.oneOf(["onClick", "onDoubleClick"]),
-  onEditRowChange: PropTypes.func
+  onEditRowChange: PropTypes.func,
+  /** 相邻行的列值一致时自动进行合并 */
+  autoRowSpanColumns: PropTypes.array
 };
 
 export default EditableTable;
