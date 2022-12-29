@@ -877,10 +877,10 @@ class EditableTable extends React.Component {
           }
 
           if (rowSpanStore[index]) {
-            let columnRowSpan = rowSpanStore[index][d.dataIndex];
+            let columnRowSpan = rowSpanStore[index][d.key];
             if (typeof columnRowSpan === "number") {
               return {
-                props: { rowSpan: columnRowSpan - 1 },
+                props: { rowSpan: columnRowSpan },
                 children: el
               }
             }
