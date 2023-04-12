@@ -129,7 +129,7 @@
   height: 0px;
 }
 
-.tablex__emptydata__inner{
+.tablex__emptydata__inner {
   transform: translateY(-50%);
 }
 
@@ -248,6 +248,7 @@
   display: none;
   z-index: 99999;
   outline: none;
+  transition: visibility 0.3s;
 }
 
 .tablex-row-contextmenu-wrapper .tablex-row-contextmenu {

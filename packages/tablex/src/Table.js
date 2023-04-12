@@ -399,6 +399,12 @@ class Table extends React.Component {
     },
     getSummaryData: () => {
       return this.getSummaryData(true);
+    },
+    showContextMenu: (params) => {
+      return this.showContextMenu(params);
+    },
+    hideContextMenu: () => {
+      return this.hideContextMenu();
     }
   };
 
@@ -1502,6 +1508,10 @@ class Table extends React.Component {
     this.contextmenu_ref.current.show({ left, top, data });
   };
 
+  hideContextMenu = () => {
+    this.contextmenu_ref.current.hide();
+  };
+
   onRow = (rowData, rowIndex, extra) => {
     let fn = this.props.onRow;
 
@@ -1660,6 +1670,10 @@ class Table extends React.Component {
         {typeof props.contextMenu === "function" ? (
           <ContextMenu
             ref={this.contextmenu_ref}
+            autoHideOnClick={props.contextMenuAutoHideOnClick}
+            autoHideOnBlur={props.contextMenuAutoHideOnBlur}
+            hideMode={props.contextMenuHideMode}
+            hideDelay={props.contextMenuHideDelay}
             wrapperStyle={props.contextMenuWrapperStyle}
             style={props.contextMenuStyle}
             content={props.contextMenu}
@@ -1687,6 +1701,10 @@ Table.defaultProps = {
   striped: true,
   contextMenuWrapperStyle: {},
   contextMenuStyle: {},
+  contextMenuAutoHideOnBlur: true,
+  contextMenuAutoHideOnClick: true,
+  contextMenuHideMode: "none",
+  contextMenuHideDelay: 0,
   defaultGroupedColumnKey: [],
   multipleSort: true,
   memorizeSortedColumns: false,
@@ -1730,6 +1748,18 @@ Table.propTypes = {
 
   /** 行右键菜单渲染 */
   contextMenu: PropTypes.func,
+
+  /** 右键菜单失去焦点后是否自动隐藏 */
+  contextMenuAutoHideOnBlur: PropTypes.bool,
+
+  /** 右键菜单点击后是否自动隐藏 */
+  contextMenuAutoHideOnClick: PropTypes.bool,
+
+  /** 右键菜单隐藏方式，默认使用display：none,可配置使用visibility：hidden */
+  contextMenuHideMode: PropTypes.oneOf(["none", "hidden"]),
+
+  /** 右键菜单隐藏延时时长 */
+  contextMenuHideDelay: PropTypes.number,
 
   /** 右键菜单外层样式 */
   contextMenuWrapperStyle: PropTypes.object,
