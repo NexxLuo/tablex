@@ -1606,7 +1606,17 @@ class Table extends React.Component {
     }
 
     return (
-      <div className={classNames} style={wrapperStyles}>
+      <div className={classNames} style={wrapperStyles} onContextMenu={(e) => {
+        if (typeof props.contextMenu === "function") {
+          e.preventDefault();
+          e.stopPropagation();
+          this.showContextMenu({
+            left: e.clientX,
+            top: e.clientY,
+            data: null
+          });
+        }
+      }}>
         {header}
         <div
           className="tablex__container__body"
