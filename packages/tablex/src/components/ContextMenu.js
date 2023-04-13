@@ -7,9 +7,12 @@ class ContextMenu extends Component {
 
   timer = null;
 
+  isVisible = false;
+
   show = ({ left, top, data }) => {
     let el = this._ref.current;
 
+    this.isVisible = true;
     if (el) {
 
       if (this.timer) {
@@ -32,6 +35,7 @@ class ContextMenu extends Component {
   };
 
   hide = () => {
+    this.isVisible = false;
     let el = this._ref.current;
     let delay = this.props.hideDelay;
 
@@ -73,12 +77,16 @@ class ContextMenu extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this.isVisible = false;
+  }
+
   render() {
     let c = null;
 
     let { content, style, wrapperStyle } = this.props;
 
-    if (typeof content === "function") {
+    if (typeof content === "function" && this.isVisible) {
       c = content(this.state.data);
     }
 
