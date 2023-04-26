@@ -27,6 +27,7 @@ function formatExpandRenderData(data, rowKey, render, onSet) {
           Object.assign({}, d, {
             children: [
               {
+                __parentRow: { ...d },
                 __type: "__expandedRowRender",
                 [rowKey]: key
               }
