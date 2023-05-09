@@ -1,22 +1,20 @@
 ---
 hero:
-  title: library
-  description: A react library developed with dumi
+  title: Tablex
+  description: 功能丰富的表格组件
   actions:
-    - text: Hello
-      link: /
-    - text: World
-      link: /
+    - text: 文档
+      link: /props
+    - text: 示例
+      link: /components/examples
 features:
-  - title: Hello
-    emoji: 💎
-    description: Put hello description here
-  - title: World
-    emoji: 🌈
-    description: Put world description here
-  - title: '!'
+  - title: 虚拟滚动
     emoji: 🚀
-    description: Put ! description here
+    description: 支持10W+海量数据加载
+  - title: 树形数据
+    emoji: 🌈
+    description: 支持树形数据加载
+  - title: 行选择
+    emoji: 💎
+    description: 支持数据行单选、多选
 ---
-
-tablex
