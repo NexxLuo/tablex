@@ -12,6 +12,8 @@
     "build": "father build",
     "build:watch": "father dev",
     "dev": "dumi dev",
+    "doc:build2": "cross-env DOC_BASE=/components/table/ dumi build",
+    "doc:gh-pages": "gh-pages -d ./packages/doc/docs-dist",
     "docs:build": "dumi build",
     "doctor": "father doctor",
     "lint": "npm run lint:es && npm run lint:css",
@@ -50,7 +52,7 @@
   },
   "dependencies": {
     "antd": "3",
-    "tablex": "^1.18.57"
+    "tablex": "^1.19.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
@@ -58,6 +60,7 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@umijs/lint": "^4.0.0",
+    "cross-env": "^7.0.3",
     "dumi": "^2.1.22",
     "eslint": "^8.23.0",
     "father": "^4.1.0",
