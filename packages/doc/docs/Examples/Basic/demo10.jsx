@@ -57,7 +57,7 @@ class Demo extends React.Component {
     render() {
       let { columns, data } = this.state
       return (
-        <Table
+        <div style={{ height: 400 }}><Table
           rowKey="id"
           columns={columns}
           data={data}
@@ -65,7 +65,7 @@ class Demo extends React.Component {
           bordered={false}
           striped={false}
           hoverable={false}
-        />
+        /></div>
       )
     }
   }

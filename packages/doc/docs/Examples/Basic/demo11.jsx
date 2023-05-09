@@ -85,14 +85,14 @@ class Demo extends React.Component {
     render() {
       let { columns, data } = this.state
       return (
-        <Table
+        <div style={{ height: 400 }}><Table
           rowKey="id"
           columns={columns}
           data={data}
           selectMode="multiple"
           orderNumber={false}
           checkStrictly={false}
-        />
+        /></div>
       )
     }
   }

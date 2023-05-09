@@ -89,13 +89,13 @@ class Demo extends React.Component {
     render() {
       let { columns, data } = this.state
       return (
-        <Table
+        <div style={{ height: 400 }}><Table
           rowKey="id"
           columns={columns}
           data={data}
           orderNumber={true}
           headerRowHeight={[30, 50, 70]}
-        />
+        /></div>
       )
     }
   }

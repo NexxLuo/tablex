@@ -86,7 +86,7 @@ class Demo extends React.Component {
     render() {
       let { columns, data, current, pageSize, total } = this.state
       return (
-        <Table
+        <div style={{ height: 400 }}><Table
           rowKey="id"
           columns={columns}
           selectMode="multiple"
@@ -103,7 +103,7 @@ class Demo extends React.Component {
             onPageChange: this.onPageChange.bind(this),
             onRefresh: this.onRefresh.bind(this),
           }}
-        />
+        /></div>
       )
     }
   }
