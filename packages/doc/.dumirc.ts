@@ -7,7 +7,7 @@ export default defineConfig({
   publicPath: BasePath,
   favicons: false,
   themeConfig: {
-    logo: '/logo-128.png',
+    logo: false,
     footer: false,
     name: 'Tablex',
     prefersColor: { default: 'auto', switch: true },
