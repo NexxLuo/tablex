@@ -25,15 +25,15 @@ export type EditToolsConfig = {
   cancelIcon: string;
 };
 
-export interface ColumnProps<T> {
+export interface ColumnProps {
   [propName: string]: any;
   title?: React.ReactNode | (() => React.ReactNode);
-  titleRender?: ({ colunm: T }) => React.ReactNode;
+  titleRender?: ({ colunm: any }) => React.ReactNode;
   key?: React.Key;
   dataIndex?: string;
   render?: (
     text: any,
-    record: T,
+    record: any,
     index: number,
     extra: { depth: number; parents: string[] }
   ) => React.ReactNode;
@@ -49,7 +49,7 @@ export interface ColumnProps<T> {
   sortable?: boolean;
   resizable?: boolean;
   dropMenu?: boolean;
-  validator?: (text: any, record: T, index: number) => ValidateResult;
+  validator?: (text: any, record: any, index: number) => ValidateResult;
   editor?: (
     value: any,
     row: object,
@@ -172,10 +172,10 @@ export interface RowSelectionProps {
   onChange: (keys: string[], rows: any[], extra: any) => void;
 }
 
-export interface TableProps<T> {
+export interface TableProps {
   rowKey: string;
-  columns?: ColumnProps<T>[];
-  data?: T[];
+  columns?: ColumnProps[];
+  data?: any[];
   rowHeight?: number | ((record: object, index: number) => number);
   headerRowHeight?: number[] | number;
   minHeight?: number;
@@ -186,7 +186,7 @@ export interface TableProps<T> {
   virtual?: boolean;
 
   rowClassName?: (record: any, index: number) => string;
-  selectionColumn?: false | null | ColumnProps<T>;
+  selectionColumn?: false | null | ColumnProps;
   showHeader?: boolean;
   bordered?: boolean;
   hoverable?: boolean;
@@ -198,7 +198,7 @@ export interface TableProps<T> {
     rowIndex: number,
     children: any
   }) => React.ReactNode;
-  onRow?: (record: T, index: number) => object;
+  onRow?: (record: any, index: number) => object;
   frozenRender?: FrozenRenderProps;
   onCell?: (row: object, rowIndex: number, extra: object) => object;
 
@@ -209,7 +209,7 @@ export interface TableProps<T> {
     groupable: boolean;
   };
   contextMenu?: (row: any) => React.ReactNode;
-  orderNumber?: false | null | ColumnProps<T>;
+  orderNumber?: false | null | ColumnProps;
   pagination?: PaginationProps | false | null;
   showRefresh?: boolean;
   onRefresh?: (pageIndex, pageSize) => void;
@@ -229,6 +229,8 @@ export interface TableProps<T> {
   striped?: boolean;
   tableId?: string;
   footerExtra?: () => React.ReactNode;
+  header?: () => React.ReactNode;
+  footer?: () => React.ReactNode;
   summary?: SummaryProps;
   emptyRenderer?: ({ headerHeight: number }) => React.ReactNode;
   loadingRender?: ({ headerHeight: number }) => React.ReactNode;
@@ -264,19 +266,19 @@ export interface TableProps<T> {
 
   expandColumnKey?: string;
   expandedRowRender?: (
-    record: T,
+    record: any,
     index: number,
     indent: number,
     expanded: boolean
   ) => React.ReactNode;
-  onSetExpandedRowRender?: (record: T, index: number) => boolean;
+  onSetExpandedRowRender?: (record: any, index: number) => boolean;
   expandRowHeight?: number | ((record: object, index: number) => number);
   defaultExpandedRowKeys?: string[] | number[];
   expandedRowKeys?: string[] | number[];
   expandOnRowClick?: boolean;
   onExpandedRowsChange?: (expandedRowKeys: string[] | number[]) => void;
-  onExpand?: (expanded: boolean, record: T) => void;
-  loadChildrenData?: (record: object) => Promise<T> | void;
+  onExpand?: (expanded: boolean, record: any) => void;
+  loadChildrenData?: (record: object) => Promise<any> | void;
   indentSize?: number;
 
   editable?: boolean;
@@ -312,7 +314,7 @@ export interface TableProps<T> {
     changedRows: object[],
     newRows: object[],
     editType: "add" | "edit" | "delete"
-  ) => Promise<T> | void;
+  ) => Promise<any> | void;
   onBeforeSave?: () => boolean;
   onComplete?: (modifiedData: {
     changed: any[];
@@ -332,7 +334,7 @@ export interface TableProps<T> {
   singleRowEdit?: boolean;
 }
 
-declare class Table<T> extends React.Component<TableProps<T>, any> {}
+declare class Table extends React.Component<TableProps, any> {}
 
 export declare function flatten(
   arr: any[],
@@ -348,4 +350,36 @@ export declare function unflatten(
 
 export default Table;
 
-export { Table };
+export type DraggableTablePropsType = TableProps & {
+  /** 是否允许拖动层级 */
+  allowDragLevel?: boolean;
+  /** 是否使用拖动按钮，此按钮将独占一列 */
+  useDragHandle?: boolean;
+  /** 拖动按钮渲染,useDragHandle:true时有效 */
+  dragHandleRender?: (props: any) => React.ElementType;
+  /** 拖动按钮元素选择器,useDragHandle:false时有效，将会在当前行元素内查找此选择器 */
+  dragHandleSelector?: string;
+
+  /** 行是否允许拖动,返回false阻止拖拽 */
+  canDrag?: (props: any) => boolean;
+  /** 拖动开始事件 */
+  onDragBegin?: (props: any) => void;
+  /** 拖动结束事件 */
+  onDragEnd?: (props: any) => void;
+
+  /** 是否允许放置,返回false阻止放置 */
+  canDrop?: (props: any) => void;
+  /** 放置hover事件 */
+  onDropHover?: (props: any) => void;
+  /** 放置完成事件 */
+  onDrop?: (props: any) => void;
+
+  /** 拖动、放置完成事件，此事件中返回拖动后的新数据 */
+  onDragComplete?: (props: any) => void;
+  /** 获取表格实例 */
+  tableRef?: (innerTableRef: any) => void;
+};
+
+declare class DraggableTable extends React.Component<DraggableTablePropsType, any> {}
+
+export { Table, DraggableTable };
