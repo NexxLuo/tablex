@@ -2,12 +2,7 @@
 
 [![NPM version](https://img.shields.io/npm/v/tablex.svg?style=flat)](https://npmjs.org/package/tablex) [![NPM downloads](http://img.shields.io/npm/dm/tablex.svg?style=flat)](http://npmjs.com/package/tablex)
 
-基于 [react-window](https://github.com/bvaughn/react-window) 的表格组件
-
-Learn more at the [website](https://tablex.now.sh/packages/website)
-
-
-## Install
+## 安装
 
 ```powershell
 yarn add tablex
@@ -32,7 +27,7 @@ class Demo extends Component {
 }
 ```
 
-## Features
+## 特性
 
 1. 虚拟加载
 2. 属性配置记忆
@@ -50,8 +45,4 @@ class Demo extends Component {
 14. 支持表头行、列合并
 15. 支持自动行高度，行高随内容高度变化
 16. 支持数据分组
- 
-## Roadmap
-
-1. 无限加载
 

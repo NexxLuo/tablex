@@ -6,7 +6,7 @@ hero:
     - text: 文档
       link: /props
     - text: 示例
-      link: /components/examples
+      link: /examples
 features:
   - title: 虚拟滚动
     emoji: 🚀
