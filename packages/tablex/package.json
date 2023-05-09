@@ -1,6 +1,6 @@
 {
   "name": "tablex",
-  "version": "1.19.0",
+  "version": "1.19.1",
   "description": "table virtualized tree-table ",
   "author": "nexx",
   "repository": {
@@ -9,13 +9,9 @@
   },
   "homepage": "https://nexxluo.github.io/tablex",
   "scripts": {
-    "start": "docz dev",
     "dev": "father-build build --watch",
     "build": "father-build build",
-    "doc": "docz dev",
-    "docb": "docz build",
-    "pub": "father-build build&&npm version patch&&npm publish",
-    "docdb": "set DOCZ_BASE=/tablex&& docz build "
+    "pub": "father-build build&&npm version patch&&npm publish"
   },
   "main": "lib/index.js",
   "types": "types/index.d.ts",
