@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "antd": "3",
+    "react-live": "^4.0.1",
     "tablex": "^1.19.1"
   },
   "devDependencies": {
