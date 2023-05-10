@@ -1,17 +1,17 @@
+import { Button, Input } from 'antd';
 import React from 'react';
 import Table from 'tablex';
-import { Button } from 'antd';
 
 class Demo extends React.Component {
   constructor(props) {
-    super(props)
-    this.tableRef = React.createRef()
+    super(props);
+    this.tableRef = React.createRef();
 
     this.state = {
       data: [],
       loading: false,
       expandedRowKeys: [],
-    }
+    };
 
     this.columns = [
       {
@@ -24,30 +24,30 @@ class Demo extends React.Component {
         onCell: (row, value, index) => {
           return {
             onClick: () => {
-              this.beginEdit(row)
+              this.beginEdit(row);
             },
-          }
+          };
         },
-        validator: function(value, row) {
+        validator: function (value, row) {
           if (!value) {
-            return { valid: false, message: '请输入' }
+            return { valid: false, message: '请输入' };
           }
 
-          return { valid: true, message: 'false' }
+          return { valid: true, message: 'false' };
         },
-        editor: function(value, row, index, onchange, ref) {
+        editor: function (value, row, index, onchange, ref) {
           return (
             <Input
               defaultValue={value}
               ref={ref}
-              onChange={e =>
+              onChange={(e) =>
                 onchange([
                   { 'column-1': e.target.value, id: row.id },
                   { id: '3', address: e.target.value },
                 ])
               }
             />
-          )
+          );
         },
       },
       {
@@ -62,18 +62,18 @@ class Demo extends React.Component {
             onCell: (row, value, index) => {
               return {
                 onClick: () => {
-                  this.beginEdit(row)
+                  this.beginEdit(row);
                 },
-              }
+              };
             },
-            editor: function(value, row, index, onchange, ref) {
+            editor: function (value, row, index, onchange, ref) {
               return (
                 <Input
                   defaultValue={value}
                   ref={ref}
-                  onChange={e => onchange({ address: e.target.value })}
+                  onChange={(e) => onchange({ address: e.target.value })}
                 />
-              )
+              );
             },
           },
           {
@@ -99,118 +99,118 @@ class Demo extends React.Component {
         key: 'column-4',
         title: 'id',
       },
-    ]
+    ];
   }
   componentDidMount() {
     function createData(level, parentKey, maxLevel, index) {
       if (level > maxLevel) {
-        return
+        return;
       }
-      let l = level
-      let data = []
+      let l = level;
+      let data = [];
       for (let i = 0; i < 3; i++) {
-        let k = parentKey + '-' + level + '-' + i
+        let k = parentKey + '-' + level + '-' + i;
         let d = {
           id: k,
           'column-1': 'Edward King ' + k,
           age: 32,
           level: level,
           address: 'London, Park Lane no. ' + i,
-        }
+        };
 
         if (i === 2) {
-          d.children = createData(l + 1, k, maxLevel, i)
+          d.children = createData(l + 1, k, maxLevel, i);
         }
 
-        data.push(d)
+        data.push(d);
       }
-      return data
+      return data;
     }
 
     function createTreeData() {
-      let data = []
+      let data = [];
       for (let i = 0; i < 10; i++) {
-        let childrens = createData(0, i, 2)
+        let childrens = createData(0, i, 2);
         let d = {
           id: '' + i,
           level: 0,
           'column-1': 'Edward King ' + i,
           age: i,
           address: 'London, Park Lane no. ' + i,
-        }
+        };
 
         if (i % 3 === 0) {
-          d.children = childrens
+          d.children = childrens;
         }
 
-        data.push(d)
+        data.push(d);
       }
 
-      return data
+      return data;
     }
 
     this.setState({
       data: createTreeData(),
-    })
+    });
   }
   beginEdit(row) {
-    let arr = []
-    arr.push(row.id)
-    this.tableRef.current.api.editRows(arr)
+    let arr = [];
+    arr.push(row.id);
+    this.tableRef.current.api.editRows(arr);
   }
   completeEdit() {
-    this.tableRef.current.api.completeEdit()
+    this.tableRef.current.api.completeEdit();
   }
   cancelEdit() {
-    this.tableRef.current.api.cancelEdit()
+    this.tableRef.current.api.cancelEdit();
   }
   insertData() {
-    let arr = []
-    arr.push({ id: 'inserted-row-' + new Date().getTime() })
+    let arr = [];
+    arr.push({ id: 'inserted-row-' + new Date().getTime() });
     this.tableRef.current.api.insertData({
       data: arr,
       parentKey: '3',
       editing: true,
       prepend: false,
       startIndex: 2,
-    })
+    });
 
     //this.tableRef.current.api.editAll();
   }
   modifyData() {
-    let arr = []
-    arr.push({ id: 'inserted-row-' + new Date().getTime() })
+    let arr = [];
+    arr.push({ id: 'inserted-row-' + new Date().getTime() });
     this.tableRef.current.api.modifyData([
       {
         id: '3',
         'column-1': 'modifyData-' + new Date().getTime(),
         level: 3,
       },
-    ])
+    ]);
   }
   delete() {
-    let deleted = this.tableRef.current.api.deleteData()
-    this.tableRef.current.api.completeEdit()
-    console.log('deleted:', deleted)
+    let deleted = this.tableRef.current.api.deleteData();
+    this.tableRef.current.api.completeEdit();
+    console.log('deleted:', deleted);
   }
   editAll() {
-    this.tableRef.current.api.editAll()
+    this.tableRef.current.api.editAll();
   }
   onEditComplete(modified) {
-    console.log('onEditComplete:', modified)
+    console.log('onEditComplete:', modified);
   }
   onEditSave(changedRows, newRows, editType) {
-    console.log('onEditSave changedRows:', changedRows)
-    console.log('onEditSave newRows:', newRows)
-    console.log('onEditSave editType:', editType)
+    console.log('onEditSave changedRows:', changedRows);
+    console.log('onEditSave newRows:', newRows);
+    console.log('onEditSave editType:', editType);
   }
   getSelections() {
-    let r = this.tableRef.current.api.getSelections()
-    console.log('getSelections:', r)
+    let r = this.tableRef.current.api.getSelections();
+    console.log('getSelections:', r);
   }
   getExpanded() {
-    let r = this.tableRef.current.api.getExpanded()
-    console.log('getExpanded:', r)
+    let r = this.tableRef.current.api.getExpanded();
+    console.log('getExpanded:', r);
   }
   render() {
     return (
@@ -268,7 +268,7 @@ class Demo extends React.Component {
                   get selections
                 </Button>
               </div>
-            )
+            );
           }}
           editable={true}
           isAppend={true}
@@ -286,8 +286,8 @@ class Demo extends React.Component {
           selectOnRowClick={false}
         />
       </div>
-    )
+    );
   }
 }
-  
+
 export default Demo;
