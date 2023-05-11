@@ -636,14 +636,22 @@ const AutoSizeAble = ({ height, width, targetRef, ...props }, ref) => {
       return <div></div>;
     }
   }
+
+  let innerStyle = {}
+  if (height > 0 && props.autoHeight !== true) {
+    innerStyle.height = height
+  }
+
   return (
     <div style={{ height: "100%", width: "100%" }} ref={targetRef}>
-      <BaseDataGrid
-        {...props}
-        height={height}
-        width={width}
-        ref={ref}
-      />
+      <div style={innerStyle}>
+        <BaseDataGrid
+          {...props}
+          height={height}
+          width={width}
+          ref={ref}
+        />
+      </div>
     </div>
   );
 }
