@@ -1,11 +1,11 @@
 {
   "name": "tablex",
-  "version": "1.19.2",
+  "version": "1.19.3",
   "description": "table virtualized tree-table ",
   "author": "nexx",
   "repository": {
     "type": "git",
-    "url": "https://github.com/NexxLuo/tablex"
+    "url": "https://github.com/nexxluo/tablex"
   },
   "homepage": "https://nexxluo.github.io/tablex",
   "scripts": {
