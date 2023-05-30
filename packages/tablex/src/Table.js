@@ -34,36 +34,45 @@ function toNumber(v) {
 }
 
 let summaryMath = {
-  max: (items, key) => {
+  max: (items, key, fn) => {
     let r =
       maxBy(items, function (o) {
+        if (typeof fn === "function") {
+          return fn(o[key], o, key, items);
+        }
         return toNumber(o[key]);
       }) || {};
 
     return r[key];
   },
-  min: (items, key) => {
+  min: (items, key, fn) => {
     let r =
       minBy(items, function (o) {
+        if (typeof fn === "function") {
+          return fn(o[key], o, key, items);
+        }
         return toNumber(o[key]);
       }) || {};
 
     return r[key];
   },
-  avg: (items, key) => {
-    let sum = summaryMath.sum(items, key)
+  avg: (items, key, fn) => {
+    let sum = summaryMath.sum(items, key, fn)
     if (sum === undefined) {
       return "";
     } else {
       return BigNumber(sum).dividedBy(items.length).toNumber();
     }
   },
-  average: (items, key) => {
-    return summaryMath.avg(items, key)
+  average: (items, key, fn) => {
+    return summaryMath.avg(items, key, fn)
   },
 
-  sum: (items, key) => {
+  sum: (items, key, fn) => {
     let r = BigNumber.sum.apply(null, items.map(o => {
+      if (typeof fn === "function") {
+        return fn(o[key], o, key, items);
+      }
       return toNumber(o[key]);
     })).toNumber()
 
@@ -1353,6 +1362,7 @@ class Table extends React.Component {
       data: summaryTypes = [],
       title = {},
       render,
+      getValue,
       custom = false,
       fixed = true
     } = summary;
@@ -1425,7 +1435,7 @@ class Table extends React.Component {
           let summaryValue = "";
 
           if (typeof fn === "function") {
-            summaryValue = fn(flatData, dataIndex);
+            summaryValue = fn(flatData, dataIndex, getValue);
             if (typeof summaryValue === "undefined") {
               summaryValue = "";
             }
@@ -1831,6 +1841,7 @@ Table.propTypes = {
     style: PropTypes.object,
     title: PropTypes.object,
     data: PropTypes.array,
+    getValue: PropTypes.func,
     render: PropTypes.func,
     rowHeight: PropTypes.number
   }),

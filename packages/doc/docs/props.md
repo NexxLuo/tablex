@@ -183,7 +183,8 @@ table th:nth-of-type(4) {
 | style | `object` | `true` | `N/A` | 汇总项样式 |
 | title | `{ text: string; column: string; render?: () => ReactNode; }` | `true` | `N/A` | 标题 |
 | data | `any[]` | `false` | `N/A` | 汇总项数据 |
-| fixed | `boolean` | `true` | true` | 是否固定在底部 |
+| getValue |  `(value: any, row: any, key: string, items:any[]) => number` | `true` | `N/A` | 汇总计算时的列值获取逻辑，默认为数据行中的值 |
+| fixed | `boolean` | `true` | `true` | 是否固定在底部 |
 | render | `(value: any, dataIndex: string, type: string, index: number) => ReactNode` | `true` | `N/A` | 自定义汇总项渲染 |
 
 
