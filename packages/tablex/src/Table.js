@@ -10,7 +10,6 @@ import Setting, { getConfigs, setConfigs } from "./components/setting";
 import SortIcon from "./components/SortIndicator";
 import EmptyIcon from "./components/EmptyIcon";
 import { Spin, Popover, Button } from "./widgets";
-
 import {
   treeToFlatten as treeToList,
   treeFilter,
@@ -21,7 +20,7 @@ import orderBy from "lodash/orderBy";
 import cloneDeep from "lodash/cloneDeep";
 import maxBy from "lodash/maxBy";
 import minBy from "lodash/minBy";
-import sumBy from "lodash/sumBy";
+import BigNumber from "bignumber.js";
 
 const DEFAULT_COLUMN_WIDTH = 100;
 
@@ -51,32 +50,22 @@ let summaryMath = {
 
     return r[key];
   },
-  average: (items, key) => {
-    let sum = sumBy(items, function (o) {
-      return toNumber(o[key]);
-    });
-
-    if (sum === undefined) {
-      return "";
-    } else {
-      return sum / items.length;
-    }
-  },
   avg: (items, key) => {
-    let sum = sumBy(items, function (o) {
-      return toNumber(o[key]);
-    });
-
+    let sum = summaryMath.sum(items, key)
     if (sum === undefined) {
       return "";
     } else {
-      return sum / items.length;
+      return BigNumber(sum).dividedBy(items.length).toNumber();
     }
   },
+  average: (items, key) => {
+    return summaryMath.avg(items, key)
+  },
+
   sum: (items, key) => {
-    let r = sumBy(items, function (o) {
+    let r = BigNumber.sum.apply(null, items.map(o => {
       return toNumber(o[key]);
-    });
+    })).toNumber()
 
     return r;
   }
