@@ -514,6 +514,8 @@ class BaseDataGrid extends React.Component {
     let sideTableScrollbarX = null;
     if (scrollbarX === 0) {
       sideTableScrollbarX = 0;
+    } else {
+      sideTableScrollbarX = scrollbarX;
     }
 
     if (autoHeight === true) {
