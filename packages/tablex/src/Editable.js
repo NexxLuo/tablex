@@ -862,7 +862,8 @@ class EditableTable extends React.Component {
           columnIsEditing = editKeys.findIndex(k => k === row[rowKey]) > -1;
         }
 
-        if (columnIsEditing && hasEditor) {
+        //如果为分组行父级，不创建编辑器
+        if (columnIsEditing && hasEditor && !row.__isGroupedHeadRow) {
           return this.renderEditor(value, row, index, d);
         } else {
 
