@@ -77,51 +77,59 @@ class HeadDropMenu extends React.Component {
     let defaultChecked = [];
 
     columns.forEach((c, i) => {
-      let columnKey = c.key || c.dataIndex;
+      if (c.visibleSettable !== false) {
 
-      let isHide = false;
+        let columnKey = c.key || c.dataIndex;
 
-      let config = (columnsConfig || {})[columnKey] || {};
+        let isHide = false;
 
-      isHide = !!config.hidden;
+        let config = (columnsConfig || {})[columnKey] || {};
 
-      if ("hidden" in config) {
         isHide = !!config.hidden;
-      } else {
-        isHide = !!c.hidden;
+
+        if ("hidden" in config) {
+          isHide = !!config.hidden;
+        } else {
+          isHide = !!c.hidden;
+        }
+
+        if (isHide === false) {
+          defaultChecked.push(columnKey);
+        }
+
+        let TitleComponent = c.title;
+        let titleElement = null;
+
+        if (typeof TitleComponent === "function") {
+          titleElement = <TitleComponent column={c} />;
+        } else {
+          titleElement = c.title;
+        }
+
+        columnsOptions.push(
+          <div key={i} style={{ display: "block" }}>
+            <Checkbox
+              checked={!isHide}
+              value={columnKey}
+              onChange={e => {
+                this.onFilterColumnChange(e.target.checked, columnKey);
+              }}
+            >
+              {titleElement}
+            </Checkbox>
+          </div>
+        );
       }
 
-      if (isHide === false) {
-        defaultChecked.push(columnKey);
-      }
-
-      let TitleComponent = c.title;
-      let titleElement = null;
-
-      if (typeof TitleComponent === "function") {
-        titleElement = <TitleComponent column={c} />;
-      } else {
-        titleElement = c.title;
-      }
-
-      columnsOptions.push(
-        <div key={i} style={{ display: "block" }}>
-          <Checkbox
-            checked={!isHide}
-            value={columnKey}
-            onChange={e => {
-              this.onFilterColumnChange(e.target.checked, columnKey);
-            }}
-          >
-            {titleElement}
-          </Checkbox>
-        </div>
-      );
     });
 
-    const columnsFilterItems = (
-      <div style={{ marginLeft: 10 }}>{columnsOptions}</div>
-    );
+
+    let columnsFilterItems = null;
+    if (columnsOptions.length > 0) {
+      columnsFilterItems = (
+        <div style={{ marginLeft: 10 }}>{columnsOptions}</div>
+      );
+    }
 
     return columnsFilterItems;
   };
@@ -168,6 +176,8 @@ class HeadDropMenu extends React.Component {
 
     let { fixable, filterable, groupable } = this.props.options;
 
+    let filterableColumns = this.columnsFilter();
+
     return (
       <div className="tablex__column__dropMenu">
         <Menu
@@ -203,17 +213,17 @@ class HeadDropMenu extends React.Component {
               </Menu.Item>
             </SubMenu>
           )}
-          {filterable && (
+          {(filterable && filterableColumns !== null) ? (
             <SubMenu
               key="sub2"
               title={this.props.intl["columnMenuVisible"]}
               onTitleClick={this.onTitleClick}
             >
               <Menu.Item key="4" style={styles} onClick={this.onItemClick}>
-                {this.columnsFilter()}
+                {filterableColumns}
               </Menu.Item>
             </SubMenu>
-          )}
+          ) : null}
           {groupable && (
             <SubMenu
               key="sub3"

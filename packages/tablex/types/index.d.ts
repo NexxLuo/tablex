@@ -49,6 +49,7 @@ export interface ColumnProps {
   sortable?: boolean;
   resizable?: boolean;
   dropMenu?: boolean;
+  visibleSettable?: boolean;
   validator?: (text: any, record: any, index: number) => ValidateResult;
   editor?: (
     value: any,
@@ -380,6 +381,9 @@ export type DraggableTablePropsType = TableProps & {
   tableRef?: (innerTableRef: any) => void;
 };
 
-declare class DraggableTable extends React.Component<DraggableTablePropsType, any> {}
+declare class DraggableTable extends React.Component<
+  DraggableTablePropsType,
+  any
+> {}
 
 export { Table, DraggableTable };
