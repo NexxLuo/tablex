@@ -728,7 +728,12 @@ class Table extends React.Component {
         columnsConfig: newConfigs,
         groupedColumnKey: groupedColumnKey
       },
-      this.resetScrollbarSize
+      () => {
+        this.resetScrollbarSize();
+        if (typeof this.props.onColumnConfigChange === "function") {
+          this.props.onColumnConfigChange(key, config)
+        }
+      }
     );
   };
 
@@ -1552,7 +1557,6 @@ class Table extends React.Component {
 
     let columns = this.formatColumns();
     let prependColumns = this.formatPrependColumns(tablePrependColumns);
-    let settableColumns = tableColumns.filter(d => d.settable !== false);
 
     let arr = this.getData();
 
@@ -1643,8 +1647,11 @@ class Table extends React.Component {
             content={
               <ColumnDropMenu
                 options={props.columnDropMenuOptions}
-                columns={settableColumns}
+                columns={tableColumns}
+                getColumns={props.getColumnDropMenuColumns}
                 columnsConfig={this.state.columnsConfig}
+                onHiddenChange={this.props.onColumnHiddenChange}
+                hiddenControled={this.props.columnConfigHiddenControled}
                 onChange={this.onColumnChange}
                 intl={this.props.intl}
               />
@@ -1780,6 +1787,18 @@ Table.propTypes = {
 
   /** 是否启用列标题配置项菜单 */
   columnDropMenu: PropTypes.bool,
+
+  /** 列下拉配置改变事件 */
+  onColumnConfigChange: PropTypes.func,
+
+  /** 列下拉配置显示隐藏状态改变事件 */
+  onColumnHiddenChange: PropTypes.func,
+
+  /** 列下拉配置显示隐藏是否受控，如果开启，必须使用getColumnDropMenuColumns正确返回列数据 */
+  columnConfigHiddenControled: PropTypes.bool,
+
+  /** 动态获取列下拉配置中的列数据，默认使用当前表格列 */
+  getColumnDropMenuColumns: PropTypes.func,
 
   /** 列下拉配置项 */
   columnDropMenuOptions: PropTypes.shape({

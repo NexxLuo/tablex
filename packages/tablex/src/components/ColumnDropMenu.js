@@ -63,21 +63,42 @@ class HeadDropMenu extends React.Component {
   };
 
   onFilterColumnChange = (checked, key) => {
-    this.onChange(key, {
-      hidden: !checked
-    });
+
+    if (typeof this.props.onHiddenChange === "function") {
+      this.props.onHiddenChange(key, !checked);
+    }
+
+    if (this.props.hiddenControled !== true) {
+      this.onChange(key, {
+        hidden: !checked
+      });
+    }
+
   };
 
   columnsFilter = () => {
-    let { columns: arr, columnsConfig } = this.props;
+    let { columns: arr, columnsConfig, getColumns } = this.props;
 
-    let columns = arr; //.filter(d => !!d.title)
+    let columns = [];
+
+    if (arr instanceof Array) {
+      columns = arr.filter(d => { return d.settable !== false && d.visibleSettable !== false });
+    }
+
+    let _columns = columns;
+
+    if (typeof getColumns === "function") {
+      let __columns = getColumns(arr, columns);
+      if (__columns instanceof Array) {
+        _columns = __columns;
+      }
+    }
 
     const columnsOptions = [];
     let defaultChecked = [];
 
-    columns.forEach((c, i) => {
-      if (c.visibleSettable !== false) {
+    if (_columns instanceof Array) {
+      _columns.forEach((c, i) => {
 
         let columnKey = c.key || c.dataIndex;
 
@@ -119,11 +140,9 @@ class HeadDropMenu extends React.Component {
             </Checkbox>
           </div>
         );
-      }
 
-    });
-
-
+      });
+    }
     let columnsFilterItems = null;
     if (columnsOptions.length > 0) {
       columnsFilterItems = (

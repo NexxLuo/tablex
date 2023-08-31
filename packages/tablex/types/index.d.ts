@@ -204,6 +204,13 @@ export interface TableProps {
   onCell?: (row: object, rowIndex: number, extra: object) => object;
 
   columnDropMenu?: boolean;
+  columnConfigHiddenControled?: boolean;
+  onColumnConfigChange?: (key: string, config: any) => void;
+  onColumnHiddenChange?: (key: string, hidden: boolean) => void;
+  getColumnDropMenuColumns?: (
+    allColumns: any[],
+    currentMenuColumns: any[]
+  ) => any;
   columnDropMenuOptions?: {
     fixable: boolean;
     filterable: boolean;
