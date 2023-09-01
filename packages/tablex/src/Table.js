@@ -389,6 +389,12 @@ class Table extends React.Component {
     getColumnConfigs: () => {
       return this.state.columnsConfig;
     },
+    setColumnConfigs: (configs = {}) => {
+      this.saveConfig(configs);
+    },
+    resetColumnConfigs: () => {
+      this.resetConfig();
+    },
     getColumns: (includeHidden = true) => {
       return this.formatColumns(includeHidden);
     },
