@@ -340,6 +340,8 @@ export interface TableProps {
     };
   };
   singleRowEdit?: boolean;
+  singleRowEditTrigger?: "none" | "onClick" | "onDoubleClick";
+  onEditRowChange?: (rowKeys: string[], event: any) => void;
 }
 
 declare class Table extends React.Component<TableProps, any> {}
