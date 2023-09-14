@@ -68,6 +68,8 @@ table th:nth-of-type(4) {
 | checkStrictly | `boolean` | `true` | `true` | 多选模式是否级联控制checkbox选中状态 |
 | selectOnRowClick | `boolean` | `true` | `true` | 点击行时是否选中行 |
 | rowSelection | [rowSelection](#rowselection) | `true` | `N/A` | 选择功能配置，配置项详情见下方 |
+| selectionColumn | `boolean \|` [column](#columns) | `true` | `true` | 复选列配置 |
+| selectionColumnKey | `string` | `true` | `N/A` | 如若设置了此列，复选框将独占一列 |
 | expandColumnKey | `string` | `true` | `N/A` | 展开按钮所在的列 |
 | expandedRowRender | `(record: any, index: number, indent: number, expanded: boolean) => ReactNode` | `true` | `N/A` | 展开行渲染 |
 | onSetExpandedRowRender | `(record: any, index: number) => boolean` | `true` | `N/A` | 展开行渲染事件，可通过此事件条件处理哪些行可展开,返回false将不可展开 |

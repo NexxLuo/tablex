@@ -188,6 +188,7 @@ export interface TableProps {
 
   rowClassName?: (record: any, index: number) => string;
   selectionColumn?: false | null | ColumnProps;
+  selectionColumnKey?: string;
   showHeader?: boolean;
   bordered?: boolean;
   hoverable?: boolean;
