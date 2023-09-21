@@ -515,7 +515,10 @@ class BaseDataGrid extends React.Component {
     if (scrollbarX === 0) {
       sideTableScrollbarX = 0;
     } else {
-      sideTableScrollbarX = scrollbarX;
+      //autoHeight为true且存在汇总行时，不应设置冻结列X滚动条，否则会导致无法对齐
+      if (autoHeight !== true) {
+        sideTableScrollbarX = scrollbarX;
+      }
     }
 
     if (autoHeight === true) {
