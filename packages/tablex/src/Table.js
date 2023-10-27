@@ -814,6 +814,34 @@ class Table extends React.Component {
         } else {
           bl = !d.hidden;
         }
+
+        //子级列如果全部隐藏，联动隐藏父级列
+        let allChildren = d.children;
+        if (allChildren instanceof Array && allChildren.length > 0) {
+          let isAllHidden = true;
+
+          let childrenLeafs = treeToList(allChildren).leafs;
+
+          for (let i = 0; i < childrenLeafs.length; i++) {
+            let _d = childrenLeafs[i];
+            let _columnKey = _d.key || _d.dataIndex;
+            let _config = configs[_columnKey] || {};
+            let isHidden = false;
+            if ("hidden" in _config) {
+              isHidden = !!_config.hidden;
+            } else {
+              isHidden = !!_d.hidden;
+            }
+            if (!isHidden) {
+              isAllHidden = false;
+            }
+          }
+
+          if (isAllHidden) {
+            bl = false
+          }
+        }
+        //
       }
 
       if (typeof config.order === "number") {

@@ -1,7 +1,9 @@
 import React from "react";
 
 import { Menu, Checkbox } from "../widgets";
-
+import {
+  treeFilter
+} from "../utils";
 const SubMenu = Menu.SubMenu;
 
 const MenuBar = () => {
@@ -82,7 +84,16 @@ class HeadDropMenu extends React.Component {
     let columns = [];
 
     if (arr instanceof Array) {
-      columns = arr.filter(d => { return d.settable !== false && d.visibleSettable !== false });
+      treeFilter(arr, (d) => {
+        let hasChildren = false;
+        if (d.children instanceof Array && d.children.length > 0) {
+          hasChildren = true;
+        }
+        if (d.settable !== false && d.visibleSettable !== false && !hasChildren) {
+          columns.push(d)
+        }
+        return true;
+      });
     }
 
     let _columns = columns;
