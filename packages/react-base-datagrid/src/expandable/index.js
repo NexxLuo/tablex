@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Table from "../selection";
 import { getDataListWithExpanded, getTreeProps } from "./utils";
-
+import { flatten } from "../utils";
 import ExpandIcon from "./ExpandIcon";
 import "./styles.css";
 
@@ -375,6 +375,11 @@ class TreeGrid extends Component {
         let columnKey = d.key || d.dataIndex;
         return columnKey === expandColumnKey;
       });
+    }
+
+    if (expandColumn?.children instanceof Array) {
+      let _flatCloumns = flatten(columns).leafs;
+      expandColumn = _flatCloumns[0]
     }
 
     if (expandColumn) {
