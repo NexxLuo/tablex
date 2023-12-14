@@ -175,31 +175,31 @@ export function treeForEach(arr, fn) {
   for (let i = 0; i < treeList.length; i++) {
     const d = treeList[i];
 
-    let bl = fn(d, i);
+    let bl = fn(d, i,{depth:0});
 
     if (bl === false) {
       break;
     }
 
     if (d.children && d.children.length > 0) {
-      getChildren(d);
+      getChildren(d,1);
     }
   }
 
-  function getChildren(node) {
+  function getChildren(node,_depth) {
     const tempArr = node.children || [];
 
     for (let i = 0; i < tempArr.length; i++) {
       const d = tempArr[i];
 
-      let bl = fn(d, i);
+      let bl = fn(d, i,{depth:_depth});
 
       if (bl === false) {
         break;
       }
 
       if (d.children && d.children.length > 0) {
-        getChildren(d);
+        getChildren(d,_depth+1);
       }
     }
   }

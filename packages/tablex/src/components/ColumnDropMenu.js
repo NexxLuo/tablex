@@ -1,9 +1,8 @@
 import React from "react";
 
 import { Menu, Checkbox } from "../widgets";
-import {
-  treeFilter
-} from "../utils";
+import { treeForEach } from "./setting/utils";
+
 const SubMenu = Menu.SubMenu;
 
 const MenuBar = () => {
@@ -84,16 +83,7 @@ class HeadDropMenu extends React.Component {
     let columns = [];
 
     if (arr instanceof Array) {
-      treeFilter(arr, (d) => {
-        let hasChildren = false;
-        if (d.children instanceof Array && d.children.length > 0) {
-          hasChildren = true;
-        }
-        if (d.settable !== false && d.visibleSettable !== false && !hasChildren) {
-          columns.push(d)
-        }
-        return true;
-      });
+      columns = arr.filter(d => { return d.settable !== false && d.visibleSettable !== false });
     }
 
     let _columns = columns;
@@ -109,8 +99,8 @@ class HeadDropMenu extends React.Component {
     let defaultChecked = [];
 
     if (_columns instanceof Array) {
-      _columns.forEach((c, i) => {
 
+      treeForEach(_columns, (c, i, o) => {
         let columnKey = c.key || c.dataIndex;
 
         let isHide = false;
@@ -139,7 +129,7 @@ class HeadDropMenu extends React.Component {
         }
 
         columnsOptions.push(
-          <div key={i} style={{ display: "block" }}>
+          <div key={columnKey} style={{ display: "block", marginLeft: o.depth * 24 }}>
             <Checkbox
               checked={!isHide}
               value={columnKey}
@@ -151,8 +141,8 @@ class HeadDropMenu extends React.Component {
             </Checkbox>
           </div>
         );
+      })
 
-      });
     }
     let columnsFilterItems = null;
     if (columnsOptions.length > 0) {
