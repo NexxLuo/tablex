@@ -2150,7 +2150,7 @@ class EditableTable extends React.Component {
           o.onClick(e);
         }
       };
-    } else {
+    } else if (type === "onDoubleClick") {
       resetProps.onDoubleClick = e => {
         this.editRows([rowData[rowKey]], null, e);
         if (typeof o.onDoubleClick === "function") {
@@ -2897,7 +2897,7 @@ EditableTable.propTypes = {
   /** 是否单行编辑模式,单行编辑模式时，点击行即可编辑 */
   singleRowEdit: PropTypes.bool,
   /** 单行编辑模式时,进入编辑触发方式，单击还是双击 */
-  singleRowEditTrigger: PropTypes.oneOf(["onClick", "onDoubleClick"]),
+  singleRowEditTrigger: PropTypes.oneOf(["none", "onClick", "onDoubleClick"]),
   onEditRowChange: PropTypes.func,
   /** 相邻行的列值一致时自动进行合并 */
   autoRowSpanColumns: PropTypes.array
