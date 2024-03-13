@@ -1446,7 +1446,7 @@ class EditableTable extends React.Component {
       return false;
     }
 
-    bl = await this.validate();
+    bl = await this.validateAll();
 
     if (bl === false) {
       showValidateMessage && message.error(this.props.intl["validateError"]);
