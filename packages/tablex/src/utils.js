@@ -696,7 +696,7 @@ export function getPageData({ data: [], total, current, pageSize }) {
   return arr;
 }
 
-export function getOrderedData({ data: [], orders = {} }) {
+export function getOrderedData({ data = [], orders = {} }) {
   let arr = data;
   let orderColumns = [];
   let orderTypes = [];

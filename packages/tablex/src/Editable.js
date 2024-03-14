@@ -901,7 +901,7 @@ class EditableTable extends React.Component {
     this.setState({ isEditAll: true, isEditing: true, editKeys: [] });
   };
 
-  endEdit = callBack => {
+  endEdit = callback => {
     let arr = [].concat(this.changedRows);
 
     let { keys, rows } = this.filterSelectedRowKeys();
@@ -926,9 +926,9 @@ class EditableTable extends React.Component {
     nextState.selectedRowKeys = keys;
     nextState.selectedRows = rows;
 
-    if (typeof callBack === "function") {
+    if (typeof callback === "function") {
       this.setState(nextState, () => {
-        callBack(arr, this.state.data, this.editType);
+        callback(arr, this.state.data, this.editType);
       });
     } else {
       this.setState(nextState);
@@ -949,7 +949,7 @@ class EditableTable extends React.Component {
 
     if (typeof callback === "function") {
       this.setState(nextState, () => {
-        callBack(this.state.data);
+        callback(this.state.data);
       });
     } else {
       this.setState(nextState);
