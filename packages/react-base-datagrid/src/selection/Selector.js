@@ -215,7 +215,6 @@ let AreaSelect = function() {
     if (this.hasBegin && key) {
       this.keysMap[key] = true;
       let rect = e.target.getBoundingClientRect();
-      testText = rect.y;
       this.rectKeyMap[key] = {
         x: rect.x,
         y: rect.y,
