@@ -1846,6 +1846,35 @@ class SelectionGrid extends Component {
     return nextKeys;
   };
 
+  selectRows = (rowKeys, silent = false) => {
+    let { flatData, rowKey } = this.state;
+    let nextKeys = [];
+    let nextRows = [];
+    if (rowKeys instanceof Array && rowKeys.length > 0) {
+      nextRows = this.getDataByKeys(rowKeys, flatData, rowKey);
+      nextKeys = nextRows.map(d => { return d[rowKey] });
+      if (silent === false) {
+        this.setState(
+          {
+            selectedRowKeys: nextKeys,
+            selectedRows: nextRows
+          },
+          () => {
+            this.call_onSelectChange({
+              rowData: null,
+              rowIndex: -1,
+              rowKey: "",
+              selectedRowKeys: nextKeys,
+              selectedRows: nextRows,
+              halfKeys: this.state.halfCheckedKeys
+            });
+          }
+        );
+      }
+    }
+    return nextRows;
+  };
+
   unSelectAll = silent => {
     if (silent === false) {
       this.removeAllSelected({
@@ -1944,7 +1973,8 @@ class SelectionGrid extends Component {
     selectAll: this.selectAll.bind(this),
     unSelectAll: this.unSelectAll.bind(this),
     selectToggle: this.selectToggle.bind(this),
-    getSelections: this.getSelections.bind(this)
+    getSelections: this.getSelections.bind(this),
+    selectRows: this.selectRows.bind(this)
   };
 
   componentDidMount() {
