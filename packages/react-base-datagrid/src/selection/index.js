@@ -108,9 +108,9 @@ class SelectionGrid extends Component {
 
       let _filterSelectionData = [];
       if (clearPrevSelections === true) {
-        _filterSelectionData = data;
+        _filterSelectionData = flatData.slice();
       } else {
-        _filterSelectionData = data.slice().concat(prevState.selectedRows);
+        _filterSelectionData = flatData.slice().concat(prevState.selectedRows);
       }
 
       if (

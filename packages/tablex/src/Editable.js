@@ -2664,6 +2664,7 @@ class EditableTable extends React.Component {
 
     let newProps = {
       data: arr,
+      flatData: this.state.flatData,
       shouldHoldPage: this.shouldHoldPage(),
       columns,
       onExpandedRowsChange: this.onExpandedRowsChange,
