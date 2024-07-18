@@ -125,7 +125,7 @@ class SelectionGrid extends Component {
 
         nextState.selectedRowKeys = keys;
         nextState.selectedRows = selectedData;
-        if (selectedRowKeys.length === 0) {
+        if (selectionProps.selectedRowKeys === 0) {
           nextState.halfCheckedKeys = [];
         }
       }

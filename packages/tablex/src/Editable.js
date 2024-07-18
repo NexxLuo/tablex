@@ -2666,16 +2666,25 @@ class EditableTable extends React.Component {
       data: arr,
       shouldHoldPage: this.shouldHoldPage(),
       columns,
-      onSelectChange: this.onSelectChange,
       onExpandedRowsChange: this.onExpandedRowsChange,
       expandedRowKeys: this.state.expandedRowKeys,
-      selectedRowKeys: this.state.selectedRowKeys,
       headerToolsBar: this.headerToolsBar,
       footerToolsBar: this.footerToolsBar,
       innerRef: this.innerTableRef,
       rowClassName: this.rowClassName,
       actions: this.api
     };
+
+    if (props.rowSelection?.compatibleOnSelectChange === false) {
+      newProps.rowSelection = {
+        ...props.rowSelection,
+        onSelectChange: this.onSelectChange,
+        selectedRowKeys: this.state.selectedRowKeys,
+      }
+    } else {
+      newProps.onSelectChange = this.onSelectChange
+      newProps.selectedRowKeys = this.state.selectedRowKeys
+    }
 
     if (props.singleRowEdit === true && props.editable && !props.readOnly) {
       newProps.onRow = this.onRow;
