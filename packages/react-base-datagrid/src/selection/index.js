@@ -393,6 +393,7 @@ class SelectionGrid extends Component {
   }) => {
     let rfn = this.getRowSelection("onCheckChange");
     let fn = this.getRowSelection("onChange");
+    let bl = this.getRowSelection("compatibleOnSelectChange") ?? true;
 
     if (typeof rfn === "function") {
       rfn(keys, rows, { halfKeys });
@@ -400,7 +401,7 @@ class SelectionGrid extends Component {
       fn(keys, rows, { halfKeys });
     }
 
-    if (callPropsFn === true) {
+    if (callPropsFn === true && bl === true) {
       this.call_props_onSelectChange({
         rowData,
         rowIndex,
@@ -765,27 +766,31 @@ class SelectionGrid extends Component {
         this.isEnableCheck() &&
         this.getRowSelection("checkOnSelect") === true
       ) {
-        let {
-          keys: nextCheckedKeys,
-          rows: nextCheckedRows,
-          halfKeys: nextHalfCheckedKeys
-        } = this.insertChecked({ key: rowKey, rowData });
-
         if (this.isMultipleSelect()) {
+          let {
+            keys: nextCheckedKeys,
+            rows: nextCheckedRows,
+            halfKeys: nextHalfCheckedKeys
+          } = this.insertChecked({ key: rowKey, rowData });
           nextState.selectedRowKeys = nextCheckedKeys;
           nextState.selectedRows = nextCheckedRows;
+          nextState.checkedKeys = nextCheckedKeys;
+          nextState.checkedRows = nextCheckedRows;
+          nextState.halfCheckedKeys = nextHalfCheckedKeys;
+        } else {
+          nextState.checkedKeys = nextKeys;
+          nextState.checkedRows = nextRows;
+          nextState.selectedRowKeys = nextKeys;
+          nextState.selectedRows = nextRows;
+          nextState.halfCheckedKeys = [];
         }
-
-        nextState.checkedKeys = nextCheckedKeys;
-        nextState.checkedRows = nextCheckedRows;
-        nextState.halfCheckedKeys = nextHalfCheckedKeys;
 
         this.call_onCheck({
           rowData,
           rowIndex,
           rowKey: rowKey,
-          keys: nextCheckedKeys,
-          rows: nextCheckedRows,
+          keys: nextState.checkedKeys,
+          rows: nextState.checkedRows,
           halfKeys: nextState.halfCheckedKeys
         });
 
@@ -793,8 +798,8 @@ class SelectionGrid extends Component {
           rowData,
           rowIndex,
           rowKey: rowKey,
-          keys: nextCheckedKeys,
-          rows: nextCheckedRows,
+          keys: nextState.checkedKeys,
+          rows: nextState.checkedRows,
           halfKeys: nextState.halfCheckedKeys,
           callPropsFn: false
         });
