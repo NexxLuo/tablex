@@ -401,8 +401,8 @@ class Table extends React.Component {
     matchColumnContentWidth: fn => {
       return this.matchColumnContentWidth(fn);
     },
-    getSummaryData: () => {
-      return this.getSummaryData(true);
+    getSummaryData: (options) => {
+      return this.getSummaryData({ fixed: true, ...options });
     },
     showContextMenu: (params) => {
       return this.showContextMenu(params);
@@ -566,7 +566,7 @@ class Table extends React.Component {
       });
     }
 
-    let summaryData = this.getSummaryData(false);
+    let summaryData = this.getSummaryData({ fixed: false });
     if (arr.length > 0 && summaryData.length > 0) {
       return [...arr, ...summaryData];
     }
@@ -1393,7 +1393,7 @@ class Table extends React.Component {
     }
   };
 
-  getSummaryData = _fixed => {
+  getSummaryData = ({ fixed: _fixed, renderParams }) => {
     let arr = [];
     let { summary = {}, rowKey } = this.props;
 
@@ -1417,6 +1417,17 @@ class Table extends React.Component {
     //title显示文本
     let titleText = title.text || "";
 
+    const _formatValue = (value, k, type, index) => {
+      let v = value;
+      if (typeof render === "function") {
+        v = render(value, k, type, index, renderParams);
+      }
+      if (typeof v === "undefined" || v === null) {
+        v = "";
+      }
+      return v;
+    }
+
     //如果为完全自定义，则不执行自身逻辑
     if (custom) {
       summaryTypes.forEach((s, i) => {
@@ -1432,13 +1443,7 @@ class Table extends React.Component {
           let dataIndex = k;
           let type = s[k];
           let summaryValue = "";
-          let v = summaryValue;
-          if (typeof render === "function") {
-            v = render(summaryValue, k, type, i);
-            if (typeof v === "undefined" || v === null) {
-              v = "";
-            }
-          }
+          let v = _formatValue(summaryValue, k, type, i);
           r[dataIndex] = v;
         }
 
@@ -1480,14 +1485,7 @@ class Table extends React.Component {
             }
           }
 
-          let v = summaryValue;
-
-          if (typeof render === "function") {
-            v = render(summaryValue, k, type, i);
-            if (typeof v === "undefined" || v === null) {
-              v = "";
-            }
-          }
+          let v = _formatValue(summaryValue, k, type, i);
 
           r[dataIndex] = v;
         }
@@ -1515,7 +1513,7 @@ class Table extends React.Component {
       return null;
     }
 
-    let arr = this.getSummaryData(true);
+    let arr = this.getSummaryData({ fixed: true });
 
     let frozenRender = {
       rowHeight: rowHeight,
