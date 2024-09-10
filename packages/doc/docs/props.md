@@ -90,6 +90,7 @@ table th:nth-of-type(4) {
 | editToolsConfig | [editToolsConfig](#edittoolsconfig) | `true` | `N/A` | 工具栏，工具按钮属性配置 |
 | extraTools | `(ins: any) => ReactNode` | `true` | `N/A` | 额外的工具栏按钮渲染 |
 | edittingToolsShowType | `0 \| 3 \| 1 \| 2` | `true` | `N/A` | 工具栏显示模式  0:不显示任何按钮 1:只显示内置的编辑按钮 2:只显示自定义按钮 3:显示所有按钮 |
+| hiddenToolsWhenEditting | `string[]` | `true` | `N/A` | 使用内置编辑模式时，需要在编辑时隐藏的工具栏按钮，目前支持["add","delete"];如果使用onEditSave中的editType做了判断逻辑需使用此配置限制按钮，否则可能导致editType不正确 |
 | intl | `any` | `true` | `N/A` | 表格内部显示文案配置 |
 | isAppend | `boolean` | `true` | `N/A` | 新增行时，是追加，还是清空当前页数据 |
 | ignoreEmptyRow | `boolean` | `true` | `N/A` | 新增时是否忽略空数据行,当所有editor列的值均为空时,此行则视为空数据行 |

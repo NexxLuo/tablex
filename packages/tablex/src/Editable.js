@@ -1878,9 +1878,13 @@ class EditableTable extends React.Component {
     let rangeUnitText = this.props.intl["addRangeRowText"];
 
     let edittingToolsShowType = 0;
+    let hiddenToolsWhenEditting = [];
 
     if (isEditing) {
       edittingToolsShowType = this.props.edittingToolsShowType || 0;
+      if (this.props.hiddenToolsWhenEditting instanceof Array) {
+        hiddenToolsWhenEditting = this.props.hiddenToolsWhenEditting;
+      }
     } else {
       edittingToolsShowType = 3;
     }
@@ -1907,7 +1911,7 @@ class EditableTable extends React.Component {
       );
 
       if (showTypes.indexOf(1) > -1) {
-        if (d === "addSingle") {
+        if (d === "addSingle" && hiddenToolsWhenEditting.indexOf("add") === -1) {
           buttons.push(
             wrapper(
               <Button
@@ -1926,7 +1930,7 @@ class EditableTable extends React.Component {
           );
         }
 
-        if (d === "add") {
+        if (d === "add" && hiddenToolsWhenEditting.indexOf("add") === -1) {
           buttons.push(
             wrapper(
               <Dropdown key={d + "_1"} overlay={menu} {...buttonProps[d]}>
@@ -1965,7 +1969,7 @@ class EditableTable extends React.Component {
           );
         }
 
-        if (d === "delete") {
+        if (d === "delete" && hiddenToolsWhenEditting.indexOf("delete") === -1) {
           let { selectedRowKeys = [], data = [] } = this.state;
           let hasSelectedRows = selectedRowKeys.length > 0;
           let hasData = data.length > 0;
@@ -2823,6 +2827,11 @@ EditableTable.propTypes = {
       3:显示所有按钮
    */
   edittingToolsShowType: PropTypes.oneOf([0, 1, 2, 3]),
+  /**
+   * 使用内置编辑模式时，需要在编辑时隐藏的工具栏按钮，目前支持["add","delete"]
+   * 如果使用onEditSave中的editType做了判断逻辑需使用此配置限制按钮，否则可能导致editType不正确
+   */
+  hiddenToolsWhenEditting: PropTypes.array,
   /** 新增行时，是追加，还是清空当前页数据 */
   isAppend: PropTypes.bool,
   /** 新增行时的默认条数 */

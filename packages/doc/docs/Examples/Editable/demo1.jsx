@@ -123,6 +123,7 @@ class Demo extends React.Component {
           isAppend={false}
           allowSaveEmpty={false}
           selectMode={'multiple'}
+          hiddenToolsWhenEditting={["delete"]}
           checkStrictly={false}
           editTools={['edit', 'add', 'delete']}
           onEditSave={this.onEditSave.bind(this)}

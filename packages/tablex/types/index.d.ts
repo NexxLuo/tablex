@@ -298,6 +298,7 @@ export interface TableProps {
   editTools?: EditTools;
   editToolsConfig?: EditToolsConfig;
   extraTools?: (ins: any) => React.ReactNode;
+  hiddenToolsWhenEditting?: string[];
   edittingToolsShowType?: 0 | 1 | 2 | 3;
   intl?: any;
   isAppend?: boolean;
@@ -345,7 +346,7 @@ export interface TableProps {
   onEditRowChange?: (rowKeys: string[], event: any) => void;
 }
 
-declare class Table extends React.Component<TableProps, any> {}
+declare class Table extends React.Component<TableProps, any> { }
 
 export declare function flatten(
   arr: any[],
@@ -394,6 +395,6 @@ export type DraggableTablePropsType = TableProps & {
 declare class DraggableTable extends React.Component<
   DraggableTablePropsType,
   any
-> {}
+> { }
 
 export { Table, DraggableTable };
