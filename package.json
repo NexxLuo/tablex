@@ -7,16 +7,17 @@
     "type": "git",
     "url": "https://github.com/NexxLuo/tablex"
   },
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "homepage": "https://nexxluo.github.io/tablex",
   "scripts": {
-    "dev": "cd ./packages/react-base-datagrid && npm run dev",
-    "build:lib": "npm run build:base && npm run build:tablex",
-    "build:base": "cd ./packages/react-base-datagrid && npm run build",
-    "build:tablex": "cd ./packages/tablex && npm run build",
-    "start": "cd ./packages/tablex && npm start",
     "i": "lerna bootstrap",
-    "link": "lerna link",
-    "pub": "lerna publish from-package"
+    "clean": "lerna clean",
+    "start": "yarn workspace doc start",
+    "build": "lerna run build --stream",
+    "pub-pro": "npm run version:patch &&lerna publish from-package --no-private --yes"
   },
   "keywords": [
     "table",
@@ -29,6 +30,8 @@
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
-    "lerna": "^3.15.0"
+    "lerna": "^6.3.0",
+    "father": "4.1.2",
+    "antd": "^3.20.3"
   }
 }

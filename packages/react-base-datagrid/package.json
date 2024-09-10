@@ -9,12 +9,8 @@
   },
   "homepage": "https://nexxluo.github.io/tablex",
   "scripts": {
-    "start": "docz dev",
-    "dev": "father-build build --watch",
-    "build": "father-build build",
-    "doc": "docz dev",
-    "docb": "docz build",
-    "pub": "father-build build&&npm version patch&&npm publish"
+    "build": "father build",
+    "dev": "father dev"
   },
   "main": "lib/index.js",
   "files": [
@@ -40,8 +36,5 @@
     "react-resize-detector": "^9.1.0",
     "react-window": "^1.8.9",
     "resize-observer-polyfill": "^1.5.1"
-  },
-  "devDependencies": {
-    "father-build": "^1.17.2"
   }
 }

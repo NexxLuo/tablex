@@ -1,0 +1,15 @@
+{
+    "version": "independent",
+    "npmClient": "yarn",
+    "useWorkspaces": true,
+    "npmClientArgs": [
+      "--ignore-engines"
+    ],
+    "command": {
+      "version": {
+        "forcePublish": true,
+        "exact": true,
+        "message": "publish package: 😊 %s"
+      }
+    }
+  }

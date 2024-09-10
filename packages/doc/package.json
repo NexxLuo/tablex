@@ -1,5 +1,5 @@
 {
-  "name": "tablexdemo",
+  "name": "doc",
   "version": "0.0.1",
   "description": "A react library developed with dumi",
   "license": "MIT",
@@ -9,8 +9,6 @@
     "dist"
   ],
   "scripts": {
-    "build": "father build",
-    "build:watch": "father dev",
     "dev": "dumi dev",
     "doc:build2": "cross-env DOC_BASE=/components/table/ dumi build",
     "doc:gh-pages": "gh-pages -d ./packages/doc/docs-dist",
@@ -21,7 +19,7 @@
     "lint:es": "eslint \"{src,test}/**/*.{js,jsx,ts,tsx}\"",
     "prepare": "dumi setup",
     "prepublishOnly": "father doctor && npm run build",
-    "start": "npm run dev"
+    "start": "dumi dev"
   },
   "commitlint": {
     "extends": [

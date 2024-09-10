@@ -9,9 +9,8 @@
   },
   "homepage": "https://nexxluo.github.io/tablex",
   "scripts": {
-    "dev": "father-build build --watch",
-    "build": "father-build build",
-    "pub": "father-build build&&npm version patch&&npm publish"
+    "build": "father build",
+    "dev": "father dev"
   },
   "main": "lib/index.js",
   "types": "types/index.d.ts",
@@ -42,9 +41,5 @@
     "react-dnd": "^11.1.3",
     "react-dnd-html5-backend": "^11.1.3",
     "react-sortable-hoc": "^1.9.1"
-  },
-  "devDependencies": {
-    "antd": "^3.20.3",
-    "father-build": "^1.17.2"
   }
 }

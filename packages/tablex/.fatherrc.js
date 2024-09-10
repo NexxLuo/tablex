@@ -1,6 +1,6 @@
 export default {
-  entry: "src/index.js",
   cjs: {
-    type: "babel"
+    output: 'lib',
+    transformer: "babel"
   }
 };
