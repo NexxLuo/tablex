@@ -126,7 +126,7 @@ export interface FrozenRenderProps {
 export interface SummaryProps {
   style?: object;
   title?: { text: string; column: string; render?: () => React.ReactNode };
-  data: any[];
+  data: { [columnKey: string]: "max" | "min" | "avg" | "sum" | string }[];
   fixed?: boolean;
   render?: (
     value: any,
