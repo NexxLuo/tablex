@@ -71,7 +71,7 @@ let summaryMath = {
   sum: (items, key, fn) => {
     let r = BigNumber.sum.apply(null, items.map(o => {
       if (typeof fn === "function") {
-        return fn(o[key], o, key, items);
+        return toNumber(fn(o[key], o, key, items));
       }
       return toNumber(o[key]);
     })).toNumber()
