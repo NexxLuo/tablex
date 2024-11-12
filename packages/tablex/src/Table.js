@@ -26,9 +26,34 @@ const DEFAULT_COLUMN_WIDTH = 100;
 
 function toNumber(v) {
   let value = 0;
-  let temp = Number(v);
-  if (!isNaN(temp)) {
-    value = temp;
+  let num = new BigNumber(v);
+  if (!num.isNaN()) {
+    value = num;
+  }
+  return value;
+}
+
+
+function tryGetNumberValue(v) {
+  let value = 0;
+  //大于15位不进行toNumber处理，否则会精度错误
+  if (typeof v?.toString === "function") {
+      let str = v.toString();
+      if (str.length > 15) {
+          return str;
+      }
+  }
+
+  if (typeof v?.toNumber === "function") {
+      let _v = v.toNumber();
+      if (!isNaN(_v)) {
+          value = _v;
+      }
+  } else {
+      let _v = Number(v);
+      if (!isNaN(_v)) {
+          value = _v;
+      }
   }
   return value;
 }
@@ -38,9 +63,9 @@ let summaryMath = {
     let r =
       maxBy(items, function (o) {
         if (typeof fn === "function") {
-          return fn(o[key], o, key, items);
+          return tryGetNumberValue(fn(o[key], o, key, items));
         }
-        return toNumber(o[key]);
+        return tryGetNumberValue(o[key]);
       }) || {};
 
     return r[key];
@@ -49,11 +74,10 @@ let summaryMath = {
     let r =
       minBy(items, function (o) {
         if (typeof fn === "function") {
-          return fn(o[key], o, key, items);
+          return tryGetNumberValue(fn(o[key], o, key, items));
         }
-        return toNumber(o[key]);
+        return tryGetNumberValue(o[key]);
       }) || {};
-
     return r[key];
   },
   avg: (items, key, fn) => {
@@ -61,7 +85,7 @@ let summaryMath = {
     if (sum === undefined) {
       return "";
     } else {
-      return BigNumber(sum).dividedBy(items.length).toNumber();
+      return tryGetNumberValue(BigNumber(sum).dividedBy(items.length));
     }
   },
   average: (items, key, fn) => {
@@ -74,9 +98,9 @@ let summaryMath = {
         return toNumber(fn(o[key], o, key, items));
       }
       return toNumber(o[key]);
-    })).toNumber()
+    }))
 
-    return r;
+    return tryGetNumberValue(r);
   }
 };
 
