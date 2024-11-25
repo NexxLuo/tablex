@@ -38,22 +38,22 @@ function tryGetNumberValue(v) {
   let value = 0;
   //大于15位不进行toNumber处理，否则会精度错误
   if (typeof v?.toString === "function") {
-      let str = v.toString();
-      if (str.length > 15) {
-          return str;
-      }
+    let str = v.toString();
+    if (str.length > 15) {
+      return str;
+    }
   }
 
   if (typeof v?.toNumber === "function") {
-      let _v = v.toNumber();
-      if (!isNaN(_v)) {
-          value = _v;
-      }
+    let _v = v.toNumber();
+    if (!isNaN(_v)) {
+      value = _v;
+    }
   } else {
-      let _v = Number(v);
-      if (!isNaN(_v)) {
-          value = _v;
-      }
+    let _v = Number(v);
+    if (!isNaN(_v)) {
+      value = _v;
+    }
   }
   return value;
 }
@@ -433,6 +433,23 @@ class Table extends React.Component {
     },
     hideContextMenu: () => {
       return this.hideContextMenu();
+    },
+    getCurrentPageData: () => {
+      return this.getCurrentPageData(this.state.data);
+    },
+    getCurrentViewData: () => {
+      return this.getData()
+    },
+    getGroupedData: () => {
+      let { data, groupedColumnKey } = this.state;
+      let rowKey = this.props.rowKey;
+      let fn = this.props.getGroupColumnValue;
+      return getGroupedData({
+        groupedKey: groupedColumnKey,
+        data: data,
+        keyField: rowKey,
+        getValue: fn
+      });
     }
   };
 
