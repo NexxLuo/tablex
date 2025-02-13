@@ -135,19 +135,20 @@ class EditableTable extends React.Component {
       nextState.changedRows = [];
 
       let data = nextProps.data || nextProps.dataSource || [];
+      let _data = cloneData(data);
 
       if (prevState.dataControled === true) {
-        let flatData = treeToFlatten(data).list;
+        let flatData = treeToFlatten(_data).list;
         nextState.rawData = data;
         nextState.flatData = flatData;
-        nextState.data = data;
+        nextState.data = _data;
         nextState.sourceData = cloneData(data);
       } else {
         if (prevState.rawData !== data) {
           nextState.rawData = data;
-          let flatData = treeToFlatten(data).list;
+          let flatData = treeToFlatten(_data).list;
           nextState.flatData = flatData;
-          nextState.data = data;
+          nextState.data = _data;
           nextState.sourceData = cloneData(data);
         }
       }
@@ -2478,7 +2479,7 @@ class EditableTable extends React.Component {
   };
 
   filterData = (fn, silent = false, source) => {
-    let { rowKey, rawData: treeData } = this.state;
+    let { rowKey, sourceData: treeData } = this.state;
     let dataSource = treeData;
 
     if (source instanceof Array) {
