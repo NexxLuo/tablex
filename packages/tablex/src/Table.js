@@ -450,7 +450,8 @@ class Table extends React.Component {
         keyField: rowKey,
         getValue: fn
       });
-    }
+    },
+    getColumnGroupSummaryValue: this.getColumnGroupSummaryValueText
   };
 
   componentDidMount() {
