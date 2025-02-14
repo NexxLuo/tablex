@@ -1017,6 +1017,20 @@ class Table extends React.Component {
               return columnValue;
             }
           };
+          let oldRenderText = d.renderText;
+          d.renderText = (value, row, index, extra) => {
+            if (row && row.__isGroupedHeadRow) {
+              const text = this.getColumnGroupSummaryValueText(row.children || [], row, columnKey);
+              return text;
+            } else {
+              let columnValue = value;
+              if (typeof oldRenderText === "function") {
+                columnValue = oldRenderText(value, row, index, extra);
+              }
+              return columnValue;
+            }
+          };
+
         }
       }
     });
@@ -1054,6 +1068,22 @@ class Table extends React.Component {
               firstColumnValue = oldRender(value, row, index, extra);
             }
             return firstColumnValue;
+          }
+        };
+        let oldRenderText = firstColumn.renderText;
+        firstColumn.renderText = (value, row, index, extra) => {
+          if (row && row.__isGroupedHeadRow) {
+            let groupLable = groupColumnName[row.__groupColumnKey] || "";
+            if (groupLable) {
+              groupLable += ":";
+            }
+            return groupLable + row.__groupName + "(" + row.__count + ")";
+          } else {
+            let columnValue = value;
+            if (typeof oldRenderText === "function") {
+              columnValue = oldRenderText(value, row, index, extra);
+            }
+            return columnValue;
           }
         };
       } else {
@@ -1432,6 +1462,51 @@ class Table extends React.Component {
     } else {
       return null;
     }
+  };
+
+  getColumnGroupSummaryValueText = (data = [], row, columnKey) => {
+    let { data: summaryTypes = [], render } =
+      this.props.groupedColumnSummary || {};
+    let flatData = treeToList(data).list;
+    let arr = [];
+    summaryTypes.forEach((d) => {
+      let { dataIndex, title, type } = d;
+      if (columnKey === dataIndex) {
+        let fn = summaryMath[type];
+        let summaryValue = "";
+        if (typeof fn === "function") {
+          summaryValue = fn(flatData, dataIndex);
+          if (typeof summaryValue === "undefined") {
+            summaryValue = "";
+          }
+        }
+        let v = summaryValue;
+        if (typeof render === "function") {
+          let renderElement = render(v, summaryValue, {
+            dataIndex,
+            title,
+            type,
+            row: row
+          });
+          if (typeof renderElement === "number" || typeof renderElement === "string" || typeof renderElement === "boolean") {
+            v = renderElement;
+          } else {
+            v = "";
+          }
+        }
+
+        if (v !== "" && v !== null && v !== undefined) {
+          arr.push(v);
+        }
+      }
+    });
+
+    let v = arr.join(";");
+
+    if (!isNaN(Number(v))) {
+      return Number(v);
+    }
+    return v;
   };
 
   getSummaryData = ({ fixed: _fixed, renderParams }) => {
