@@ -135,7 +135,7 @@ class EditableTable extends React.Component {
       nextState.changedRows = [];
 
       let data = nextProps.data || nextProps.dataSource || [];
-      let _data = cloneData(data);
+      let _data = data;
 
       if (prevState.dataControled === true) {
         let flatData = treeToFlatten(_data).list;
@@ -263,7 +263,9 @@ class EditableTable extends React.Component {
     // 当change时立即验证行
     if (this.props.validateTrigger === "onChange") {
       this.validateRows(modifiedData);
-      this.updateComponent();
+      this.setState({
+        data: this.nextData
+      })
     }
   };
 
@@ -2409,6 +2411,13 @@ class EditableTable extends React.Component {
 
   modifyData = (rows = [], silent = false, callback) => {
     let { data } = this.state;
+
+    //以下情况在修改数据时，应同时修改外部引用数据中的值，
+    // 因为项目中会直接使用state中的值
+    if (this.props.editAll === true || this.props.editorNoBorder === true) {
+    } else {
+      data = cloneData(data);
+    }
 
     let insertedData = this.insertedData;
 
