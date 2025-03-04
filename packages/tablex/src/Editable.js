@@ -2414,7 +2414,8 @@ class EditableTable extends React.Component {
 
     //以下情况在修改数据时，应同时修改外部引用数据中的值，
     // 因为项目中会直接使用state中的值
-    if (this.props.editAll === true || this.props.editorNoBorder === true) {
+    // !!!注意：手动调用api.modifyData时默认情况下(silent为false)会修改state中的值，调用editor中的onchange时不会
+    if (this.props.editAll === true || this.props.editorNoBorder === true || silent === false) {
     } else {
       data = cloneData(data);
     }
