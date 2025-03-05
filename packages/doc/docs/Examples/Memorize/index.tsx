@@ -1,6 +1,6 @@
 import React from 'react';
 import Table from 'tablex';
-import { Input, Button } from 'antd';
+import { Input, Button,Select } from 'antd';
 
 
 class EditDemo extends React.Component<any, any> {
@@ -48,16 +48,24 @@ class EditDemo extends React.Component<any, any> {
               value={value}
               onChange={(e) => {
                 console.log('row:', row);
-                this.tableRef.current.api.modifyData([
-                  { ...row, 'column-1': e.target.value },
-                ]);
+                // this.tableRef.current.api.modifyData([
+                //   { ...row, 'column-1': e.target.value },
+                // ]);
                 //  this.tableRef.current.api.commitEdit()
 
-                //    onchange({'column-1':e.target.value})
+                   onchange({'column-1':e.target.value})
               }}
             />
           );
         },
+        validator:(value)=>{
+          console.log("value:",value)
+
+          if (!value) {
+              return "必填"
+          }
+          return ""
+        }
       },
 
       {
@@ -66,6 +74,34 @@ class EditDemo extends React.Component<any, any> {
         title: 'column-2',
         width: 150,
         align: 'center',
+        editor: (value, row, index, onchange, ref) => {
+          return (
+            <Select
+              value={value}
+              allowClear={true}
+              onChange={(v) => {
+                console.log('row:', row);
+                // this.tableRef.current.api.modifyData([
+                //   { ...row, 'column-1': e.target.value },
+                // ]);
+                //  this.tableRef.current.api.commitEdit()
+
+                   onchange({'column-2':v})
+              }}
+            >
+              <Select.Option value={1} key={1}>
+                1
+              </Select.Option>
+              </Select>
+          );
+        },
+        validator:(value)=>{
+          console.log("value:",value)
+          if (value == null || value.toString().trim() === '') {
+            return { valid: false, message: '请选择' };
+        }
+        return { valid: true, message: '' };
+        }
       },
 
       {
@@ -86,7 +122,7 @@ class EditDemo extends React.Component<any, any> {
     let data = this.generateData(columns, 20);
 
     this.state = {
-      data: data,
+      data: [],
       columns: columns,
     };
   }
@@ -105,6 +141,7 @@ class EditDemo extends React.Component<any, any> {
           columnDropMenu={true}
           settable={true}
           editable={true}
+          isAppend={true}
           validateTrigger="onChange"
           onEditSave={(changed, nextData) => {
             this.setState({ data: nextData });
