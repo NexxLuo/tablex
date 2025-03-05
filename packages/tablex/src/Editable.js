@@ -263,8 +263,10 @@ class EditableTable extends React.Component {
     // 当change时立即验证行
     if (this.props.validateTrigger === "onChange") {
       this.validateRows(modifiedData);
+      let nextData = this.nextData;
       this.setState({
-        data: this.nextData
+        data: nextData,
+        flatData: nextData
       })
     }
   };
