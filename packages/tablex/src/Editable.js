@@ -136,7 +136,7 @@ class EditableTable extends React.Component {
 
       let data = nextProps.data || nextProps.dataSource || [];
       let _data = data;
-      if (nextProps.editAll === true || nextProps.editorNoBorder === true) {
+      if (nextProps.editAll === true || nextProps.editorNoBorder === true || nextProps.editable === false) {
         _data = data;
       } else {
         _data = cloneData(data);
