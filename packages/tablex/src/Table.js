@@ -39,7 +39,16 @@ function tryGetNumberValue(v) {
   //大于15位不进行toNumber处理，否则会精度错误
   if (typeof v?.toString === "function") {
     let str = v.toString();
-    if (str.length > 15) {
+    let n = 15;
+    if (n.indexOf(".") > -1) {
+      n = 17;
+    }
+    let c = window.__tablex_configs?.maxNumberLength;
+    if (typeof c === "number" && n > 15) {
+      n = c;
+    }
+
+    if (str.length > n) {
       return str;
     }
   }
