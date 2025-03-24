@@ -40,7 +40,7 @@ function tryGetNumberValue(v) {
   if (typeof v?.toString === "function") {
     let str = v.toString();
     let n = 15;
-    if (n.indexOf(".") > -1) {
+    if (str.indexOf(".") > -1) {
       n = 17;
     }
     let c = window.__tablex_configs?.maxNumberLength;
