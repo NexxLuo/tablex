@@ -460,7 +460,9 @@ class Table extends React.Component {
         getValue: fn
       });
     },
-    getColumnGroupSummaryValue: this.getColumnGroupSummaryValueText
+    getColumnGroupSummaryValue: (data, row, columnKey) => {
+      return this.getColumnGroupSummaryValueText(data, row, columnKey)
+    }
   };
 
   componentDidMount() {
