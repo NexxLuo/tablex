@@ -1116,7 +1116,6 @@ class EditableTable extends React.Component {
       rowKeys.push(k);
     });
 
-    newEditKeys = editKeys.concat(rowKeys);
     newAddedData = [].concat(rows);
     this.insertedData = newAddedData;
 
@@ -1124,10 +1123,19 @@ class EditableTable extends React.Component {
 
     this.nextData = newData;
 
+    //feat：只addRows传递树形数据
+    let nextFlatData = flatData.slice();
+    newEditKeys = editKeys.slice();
+    treeFilter(newAddedData, (d) => {
+      nextFlatData.push(d);
+      newEditKeys.push(d[rowKey]);
+      return true;
+    })
+
     let nextState = {
       isAddingRange: true,
       data: newData,
-      flatData: flatData.slice().concat(newAddedData)
+      flatData: nextFlatData,
     };
 
     if (editting === true) {
