@@ -136,11 +136,30 @@ class EditableTable extends React.Component {
 
       let data = nextProps.data || nextProps.dataSource || [];
       let _data = data;
-      if (nextProps.editAll === true || nextProps.editorNoBorder === true || nextProps.editable === false) {
-        _data = data;
-      } else {
+
+      let shouldClone = false;
+      if (nextProps.editable === true) {
+        let editTools = nextProps.editTools || [];
+        if (editTools instanceof Array) {
+          if (editTools.length > 0) {
+            shouldClone = true;
+          } else {
+            shouldClone = false;
+          }
+
+          if (
+            nextProps.editAll === true ||
+            nextProps.editorNoBorder === true ||
+            nextProps.dataControled === true
+          ) {
+            shouldClone = false;
+          }
+        }
+      }
+
+      if (shouldClone) {
         _data = cloneData(data);
-      };
+      }
 
       if (prevState.dataControled === true) {
         let flatData = treeToFlatten(_data).list;
