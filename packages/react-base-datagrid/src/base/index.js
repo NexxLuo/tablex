@@ -647,6 +647,10 @@ const AutoSizeAble = ({ height, width, targetRef, ...props }, ref) => {
     innerStyle.height = height
   }
 
+  if (props.autoRowHeight === true && height === 0 && width === 0) {
+    return <div></div>;
+  }
+
   return (
     <div style={{ height: "100%", width: "100%" }} ref={targetRef}>
       <div style={innerStyle}>

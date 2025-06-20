@@ -26,6 +26,9 @@ class ClacTable extends Component {
       let totalSize = 0;
 
       if (container) {
+        if (container.offsetHeight <= 0) {
+          return;
+        }
         let rows = container.querySelectorAll(".tablex-table-row");
         let rowsContainer = getParentElement(container, ".tablex-container");
 
