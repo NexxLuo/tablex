@@ -21,6 +21,7 @@ import cloneDeep from "lodash/cloneDeep";
 import maxBy from "lodash/maxBy";
 import minBy from "lodash/minBy";
 import BigNumber from "bignumber.js";
+import FullscreenTrigger from "./components/fullscreen";
 
 const DEFAULT_COLUMN_WIDTH = 100;
 
@@ -1308,16 +1309,25 @@ class Table extends React.Component {
       }
     }
 
+    let fullscreenIcon = null;
+    if (this.props.enableFullscreen === true) {
+      fullscreenIcon = <FullscreenTrigger getElement={() => {
+        return this.containerRef.current?.parentElement;
+      }}></FullscreenTrigger>;
+    }
+
     if (
       pagerEl !== null ||
       settingButtonEl !== null ||
       footerEl !== null ||
       toolsBarEl !== null ||
-      refreshButtonEl !== null
+      refreshButtonEl !== null ||
+      fullscreenIcon !== null
     ) {
       footerContentEl = (
         <div className="tablex__container__footer__content">
           {settingButtonEl}
+          {fullscreenIcon}
           {footerEl}
           {toolsBarEl}
           {refreshButtonEl}
@@ -1865,6 +1875,7 @@ Table.defaultProps = {
   resetScrollOffset: true,
   loading: false,
   striped: true,
+  enableFullscreen: false,
   contextMenuWrapperStyle: {},
   contextMenuStyle: {},
   contextMenuAutoHideOnBlur: true,
@@ -1998,6 +2009,9 @@ Table.propTypes = {
 
   /** 奇偶行颜色间隔 */
   striped: PropTypes.bool,
+
+  /** 是否显示全屏按钮 */
+  enableFullscreen: PropTypes.bool,
 
   /** 渲染footer */
   footer: PropTypes.func,

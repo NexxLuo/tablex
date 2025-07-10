@@ -263,3 +263,8 @@
   background-color: #ffffff;
   outline: none;
 }
+
+.tablex__container:fullscreen {
+  padding: 12px;
+  background-color: #ffffff;
+}

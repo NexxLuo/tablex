@@ -236,6 +236,7 @@ export interface TableProps {
   settable?: boolean;
   sortable?: boolean;
   striped?: boolean;
+  enableFullscreen?: boolean;
   tableId?: string;
   footerExtra?: () => React.ReactNode;
   header?: () => React.ReactNode;
