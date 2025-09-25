@@ -2614,10 +2614,11 @@ class EditableTable extends React.Component {
     }
 
     if (focused === true && found && found.index > -1) {
+      let fk = found.row[rowKey];
       this.setState(
-        { focusedRowKeys: [found.row[rowKey]], focusedRowIndex: found.index },
+        { focusedRowKeys: [fk], focusedRowIndex: found.index },
         () => {
-          this.scrollToItem(found.index, "center");
+          this.scrollToRow(fk, "center");
         }
       );
     }
@@ -2663,6 +2664,7 @@ class EditableTable extends React.Component {
 
     /** 滚动到指定行 */
     scrollToItem: this.scrollToItem.bind(this),
+    scrollToRow: this.scrollToRow.bind(this),
 
     reset: this.reset.bind(this),
     isEditing: this.isEditing.bind(this),
