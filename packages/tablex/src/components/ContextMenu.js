@@ -65,11 +65,6 @@ class ContextMenu extends Component {
     }
   };
 
-  onBlur = () => {
-    if (this.props.autoHideOnBlur !== false) {
-      this.hide();
-    }
-  }
 
   onClick = () => {
     if (this.props.autoHideOnClick !== false) {
@@ -77,8 +72,26 @@ class ContextMenu extends Component {
     }
   }
 
+  outsideClick = (e) => {
+    let container = this._ref.current;
+    if (container && typeof container.contains === 'function') {
+      if (!container.contains(e.target)) {
+        this.hide()
+      }
+    }
+  }
+
   componentWillUnmount() {
     this.isVisible = false;
+    if (this.props.autoHideOnBlur !== false) {
+      window.document.removeEventListener('mousedown', this.outsideClick);
+    }
+  }
+
+  componentDidMount() {
+    if (this.props.autoHideOnBlur !== false) {
+      window.document.addEventListener('mousedown', this.outsideClick);
+    }
   }
 
   render() {
@@ -94,9 +107,6 @@ class ContextMenu extends Component {
       <div
         className="tablex-row-contextmenu-wrapper"
         ref={this._ref}
-        autoFocus={true}
-        tabIndex="1"
-        onBlur={this.onBlur}
         onClick={this.onClick}
         style={wrapperStyle}
       >
