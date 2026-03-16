@@ -17,7 +17,7 @@
   flex-direction: column;
 }
 
-.tablex__container__body > div:first-child {
+.tablex__container__body>div:first-child {
   flex: auto;
 }
 
@@ -90,10 +90,7 @@
   display: inline-block;
 }
 
-.tablex__column__dropMenu
-  .tablex-menu-vertical
-  > .tablex-menu-submenu
-  > .tablex-menu-submenu-title {
+.tablex__column__dropMenu .tablex-menu-vertical>.tablex-menu-submenu>.tablex-menu-submenu-title {
   height: auto;
   line-height: normal;
   padding: 0 8px;
@@ -172,8 +169,7 @@
   color: #ffffff;
 }
 
-.tablex__setting__modal__footer
-  .tablex-btn.tablex-btn-purple.tablex-btn-clicked:after {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-purple.tablex-btn-clicked:after {
   border-color: #6676ca;
 }
 
@@ -196,8 +192,7 @@
   color: #ffffff;
 }
 
-.tablex__setting__modal__footer
-  .tablex-btn.tablex-btn-green.tablex-btn-clicked:after {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-green.tablex-btn-clicked:after {
   border-color: #03a45e;
 }
 
@@ -220,8 +215,7 @@
   color: #ffffff;
 }
 
-.tablex__setting__modal__footer
-  .tablex-btn.tablex-btn-red.tablex-btn-clicked:after {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-red.tablex-btn-clicked:after {
   border-color: #d33f3c;
 }
 
@@ -244,8 +238,7 @@
   color: #ffffff;
 }
 
-.tablex__setting__modal__footer
-  .tablex-btn.tablex-btn-gray.tablex-btn-clicked:after {
+.tablex__setting__modal__footer .tablex-btn.tablex-btn-gray.tablex-btn-clicked:after {
   border-color: #a9a6a6;
 }
 
@@ -267,4 +260,26 @@
 .tablex__container:fullscreen {
   padding: 12px;
   background-color: #ffffff;
+}
+
+.tablex-row-content-tip-wrapper {
+  position: fixed;
+  display: none;
+  z-index: 99999;
+  outline: none;
+  transition: visibility 0.3s;
+}
+
+.tablex-row-content-tip-wrapper .tablex-row-content-tip {
+  border: 1px solid #ccc;
+  box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.15);
+  background-color: #ffffff;
+  outline: none;
+  padding: 4px;
+}
+
+
+.tablex-row-content-tip-wrapper .tablex-row-content-tip .tablex-row-content-tip-item {
+  padding: 2px 8px;
+  white-space: nowrap;
 }

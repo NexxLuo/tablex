@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import BaseTable from "react-base-datagrid";
 import ContextMenu from "./components/ContextMenu";
+import RowContentInfo from "./components/RowContentInfo";
 import Pagination from "./components/pagination";
 import ColumnDropMenu, {
   ColumnDropMenuButton
@@ -135,6 +136,7 @@ function isNumber(v) {
 class Table extends React.Component {
   dropdown_button_ref = React.createRef();
   contextmenu_ref = React.createRef();
+  rowcontent_ref = React.createRef();
   containerRef = React.createRef();
 
   constructor(props) {
@@ -1736,7 +1738,23 @@ class Table extends React.Component {
       prependColumns,
       onColumnResizeStop: this.onColumnResize,
       innerRef: this.innerRef,
-      style: {}
+      style: {},
+      onCellContent: ({ dataIndex, rowColumns, columnKey }) => {
+        if (columnKey === "__ordernumber_column") {
+          return {
+            onMouseMove: (e) => {
+              this.rowcontent_ref.current.show({
+                left: e.clientX,
+                top: e.clientY, data: {
+                  dataIndex, rowColumns
+                }
+              });
+            }
+          }
+        } else {
+          return {};
+        }
+      }
     };
 
     if (typeof props.contextMenu === "function") {
@@ -1855,6 +1873,9 @@ class Table extends React.Component {
             content={props.contextMenu}
           ></ContextMenu>
         ) : null}
+        <RowContentInfo
+          ref={this.rowcontent_ref}
+        ></RowContentInfo>
       </div>
     );
   }

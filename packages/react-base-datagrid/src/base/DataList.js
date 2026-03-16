@@ -175,6 +175,7 @@ const TableCell = props => {
     row,
     rowKey,
     rowIndex,
+    rowColumns,
     getRowsHeight,
     getRowKey,
     getColumnsWidth,
@@ -190,6 +191,7 @@ const TableCell = props => {
     prependRender,
     render,
     onCell,
+    onCellContent,
     cellRenderExtra,
     columnStyle,
     rowHeight,
@@ -250,6 +252,17 @@ const TableCell = props => {
         rowIndex,
         Object.assign({ columnKey }, cellExtra || {}),
         extra
+      ) || {};
+  }
+
+  if (typeof onCellContent === "function") {
+    extraAttr =
+      onCellContent(
+        {
+          columnKey,
+          dataIndex,
+          rowColumns
+        }
       ) || {};
   }
 
@@ -377,7 +390,7 @@ const TableCell = props => {
   align && (alignStyles.textAlign = align);
 
   if (typeof cellElement === "string" || typeof cellElement === "number") {
-    cellElement = <CellWithTitle value={cellElement} />;
+    cellElement = <CellWithTitle dataIndex={dataIndex} rowColumns={rowColumns} onCellContent={onCellContent} value={cellElement} />;
   }
 
   if (isInRowspan) {
@@ -419,6 +432,7 @@ const ListItem = memo(function TableRow({ data, index, style }) {
     getColumnsWidth,
     onRow,
     onCell,
+    onCellContent,
     rowClassName,
     rowComponent,
     onRowComponent,
@@ -459,6 +473,15 @@ const ListItem = memo(function TableRow({ data, index, style }) {
     end: 0
   };
 
+  let rowColumns = columns.map(d => {
+    let columnKey = d.key || d.dataIndex || i;
+    return {
+      key: columnKey,
+      title: d.title || columnKey,
+      value: row[d.dataIndex],
+    }
+  })
+
   let rowCells = columns.map((d, i) => {
     let columnKey = d.key || d.dataIndex || i;
 
@@ -471,6 +494,7 @@ const ListItem = memo(function TableRow({ data, index, style }) {
         columnKey={columnKey}
         row={row}
         rowIndex={index}
+        rowColumns={rowColumns}
         rowHeight={style.height}
         columnIndex={i}
         columnStyle={columnStyle}
@@ -482,6 +506,7 @@ const ListItem = memo(function TableRow({ data, index, style }) {
         columnRowSpan={columnRowSpan}
         columnRowSpanPlaceholders={columnRowSpanPlaceholders}
         onCell={onCell}
+        onCellContent={onCellContent}
         disabledRowSpan={disabledRowSpan}
         {...d}
       />
@@ -786,6 +811,7 @@ class DataList extends Component {
       cellRenderExtra,
       placeholders,
       onCell,
+      onCellContent,
       overscanCount = 2,
       autoItemSize,
       virtual,
@@ -808,6 +834,7 @@ class DataList extends Component {
     itemData.getRowsHeight = this.getRowsHeight;
     itemData.getColumnsWidth = this.getColumnsWidth;
     itemData.onCell = onCell;
+    itemData.onCellContent = onCellContent;
     itemData.rowRenderExtra = rowRenderExtra;
     itemData.getRowKey = this.getRowKey;
 
