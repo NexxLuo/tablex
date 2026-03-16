@@ -1,5 +1,4 @@
 import React, { Fragment } from "react";
-import ReactDom from "react-dom";
 import PropTypes from "prop-types";
 import cloneDeep from "lodash/cloneDeep";
 import merge from "lodash/merge";
@@ -1184,7 +1183,8 @@ class EditableTable extends React.Component {
       return;
     }
 
-    let el = ReactDom.findDOMNode(editor);
+    // React 19: 使用 elementRef 替代 findDOMNode
+    let el = editor.elementRef?.current;
 
     if (el) {
       //如果自定义李编辑焦点控件，则优先其focus

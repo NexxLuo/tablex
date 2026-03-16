@@ -3,28 +3,19 @@ import React, { Component } from "react";
 import { Modal, Button, InputNumber, Radio, Switch } from "../../widgets";
 
 import { saveConfigs, removeConfigs, treeToList } from "./utils";
-import { SortableContainer, SortableElement } from "react-sortable-hoc";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import cloneDeep from "lodash/cloneDeep";
 import orderBy from "lodash/orderBy";
-
-const DraggableItem = SortableElement(({ children }) => {
-  return <div>{children}</div>;
-});
-
-const DraggableContainer = SortableContainer(({ children }) => {
-  return <div>{children}</div>;
-});
-
-const RadioGroup = Radio.Group;
-const RadioButton = Radio.Button;
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
-
   return result;
 };
+
+const RadioGroup = Radio.Group;
+const RadioButton = Radio.Button;
 
 class SortableItem extends Component {
   onChangeWidth = e => {
@@ -132,48 +123,65 @@ class SortableList extends Component {
     };
   }
 
-  containerRef = React.createRef();
-
   static getDerivedStateFromProps(nextProps, prevState) {
     return { items: nextProps.items };
   }
 
-  onSortEnd = ({ collection, newIndex, oldIndex }) => {
-    const items = reorder(this.state.items, oldIndex, newIndex);
+  onDragEnd = result => {
+    if (!result.destination) {
+      return;
+    }
+
+    const items = reorder(
+      this.state.items,
+      result.source.index,
+      result.destination.index
+    );
 
     this.props.onSort(items);
   };
 
-  getHelperContainer = () => {
-    return this.containerRef.current;
-  };
-
   render() {
     return (
-      <div ref={this.containerRef}>
-        <DraggableContainer
-          onSortEnd={this.onSortEnd}
-          distance={10}
-          helperContainer={this.getHelperContainer}
-          helperClass="tablex__setting__modal__item__dragging"
-        >
-          {this.state.items.map((item, index) => (
-            <DraggableItem
-              key={item.key || item.dataIndex}
-              draggableId={item.key || item.dataIndex}
-              index={index}
+      <DragDropContext onDragEnd={this.onDragEnd}>
+        <Droppable droppableId="droppable">
+          {(provided) => (
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
             >
-              <SortableItem
-                data={item}
-                intl={this.props.intl}
-                onChangeWidth={this.props.onChangeWidth}
-                onChangeFixed={this.props.onChangeFixed}
-                onToggleVisible={this.props.onToggleVisible}
-              />
-            </DraggableItem>
-          ))}
-        </DraggableContainer>
-      </div>
+              {this.state.items.map((item, index) => (
+                <Draggable
+                  key={item.key || item.dataIndex}
+                  draggableId={String(item.key || item.dataIndex)}
+                  index={index}
+                >
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      style={{
+                        ...provided.draggableProps.style,
+                        opacity: snapshot.isDragging ? 0.8 : 1
+                      }}
+                    >
+                      <SortableItem
+                        data={item}
+                        intl={this.props.intl}
+                        onChangeWidth={this.props.onChangeWidth}
+                        onChangeFixed={this.props.onChangeFixed}
+                        onToggleVisible={this.props.onToggleVisible}
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     );
   }
 }
@@ -378,18 +386,20 @@ class SettingModal extends React.Component {
     let leafs = columnsLeafs.filter(d => d.settable !== false);
 
     let attrs = {
-      visible: visible,
+      open: visible,
       title: this.props.intl["settingTitle"],
       onOk: this.onOk,
       onCancel: this.onCancel,
 
       width: "720px",
       zIndex: 99999,
-      bodyStyle: {
-        minHeight: "300px",
-        maxHeight: "500px",
-        overflow: "auto",
-        padding: 10
+      styles: {
+        body: {
+          minHeight: "300px",
+          maxHeight: "500px",
+          overflow: "auto",
+          padding: 10
+        }
       },
       maskClosable: false,
       footer: (

@@ -1,6 +1,5 @@
 import React from 'react';
 import { DraggableTable } from 'tablex';
-import 'antd/dist/antd.css';
 
 export default class Demo extends React.Component<any, any> {
   generateData(columns: any, count = 20, prefix = 'Row') {

@@ -1,53 +1,15 @@
 import React, { Component } from "react";
-import ReactDom from "react-dom";
 import { Table } from "tablex";
-import { Input, Button } from "antd";
+import { Input } from "antd";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 import "./styles.css";
-
-import { SortableContainer, SortableElement } from "react-sortable-hoc";
-
-const DraggableRow = SortableElement(props => {
-  return <div {...props} />;
-});
-
-const DraggableContainer = SortableContainer(({ className, children }) => {
-  return <div className={className}>{children}</div>;
-});
-
-function DraggableTableRow(props) {
-  let { rowData, rowIndex, rowProps } = props;
-  return <DraggableRow {...rowProps} index={rowIndex} data-key={rowData.id} />;
-}
-
-const DraggableTable = props => {
-  return (
-    <Table
-      {...props}
-      components={{
-        body: ({ className, children }) => {
-          return (
-            <DraggableContainer className={className} {...props}>
-              {children}
-            </DraggableContainer>
-          );
-        },
-        row: DraggableTableRow
-      }}
-    />
-  );
-};
 
 const generateData = (columns, count = 20, prefix = "row-") =>
   new Array(count).fill(0).map((row, rowIndex) => {
     return columns.reduce(
       (rowData, column, columnIndex) => {
         rowData[column.dataIndex] = `Row ${rowIndex} - Col ${columnIndex}`;
-
-        if (rowIndex === 0) {
-          //rowData.children = [];
-        }
-
         return rowData;
       },
       {
@@ -81,7 +43,6 @@ class Demo extends Component {
           if (!value) {
             return { valid: false, message: "请输入" };
           }
-
           return { valid: true, message: "false" };
         },
         editor: function(value, row, index, onchange, ref) {
@@ -124,34 +85,41 @@ class Demo extends Component {
     });
   }
 
-  onSortEnd({ newIndex, oldIndex }) {
+  onDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
+    
     this.setState(({ data }) => ({
-      data: arrayMove(data, oldIndex, newIndex)
+      data: arrayMove(data, result.source.index, result.destination.index)
     }));
   }
 
-  getContainer() {
-    let el = ReactDom.findDOMNode(this);
-    return el.querySelector(".tablex-table-body>div");
-  }
-
   render() {
+    const { data, columns } = this.state;
+
     return (
-      <div style={{ height: 600 }}><DraggableTable
-        rowKey="id"
-        expandColumnKey="column-1"
-        editable={true}
-        columns={this.state.columns}
-        selectMode="none"
-        data={this.state.data}
-        orderNumber={true}
-        lockAxis="y"
-        onSortEnd={this.onSortEnd.bind(this)}
-        validateTrigger="onChange"
-        distance={10}
-        helperClass="tablex-row-dragging"
-        getContainer={this.getContainer.bind(this)}
-      /></div>
+      <div style={{ height: 600 }}>
+        <DragDropContext onDragEnd={this.onDragEnd}>
+          <Droppable droppableId="table-body">
+            {(provided) => (
+              <div ref={provided.innerRef} {...provided.droppableProps}>
+                <Table
+                  rowKey="id"
+                  expandColumnKey="column-1"
+                  editable={true}
+                  columns={columns}
+                  selectMode="none"
+                  data={data}
+                  orderNumber={true}
+                  validateTrigger="onChange"
+                />
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </div>
     );
   }
 }

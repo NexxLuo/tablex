@@ -44,20 +44,22 @@
     ]
   },
   "resolutions": {
-    "react-resize-detector": "^9.1.0",
+    "react-resize-detector": "^12.3.0",
     "react-window": "^1.8.9",
     "resize-observer-polyfill": "^1.5.1"
   },
   "dependencies": {
-    "antd": "3",
+    "@ant-design/icons": "^6.0.0",
+    "@hello-pangea/dnd": "^18.0.0",
+    "antd": "^6.0.0",
     "react-live": "^4.0.1",
     "tablex": "^1.19.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@umijs/lint": "^4.0.0",
     "cross-env": "^7.0.3",
     "dumi": "^2.1.22",
@@ -68,13 +70,13 @@
     "prettier": "^2.7.1",
     "prettier-plugin-organize-imports": "^3.0.0",
     "prettier-plugin-packagejson": "^2.2.18",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "stylelint": "^14.9.1"
   },
   "peerDependencies": {
-    "react": ">=16.9.0",
-    "react-dom": ">=16.9.0"
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
   },
   "publishConfig": {
     "access": "public"

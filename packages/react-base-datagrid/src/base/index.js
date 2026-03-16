@@ -10,7 +10,7 @@ import {
   isNumber,
   getParentElement
 } from "./utils";
-import { withResizeDetector } from "react-resize-detector";
+import { useResizeDetector } from "react-resize-detector";
 import CalcRowHeightTable from "./CalcRowHeightTable";
 import ResizeObserver from 'resize-observer-polyfill';
 
@@ -631,14 +631,22 @@ class BaseDataGrid extends React.Component {
   }
 }
 
-const AutoSizeAble = ({ height, width, targetRef, ...props }, ref) => {
+const AutoSizeAble = (props, ref) => {
+  const { height: detectedHeight, width: detectedWidth, ref: targetRef } = useResizeDetector({
+    handleHeight: true,
+    handleWidth: true
+  });
+  
+  let height = detectedHeight;
+  let width = detectedWidth;
+
   if (height === undefined || height === null) {
     if (props.renderInTimeWhenNotDetectHeight !== true) {
       height = 100;
     }
     if (props.autoHeight === true) {
     } else {
-      return <div></div>;
+      return <div ref={targetRef}></div>;
     }
   }
 
@@ -648,7 +656,7 @@ const AutoSizeAble = ({ height, width, targetRef, ...props }, ref) => {
   }
 
   if (props.autoRowHeight === true && height === 0 && width === 0) {
-    return <div></div>;
+    return <div ref={targetRef}></div>;
   }
 
   return (
@@ -665,7 +673,7 @@ const AutoSizeAble = ({ height, width, targetRef, ...props }, ref) => {
   );
 }
 
-const AutoSizerTable = withResizeDetector(forwardRef(AutoSizeAble));
+const AutoSizerTable = forwardRef(AutoSizeAble);
 
 BaseDataGrid.defaultProps = {
   columns: [],

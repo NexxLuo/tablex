@@ -213,6 +213,6 @@ nav:
 
 > 使用`components`属性定制表格渲染行为
 
-### 使用 react-sortable-hoc 实现行拖动
+### 使用 @hello-pangea/dnd 实现行拖动
 
 <code id="other-14" src="./Other/demo14.jsx"></code>

@@ -2,7 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 import Table from "../Editable";
 import DraggableRow from "./DraggableRow";
-import ReactDom from "react-dom";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
@@ -30,6 +29,7 @@ function DraggableTableRow(props) {
 
 class Draggable extends React.Component {
   tableRef = React.createRef(null);
+  containerRef = React.createRef(null);
 
   acceptType = "";
 
@@ -60,8 +60,8 @@ class Draggable extends React.Component {
   }
 
   getContainer = () => {
-    let el = ReactDom.findDOMNode(this);
-    return el.querySelector(".tablex-container");
+    let el = this.containerRef.current;
+    return el ? el.querySelector(".tablex-container") : null;
   };
 
   isTree = () => {
@@ -209,7 +209,11 @@ class Draggable extends React.Component {
       ];
     }
 
-    return <Table {...props} {...newProps} ref={this.tableRef} />;
+    return (
+      <div ref={this.containerRef} style={{ height: "100%" }}>
+        <Table {...props} {...newProps} ref={this.tableRef} />
+      </div>
+    );
   }
 }
 

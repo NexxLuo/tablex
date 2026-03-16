@@ -58,7 +58,13 @@ const DraggableRow = memo(({ rowProps, onRowProps, dragOptions }) => {
   }
 
   const [{ isDragging, height }, connectDrag, preview] = useDrag({
-    item: dragInfo,
+    type: dragInfo.type,
+    item: (monitor) => {
+      if (typeof onDragBegin === "function") {
+        onDragBegin(dragInfo, monitor);
+      }
+      return dragInfo;
+    },
     collect: monitor => {
       const result = {
         isDragging: monitor.isDragging(),
@@ -75,11 +81,6 @@ const DraggableRow = memo(({ rowProps, onRowProps, dragOptions }) => {
         return true;
       }
       return true;
-    },
-    begin(monitor) {
-      if (typeof onDragBegin === "function") {
-        return onDragBegin(dragInfo, monitor);
-      }
     },
     end(item, monitor) {
       removeClass("drag-under");

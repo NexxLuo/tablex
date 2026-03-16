@@ -1,73 +1,95 @@
 import React from "react";
-import AButton from "antd/lib/button";
-import AModal from "antd/lib/modal";
-import AMenu from "antd/lib/menu";
-import ACheckbox from "antd/lib/checkbox";
-import ATooltip from "antd/lib/tooltip";
-import APagination from "antd/lib/pagination";
+import {
+  Button as AButton,
+  Modal as AModal,
+  Menu as AMenu,
+  Checkbox as ACheckbox,
+  Tooltip as ATooltip,
+  Pagination as APagination,
+  InputNumber as AInputNumber,
+  Radio as ARadio,
+  Switch as ASwitch,
+  message as Amessage,
+  Popconfirm as APopconfirm,
+  Dropdown as ADropdown,
+  Spin as ASpin,
+  Popover as APopover,
+  Select as ASelect
+} from "antd";
 
-import AInputNumber from "antd/lib/input-number";
-import ARadio from "antd/lib/radio";
-import ASwitch from "antd/lib/switch";
-import Amessage from "antd/lib/message";
-import APopconfirm from "antd/lib/popconfirm";
-import ADropdown from "antd/lib/dropdown";
-import AIcon from "antd/lib/icon";
-import ASpin from "antd/lib/spin";
-import APopover from "antd/lib/popover";
-import ASelect from "antd/lib/select";
+import * as Icons from "@ant-design/icons";
 
 import "./style.css";
 
-import "antd/lib/select/style/css"; // 加载 CSS
-import "antd/lib/popconfirm/style/css"; // 加载 CSS
-
+// Icon 组件从 @ant-design/icons 导入
+const Icon = (props) => {
+  const { type, ...rest } = props;
+  const IconComponent = Icons[type];
+  if (IconComponent) {
+    return <IconComponent {...rest} />;
+  }
+  return null;
+};
 
 function Button(props) {
-  return <AButton {...props} />;
+  const { prefixCls = "tablex-btn", ...rest } = props;
+  return <AButton {...rest} prefixCls={prefixCls} />;
 }
 
 function Modal(props) {
-  return <AModal {...props} />;
+  const { prefixCls = "tablex-modal", ...rest } = props;
+  return <AModal {...rest} prefixCls={prefixCls} />;
 }
+
 function Menu(props) {
-  return <AMenu {...props} />;
+  const { prefixCls = "tablex-menu", ...rest } = props;
+  return <AMenu {...rest} prefixCls={prefixCls} />;
 }
 
 Menu.SubMenu = AMenu.SubMenu;
 Menu.Item = AMenu.Item;
 
 function Checkbox(props) {
-  return <ACheckbox {...props} />;
+  const { prefixCls = "tablex-checkbox", ...rest } = props;
+  return <ACheckbox {...rest} prefixCls={prefixCls} />;
 }
+
 function Tooltip(props) {
-  return <ATooltip {...props} />;
+  const { prefixCls = "tablex-tooltip", ...rest } = props;
+  return <ATooltip {...rest} prefixCls={prefixCls} />;
 }
+
 function Pagination(props) {
-  return <APagination {...props} />;
+  const { prefixCls = "tablex-pagination", ...rest } = props;
+  return <APagination {...rest} prefixCls={prefixCls} />;
 }
+
 function InputNumber(props) {
-  return <AInputNumber {...props} />;
+  const { prefixCls = "tablex-input-number", ...rest } = props;
+  return <AInputNumber {...rest} prefixCls={prefixCls} />;
 }
+
 function Radio(props) {
-  return <ARadio {...props} />;
+  const { prefixCls = "tablex-radio", ...rest } = props;
+  return <ARadio {...rest} prefixCls={prefixCls} />;
 }
 
 function RadioGroup(props) {
-  return <ARadio.Group {...props} />;
+  const { prefixCls = "tablex-radio", ...rest } = props;
+  return <ARadio.Group {...rest} prefixCls={prefixCls} />;
 }
 
 function RadioButton(props) {
-  return <ARadio.Button {...props} />;
+  const { prefixCls = "tablex-radio-button", ...rest } = props;
+  return <ARadio.Button {...rest} prefixCls={prefixCls} />;
 }
-
-
 
 Radio.Group = RadioGroup;
 Radio.Button = RadioButton;
 
 function Switch(props) {
-  return <ASwitch {...props} />;
+  const { prefixCls = "tablex-switch", ...rest } = props;
+  return <ASwitch {...rest} prefixCls={prefixCls} />;
 }
 
 function message(props) {
@@ -75,100 +97,33 @@ function message(props) {
 }
 
 message.error = Amessage.error;
-message.warn = Amessage.warn;
+message.warn = Amessage.warning; // antd v6 中使用 warning 代替 warn
 message.info = Amessage.info;
+message.success = Amessage.success;
 
 function Popconfirm(props) {
   return <APopconfirm {...props} />;
 }
 
 function Dropdown(props) {
-  return <ADropdown {...props} />;
-}
-
-function Icon(props) {
-  return <AIcon {...props} />;
+  const { prefixCls = "tablex-dropdown", ...rest } = props;
+  return <ADropdown {...rest} prefixCls={prefixCls} />;
 }
 
 function Spin(props) {
-  return <ASpin {...props} />;
+  const { prefixCls = "tablex-spin", ...rest } = props;
+  return <ASpin {...rest} prefixCls={prefixCls} />;
 }
 
 function Popover(props) {
-  return <APopover {...props} />;
+  const { prefixCls = "tablex-popover", ...rest } = props;
+  return <APopover {...rest} prefixCls={prefixCls} />;
 }
 
 function Select(props) {
-  return <ASelect {...props} />;
+  const { prefixCls = "tablex-select", ...rest } = props;
+  return <ASelect {...rest} prefixCls={prefixCls} />;
 }
-
-RadioGroup.defaultProps = {
-  prefixCls: "tablex-radio"
-};
-
-RadioButton.defaultProps = {
-  prefixCls: "tablex-radio-button"
-};
-
-Button.defaultProps = {
-  prefixCls: "tablex-btn"
-};
-
-Modal.defaultProps = {
-  prefixCls: "tablex-modal"
-};
-
-Menu.defaultProps = {
-  prefixCls: "tablex-menu"
-};
-
-Checkbox.defaultProps = {
-  prefixCls: "tablex-checkbox"
-};
-
-Tooltip.defaultProps = {
-  prefixCls: "tablex-tooltip"
-};
-
-Pagination.defaultProps = {
-  prefixCls: "tablex-pagination"
-};
-
-InputNumber.defaultProps = {
-  prefixCls: "tablex-input-number"
-};
-
-Radio.defaultProps = {
-  prefixCls: "tablex-radio"
-};
-
-Switch.defaultProps = {
-  prefixCls: "tablex-switch"
-};
-
-message.defaultProps = {
-  prefixCls: "tablex-message"
-};
-
-// Popconfirm.defaultProps = {
-//   prefixCls: "tablex-popconfirm"
-// };
-
-Dropdown.defaultProps = {
-  prefixCls: "tablex-dropdown"
-};
-
-Spin.defaultProps = {
-  prefixCls: "tablex-spin"
-};
-
-Popover.defaultProps = {
-  prefixCls: "tablex-popover"
-};
-
-Select.defaultProps = {
-  prefixCls: "tablex-select"
-};
 
 export {
   Button,
@@ -185,5 +140,6 @@ export {
   Dropdown,
   Icon,
   Spin,
-  Popover
+  Popover,
+  Select
 };

@@ -32,6 +32,6 @@
   "devDependencies": {
     "lerna": "^6.3.0",
     "father": "4.1.2",
-    "antd": "^3.20.3"
+    "antd": "^6.0.0"
   }
 }
