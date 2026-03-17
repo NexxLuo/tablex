@@ -276,10 +276,13 @@
   background-color: #ffffff;
   outline: none;
   padding: 4px;
+  max-width: 800px;
+  max-height: 400px;
+  overflow: auto;
 }
-
 
 .tablex-row-content-tip-wrapper .tablex-row-content-tip .tablex-row-content-tip-item {
   padding: 2px 8px;
-  white-space: nowrap;
+  white-space: pre-line;
+  word-break: break-all;
 }
