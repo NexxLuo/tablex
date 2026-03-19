@@ -1749,6 +1749,9 @@ class Table extends React.Component {
                   dataIndex, rowColumns
                 }
               });
+            },
+            onMouseLeave: (e) => {
+              this.rowcontent_ref.current.hide();
             }
           }
         } else {

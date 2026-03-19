@@ -125,26 +125,27 @@ class ContextMenu extends Component {
   };
 
   hide = () => {
-    const { hideDelay } = this.props;
-
+    const hideDelay = 300;
     if (this.rafId) {
       clearTimeout(this.rafId);
       this.rafId = null;
     }
 
     const doHide = () => {
-      this.isVisible = false;
-      this.isPaused = false;
-      if (this.el) {
-        if (this.props.hideMode === "hidden") {
-          this.el.style.visibility = "hidden";
-          this.el.style.height = "0px";
-          this.el.style.width = "0px";
-          this.el.style.overflow = "hidden";
-        } else {
-          this.el.style.display = "none";
+      if (!this.isPaused) {
+        this.isVisible = false;
+        this.isPaused = false;
+        if (this.el) {
+          if (this.props.hideMode === "hidden") {
+            this.el.style.visibility = "hidden";
+            this.el.style.height = "0px";
+            this.el.style.width = "0px";
+            this.el.style.overflow = "hidden";
+          } else {
+            this.el.style.display = "none";
+          }
+          this.el.style.opacity = "0";
         }
-        this.el.style.opacity = "0";
       }
     };
 
