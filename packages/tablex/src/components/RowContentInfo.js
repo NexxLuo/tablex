@@ -11,9 +11,9 @@ const isEmptyString = (str) => {
 };
 
 class ContextMenu extends Component {
-  _ref = React.createRef();
+  _ref = React.createRef(null);
 
-  state = { data: null };
+  state = { rowIndex: null, rowColumns: [] };
 
   rafId = null;
   hideTimer = null;
@@ -42,10 +42,53 @@ class ContextMenu extends Component {
     followDelay: 150      // 位置跟随延迟(ms)，让浮层落后鼠标，便于用户移入
   };
 
+
+  getRowTextContent = (rowIndex, rowColumns, activeColumn) => {
+    const num = Number(rowIndex);
+    if (typeof num === "number" && !Number.isNaN(num)) {
+      const container = this._ref.current?.parentElement;
+      if (container) {
+        const columnsTitleMap = {};
+        if (rowColumns instanceof Array) {
+          rowColumns.map(d => {
+            if (d.columnKey && d.title) {
+              columnsTitleMap[d.columnKey] = d.title;
+            }
+          });
+        }
+
+        let rows = container.querySelectorAll(".tablex-table-row-" + num);
+        let columns = [];
+        for (let i = 0; i < rows.length; i++) {
+          const row_element = rows[i];
+          let cells = row_element.querySelectorAll(".tablex-table-row-cell");
+          for (let j = 0; j < cells.length; j++) {
+            const cell_element = cells[j];
+            const ck = cell_element.dataset?.columnkey;
+            if (ck && ck !== "__ordernumber_column") {
+              const column_value = cell_element.innerText || cell_element.textContent || "";
+              if (!isEmptyString(column_value)) {
+                columns.push({
+                  title: columnsTitleMap[ck] || ck,
+                  columnKey: ck,
+                  value: column_value,
+                  actived: activeColumn === ck
+                });
+              }
+            }
+          }
+        }
+        return columns;
+      }
+    }
+    return [];
+  }
+
   show = ({ left, top, data }) => {
     // 1. 数据变化才触发 React 更新
-    if (data !== this.state.data) {
-      this.setState({ data });
+    if (data?.rowIndex !== this.state.rowIndex) {
+      const columns = this.getRowTextContent(data?.rowIndex, data?.rowColumns, data?.dataIndex);
+      this.setState({ rowIndex: data?.rowIndex, rowColumns: columns });
     }
 
     // 2. 清除隐藏定时器
@@ -221,15 +264,7 @@ class ContextMenu extends Component {
   }
 
   render() {
-    const { data } = this.state;
-    let columns = [];
-    if (data && data.rowColumns instanceof Array) {
-      data.rowColumns.map(d => {
-        if (!isEmptyString(d.value)) {
-          columns.push(d);
-        }
-      });
-    }
+    const { rowColumns } = this.state;
 
     return (
       <div
@@ -249,11 +284,11 @@ class ContextMenu extends Component {
         }}
       >
         {
-          columns.length > 0 && (
+          rowColumns.length > 0 && (
             <div className="tablex-row-content-tip">
-              {columns.map((column, index) => {
+              {rowColumns.map((column, index) => {
                 return (
-                  <div key={index} className="tablex-row-content-tip-item">
+                  <div key={index} className="tablex-row-content-tip-item" >
                     {column.title}:{column.value}
                   </div>
                 )

@@ -1739,14 +1739,14 @@ class Table extends React.Component {
       onColumnResizeStop: this.onColumnResize,
       innerRef: this.innerRef,
       style: {},
-      onCellContent: ({ dataIndex, rowColumns, columnKey }) => {
+      onCellContent: ({ dataIndex, rowColumns, columnKey, rowKey, rowIndex }) => {
         if (columnKey === "__ordernumber_column") {
           return {
             onMouseMove: (e) => {
               this.rowcontent_ref.current.show({
                 left: e.clientX,
                 top: e.clientY, data: {
-                  dataIndex, rowColumns
+                  dataIndex, rowColumns, rowKey, rowIndex
                 }
               });
             },

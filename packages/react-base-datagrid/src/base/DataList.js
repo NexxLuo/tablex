@@ -259,6 +259,8 @@ const TableCell = props => {
     extraAttr =
       onCellContent(
         {
+          rowKey: rowKey,
+          rowIndex: rowIndex,
           columnKey,
           dataIndex,
           rowColumns
