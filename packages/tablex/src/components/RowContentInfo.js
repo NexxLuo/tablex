@@ -106,22 +106,17 @@ class ContextMenu extends Component {
     this.targetX = left + (this.props.offsetX || 0);
     this.targetY = top + (this.props.offsetY || 0);
 
-    // 5. 延迟调度位置更新（让浮层落后鼠标，用户可以从后面移入）
-    this.schedulePositionUpdate();
+    // 5. 直接更新位置
+    this.flushPosition();
   };
 
-  // 调度位置更新，延迟执行让浮层落后鼠标
+  // 调度位置更新
   schedulePositionUpdate = () => {
     if (this.rafId) return;
-
-    const { followDelay } = this.props;
-
-    this.rafId = setTimeout(() => {
+    this.rafId = requestAnimationFrame(() => {
       this.rafId = null;
-      requestAnimationFrame(() => {
-        this.flushPosition();
-      });
-    }, followDelay);
+      this.flushPosition();
+    });
   };
 
   // 刷新位置到 DOM
@@ -142,29 +137,27 @@ class ContextMenu extends Component {
       this.renderY = this.targetY;
 
       el.style.display = "block";
-      el.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
+      // 使用 scale 动画：从 0 放大到 1
+      el.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(0)`;
+      el.style.opacity = "0";
+      
+      // 强制重绘以触发过渡动画
+      el.offsetHeight;
+      
+      el.style.transition = "transform 200ms cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 150ms ease-out";
+      el.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(1)`;
       el.style.opacity = "1";
 
       return;
     }
 
-    // 计算与上次渲染位置的距离
-    const dx = Math.abs(this.targetX - this.renderX);
-    const dy = Math.abs(this.targetY - this.renderY);
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
     // 更新记录的位置
     this.renderX = this.targetX;
     this.renderY = this.targetY;
 
-    // 大幅移动(>60px)无动画，小幅移动有动画
-    if (distance > 60) {
-      el.style.transition = "none";
-      el.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
-    } else {
-      el.style.transition = "transform 80ms ease-out";
-      el.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
-    }
+    // 直接更新位置，无平移动画
+    el.style.transition = "none";
+    el.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(1)`;
   };
 
   hide = () => {
@@ -175,20 +168,28 @@ class ContextMenu extends Component {
     }
 
     const doHide = () => {
-      if (!this.isPaused) {
+      if (!this.isPaused && this.el) {
         this.isVisible = false;
         this.isPaused = false;
-        if (this.el) {
-          if (this.props.hideMode === "hidden") {
-            this.el.style.visibility = "hidden";
-            this.el.style.height = "0px";
-            this.el.style.width = "0px";
-            this.el.style.overflow = "hidden";
-          } else {
-            this.el.style.display = "none";
+        
+        // 添加缩小动画
+        this.el.style.transition = "transform 150ms ease-in, opacity 100ms ease-out";
+        this.el.style.transform = `translate3d(${Math.round(this.renderX)}px, ${Math.round(this.renderY)}px, 0) scale(0)`;
+        this.el.style.opacity = "0";
+        
+        // 动画完成后隐藏元素
+        setTimeout(() => {
+          if (!this.isVisible && this.el) {
+            if (this.props.hideMode === "hidden") {
+              this.el.style.visibility = "hidden";
+              this.el.style.height = "0px";
+              this.el.style.width = "0px";
+              this.el.style.overflow = "hidden";
+            } else {
+              this.el.style.display = "none";
+            }
           }
-          this.el.style.opacity = "0";
-        }
+        }, 150);
       }
     };
 
@@ -278,9 +279,10 @@ class ContextMenu extends Component {
           left: 0,
           display: "none",
           opacity: 0,
-          willChange: "transform",
+          willChange: "transform, opacity",
           pointerEvents: "auto",
-          zIndex: 9999
+          zIndex: 9999,
+          transformOrigin: "top left"
         }}
       >
         {
