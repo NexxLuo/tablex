@@ -10,6 +10,24 @@ const isEmptyString = (str) => {
   return true;
 };
 
+const isVisibleElement = (el) => {
+  if (!el) {
+    return false;
+  }
+  const style = window.getComputedStyle(el);
+  if (
+    style.display === 'none' ||
+    style.visibility === 'hidden' ||
+    parseFloat(style.opacity) === 0
+  ) {
+    return false;
+  }
+  if (el.offsetWidth === 0 && el.offsetHeight === 0) {
+    return false;
+  }
+  return true;
+};
+
 class ContextMenu extends Component {
   _ref = React.createRef(null);
 
@@ -65,7 +83,8 @@ class ContextMenu extends Component {
           for (let j = 0; j < cells.length; j++) {
             const cell_element = cells[j];
             const ck = cell_element.dataset?.columnkey;
-            if (ck && ck !== "__ordernumber_column") {
+            const isVisible = isVisibleElement(cell_element) === true;
+            if (ck && ck !== "__ordernumber_column" && isVisible) {
               const column_value = cell_element.innerText || cell_element.textContent || "";
               if (!isEmptyString(column_value)) {
                 columns.push({
@@ -140,10 +159,10 @@ class ContextMenu extends Component {
       // 使用 scale 动画：从 0 放大到 1
       el.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(0)`;
       el.style.opacity = "0";
-      
+
       // 强制重绘以触发过渡动画
       el.offsetHeight;
-      
+
       el.style.transition = "transform 200ms cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 150ms ease-out";
       el.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(1)`;
       el.style.opacity = "1";
@@ -171,12 +190,12 @@ class ContextMenu extends Component {
       if (!this.isPaused && this.el) {
         this.isVisible = false;
         this.isPaused = false;
-        
+
         // 添加缩小动画
         this.el.style.transition = "transform 150ms ease-in, opacity 100ms ease-out";
         this.el.style.transform = `translate3d(${Math.round(this.renderX)}px, ${Math.round(this.renderY)}px, 0) scale(0)`;
         this.el.style.opacity = "0";
-        
+
         // 动画完成后隐藏元素
         setTimeout(() => {
           if (!this.isVisible && this.el) {
