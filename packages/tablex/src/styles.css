@@ -286,3 +286,8 @@
   white-space: pre-line;
   word-break: break-all;
 }
+
+.tablex-row-content-tip-item .tablex-row-content-tip-item-title {
+  font-weight: bold;
+  margin: 2px 4px 2px 0;
+}

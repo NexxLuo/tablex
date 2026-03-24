@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ReactDom from "react-dom";
 
 const isEmptyString = (str) => {
   if (typeof str === "number" && !Number.isNaN(str)) {
@@ -69,12 +70,11 @@ class ContextMenu extends Component {
         const columnsTitleMap = {};
         if (rowColumns instanceof Array) {
           rowColumns.map(d => {
-            if (d.columnKey && d.title) {
-              columnsTitleMap[d.columnKey] = d.title;
+            if (d.key && d.title) {
+              columnsTitleMap[d.key] = d.title;
             }
           });
         }
-
         let rows = container.querySelectorAll(".tablex-table-row-" + num);
         let columns = [];
         for (let i = 0; i < rows.length; i++) {
@@ -86,9 +86,10 @@ class ContextMenu extends Component {
             const isVisible = isVisibleElement(cell_element) === true;
             if (ck && ck !== "__ordernumber_column" && isVisible) {
               const column_value = cell_element.innerText || cell_element.textContent || "";
-              if (!isEmptyString(column_value)) {
+              const column_title = columnsTitleMap[ck];
+              if (!isEmptyString(column_title) && !isEmptyString(column_value)) {
                 columns.push({
-                  title: columnsTitleMap[ck] || ck,
+                  title: column_title,
                   columnKey: ck,
                   value: column_value,
                   actived: activeColumn === ck
@@ -286,39 +287,37 @@ class ContextMenu extends Component {
   render() {
     const { rowColumns } = this.state;
 
-    return (
-      <div
-        className="tablex-row-content-tip-wrapper"
-        ref={this._ref}
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          display: "none",
-          opacity: 0,
-          willChange: "transform, opacity",
-          pointerEvents: "auto",
-          zIndex: 9999,
-          transformOrigin: "top left"
-        }}
-      >
-        {
-          rowColumns.length > 0 && (
-            <div className="tablex-row-content-tip">
-              {rowColumns.map((column, index) => {
-                return (
-                  <div key={index} className="tablex-row-content-tip-item" >
-                    {column.title}:{column.value}
-                  </div>
-                )
-              })}
-            </div>
-          )
-        }
-      </div>
-    );
+    return ReactDom.createPortal(<div
+      className="tablex-row-content-tip-wrapper"
+      ref={this._ref}
+      onMouseEnter={this.handleMouseEnter}
+      onMouseLeave={this.handleMouseLeave}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        display: "none",
+        opacity: 0,
+        willChange: "transform, opacity",
+        pointerEvents: "auto",
+        zIndex: 12000,
+        transformOrigin: "top left"
+      }}
+    >
+      {
+        rowColumns.length > 0 && (
+          <div className="tablex-row-content-tip">
+            {rowColumns.map((column, index) => {
+              return (
+                <div key={index} className="tablex-row-content-tip-item" >
+                  <span className="tablex-row-content-tip-item-title">{column.title}:</span><span>{column.value}</span>
+                </div>
+              )
+            })}
+          </div>
+        )
+      }
+    </div>, document.body)
   }
 }
 
