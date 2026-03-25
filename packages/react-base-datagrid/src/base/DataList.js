@@ -445,7 +445,8 @@ const ListItem = memo(function TableRow({ data, index, style }) {
     columnRowSpan,
     columnRowSpanPlaceholders,
     autoItemSize,
-    disabledRowSpan
+    disabledRowSpan,
+    allColumns
   } = data;
   let row = rows[index];
 
@@ -475,7 +476,7 @@ const ListItem = memo(function TableRow({ data, index, style }) {
     end: 0
   };
 
-  let rowColumns = columns.map(d => {
+  let rowColumns = allColumns.map(d => {
     let columnKey = d.key || d.dataIndex || i;
     return {
       key: columnKey,
@@ -483,7 +484,6 @@ const ListItem = memo(function TableRow({ data, index, style }) {
       value: row[d.dataIndex],
     }
   })
-
   let rowCells = columns.map((d, i) => {
     let columnKey = d.key || d.dataIndex || i;
 
@@ -817,7 +817,8 @@ class DataList extends Component {
       overscanCount = 2,
       autoItemSize,
       virtual,
-      disabledRowSpan
+      disabledRowSpan,
+      allColumns
     } = this.props;
 
     let itemData = createItemData(data, columns, rowKey);
@@ -842,6 +843,7 @@ class DataList extends Component {
 
     itemData.autoItemSize = autoItemSize;
     itemData.virtual = virtual;
+    itemData.allColumns = allColumns;
 
     let itemCount = data.length;
 

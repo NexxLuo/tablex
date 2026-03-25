@@ -467,7 +467,8 @@ class BaseDataGrid extends React.Component {
       scrollbarY,
       columnsDepth: maxDepth,
       headerHeight,
-      headerRowHeight: headerHeights
+      headerRowHeight: headerHeights,
+      allColumns: [...left, ...middle, ...right]
     };
 
     /** */
@@ -799,7 +800,7 @@ BaseDataGrid.propTypes = {
   /** 自定义列属性，可处理列事件 */
   onCell: PropTypes.func,
 
-    /** 自定义列内容元素属性 */
+  /** 自定义列内容元素属性 */
   onCellContent: PropTypes.func,
 
   /** 列宽拖动完成事件，(width, columnKey) */
