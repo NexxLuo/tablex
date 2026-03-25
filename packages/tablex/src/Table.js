@@ -1878,6 +1878,9 @@ class Table extends React.Component {
         ) : null}
         <RowContentInfo
           ref={this.rowcontent_ref}
+          getContainer={() => {
+            return this.containerRef.current;
+          }}
         ></RowContentInfo>
       </div>
     );

@@ -61,11 +61,17 @@ class ContextMenu extends Component {
     followDelay: 150      // 位置跟随延迟(ms)，让浮层落后鼠标，便于用户移入
   };
 
+  getContainer = () => {
+    const fn = this.props.getContainer;
+    if (typeof fn === "function") {
+      return fn();
+    }
+  };
 
   getRowTextContent = (rowIndex, rowColumns, activeColumn) => {
     const num = Number(rowIndex);
     if (typeof num === "number" && !Number.isNaN(num)) {
-      const container = this._ref.current?.parentElement;
+      const container = this.getContainer();
       if (container) {
         const columnsTitleMap = {};
         if (rowColumns instanceof Array) {
