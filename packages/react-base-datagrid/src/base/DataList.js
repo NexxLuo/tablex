@@ -256,7 +256,7 @@ const TableCell = props => {
   }
 
   if (typeof onCellContent === "function") {
-    extraAttr =
+    const _extraArr =
       onCellContent(
         {
           rowKey: rowKey,
@@ -266,6 +266,7 @@ const TableCell = props => {
           rowColumns
         }
       ) || {};
+    extraAttr = Object.assign(_extraArr, extraAttr);
   }
 
   let cellRender = render;
@@ -408,6 +409,7 @@ const TableCell = props => {
     cls.push("tablex-table-row-cell-rowspan");
   }
 
+  console.log("extraAttr:", onCell, extraAttr);
   return (
     <div
       {...extraAttr}
