@@ -124,6 +124,7 @@ const codeText = `class Demo extends React.Component {
         title: 'column-2',
         width: 150,
         align: 'center',
+        fixed:"right"
       },
 
       {
