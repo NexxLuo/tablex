@@ -2576,7 +2576,7 @@ class EditableTable extends React.Component {
 
   findData = (
     fn,
-    { startIndex = 0, startRowKey = "", focused = true, source }
+    { startIndex = 0, startRowKey = "", focused = true, notFoundClear = false, source } = {}
   ) => {
     let { flatData, rowKey, focusedRowIndex } = this.state;
 
@@ -2613,18 +2613,32 @@ class EditableTable extends React.Component {
       }
     }
 
-    if (focused === true && found && found.index > -1) {
-      let fk = found.row[rowKey];
-      this.setState(
-        { focusedRowKeys: [fk], focusedRowIndex: found.index },
-        () => {
-          this.scrollToRow(fk, "center");
+    if (focused === true) {
+      if (found && found.index > -1) {
+        let fk = found.row[rowKey];
+        this.setState(
+          { focusedRowKeys: [fk], focusedRowIndex: found.index },
+          () => {
+            this.scrollToRow(fk, "center");
+          }
+        );
+      } else {
+        if (notFoundClear) {
+          this.setState(
+            { focusedRowKeys: [], focusedRowIndex: -1 },
+          );
         }
-      );
+      }
     }
 
     return found;
   };
+
+  clearFoundData = () => {
+    this.setState(
+      { focusedRowKeys: [], focusedRowIndex: -1 },
+    );
+  }
 
   api = {
     /** 添加n行数据-同默认按钮动作 */
@@ -2656,9 +2670,10 @@ class EditableTable extends React.Component {
     cancelEdit: this.cancelEdit.bind(this),
     /** 获取表格所有状态下的数据 */
     getDataState: this.getModifiedData.bind(this),
-
     /** 查找数据行 */
     findData: this.findData.bind(this),
+    /** 清理掉已查找到的数据激活状态 */
+    clearFoundData: this.clearFoundData.bind(this),
     /** 筛选数据 */
     filterData: this.filterData.bind(this),
 
