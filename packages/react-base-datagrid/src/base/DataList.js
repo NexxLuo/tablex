@@ -408,8 +408,7 @@ const TableCell = props => {
   if (hasRowSpan === true) {
     cls.push("tablex-table-row-cell-rowspan");
   }
-
-  console.log("extraAttr:", onCell, extraAttr);
+ 
   return (
     <div
       {...extraAttr}
