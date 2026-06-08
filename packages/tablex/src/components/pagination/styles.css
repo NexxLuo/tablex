@@ -74,10 +74,7 @@
   border-bottom-left-radius: 0;
 }
 
-.tablex-pagination-options-size-changer.ant-select {
-  display: inline-block;
-  width: auto;
-}
+ 
 
 .tablex-pagination-refresh {
   vertical-align: middle;

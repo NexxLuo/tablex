@@ -35,7 +35,8 @@ class SortableItem extends Component {
 
   render() {
     let itemStyles = {
-      display: "inline-block",
+      display: "inline-flex",
+      alignItems:"center",
       marginLeft: 10
     };
 

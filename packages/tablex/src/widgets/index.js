@@ -33,7 +33,7 @@ const Icon = (props) => {
 
 function Button(props) {
   const { prefixCls = "tablex-btn", ...rest } = props;
-  return <AButton {...rest} prefixCls={prefixCls} />;
+  return <AButton {...rest}   />;
 }
 
 function Modal(props) {
@@ -51,37 +51,37 @@ Menu.Item = AMenu.Item;
 
 function Checkbox(props) {
   const { prefixCls = "tablex-checkbox", ...rest } = props;
-  return <ACheckbox {...rest} prefixCls={prefixCls} />;
+  return <ACheckbox {...rest}   />;
 }
 
 function Tooltip(props) {
   const { prefixCls = "tablex-tooltip", ...rest } = props;
-  return <ATooltip {...rest} prefixCls={prefixCls} />;
+  return <ATooltip {...rest}   />;
 }
 
 function Pagination(props) {
   const { prefixCls = "tablex-pagination", ...rest } = props;
-  return <APagination {...rest} prefixCls={prefixCls} />;
+  return <APagination {...rest}  />;
 }
 
 function InputNumber(props) {
   const { prefixCls = "tablex-input-number", ...rest } = props;
-  return <AInputNumber {...rest} prefixCls={prefixCls} />;
+  return <AInputNumber {...rest} />;
 }
 
 function Radio(props) {
   const { prefixCls = "tablex-radio", ...rest } = props;
-  return <ARadio {...rest} prefixCls={prefixCls} />;
+  return <ARadio {...rest}   />;
 }
 
 function RadioGroup(props) {
   const { prefixCls = "tablex-radio", ...rest } = props;
-  return <ARadio.Group {...rest} prefixCls={prefixCls} />;
+  return <ARadio.Group {...rest}   />;
 }
 
 function RadioButton(props) {
   const { prefixCls = "tablex-radio-button", ...rest } = props;
-  return <ARadio.Button {...rest} prefixCls={prefixCls} />;
+  return <ARadio.Button {...rest}  />;
 }
 
 Radio.Group = RadioGroup;
@@ -89,7 +89,7 @@ Radio.Button = RadioButton;
 
 function Switch(props) {
   const { prefixCls = "tablex-switch", ...rest } = props;
-  return <ASwitch {...rest} prefixCls={prefixCls} />;
+  return <ASwitch {...rest}   />;
 }
 
 function message(props) {
@@ -117,7 +117,7 @@ function Spin(props) {
 
 function Popover(props) {
   const { prefixCls = "tablex-popover", ...rest } = props;
-  return <APopover {...rest} prefixCls={prefixCls} />;
+  return <APopover {...rest}  arrow={{pointAtCenter:true}} />;
 }
 
 function Select(props) {
