@@ -18,9 +18,9 @@ const RadioGroup = Radio.Group;
 const RadioButton = Radio.Button;
 
 class SortableItem extends Component {
-  onChangeWidth = e => {
+  onChangeWidth = value => {
     let { onChangeWidth, data } = this.props;
-    onChangeWidth(e, data);
+    onChangeWidth(value, data);
   };
 
   onChangeFixed = e => {
@@ -28,9 +28,9 @@ class SortableItem extends Component {
     onChangeFixed(e, data);
   };
 
-  onToggleVisible = e => {
+  onToggleVisible = bl => {
     let { onToggleVisible, data } = this.props;
-    onToggleVisible(e, data);
+    onToggleVisible(bl, data);
   };
 
   render() {
@@ -65,8 +65,10 @@ class SortableItem extends Component {
             display: "inline-block",
             width: "30%",
             fontWeight: "bold",
-            verticalAlign: "middle"
+            verticalAlign: "middle",
+            cursor: "move"
           }}
+          {...this.props.dragHandleProps}
         >
           {titleElement}
         </div>
@@ -161,7 +163,6 @@ class SortableList extends Component {
                     <div
                       ref={provided.innerRef}
                       {...provided.draggableProps}
-                      {...provided.dragHandleProps}
                       style={{
                         ...provided.draggableProps.style,
                         opacity: snapshot.isDragging ? 0.8 : 1
@@ -173,6 +174,7 @@ class SortableList extends Component {
                         onChangeWidth={this.props.onChangeWidth}
                         onChangeFixed={this.props.onChangeFixed}
                         onToggleVisible={this.props.onToggleVisible}
+                        dragHandleProps={provided.dragHandleProps}
                       />
                     </div>
                   )}
@@ -205,7 +207,10 @@ class SettingModal extends React.Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (prevState.propsOriginal !== nextProps) {
+    if (
+      nextProps.columns !== prevState.columnsOriginal ||
+      nextProps.configs !== prevState.rawConfigs
+    ) {
       let nextState = {};
 
       nextState.propsOriginal = nextProps;
