@@ -1,6 +1,6 @@
 {
   "name": "tablex",
-  "version": "2.0.0-beta.6",
+  "version": "2.0.0-beta.7",
   "description": "table virtualized tree-table ",
   "author": "nexx",
   "repository": {
@@ -12,6 +12,7 @@
     "build": "father build",
     "dev": "father dev"
   },
+  "main": "lib/index.js",
   "module": "es/index.js",
   "types": "types/index.d.ts",
   "files": [
@@ -39,7 +40,7 @@
     "bignumber.js": "^9.1.1",
     "lodash": "^4.17.11",
     "prop-types": "^15.7.2",
-    "react-base-datagrid": "2.0.0-beta.5",
+    "react-base-datagrid": "2.0.0-beta.7",
     "react-dnd": "^16.0.0",
     "react-dnd-html5-backend": "^16.0.0"
   }
