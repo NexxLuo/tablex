@@ -136,8 +136,6 @@ function VirtualList(props, ref) {
       >
         {items.map((virtualRow) => {
           const index = virtualRow.index;
-          console.log("virtualRow:", virtualRow);
-
           return (
             <div
               key={virtualRow.key}
