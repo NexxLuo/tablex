@@ -535,6 +535,7 @@ class BaseDataGrid extends React.Component {
             rowKey={rowKey}
             data={data}
             columns={this.props.columns}
+            allColumns={attrs.allColumns}
             onItemSizeChange={this.onItemSizeChange}
             rowRender={params =>
               this.rowRender({

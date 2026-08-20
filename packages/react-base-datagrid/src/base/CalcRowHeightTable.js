@@ -70,7 +70,7 @@ class ClacTable extends Component {
   }
 
   render() {
-    let { rowKey, data, columns, rowRender } = this.props;
+    let { rowKey, data, columns, allColumns, rowRender } = this.props;
 
     return (
       <div
@@ -85,6 +85,7 @@ class ClacTable extends Component {
           containerHeight={1}
           headerHeight={0}
           columns={columns}
+          allColumns={allColumns}
           showHeader={false}
           virtual={false}
           autoHeight={true}

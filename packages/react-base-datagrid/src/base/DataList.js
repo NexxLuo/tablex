@@ -477,7 +477,7 @@ const ListItem = memo(function TableRow({ data, index, style }) {
     end: 0
   };
 
-  let rowColumns = allColumns.map(d => {
+  let rowColumns = (allColumns || columns).map((d, i) => {
     let columnKey = d.key || d.dataIndex || i;
     return {
       key: columnKey,
