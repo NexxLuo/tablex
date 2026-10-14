@@ -1,3 +1,5 @@
+import throttle from "lodash/throttle";
+
 function getTime() {
   let cd = new Date();
 
@@ -19,6 +21,31 @@ function getTime() {
 let storageKey = "__tablex_configs";
 let tableKey = "tableId";
 let serverSaveFunctionName = "__tablex_configs_save";
+let serverSyncDelay = 5000;
+
+//节流窗口内各表格待同步到服务端的最新配置,多次变更只保留最后一次
+let pendingServerConfigs = {};
+
+//leading:首次变更立即同步 trailing:窗口结束后补发最后一次变更,保证拖拽列宽等高频场景下最终配置不丢失
+let syncServerConfigs = throttle(
+  function() {
+    let serverSaveFn = window[serverSaveFunctionName];
+
+    if (typeof serverSaveFn !== "function") {
+      pendingServerConfigs = {};
+      return;
+    }
+
+    let keys = Object.keys(pendingServerConfigs);
+    for (let i = 0; i < keys.length; i++) {
+      let key = keys[i];
+      serverSaveFn(key, pendingServerConfigs[key]);
+      delete pendingServerConfigs[key];
+    }
+  },
+  serverSyncDelay,
+  { leading: true, trailing: true }
+);
 
 let LocalConfig = {
   get: function(key) {
@@ -72,12 +99,20 @@ export function getConfigs(key) {
 }
 
 export function setConfigs(key, configs) {
-  return LocalConfig.set(key, configs);
+  let settedConfigs = LocalConfig.set(key, configs);
+
+  pendingServerConfigs[key] = LocalConfig.get(key);
+  syncServerConfigs();
+
+  return settedConfigs;
 }
 
 //配置窗口 保存
 export function saveConfigs(key, configs) {
   let settedConfigs = LocalConfig.set(key, configs);
+
+  //此处已直接同步服务端,取消节流窗口内待同步的旧配置,避免覆盖
+  delete pendingServerConfigs[key];
 
   let serverSaveFn = window[serverSaveFunctionName];
 
@@ -94,6 +129,9 @@ export function saveConfigs(key, configs) {
 
 //配置窗口 重置
 export function removeConfigs(key) {
+  //配置将被删除,取消节流窗口内待同步的配置
+  delete pendingServerConfigs[key];
+
   let serverSaveFn = window[serverSaveFunctionName];
 
   return new Promise(function(resolve, reject) {
