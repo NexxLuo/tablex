@@ -1,6 +1,115 @@
 import groupBy from "lodash/groupBy";
 import orderBy from "lodash/orderBy";
 
+//对象/函数的稳定身份id(用于指纹中标记引用身份，函数或对象被替换为新的引用时指纹变化)
+const fingerprintIdStore = new WeakMap();
+let fingerprintIdSeed = 0;
+function getFingerprintId(v) {
+  let id = fingerprintIdStore.get(v);
+  if (id === undefined) {
+    id = ++fingerprintIdSeed;
+    fingerprintIdStore.set(v, id);
+  }
+  return id;
+}
+
+//值指纹：原始值直接拼接；对象序列化(嵌套内容变更可检测，函数被JSON丢弃故辅以身份id)；
+//函数以身份id标记(替换为新函数可检测)；序列化失败降级为身份id
+function fingerprintValue(key, v) {
+  let t = typeof v;
+  if (v === null || v === undefined) {
+    return key + ":" + t;
+  }
+  if (t === "function") {
+    return key + ":fn" + getFingerprintId(v);
+  }
+  if (t === "object") {
+    try {
+      return key + ":" + JSON.stringify(v);
+    } catch (e) {
+      return key + ":obj" + getFingerprintId(v);
+    }
+  }
+  return key + ":" + String(v);
+}
+
+//行数据内容指纹：捕获"原地修改行内容但未更换数组引用"的场景(与旧版每次全量重算的行为保持一致)
+export function computeDataFingerprint(data) {
+  if (!Array.isArray(data)) {
+    return String(data);
+  }
+  let parts = [];
+  for (let i = 0; i < data.length; i++) {
+    let d = data[i];
+    if (typeof d !== "object" || d === null) {
+      parts.push(i + ":" + String(d));
+      continue;
+    }
+    let keys = Object.keys(d);
+    let rowParts = new Array(keys.length);
+    for (let j = 0; j < keys.length; j++) {
+      let k = keys[j];
+      rowParts[j] = fingerprintValue(k, d[k]);
+    }
+    parts.push(rowParts.join(","));
+  }
+  return parts.join(";");
+}
+
+//列树内容指纹：捕获"原地修改列配置(宽/显隐/标题/渲染函数等)但未更换引用"的场景
+export function computeColumnsFingerprint(columns) {
+  if (!Array.isArray(columns)) {
+    return String(columns);
+  }
+  let parts = [];
+  for (let i = 0; i < columns.length; i++) {
+    let d = columns[i];
+    if (typeof d !== "object" || d === null) {
+      parts.push(String(d));
+      continue;
+    }
+    let keys = Object.keys(d);
+    let nodeParts = new Array(keys.length);
+    for (let j = 0; j < keys.length; j++) {
+      let k = keys[j];
+      let v = d[k];
+      if (k === "children" && Array.isArray(v)) {
+        nodeParts[j] = "children:" + computeColumnsFingerprint(v);
+      } else {
+        nodeParts[j] = fingerprintValue(k, v);
+      }
+    }
+    parts.push(nodeParts.join(","));
+  }
+  return parts.join(";");
+}
+
+//列配置项指纹(columnOptions: {visible/disabled}等)
+export function computePlainObjectFingerprint(obj) {
+  if (typeof obj !== "object" || obj === null) {
+    return String(obj);
+  }
+  let keys = Object.keys(obj);
+  let parts = new Array(keys.length);
+  for (let i = 0; i < keys.length; i++) {
+    let k = keys[i];
+    parts[i] = fingerprintValue(k, obj[k]);
+  }
+  return parts.join(",");
+}
+
+//浅拷贝列树：仅复制每个列节点对象并重建children数组，其余属性按引用共享。
+//用于需要改写节点属性(如render包装)但不希望整树深拷贝的场景
+export function cloneColumnsShallow(columns) {
+  return columns.map(d => {
+    if (d && d.children instanceof Array && d.children.length > 0) {
+      let { children, ...rest } = d;
+      return { ...rest, children: cloneColumnsShallow(children) };
+    }
+    return { ...d };
+  });
+}
+
 export function getParentElement(element, selector) {
   function isMatched(el, str = "") {
     str = str.toLowerCase();

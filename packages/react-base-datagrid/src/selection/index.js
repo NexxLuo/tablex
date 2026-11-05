@@ -71,11 +71,14 @@ class SelectionGrid extends Component {
       rowSelectClassName,
       flatData,
       treeProps,
-      prependColumns = [],
       selectedRowKeys,
       selectOnRowClick,
       clearPrevSelections
     } = nextProps;
+
+    //注意不能用解构默认值(每次渲染均为新数组会击穿下游身份门控)
+    let rawPrependColumns = nextProps.prependColumns;
+    let prependColumns = rawPrependColumns || [];
 
     let nextState = {};
 
@@ -89,17 +92,35 @@ class SelectionGrid extends Component {
         extraColumns.unshift(selectionColumn);
       }
 
+      //prependColumns(含选择列拼接)引用缓存：perfCache开启且相关输入未变化时复用，
+      //避免concat产生的新数组使下游(base index分列缓存/itemData/行级memo)失效
+      let prependColumnsChanged =
+        nextProps.perfCache !== true ||
+        prevState.sourcePrependColumns !== rawPrependColumns ||
+        prevState.hasSelectionColumn !== !!selectionColumn ||
+        prevState.sourceRowSelection !== nextProps.rowSelection;
+
+      let nextPrependColumns;
+      if (prependColumnsChanged) {
+        nextPrependColumns = extraColumns.concat(prependColumns);
+      } else {
+        nextPrependColumns = prevState.prependColumns;
+      }
+
       nextState = {
         rowKey,
         data: data,
         flatData: flatData,
         treeProps,
         columns: columns,
-        prependColumns: extraColumns.concat(prependColumns),
+        prependColumns: nextPrependColumns,
         prevProps: nextProps,
         selectMode,
         rowSelectClassName,
-        selectOnRowClick
+        selectOnRowClick,
+        sourcePrependColumns: rawPrependColumns,
+        hasSelectionColumn: !!selectionColumn,
+        sourceRowSelection: nextProps.rowSelection
       };
 
       if ("checkStrictly" in selectionProps) {

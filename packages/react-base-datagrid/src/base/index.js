@@ -46,16 +46,31 @@ class BaseDataGrid extends React.Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (prevState.prevProps !== nextProps) {
-      let { data, columns, prependColumns, rowKey, hoverable } = nextProps;
+      let { data, columns, rowKey, hoverable } = nextProps;
 
-      let formattedColumns = formatColumns(columns, prependColumns);
+      let prependColumns = nextProps.prependColumns;
+
+      //perfCache开启且列/前置列引用未变化时，复用上次分列结果，
+      //保持left/middle/right身份稳定，使下游itemData(memoize-one)与行级memo可以命中
+      let formattedColumns;
+      if (
+        nextProps.perfCache === true &&
+        prevState.sourceColumns === columns &&
+        prevState.sourcePrependColumns === prependColumns
+      ) {
+        formattedColumns = prevState.formattedColumns;
+      } else {
+        formattedColumns = formatColumns(columns, prependColumns || []);
+      }
 
       let nextState = {
         rowKey,
         data,
         formattedColumns,
         hoverable,
-        prevProps: nextProps
+        prevProps: nextProps,
+        sourceColumns: columns,
+        sourcePrependColumns: prependColumns
       };
 
       if (nextProps.height) {

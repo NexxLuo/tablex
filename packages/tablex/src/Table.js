@@ -181,38 +181,50 @@ class Table extends React.Component {
     if (prevState.prevProps !== nextProps) {
       let {
         columns,
-        prependColumns = [],
         columnDropMenu,
         sortable
       } = nextProps;
 
+      //注意不能用解构默认值(每次渲染均为新数组会击穿身份门控)，用原始值做比较
+      let rawPrependColumns = nextProps.prependColumns;
+      let prependColumns = rawPrependColumns || [];
+
       let data = nextProps.data || nextProps.dataSource || [];
 
-      //给列key、width设置缺省值
-      let columnsArr = treeFilter(columns, (d, i, { depth, treeIndex }) => {
-        if (!d.key) {
-          d.key = d.dataIndex || depth + "-" + i + "-" + treeIndex;
-        }
-
-        if (depth > 0) {
-          if (!isNumber(d.width)) {
-            d.width = DEFAULT_COLUMN_WIDTH;
-          }
-        }
-
-        return true;
-      });
-      //
-
       nextState = {
-        columns: cloneDeep(columnsArr),
         data: data,
         rawData: data,
-        rawColumns: columnsArr,
         columnDropMenu,
         sortable,
         prevProps: nextProps
       };
+
+      //perfCache开启且列引用未变化时，跳过treeFilter+cloneDeep，避免每次渲染深拷贝整棵列树。
+      //列引用由上层(Editable.formatColumns缓存)保证：内容变化必然产生新引用
+      if (
+        nextProps.perfCache !== true ||
+        prevState.sourceColumns !== columns
+      ) {
+        //给列key、width设置缺省值
+        let columnsArr = treeFilter(columns, (d, i, { depth, treeIndex }) => {
+          if (!d.key) {
+            d.key = d.dataIndex || depth + "-" + i + "-" + treeIndex;
+          }
+
+          if (depth > 0) {
+            if (!isNumber(d.width)) {
+              d.width = DEFAULT_COLUMN_WIDTH;
+            }
+          }
+
+          return true;
+        });
+        //
+
+        nextState.columns = cloneDeep(columnsArr);
+        nextState.rawColumns = columnsArr;
+        nextState.sourceColumns = columns;
+      }
 
       let extraColumns = [];
 
@@ -220,38 +232,53 @@ class Table extends React.Component {
         nextState.groupedColumnKey = nextProps.groupedColumnKey;
       }
 
-      if ("orderNumber" in nextProps) {
-        let orderColumn = nextProps.orderNumber;
-        let hasOrderNumber = false;
+      //前置列(序号列等)仅在相关输入变化时重建，保持身份稳定，
+      //避免下游分列结果缓存(react-base-datagrid)失效
+      let _orderNumberTitle =
+        nextProps.intl && nextProps.intl.orderNumberTitle;
 
-        if (orderColumn !== false && orderColumn !== null) {
-          hasOrderNumber = true;
-        }
+      if (
+        nextProps.perfCache !== true ||
+        prevState.sourcePrependColumns !== rawPrependColumns ||
+        prevState.sourceOrderNumber !== nextProps.orderNumber ||
+        prevState.sourceOrderNumberTitle !== _orderNumberTitle
+      ) {
+        if ("orderNumber" in nextProps) {
+          let orderColumn = nextProps.orderNumber;
+          let hasOrderNumber = false;
 
-        if (hasOrderNumber === true) {
-          let orderNumberColumn = {
-            key: "__ordernumber_column",
-            dataIndex: "__ordernumber_column",
-            __type: "__ordernumber_column",
-            resizable: false,
-            width: 50,
-            align: "center",
-            render: orderNumberCellRender,
-            title: nextProps.intl.orderNumberTitle
-          };
-          if (orderColumn instanceof Object) {
-            orderNumberColumn = Object.assign(
-              {},
-              orderNumberColumn,
-              orderColumn
-            );
+          if (orderColumn !== false && orderColumn !== null) {
+            hasOrderNumber = true;
           }
 
-          extraColumns.unshift(orderNumberColumn);
-        }
-      }
+          if (hasOrderNumber === true) {
+            let orderNumberColumn = {
+              key: "__ordernumber_column",
+              dataIndex: "__ordernumber_column",
+              __type: "__ordernumber_column",
+              resizable: false,
+              width: 50,
+              align: "center",
+              render: orderNumberCellRender,
+              title: _orderNumberTitle
+            };
+            if (orderColumn instanceof Object) {
+              orderNumberColumn = Object.assign(
+                {},
+                orderNumberColumn,
+                orderColumn
+              );
+            }
 
-      nextState.prependColumns = prependColumns.concat(extraColumns);
+            extraColumns.unshift(orderNumberColumn);
+          }
+        }
+
+        nextState.prependColumns = prependColumns.concat(extraColumns);
+        nextState.sourcePrependColumns = rawPrependColumns;
+        nextState.sourceOrderNumber = nextProps.orderNumber;
+        nextState.sourceOrderNumberTitle = _orderNumberTitle;
+      }
     }
 
     if ("pagination" in nextProps) {
@@ -587,7 +614,30 @@ class Table extends React.Component {
   }
 
   getData = () => {
-    let { data, sortedColumns, groupedColumnKey } = this.state;
+    let { data, sortedColumns, groupedColumnKey, pagination } = this.state;
+
+    //结果缓存(perfCache)：所有输入引用未变化时直接复用。
+    //原实现每次渲染都会因排序/分页过滤/汇总拼接产生新数组，
+    //导致下游itemData身份变化、行级memo被击穿(全表行重渲染)
+    let _pagination = pagination || {};
+    let cache = this._getDataCache;
+    if (
+      this.props.perfCache === true &&
+      cache &&
+      cache.data === data &&
+      cache.sortedColumns === sortedColumns &&
+      cache.groupedColumnKey === groupedColumnKey &&
+      cache.summary === this.props.summary &&
+      cache.getGroupColumnValue === this.props.getGroupColumnValue &&
+      cache.rowKey === this.props.rowKey &&
+      cache.shouldHoldPage === this.props.shouldHoldPage &&
+      cache.current === _pagination.current &&
+      cache.pageSize === _pagination.pageSize &&
+      cache.total === _pagination.total
+    ) {
+      return cache.result;
+    }
+
     let rowKey = this.props.rowKey;
     let fn = this.props.getGroupColumnValue;
     let arr = data;
@@ -624,8 +674,23 @@ class Table extends React.Component {
 
     let summaryData = this.getSummaryData({ fixed: false });
     if (arr.length > 0 && summaryData.length > 0) {
-      return [...arr, ...summaryData];
+      arr = [...arr, ...summaryData];
     }
+
+    this._getDataCache = {
+      data,
+      sortedColumns,
+      groupedColumnKey,
+      summary: this.props.summary,
+      getGroupColumnValue: this.props.getGroupColumnValue,
+      rowKey: this.props.rowKey,
+      shouldHoldPage: this.props.shouldHoldPage,
+      current: _pagination.current,
+      pageSize: _pagination.pageSize,
+      total: _pagination.total,
+      result: arr
+    };
+
     return arr;
   };
 
@@ -843,6 +908,25 @@ class Table extends React.Component {
 
     let { data: summaryTypes = [] } =
       this.props.groupedColumnSummary || {};
+
+    //结果缓存：所有输入引用未变化时直接复用。
+    //此方法每次render都会调用，原实现每次都对整棵列树cloneDeep并重建全部包装闭包
+    let _hasDropMenu = this.hasDropMenu();
+    let _cache = this._formatColumnsCache;
+    if (
+      this.props.perfCache === true &&
+      _cache &&
+      _cache.columns === columns &&
+      _cache.columnsConfig === columnsConfig &&
+      _cache.sortedColumns === sortedColumns &&
+      _cache.sortable === sortable &&
+      _cache.groupedColumnKey === groupedColumnKey &&
+      _cache.groupedColumnSummary === this.props.groupedColumnSummary &&
+      _cache.includeHidden === includeHidden &&
+      _cache.hasDropMenu === _hasDropMenu
+    ) {
+      return _cache.result;
+    }
 
     let configs = columnsConfig || {};
 
@@ -1179,6 +1263,18 @@ class Table extends React.Component {
 
     }
     //
+
+    this._formatColumnsCache = {
+      columns,
+      columnsConfig,
+      sortedColumns,
+      sortable,
+      groupedColumnKey,
+      groupedColumnSummary: this.props.groupedColumnSummary,
+      includeHidden,
+      hasDropMenu: _hasDropMenu,
+      result: arr
+    };
 
     return arr;
   };

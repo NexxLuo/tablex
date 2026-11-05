@@ -29,17 +29,27 @@ class Table extends React.Component {
     if (prevState.prevProps !== nextProps) {
       let { data, columns, rowKey, showHeader } = nextProps;
 
-      let { roots: columnsRoots, leafs: columnsLeafs } =
-        getFlattenColumns(columns);
-
       let nextState = {
         rowKey,
         data,
-        rawColumns: columns,
-        columns: columnsRoots,
-        columnsLeafs: columnsLeafs,
         showHeader
       };
+
+      //perfCache开启且列引用未变化时，跳过展平计算，保持columns/columnsLeafs身份稳定，
+      //避免下游DataList的itemData(memoize-one)与行级memo被击穿
+      if (
+        nextProps.perfCache !== true ||
+        prevState.sourceColumns !== columns
+      ) {
+        let { roots: columnsRoots, leafs: columnsLeafs } =
+          getFlattenColumns(columns);
+
+        nextState.rawColumns = columns;
+        nextState.columns = columnsRoots;
+        nextState.columnsLeafs = columnsLeafs;
+        nextState.sourceColumns = columns;
+      }
+
       return nextState;
     }
   }

@@ -14,13 +14,40 @@ import {
   cloneData,
   insertData,
   deleteData,
-  distinctData
+  distinctData,
+  cloneColumnsShallow,
+  computeDataFingerprint,
+  computeColumnsFingerprint,
+  computePlainObjectFingerprint
 } from "./utils";
 
 import { message, Button, Popconfirm, Menu, Dropdown, Icon } from "./widgets";
 
 import orderBy from "lodash/orderBy";
 import "./styles.css";
+
+//缺省空对象常量(保持引用稳定，避免缺省值的新对象击穿身份门控)
+const EMPTY_OBJECT = {};
+
+//列树中是否存在editingVisible配置
+//(存在时编辑态切换会改变列集合，isEditing需参与formatColumns缓存key)
+function columnsHaveEditingVisible(columns) {
+  for (let i = 0; i < columns.length; i++) {
+    let d = columns[i];
+    if (d && typeof d === "object") {
+      if ("editingVisible" in d) {
+        return true;
+      }
+      if (
+        d.children instanceof Array &&
+        columnsHaveEditingVisible(d.children)
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 /**
  * 表格
@@ -67,13 +94,16 @@ class EditableTable extends React.Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (prevState.prevProps !== nextProps) {
+      let rawColumnOptions = nextProps.columnOptions;
+      let columnOptions = rawColumnOptions || EMPTY_OBJECT;
+
       let nextState = {
         prevProps: nextProps,
         dataControled: nextProps.dataControled || false,
         readOnly: nextProps.readOnly,
         rawColumns: nextProps.columns || [],
         isAppend: nextProps.isAppend,
-        columnOptions: nextProps.columnOptions || {}
+        columnOptions: columnOptions
       };
 
       //处理编辑状态受控
@@ -102,35 +132,65 @@ class EditableTable extends React.Component {
         nextState.selectedRowKeys = nextProps.selectedRowKeys;
       }
 
-      let columnList = [];
+      //perfCache开启时，列与columnOptions引用、内容指纹均未变化则跳过整树cloneDeep+treeFilter。
+      //指纹兜底保证"原地修改列配置但未更换引用"仍会被检测到，行为与旧版一致；
+      //perfCache关闭(缺省)时每次全量重算，即旧版行为
+      let perfCache = nextProps.perfCache === true;
 
-      //给列key设置缺省值
-      let columns = treeFilter(
-        cloneDeep(nextProps.columns || []),
-        (d, i, { depth, treeIndex }) => {
-          if (!d.key) {
-            d.key = d.dataIndex || depth + "-" + i + "-" + treeIndex;
-          }
+      let columnsChanged =
+        !perfCache ||
+        prevState.sourceColumns !== nextProps.columns ||
+        prevState.sourceColumnOptions !== rawColumnOptions;
 
-          //控制编辑器可见权限
-          let visible = true;
-          let options = nextState.columnOptions[d.key] || {};
-          if (options.visible === false) {
-            visible = false;
-          }
-          //
+      if (!columnsChanged) {
+        columnsChanged =
+          prevState.columnsFingerprint !==
+            computeColumnsFingerprint(nextProps.columns) ||
+          prevState.columnOptionsFingerprint !==
+            computePlainObjectFingerprint(columnOptions);
+      }
 
-          if (visible === true) {
-            columnList.push(d);
-            return true;
+      if (columnsChanged) {
+        let columnList = [];
+
+        //给列key设置缺省值
+        let columns = treeFilter(
+          cloneDeep(nextProps.columns || []),
+          (d, i, { depth, treeIndex }) => {
+            if (!d.key) {
+              d.key = d.dataIndex || depth + "-" + i + "-" + treeIndex;
+            }
+
+            //控制编辑器可见权限
+            let visible = true;
+            let options = columnOptions[d.key] || {};
+            if (options.visible === false) {
+              visible = false;
+            }
+            //
+
+            if (visible === true) {
+              columnList.push(d);
+              return true;
+            }
+            return false;
           }
-          return false;
+        );
+        //
+
+        nextState.columns = columns;
+        nextState.columnList = columnList;
+        nextState.sourceColumns = nextProps.columns;
+        nextState.sourceColumnOptions = rawColumnOptions;
+        if (perfCache) {
+          nextState.columnsFingerprint = computeColumnsFingerprint(
+            nextProps.columns
+          );
+          nextState.columnOptionsFingerprint = computePlainObjectFingerprint(
+            columnOptions
+          );
         }
-      );
-      //
-
-      nextState.columns = columns;
-      nextState.columnList = columnList;
+      }
 
       nextState.changedRows = [];
 
@@ -161,19 +221,32 @@ class EditableTable extends React.Component {
         _data = cloneData(data);
       }
 
-      if (prevState.dataControled === true) {
-        let flatData = treeToFlatten(_data).list;
+      //perfCache开启时，数据引用、内容指纹均未变化则跳过treeToFlatten与cloneData(JSON深拷贝)。
+      //受控模式下旧版每次渲染都会对全量数据做cloneData深拷贝，是大数据量下的主要性能瓶颈。
+      //内容变化但引用未变时(原地修改行数据)，以slice生成新数组引用使下游正确失效，行为与旧版一致
+      let dataChanged = !perfCache || prevState.rawData !== data;
+
+      if (!dataChanged) {
+        dataChanged =
+          prevState.dataFingerprint !== computeDataFingerprint(data);
+      }
+
+      if (dataChanged) {
+        let nextData = _data;
+        if (
+          perfCache &&
+          _data === data &&
+          prevState.rawData === data
+        ) {
+          //引用未变但内容变了(原地修改)：生成新引用
+          nextData = data.slice();
+        }
         nextState.rawData = data;
-        nextState.flatData = flatData;
-        nextState.data = _data;
+        nextState.flatData = treeToFlatten(_data).list;
+        nextState.data = nextData;
         nextState.sourceData = cloneData(data);
-      } else {
-        if (prevState.rawData !== data) {
-          nextState.rawData = data;
-          let flatData = treeToFlatten(_data).list;
-          nextState.flatData = flatData;
-          nextState.data = _data;
-          nextState.sourceData = cloneData(data);
+        if (perfCache) {
+          nextState.dataFingerprint = computeDataFingerprint(data);
         }
       }
 
@@ -847,16 +920,48 @@ class EditableTable extends React.Component {
   }
 
   formatColumns = () => {
-    let { columns, editKeys, isEditAll, isEditing, columnOptions } = this.state;
+    let { columns, isEditing, columnOptions } = this.state;
+
+    //列树中是否存在editingVisible配置(存在时编辑态切换会改变列集合，需参与缓存key)。
+    //perfCache关闭时保持旧版行为(无条件treeFilter)，不计算
+    let perfCache = this.props.perfCache === true;
+    let hasEditingVisible = perfCache
+      ? columnsHaveEditingVisible(columns)
+      : true;
+
+    //结果缓存：所有影响列结构/渲染行为的输入引用未变化时直接复用，
+    //避免每次渲染都重建整棵列树(原实现含两次cloneDeep，是编辑态切换的主要性能开销之一)。
+    //注意：editKeys/isEditAll不参与缓存key，render包装闭包内实时读取state，
+    //编辑态切换时列对象身份保持稳定，配合行key后缀仅重挂载编辑行，其余行命中行级memo
+    let cache = this._formatColumnsCache;
+    let autoRowSpanColumns = this.props.autoRowSpanColumns;
+    let rowKey = this.props.rowKey;
+    if (
+      perfCache &&
+      cache &&
+      cache.columns === columns &&
+      (!hasEditingVisible || cache.isEditing === isEditing) &&
+      cache.columnOptions === columnOptions &&
+      cache.autoRowSpanColumns === autoRowSpanColumns &&
+      cache.data === this.state.data &&
+      cache.rowKey === rowKey
+    ) {
+      return cache.result;
+    }
 
     let rowSpanStore = this.getAutoRowSpanStore();
 
-    let rowKey = this.props.rowKey;
-    let columnArr = cloneDeep(columns);
+    //perfCache开启时浅拷贝列节点代替cloneDeep：render包装只改写节点自身属性，
+    //children数组递归重建，其余属性(render/editor等函数与配置对象)按引用共享；
+    //关闭时保持旧版cloneDeep，行为逐字节一致
+    let columnArr =
+      perfCache === true
+        ? cloneColumnsShallow(columns)
+        : cloneDeep(columns);
 
     let arr = columnArr;
 
-    if (isEditing === true) {
+    if (isEditing === true && hasEditingVisible) {
       arr = treeFilter(columnArr, d => {
         if (d.editingVisible === true) {
           d.hidden = false;
@@ -880,11 +985,15 @@ class EditableTable extends React.Component {
       let renderFn = d.render;
 
       d.render = (value, row, index, extra) => {
+        //实时读取编辑状态，避免闭包捕获过期引用
+        let _editKeys = this.state.editKeys || [];
+        let _isEditAll = this.state.isEditAll === true;
+
         let columnIsEditing = false;
-        if (isEditAll) {
+        if (_isEditAll) {
           columnIsEditing = true;
         } else {
-          columnIsEditing = editKeys.findIndex(k => k === row[rowKey]) > -1;
+          columnIsEditing = _editKeys.findIndex(k => k === row[rowKey]) > -1;
         }
 
         //如果为分组行父级，不创建编辑器
@@ -919,7 +1028,25 @@ class EditableTable extends React.Component {
 
     arr = orderBy(arr, ["order"], ["asc"]);
 
-    return cloneDeep(arr);
+    //perfCache关闭时保持旧版行为：返回前再整树cloneDeep；
+    //开启时arr节点均为一次性浅拷贝副本，可直接返回
+    if (perfCache !== true) {
+      return cloneDeep(arr);
+    }
+
+    let result = arr;
+
+    this._formatColumnsCache = {
+      columns,
+      isEditing,
+      columnOptions,
+      autoRowSpanColumns,
+      data: this.state.data,
+      rowKey,
+      result
+    };
+
+    return result;
   };
 
   editAll = () => {
@@ -2716,11 +2843,27 @@ class EditableTable extends React.Component {
 
     let props = this.props;
 
+    //编辑行key映射：传递给底层列表，使编辑中的行key追加后缀单独重挂载，
+    //配合perfCache下的行级memo，编辑态切换时仅重渲染编辑行。
+    //仅perfCache开启时传递，关闭时不改变旧行为(原地重渲染)
+    let editKeysMap = null;
+    if (this.props.perfCache === true && this.state.isEditing === true) {
+      let keys = this.state.editKeys || [];
+      if (keys.length > 0 || this.state.isEditAll === true) {
+        editKeysMap = {};
+        keys.forEach(k => {
+          editKeysMap[k] = true;
+        });
+      }
+    }
+
     let newProps = {
       data: arr,
       flatData: this.state.flatData,
       shouldHoldPage: this.shouldHoldPage(),
       columns,
+      editKeysMap,
+      editAll: this.props.perfCache === true && this.state.isEditAll === true,
       onExpandedRowsChange: this.onExpandedRowsChange,
       expandedRowKeys: this.state.expandedRowKeys,
       headerToolsBar: this.headerToolsBar,
@@ -2968,6 +3111,8 @@ EditableTable.propTypes = {
   /** 单行编辑模式时,进入编辑触发方式，单击还是双击 */
   singleRowEditTrigger: PropTypes.oneOf(["none", "onClick", "onDoubleClick"]),
   onEditRowChange: PropTypes.func,
+  /** 是否启用基于引用/内容指纹的性能缓存(跳过数据与列的重复深拷贝)，缺省false */
+  perfCache: PropTypes.bool,
   /** 相邻行的列值一致时自动进行合并 */
   autoRowSpanColumns: PropTypes.array
 };

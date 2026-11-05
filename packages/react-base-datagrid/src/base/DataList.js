@@ -778,10 +778,24 @@ class DataList extends Component {
   getItemKey = (index, itemData) => {
     let { rowKey } = this.props;
 
-    let { data } = itemData;
+    let { data, editKeysMap, editAll } = itemData;
     let row = data[index];
     if (row) {
-      return row[rowKey];
+      let k = row[rowKey];
+      //编辑中的行追加key后缀使其单独重挂载：
+      //perfCache开启时行级memo会跳过无关行的重渲染，
+      //编辑行的render切换(显示↔编辑器)依赖key变化触发重挂载。
+      //必须显式perfCache开启，避免影响旧行为
+      if (
+        k &&
+        this.props.perfCache === true &&
+        editKeysMap &&
+        (editKeysMap[k] === true || editAll === true) &&
+        !row.__isGroupedHeadRow
+      ) {
+        return k + "__editing";
+      }
+      return k;
     }
     return "";
   };
@@ -825,6 +839,8 @@ class DataList extends Component {
     let itemData = createItemData(data, columns, rowKey);
 
     itemData.placeholders = placeholders;
+    itemData.editKeysMap = this.props.editKeysMap;
+    itemData.editAll = this.props.editAll;
     itemData.onRow = onRow;
     itemData.disabledRowSpan = disabledRowSpan;
     itemData.rowClassName = rowClassName;
