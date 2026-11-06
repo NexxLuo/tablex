@@ -14,6 +14,18 @@ import {
 } from "./utils";
 import { AreaSelect } from "./Selector";
 
+//rowSelection配置内容快照：仅序列化非数组/非函数的一级字段
+function rowSelectionConfigKey(rs) {
+  if (!rs || typeof rs !== "object") return String(rs);
+  let keys = Object.keys(rs).filter(
+    k => !Array.isArray(rs[k]) && typeof rs[k] !== "function"
+  );
+  return keys
+    .map(k => k + ":" + String(rs[k]))
+    .sort()
+    .join(",");
+}
+
 class SelectionGrid extends Component {
   constructor(props) {
     super(props);
@@ -98,7 +110,8 @@ class SelectionGrid extends Component {
         nextProps.perfCache !== true ||
         prevState.sourcePrependColumns !== rawPrependColumns ||
         prevState.hasSelectionColumn !== !!selectionColumn ||
-        prevState.sourceRowSelection !== nextProps.rowSelection;
+        prevState.sourceRowSelectionKey !==
+          rowSelectionConfigKey(nextProps.rowSelection);
 
       let nextPrependColumns;
       if (prependColumnsChanged) {
@@ -120,7 +133,7 @@ class SelectionGrid extends Component {
         selectOnRowClick,
         sourcePrependColumns: rawPrependColumns,
         hasSelectionColumn: !!selectionColumn,
-        sourceRowSelection: nextProps.rowSelection
+        sourceRowSelectionKey: rowSelectionConfigKey(nextProps.rowSelection)
       };
 
       if ("checkStrictly" in selectionProps) {

@@ -425,6 +425,47 @@ const TableCell = props => {
   );
 };
 
+//浅比较两个style对象内容
+function styleEquals(a, b) {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  const ka = Object.keys(a);
+  const kb = Object.keys(b);
+  if (ka.length !== kb.length) return false;
+  for (let i = 0; i < ka.length; i++) {
+    if (a[ka[i]] !== b[ka[i]]) return false;
+  }
+  return true;
+}
+
+/**
+ * 行级memo比较器：
+ * - itemData相同(数据/列引用未变) → 仅比较style(与react-window默认行为一致)
+ * - itemData变化时，perfCache开启则按"行对象引用"比较——
+ *   上游(formx行级快照)保证行引用=内容版本：行未变则跳过重渲染；
+ *   perfCache关闭时保持旧行为(itemData变化即全量重渲染)
+ * - 编辑行的显示↔编辑器切换由行key后缀(__editing)触发重挂载，不依赖此比较器
+ */
+function listItemEquals(prev, next) {
+  if (prev.index !== next.index) return false;
+  if (prev.data === next.data) {
+    return styleEquals(prev.style, next.style);
+  }
+  if (
+    prev.data &&
+    next.data &&
+    prev.data.perfCache === true &&
+    next.data.perfCache === true
+  ) {
+    if (prev.data.columns !== next.data.columns) return false;
+    if (prev.data.data[prev.index] !== next.data.data[next.index]) {
+      return false;
+    }
+    return styleEquals(prev.style, next.style);
+  }
+  return false;
+}
+
 const ListItem = memo(function TableRow({ data, index, style }) {
   let {
     data: rows,
@@ -642,7 +683,7 @@ const ListItem = memo(function TableRow({ data, index, style }) {
       {rowElement}
     </Fragment>
   );
-}, areEqual);
+}, listItemEquals);
 
 class DataList extends Component {
   constructor(props) {
@@ -839,6 +880,7 @@ class DataList extends Component {
     let itemData = createItemData(data, columns, rowKey);
 
     itemData.placeholders = placeholders;
+    itemData.perfCache = this.props.perfCache === true;
     itemData.editKeysMap = this.props.editKeysMap;
     itemData.editAll = this.props.editAll;
     itemData.onRow = onRow;

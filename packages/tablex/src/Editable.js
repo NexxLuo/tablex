@@ -936,14 +936,20 @@ class EditableTable extends React.Component {
     let cache = this._formatColumnsCache;
     let autoRowSpanColumns = this.props.autoRowSpanColumns;
     let rowKey = this.props.rowKey;
+    //rowSpanStore仅依赖autoRowSpanColumns与data；未配置autoRowSpan时data变化不影响列
+    //(数据变化时保持列身份稳定，下游itemData的columns引用与行级memo才能按行引用跳过未变行)
+    let hasAutoRowSpan =
+      autoRowSpanColumns instanceof Array && autoRowSpanColumns.length > 0;
     if (
       perfCache &&
       cache &&
       cache.columns === columns &&
       (!hasEditingVisible || cache.isEditing === isEditing) &&
       cache.columnOptions === columnOptions &&
-      cache.autoRowSpanColumns === autoRowSpanColumns &&
-      cache.data === this.state.data &&
+      //autoRowSpanColumns为空配置(空数组/未传)时rowSpanStore恒为空对象，与列和数据无关，
+      //跳过引用比较(上游可能每渲染传入新的空数组引用)
+      (hasAutoRowSpan ? cache.autoRowSpanColumns === autoRowSpanColumns : true) &&
+      (!hasAutoRowSpan || cache.data === this.state.data) &&
       cache.rowKey === rowKey
     ) {
       return cache.result;
