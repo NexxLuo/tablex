@@ -91,7 +91,6 @@ class Demo extends React.Component {
       <div style={{ height: 400 }}><Table
         rowKey="id"
         columns={columns}
-        overscanCount={15}
         virtual={true}
         data={data}
         selectMode="multiple"

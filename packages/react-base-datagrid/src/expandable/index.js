@@ -4,6 +4,7 @@ import Table from "../selection";
 import { getDataListWithExpanded, getTreeProps } from "./utils";
 import { flatten } from "../utils";
 import ExpandIcon from "./ExpandIcon";
+import { createSignal } from "../signal";
 import "./styles.css";
 
 function formatExpandRenderData(data, rowKey, render, onSet) {
@@ -57,6 +58,14 @@ class TreeGrid extends Component {
     if (props.defaultExpandedRowKeys instanceof Array === true) {
       expandedKeys = props.defaultExpandedRowKeys;
     }
+
+    // 子级加载态 signal：行订阅后 loading 图标变化直达重渲(不经过行级memo)
+    this.loadingKeysSignal = createSignal([]);
+
+    // 展开态 signal：展开/收起时图标方向直达重渲——
+    // 数据变化(getDataListWithExpanded)只影响子行进出，父行对象引用共享，
+    // 行级memo无法感知展开态变化(图标不翻转)
+    this.expandedRowKeysSignal = createSignal([]);
 
     this.state = {
       prevProps: null,
@@ -157,16 +166,31 @@ class TreeGrid extends Component {
   }
 
   componentDidUpdate() {
-    this.resetAfterIndex(0);
+    // 受控 expandedRowKeys props 经 gDSFP 更新 state，此处兜底同步 signal
+    this.syncExpandedSignal();
+    // 不再无条件 resetAfterIndex(清空行高缓存)：共享 virtualizer 的实测尺寸
+    // 按行 key 持久化，展开/收起只影响行集增减，未变行高度自动保留；
+    // 展开行高由 rowHeightWithExpandRender 函数给出精确估算，
+    // 展开内容变化由宿主共享 ResizeObserver 捕获
+  }
+
+  syncExpandedSignal() {
+    if (this.expandedRowKeysSignal.get() !== this.state.expandedRowKeys) {
+      this.expandedRowKeysSignal.set(this.state.expandedRowKeys || []);
+    }
   }
 
   isLoadingChildren = key => {
-    let { loadingKeys } = this.state;
+    // 实时读取 signal：signal.set 先于 setState 生效，
+    // 订阅触发的行重渲若读 state 会拿到旧值(loading无法消失)
+    let loadingKeys = this.loadingKeysSignal.get();
     return loadingKeys.indexOf(key) > -1;
   };
 
   isExpanded = key => {
-    let { expandedRowKeys } = this.state;
+    // 实时读取 signal：signal.set 先于 setState 生效，
+    // 订阅触发的行重渲若读 state 会拿到旧值(图标不翻转)
+    let expandedRowKeys = this.expandedRowKeysSignal.get();
     return expandedRowKeys.indexOf(key) > -1;
   };
 
@@ -213,6 +237,8 @@ class TreeGrid extends Component {
       rowKey
     );
 
+    this.expandedRowKeysSignal.set(nextExpandedKeys);
+
     let nextState = {
       expandedRowKeys: nextExpandedKeys,
       data: expandedData
@@ -249,6 +275,8 @@ class TreeGrid extends Component {
       rowKey
     );
 
+    this.expandedRowKeysSignal.set(nextExpandedKeys);
+
     this.setState({
       expandedRowKeys: nextExpandedKeys,
       data: expandedData
@@ -278,6 +306,8 @@ class TreeGrid extends Component {
         nextKeys.splice(i, 1);
       }
     }
+
+    this.loadingKeysSignal.set(nextKeys);
 
     return this.setState({ loadingKeys: nextKeys, ...reduceState }, callback);
   };
@@ -656,6 +686,11 @@ class TreeGrid extends Component {
   };
 
   componentDidMount() {
+    // 挂载即兜底同步 signal(受控 expandedRowKeys 初次设置发生在 mount 的 gDSFP)。
+    // 与 actions 注册同钩子合并——类体中重复定义的生命周期后定义会静默覆盖前定义
+    // (signal 改造时曾因此丢失挂载同步)
+    this.syncExpandedSignal();
+
     let o = this.props.actions;
     if (o && typeof o === "object") {
       let actions = this.actions;
@@ -690,6 +725,9 @@ class TreeGrid extends Component {
     if (typeof props.expandedRowRender === "function") {
       newProps.rowHeight = this.rowHeightWithExpandRender;
     }
+
+newProps.loadingKeysSignal = this.loadingKeysSignal;
+    newProps.expandedRowKeysSignal = this.expandedRowKeysSignal;
 
     return <Table {...props} {...newProps} />;
   }

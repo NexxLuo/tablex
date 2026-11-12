@@ -148,6 +148,24 @@ table th:nth-of-type(4) {
 | onCell | `(row: object, rowIndex: number, extra: any) => object` | `true` | `N/A` | 列自定义属性 |
 | onHeaderCell | `(column: object) => object` | `true` | `N/A` | 表头列自定义属性 |
 
+#### 表体行列合并（render 通道）
+
+与 antd Table 一致：`render` 返回 `{ children, props: { rowSpan, colSpan, style } }` 对象即可声明表体合并（`rowSpan`/`colSpan` 为 `0` 时该单元格不渲染）：
+
+```js
+render: (value, row, index) => {
+  const obj = { children: value, props: {} };
+  if (index === 2) obj.props.rowSpan = 4; // 从第 2 行起向下合并 4 行
+  if (index === 0) obj.props.colSpan = 2; // 向右合并 2 列
+  return obj;
+}
+```
+
+- `rowSpan` 合并格随虚拟滚动自动接管：合并区起始行滚出视口后由窗口内首行继续渲染，滚动过程中无空洞
+- 被 `rowSpan`/`colSpan` 覆盖的单元格不渲染（`render` 不执行）
+- 另有 `autoRowSpanColumns: string[]`：指定列相邻行值相同时自动合并
+
+
 
 ### pagination
 

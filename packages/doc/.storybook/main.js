@@ -13,7 +13,10 @@ const docNodeModules = path.resolve(__dirname, "../node_modules");
 module.exports = {
   framework: {
     name: "@storybook/react-vite",
-    options: {},
+    options: {
+      // 关闭 StrictMode：dev 下组件双渲染会显著拖慢滚动期间的行更新
+      strictMode: false
+    },
   },
 
   stories: ["../src/stories/**/*.stories.@(js|jsx|ts|tsx)"],
@@ -43,6 +46,11 @@ module.exports = {
         find: /^react-base-datagrid\/lib$/,
         replacement: path.join(packagesDir, "react-base-datagrid/src"),
       },
+      // lib 子路径(如 lib/signal)同样重定向到 src，供 tablex 源码跨包引用
+      {
+        find: /^react-base-datagrid\/lib\//,
+        replacement: path.join(packagesDir, "react-base-datagrid/src/") + "",
+      },
     ];
 
     config.resolve.dedupe = [
@@ -51,21 +59,29 @@ module.exports = {
       "react-dom",
     ];
 
-    // 依赖扫描器(dev 模式 optimizeDeps)为独立 esbuild 进程，不经过上述插件，
-    // 需通过 loader 映射让扫描器识别源码 .js 中的 JSX
-    config.optimizeDeps = {
-      ...config.optimizeDeps,
-      esbuildOptions: {
-        ...((config.optimizeDeps && config.optimizeDeps.esbuildOptions) || {}),
-        loader: {
-          ...((config.optimizeDeps &&
-            config.optimizeDeps.esbuildOptions &&
-            config.optimizeDeps.esbuildOptions.loader) ||
-            {}),
-          ".js": "jsx",
+    // antd@3 的 es/ 目录是"ESM 混入 require()"的产物(rc-switch/rc-menu/antd es 均有)，
+    // rollup 的 commonjs 插件无法转换 ESM 中的 require，导致浏览器 "require is not defined"。
+    // 根治：强制 antd 与全部 rc-* 组件解析到 lib/（纯 CJS），require 全部由 commonjs 插件正常转换
+    config.plugins = [
+      ...(config.plugins || []),
+      {
+        name: "force-antd-cjs-lib",
+        enforce: "pre",
+        transform(code, id) {
+          // transform 钩子在当前构建管线中实证有效(load/resolveId 无效)。
+          // antd@3 的 es/ 是"ESM混入require"产物，commonjs 插件无法转换 ESM 中的
+          // 顶层 require(随chunk加载即崩)。重定向：es/ 文件读取同包 lib/(纯CJS)内容，
+          // commonjs 插件按内容检测到 CJS 并在后续 transform 中正确转换全部 require
+          const m = id.match(/^(.*node_modules\/(?:antd|rc-[a-z0-9-]+))\/es\/(.+\.js)$/);
+          if (!m) return null;
+          const libPath = m[1].replace(/\/es$/, "/lib") + "/" + m[2];
+          if (require("fs").existsSync(libPath)) {
+            return { code: require("fs").readFileSync(libPath, "utf8"), map: null };
+          }
+          return null;
         },
       },
-    };
+    ];
 
     // 源码 .js 文件内含 JSX（vite 默认只对 .jsx/.tsx 启用 jsx loader）
     const esbuild = require("esbuild");

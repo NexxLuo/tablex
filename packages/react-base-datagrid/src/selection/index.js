@@ -13,6 +13,159 @@ import {
   removeCheckeds
 } from "./utils";
 import { AreaSelect } from "./Selector";
+import { createSignal, useSelector } from "../signal";
+
+/**
+ * 表头全选框：订阅选中态 signals，全选/半选变化直达重渲
+ */
+function HeadCheckbox({ grid }) {
+  // selector 化订阅：仅"存在勾选/存在半选"的布尔变化时重渲
+  const hasChecked = useSelector(
+    grid.checkedKeysSignal,
+    keys => keys.length > 0
+  );
+  const hasHalfChecked = useSelector(
+    grid.halfCheckedKeysSignal,
+    keys => keys.length > 0
+  );
+  const flatData = grid.state.flatData;
+
+  if (grid.isSingleCheck()) {
+    return null;
+  }
+
+  let attr = {
+    checked: false,
+    indeterminate: false
+  };
+
+  let isCheckedAll = grid.isCheckedAll(grid.state.disabledCheckedKeys);
+
+  if (flatData.length > 0) {
+    if (isCheckedAll === true) {
+      attr.checked = true;
+    } else {
+      if (hasChecked || hasHalfChecked) {
+        attr.indeterminate = true;
+      }
+    }
+  }
+
+  let SelectionTitle = grid.getRowSelection("columnTitle");
+
+  if (typeof SelectionTitle !== "undefined") {
+    if (typeof SelectionTitle === "function") {
+      return <SelectionTitle onChange={grid.onCheckAllChange} />;
+    } else {
+      return SelectionTitle;
+    }
+  }
+
+  let c = grid.props.selectionColumn;
+
+  if (c !== false && c !== null) {
+    if (c instanceof Object) {
+      let selectionColumnTitle = c.title;
+      if (typeof selectionColumnTitle === "function") {
+        return (
+          selectionColumnTitle({
+            ...attr,
+            onChange: checked => grid.onCheckAllChange(checked)
+          }) || null
+        );
+      }
+    }
+  }
+
+  return <Checkbox {...attr} onChange={grid.onCheckAllChange} />;
+}
+
+/**
+ * 行内勾选框：订阅 selection 层的选中态 signals。
+ * 选中变化时仅本组件重渲(useSyncExternalStore 更新不经过父级memo)，
+ * 不依赖任何引用传播——从机制上规避引用缓存导致的视觉不更新问题
+ */
+function CheckboxCell({ grid, rowData, index }) {
+  const rowKey = grid.state.rowKey;
+
+  let key = rowData[rowKey];
+
+  // selector 化订阅(布尔值比较)：仅本行勾选/半选态变化时重渲
+  const checked = useSelector(
+    grid.checkedKeysSignal,
+    keys => keys.indexOf(key) > -1
+  );
+  const indeterminate = useSelector(
+    grid.halfCheckedKeysSignal,
+    keys => keys.indexOf(key) > -1
+  );
+
+  let attr = {
+    checked: false,
+    disabled: false,
+    indeterminate: false
+  };
+
+  let fn = grid.getRowSelection("getCheckboxProps");
+  if (typeof fn === "function") {
+    let p = fn(rowData);
+    if (p instanceof Object) {
+      attr = Object.assign(attr, p);
+    }
+  }
+
+  if (checked) {
+    attr.checked = true;
+  }
+
+  if (indeterminate) {
+    attr.indeterminate = true;
+  }
+
+  if (grid.isDisabledCheck(key, rowData)) {
+    attr.disabled = true;
+  }
+
+  let c = grid.props.selectionColumn;
+
+  if (c !== false && c !== null) {
+    if (c instanceof Object) {
+      let selectionColumnRender = c.render;
+      if (typeof selectionColumnRender === "function") {
+        return (
+          selectionColumnRender(rowData, index, {
+            ...attr,
+            value: key,
+            onChange: checked => {
+              grid.onCheckChange({
+                selected: !checked,
+                key: key,
+                index: index,
+                rowData: rowData
+              });
+            }
+          }) || null
+        );
+      }
+    }
+  }
+
+  return (
+    <Checkbox
+      rowData={rowData}
+      value={key}
+      {...attr}
+      onChange={(checked, ck) => {
+        grid.onCheckChange({
+          selected: checked,
+          key: ck,
+          index: index,
+          rowData: rowData
+        });
+      }}
+    />
+  );
+}
 
 //rowSelection配置内容快照：仅序列化非数组/非函数的一级字段
 function rowSelectionConfigKey(rs) {
@@ -52,6 +205,11 @@ class SelectionGrid extends Component {
       selectedKeys = keys;
       selectedRows = data;
     }
+
+    // 选中态 signals：订阅组件(CheckboxCell/行)直接消费，绕开引用缓存
+    this.checkedKeysSignal = createSignal([]);
+    this.selectedRowKeysSignal = createSignal(selectedKeys);
+    this.halfCheckedKeysSignal = createSignal([]);
 
     this.state = {
       prevProps: null,
@@ -107,7 +265,7 @@ class SelectionGrid extends Component {
       //prependColumns(含选择列拼接)引用缓存：perfCache开启且相关输入未变化时复用，
       //避免concat产生的新数组使下游(base index分列缓存/itemData/行级memo)失效
       let prependColumnsChanged =
-        nextProps.perfCache !== true ||
+        nextProps.perfCache === false ||
         prevState.sourcePrependColumns !== rawPrependColumns ||
         prevState.hasSelectionColumn !== !!selectionColumn ||
         prevState.sourceRowSelectionKey !==
@@ -140,39 +298,82 @@ class SelectionGrid extends Component {
         nextState.checkStrictly = selectionProps.checkStrictly;
       }
 
-      let _filterSelectionData = [];
-      if (clearPrevSelections === true) {
-        _filterSelectionData = flatData.slice();
-      } else {
-        _filterSelectionData = flatData.slice().concat(prevState.selectedRows);
-      }
+      //选择行过滤结果缓存(perfCache)：输入引用未变化时跳过全量行过滤。
+      //filterDataByKeys为O(数据量)扫描 + flatData.slice/concat的全量拷贝，
+      //是大数据量下每次重渲的主要共享开销(与上层列/数据缓存无关)。
+      //输入包括 flatData引用(上层expandable按data引用缓存，稳定)、
+      //selectedRowKeys/checkedKeys引用、clearPrevSelections、rowKey，
+      //以及内部选中行集合——内部选择操作会使state.selectedRows引用变化，正确触发重算
+      let selectionFilterStale =
+        nextProps.perfCache === false ||
+        prevState.filterInputFlatData !== flatData ||
+        prevState.filterInputSelectedRows !== prevState.selectedRows ||
+        prevState.filterInputRowKey !== rowKey ||
+        prevState.filterInputClearPrev !== clearPrevSelections;
 
       if (
+        !selectionFilterStale &&
         "selectedRowKeys" in selectionProps &&
         selectionProps.selectedRowKeys instanceof Array
       ) {
-        let { data: selectedData, keys } = filterDataByKeys(
-          _filterSelectionData,
-          rowKey,
-          selectionProps.selectedRowKeys
-        );
-
-        nextState.selectedRowKeys = keys;
-        nextState.selectedRows = selectedData;
-        if (selectionProps.selectedRowKeys === 0) {
-          nextState.halfCheckedKeys = [];
-        }
+        selectionFilterStale =
+          prevState.filterInputSelectedRowKeys !==
+          selectionProps.selectedRowKeys;
       }
 
-      if ("checkedKeys" in selectionProps) {
-        let { data: checkedData, keys } = filterDataByKeys(
-          _filterSelectionData,
-          rowKey,
-          selectionProps.checkedKeys
-        );
+      if (
+        !selectionFilterStale &&
+        "checkedKeys" in selectionProps
+      ) {
+        selectionFilterStale =
+          prevState.filterInputCheckedKeys !== selectionProps.checkedKeys;
+      }
 
-        nextState.checkedKeys = keys;
-        nextState.checkedRows = checkedData;
+      if (selectionFilterStale) {
+        let _filterSelectionData = [];
+        if (clearPrevSelections === true) {
+          _filterSelectionData = flatData.slice();
+        } else {
+          _filterSelectionData = flatData
+            .slice()
+            .concat(prevState.selectedRows);
+        }
+
+        if (
+          "selectedRowKeys" in selectionProps &&
+          selectionProps.selectedRowKeys instanceof Array
+        ) {
+          let { data: selectedData, keys } = filterDataByKeys(
+            _filterSelectionData,
+            rowKey,
+            selectionProps.selectedRowKeys
+          );
+
+          nextState.selectedRowKeys = keys;
+          nextState.selectedRows = selectedData;
+          if (selectionProps.selectedRowKeys === 0) {
+            nextState.halfCheckedKeys = [];
+          }
+        }
+
+        if ("checkedKeys" in selectionProps) {
+          let { data: checkedData, keys } = filterDataByKeys(
+            _filterSelectionData,
+            rowKey,
+            selectionProps.checkedKeys
+          );
+
+          nextState.checkedKeys = keys;
+          nextState.checkedRows = checkedData;
+        }
+
+        nextState.filterInputFlatData = flatData;
+        nextState.filterInputSelectedRows = prevState.selectedRows;
+        nextState.filterInputRowKey = rowKey;
+        nextState.filterInputClearPrev = clearPrevSelections;
+        nextState.filterInputSelectedRowKeys =
+          selectionProps.selectedRowKeys;
+        nextState.filterInputCheckedKeys = selectionProps.checkedKeys;
       }
 
       if ("halfCheckedKeys" in selectionProps) {
@@ -1667,137 +1868,20 @@ class SelectionGrid extends Component {
   };
 
   checkboxCellRender = (value, rowData, index) => {
-    let { rowKey, checkedKeys, halfCheckedKeys } = this.state;
-
-    let key = rowData[rowKey];
-
-    let attr = {
-      checked: false,
-      disabled: false,
-      indeterminate: false
-    };
-
-    let fn = this.getRowSelection("getCheckboxProps");
-    if (typeof fn === "function") {
-      let p = fn(rowData);
-      if (p instanceof Object) {
-        attr = Object.assign(attr, p);
-      }
-    }
-
-    if (checkedKeys.indexOf(key) > -1) {
-      attr.checked = true;
-    }
-
-    if (halfCheckedKeys.indexOf(key) > -1) {
-      attr.indeterminate = true;
-    }
-
-    if (this.isDisabledCheck(key, rowData)) {
-      attr.disabled = true;
-    }
-
-    let c = this.props.selectionColumn;
-
-    if (c !== false && c !== null) {
-      if (c instanceof Object) {
-        let selectionColumnRender = c.render;
-        if (typeof selectionColumnRender === "function") {
-          return (
-            selectionColumnRender(rowData, index, {
-              ...attr,
-              value: key,
-              onChange: checked => {
-                this.onCheckChange({
-                  selected: !checked,
-                  key: key,
-                  index: index,
-                  rowData: rowData
-                });
-              }
-            }) || null
-          );
-        }
-      }
-    }
-
-    return (
-      <Checkbox
-        rowData={rowData}
-        value={key}
-        {...attr}
-        onChange={(checked, ck) => {
-          this.onCheckChange({
-            selected: checked,
-            key: ck,
-            index: index,
-            rowData: rowData
-          });
-        }}
-      />
-    );
+    // 订阅组件：勾选态变化直达重渲(不经过行级memo/引用缓存)
+    return <CheckboxCell grid={this} rowData={rowData} index={index} />;
   };
 
   checkboxHeadRender = () => {
-    let { checkedKeys, halfCheckedKeys, flatData } = this.state;
-
-    if (this.isSingleCheck()) {
-      return null;
-    }
-
-    let isCheckedAll = true;
-
-    let attr = {
-      checked: false,
-      indeterminate: false
-    };
-
-    isCheckedAll = this.isCheckedAll(this.state.disabledCheckedKeys);
-
-    if (flatData.length > 0) {
-      if (isCheckedAll === true) {
-        attr.checked = true;
-      } else {
-        if (checkedKeys.length > 0 || halfCheckedKeys.length > 0) {
-          attr.indeterminate = true;
-        }
-      }
-    }
-
-    let SelectionTitle = this.getRowSelection("columnTitle");
-
-    if (typeof SelectionTitle !== "undefined") {
-      if (typeof SelectionTitle === "function") {
-        return (
-          <SelectionTitle onChange={this.onCheckAllChange}></SelectionTitle>
-        );
-      } else {
-        return SelectionTitle;
-      }
-    }
-
-    let c = this.props.selectionColumn;
-
-    if (c !== false && c !== null) {
-      if (c instanceof Object) {
-        let selectionColumnTitle = c.title;
-
-        if (typeof selectionColumnTitle === "function") {
-          return (
-            selectionColumnTitle({
-              ...attr,
-              onChange: checked => this.onCheckAllChange(checked)
-            }) || null
-          );
-        }
-      }
-    }
-
-    return <Checkbox {...attr} onChange={this.onCheckAllChange} />;
+    // 订阅组件：全选/半选态变化直达重渲
+    return <HeadCheckbox grid={this} />;
   };
 
   rowClassName = ({ rowData, rowIndex }) => {
-    let { rowKey, selectedRowKeys, rowSelectClassName } = this.state;
+    let { rowKey, rowSelectClassName } = this.state;
+    // 实时读取 signal(而非 state)：行组件订阅 selectedRowKeysSignal 触发重渲，
+    // 此处随渲染取到最新选中集合
+    let selectedRowKeys = this.selectedRowKeysSignal.get();
     let key = rowData[rowKey];
     let isSelected = false;
 
@@ -2017,6 +2101,10 @@ class SelectionGrid extends Component {
   };
 
   componentDidMount() {
+    // 挂载即兜底同步 signal。与 actions 注册同钩子合并——类体中重复定义的
+    // 生命周期后定义会静默覆盖前定义(signal 改造时曾因此丢失挂载同步)
+    this.syncSelectionSignals();
+
     let o = this.props.actions;
 
     if (o && typeof o === "object") {
@@ -2025,6 +2113,27 @@ class SelectionGrid extends Component {
         o[k] = actions[k];
       }
     }
+  }
+
+  // signal 兜底同步：覆盖所有 setState 与 gDSFP(受控props)路径，
+  // 避免逐点写入的遗漏；signal.set 触发订阅组件(CheckboxCell/行)重渲。
+  // 注意 didMount 必须同步：受控初始选中的级联发生在 mount 的 gDSFP(render阶段)，
+  // signal 无法在其中写入；且 React 对相同 element 的重渲会 bail out
+  // (无更新周期)，仅靠 componentDidUpdate 同步会漏掉首帧
+  syncSelectionSignals() {
+    if (this.checkedKeysSignal.get() !== this.state.checkedKeys) {
+      this.checkedKeysSignal.set(this.state.checkedKeys);
+    }
+    if (this.selectedRowKeysSignal.get() !== this.state.selectedRowKeys) {
+      this.selectedRowKeysSignal.set(this.state.selectedRowKeys);
+    }
+    if (this.halfCheckedKeysSignal.get() !== this.state.halfCheckedKeys) {
+      this.halfCheckedKeysSignal.set(this.state.halfCheckedKeys);
+    }
+  }
+
+  componentDidUpdate() {
+    this.syncSelectionSignals();
   }
 
   render() {
@@ -2045,7 +2154,10 @@ class SelectionGrid extends Component {
       columns,
       prependColumns,
       rowClassName: this.rowClassName,
-      onRow: this.onRow
+      onRow: this.onRow,
+      // 选中态 signal(实例属性，引用恒定)：行组件内部订阅，
+      // 选中变化时订阅行重渲(不经过memo比较)，高亮类随渲染计算
+      selectedRowKeysSignal: this.selectedRowKeysSignal
     };
 
     return <Table {...props} {...newProps} />;

@@ -38,7 +38,7 @@ class Table extends React.Component {
       //perfCache开启且列引用未变化时，跳过展平计算，保持columns/columnsLeafs身份稳定，
       //避免下游DataList的itemData(memoize-one)与行级memo被击穿
       if (
-        nextProps.perfCache !== true ||
+        nextProps.perfCache === false ||
         prevState.sourceColumns !== columns
       ) {
         let { roots: columnsRoots, leafs: columnsLeafs } =

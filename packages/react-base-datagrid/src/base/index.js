@@ -11,7 +11,7 @@ import {
   getParentElement
 } from "./utils";
 import { withResizeDetector } from "react-resize-detector";
-import CalcRowHeightTable from "./CalcRowHeightTable";
+import RowsProvider from "./RowsProvider";
 import ResizeObserver from 'resize-observer-polyfill';
 
 if (!window.ResizeObserver) {
@@ -54,7 +54,7 @@ class BaseDataGrid extends React.Component {
       //保持left/middle/right身份稳定，使下游itemData(memoize-one)与行级memo可以命中
       let formattedColumns;
       if (
-        nextProps.perfCache === true &&
+        nextProps.perfCache !== false &&
         prevState.sourceColumns === columns &&
         prevState.sourcePrependColumns === prependColumns
       ) {
@@ -101,27 +101,9 @@ class BaseDataGrid extends React.Component {
     return true;
   }
 
-  onLeftScroll = ({ scrollOffset, scrollUpdateWasRequested }) => {
-    if (scrollUpdateWasRequested === false) {
-      this.middleRef.current && this.middleRef.current.scrollTo(scrollOffset);
-      this.rightRef.current && this.rightRef.current.scrollTo(scrollOffset);
-    }
-  };
-
-  onRightScroll = ({ scrollOffset, scrollUpdateWasRequested }) => {
-    if (scrollUpdateWasRequested === false) {
-      this.middleRef.current && this.middleRef.current.scrollTo(scrollOffset);
-      this.leftRef.current && this.leftRef.current.scrollTo(scrollOffset);
-    }
-  };
-
-  onMiddleScroll = ({ scrollOffset, scrollUpdateWasRequested }) => {
-    //true: api called  false: user interaction
-    if (scrollUpdateWasRequested === false) {
-      this.rightRef.current && this.rightRef.current.scrollTo(scrollOffset);
-      this.leftRef.current && this.leftRef.current.scrollTo(scrollOffset);
-    }
-  };
+  // 三栏垂直滚动同步已由 RowsProvider 宿主接管：
+  // 主栏滚动事件内命令式写入侧栏 scrollTop(侧栏无滚动监听器，无回声)，
+  // 取代旧版三栏互写 scrollTop + scrollUpdateWasRequested 防回声机制
 
   setFrozenStyle = () => {
     let headEl = this.headRef.current;
@@ -417,21 +399,31 @@ class BaseDataGrid extends React.Component {
     return { tableHeight, headerHeights, headerHeight };
   };
 
-  memorizedSize = {};
-  memorizedTotalSize = 0;
-  onItemSizeChange = (sizes, totalSize) => {
-    this.memorizedSize = sizes;
-    this.memorizedTotalSize = totalSize;
-    //二次加载后重设行高
-    this.forceUpdate(() => {
-      this.resetAutoSize();
-      this.resetAfterIndex(0);
-    });
-  };
+  // 汇总冻结行占位高度(与 Table.getPlaceholders 保持一致)，
+  // 供共享 virtualizer 计算占位项尺寸与 itemCount
+  getPlaceholders = () => {
+    let { frozenRender = {} } = this.props;
 
-  resetAutoSize = () => {
-    this.memorizedTotalSize = 0;
-    this.memorizedSize = {};
+    let {
+      top: frozenTopData = [],
+      bottom: frozenBottomData = [],
+      rowHeight: frozenRowHeight = 40
+    } = frozenRender;
+
+    let placeholders = {
+      top: 0,
+      bottom: 0
+    };
+
+    if (frozenTopData.length > 0) {
+      placeholders.top = frozenTopData.length * frozenRowHeight;
+    }
+
+    if (frozenBottomData.length > 0) {
+      placeholders.bottom = frozenBottomData.length * frozenRowHeight;
+    }
+
+    return placeholders;
   };
 
   render() {
@@ -441,7 +433,6 @@ class BaseDataGrid extends React.Component {
 
     let { data, rowKey, scrollbarX, scrollbarY, formattedColumns } = this.state;
 
-    let memorizedSize = this.memorizedSize;
     let { middle, left, leftWidth, right, rightWidth, maxDepth } =
       formattedColumns;
 
@@ -474,7 +465,6 @@ class BaseDataGrid extends React.Component {
     let attrs = {
       ...props,
       outerRef: this.outerRef,
-      memorizedSize,
       innerStyle: {},
       data,
       rowKey,
@@ -486,26 +476,9 @@ class BaseDataGrid extends React.Component {
       allColumns: [...left, ...middle, ...right]
     };
 
-    /** */
-    let needCalcRowHeight = false;
-
     if (props.virtual === false && props.autoRowHeight === true) {
       attrs.autoItemSize = true;
     }
-
-    let itemTotalSize = this.memorizedTotalSize;
-    if (itemTotalSize > 0) {
-      attrs.innerStyle.height = itemTotalSize;
-    }
-
-    if (
-      props.autoRowHeight === true &&
-      props.virtual === true &&
-      itemTotalSize <= 0
-    ) {
-      needCalcRowHeight = true;
-    }
-    /**  */
 
     let overlay = null;
     if (typeof overlayRenderer === "function") {
@@ -543,24 +516,12 @@ class BaseDataGrid extends React.Component {
 
     let sideTableHeight = tableHeight - scrollbarX;
 
-    return (
-      <div className={cls} ref={this.containerRef}>
-        {needCalcRowHeight ? (
-          <CalcRowHeightTable
-            rowKey={rowKey}
-            data={data}
-            columns={this.props.columns}
-            allColumns={attrs.allColumns}
-            onItemSizeChange={this.onItemSizeChange}
-            rowRender={params =>
-              this.rowRender({
-                ...params,
-                frozen: "none",
-                frozens: frozens
-              })
-            }
-          ></CalcRowHeightTable>
-        ) : null}
+    // 主栏(中栏)行视口高度：与 Table.renderBody 对中栏的计算一致
+    // (containerHeight - headerHeight - 2)
+    let bodyViewportHeight = tableHeight - headerHeight - 2;
+
+    let content = (
+      <React.Fragment>
         {overlay}
         {hasLeft ? (
           <div
@@ -586,7 +547,6 @@ class BaseDataGrid extends React.Component {
                 style={{ overflowX: "hidden" }}
                 innerStyle={{ width: leftWidth }}
                 ref={this.leftRef}
-                onScroll={this.onLeftScroll}
                 rowRender={params =>
                   this.rowRender({
                     ...params,
@@ -604,7 +564,7 @@ class BaseDataGrid extends React.Component {
             containerHeight={tableHeight}
             columns={middle}
             ref={this.middleRef}
-            onScroll={this.onMiddleScroll}
+            primary={true}
             outerRef={this.mainInit}
             headRef={this.headRef}
             headStyle={headStyle}
@@ -631,7 +591,6 @@ class BaseDataGrid extends React.Component {
               headStyle={{ width: rightWidth }}
               columns={right}
               style={{ overflowX: "hidden" }}
-              onScroll={this.onRightScroll}
               ref={this.rightRef}
               rowRender={params =>
                 this.rowRender({
@@ -643,6 +602,29 @@ class BaseDataGrid extends React.Component {
             />
           </div>
         ) : null}
+      </React.Fragment>
+    );
+
+    // 虚拟模式：三栏共享单一 virtualizer(官方多 pane 模式)，
+    // 动态行高(autoRowHeight)由共享 ResizeObserver 跨栏聚合测量，
+    // 不再离屏全量预测量(CalcRowHeightTable 已删除)
+    return (
+      <div className={cls} ref={this.containerRef}>
+        {props.virtual === false ? (
+          content
+        ) : (
+          <RowsProvider
+            data={data}
+            rowKey={rowKey}
+            rowHeight={props.rowHeight}
+            placeholders={this.getPlaceholders()}
+            viewportHeight={bodyViewportHeight}
+            overscanCount={props.overscanCount}
+            autoRowHeight={props.autoRowHeight === true}
+          >
+            {content}
+          </RowsProvider>
+        )}
       </div>
     );
   }

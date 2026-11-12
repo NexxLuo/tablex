@@ -33,7 +33,23 @@ function fingerprintValue(key, v) {
   return key + ":" + String(v);
 }
 
-//行数据内容指纹：捕获"原地修改行内容但未更换数组引用"的场景(与旧版每次全量重算的行为保持一致)
+//行级引用比较：数组长度与逐行对象引用一致即视为未变化。
+//行对象被替换/新增/删除/重排均可检测；同一行对象内的字段原地修改不可检测
+//(该场景下行级memo按行引用比较同样无法感知，上层深比对无实际收益)
+//复杂度O(n)指针比较，相比内容指纹(O(n×列)字符串构建)在大数据量下有数量级优势
+export function rowsRefEqual(prevRows, nextRows) {
+  if (prevRows === nextRows) return true;
+  if (!Array.isArray(prevRows) || !Array.isArray(nextRows)) return false;
+  if (prevRows.length !== nextRows.length) return false;
+  for (let i = 0; i < prevRows.length; i++) {
+    if (prevRows[i] !== nextRows[i]) return false;
+  }
+  return true;
+}
+
+//行数据内容指纹：按行×列构建内容字符串。
+//注意：不再用于数据变更检测的主路径(开销与数据量线性相关且常数大于深拷贝)，
+//仅保留作为调试/特殊场景工具
 export function computeDataFingerprint(data) {
   if (!Array.isArray(data)) {
     return String(data);

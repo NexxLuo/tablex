@@ -1,4 +1,5 @@
 import React from 'react';
+import { Input } from 'antd';
 import Table from 'tablex';
 
 class Demo extends React.PureComponent {

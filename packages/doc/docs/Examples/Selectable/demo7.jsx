@@ -1,4 +1,5 @@
 import React from 'react';
+import { Checkbox } from 'antd';
 import Table from 'tablex';
 
 class Demo extends React.Component {

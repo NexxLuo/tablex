@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import cloneDeep from "lodash/cloneDeep";
 import merge from "lodash/merge";
 import Table from "./Table";
+import { createSignal, useSelector } from "react-base-datagrid/lib/signal";
 import Editor from "./components/Editor";
 import Validator from "./components/Validator";
 import {
@@ -16,7 +17,7 @@ import {
   deleteData,
   distinctData,
   cloneColumnsShallow,
-  computeDataFingerprint,
+  rowsRefEqual,
   computeColumnsFingerprint,
   computePlainObjectFingerprint
 } from "./utils";
@@ -47,6 +48,106 @@ function columnsHaveEditingVisible(columns) {
     }
   }
   return false;
+}
+
+/**
+ * 不可变替换数据中的指定行(平表数组/树形结构均支持)
+ * @param {Array} data 数据(树或平表)
+ * @param {Object} replacedRowsMap { [rowKey]: 新行对象 }
+ * @param {String} rowKey
+ * @returns {Array} 新数据结构(未被替换的路径保持原引用)
+ */
+function replaceRowsInData(data, replacedRowsMap, rowKey) {
+  const walk = rows => {
+    let changed = false;
+    const next = rows.map(r => {
+      if (!r || typeof r !== "object") return r;
+      const rep = replacedRowsMap[r[rowKey]];
+      const hasChildren = r.children instanceof Array && r.children.length > 0;
+      // 递归替换子级(树形)
+      const nextChildren = hasChildren ? walk(r.children) : r.children;
+      const childrenChanged = hasChildren && nextChildren !== r.children;
+      if (rep || childrenChanged) {
+        changed = true;
+        // rep 为完整新行(复制自原行，children为原引用)；
+        // 树形路径上需使用替换后的 children
+        return rep
+          ? hasChildren
+            ? Object.assign({}, rep, { children: nextChildren })
+            : rep
+          : Object.assign({}, r, { children: nextChildren });
+      }
+      return r;
+    });
+    return changed ? next : rows;
+  };
+  return walk(data);
+}
+
+/**
+ * 编辑器单元格：订阅编辑值覆盖层(editValuesSignal)。
+ * 输入 → setEditValue → signal.set → 仅本组件重渲(单cell级更新，
+ * 不经过行级memo与数据路径全量重算)——大数据量下输入不卡顿的关键
+ */
+function EditorCell({ grid, value, row, index, column }) {
+  const rowKeyField = grid.state.rowKey;
+  const key = row[rowKeyField];
+  // selector 化订阅：只订阅本格子的覆盖值(原始值比较)，
+  // 其他格子的输入不触发本组件重渲
+  const cellValue = useSelector(
+    grid.editValuesSignal,
+    overlay => {
+      const rowOverlay = overlay[key];
+      return rowOverlay ? rowOverlay[column.dataIndex] : undefined;
+    }
+  );
+  // 覆盖值优先，未覆盖取行原值
+  const currentValue = cellValue !== undefined ? cellValue : value;
+
+  let { valid, msg } = grid.getValidate(row, column.dataIndex) || {};
+
+  const rendered = column.editor(
+    currentValue,
+    row,
+    index,
+    values => {
+      grid.setEditValue(values, row, index);
+    },
+    ins => {},
+    {
+      columnDataIndex: column.dataIndex,
+      columnKey: column.key,
+      validate: grid.validate
+    }
+  );
+
+  let ed = rendered;
+
+  // editor 返回 {children, props} 对象格式时取 children
+  // (props 通道如 rowSpan 在编辑器场景不支持——编辑态行高由编辑器内容决定)
+  if (rendered instanceof Object && !React.isValidElement(rendered)) {
+    ed = rendered.children;
+  }
+
+  if (!ed) {
+    return null;
+  }
+
+  return (
+    <Editor
+      valid={valid}
+      message={msg}
+      onClick={grid.onClick}
+      rowKey={key}
+      columnKey={column.dataIndex}
+      onKeyUp={grid.onKeyUp}
+      ref={ins => {
+        grid.setEditorIns(row, column, ins);
+      }}
+    >
+      {ed}
+    </Editor>
+  );
 }
 
 /**
@@ -92,6 +193,134 @@ class EditableTable extends React.Component {
     return this.state.isEditing;
   };
 
+  // 编辑态 signal：行组件订阅后编辑态切换直达重渲(不经过memo/引用缓存)，
+  // 取代此前"__editing key后缀强制重挂载"的机制
+  editStateSignal = createSignal({ editKeys: [], editAll: false });
+
+  // 编辑值 signal(覆盖层 { [rowKey]: { [dataIndex]: value } })：
+  // 输入 onChange 只写入覆盖层并通知订阅的编辑器cell重渲(单cell级更新)，
+  // 不触发 setState/数据路径全量重算(cloneData+treeToFlatten)——
+  // 这是大数据量下编辑输入卡顿的根因。覆盖层在保存/退出时统一应用回数据(applyEditValues)
+  editValuesSignal = createSignal({});
+
+  // 校验版本 signal({ [rowKey]: version })：校验结果(setRowAttr的validation)变化时
+  // bump 本行版本，订阅行重渲后经 getValidate 实时读取新校验结果——
+  // 修复"即时校验(validateTrigger=onChange)显示不更新"(编辑值signal化引入的回归)
+  validationSignal = createSignal({});
+
+  // 焦点行 signal：行焦点高亮(focusedRowKeys)与选中高亮同构，
+  // 经订阅直达重渲而非引用传播(键盘导航高频场景)
+  focusedRowKeysSignal = createSignal([]);
+
+  /**
+   * 编辑器输入：写入值覆盖层 + changedRows记录 + onChange即时校验。
+   * 替代输入路径的 editChange→modifyData(全量数据重算)，协议与 editChange 兼容
+   * (values 支持 { [dataIndex]: value } 对象与行对象数组两种形式)
+   */
+  setEditValue = (values, row, index) => {
+    const rowKeyField = this.state.rowKey;
+    const overlay = this.editValuesSignal.get();
+    let next = overlay;
+    let rowsMap = {};
+
+    if (values instanceof Array) {
+      next = Object.assign({}, overlay);
+      values.forEach(r => {
+        const k = r[rowKeyField];
+        if (k != null) {
+          next[k] = Object.assign({}, next[k], r);
+        }
+      });
+      // 数组协议：changedRows 需要合成行(原行+累计覆盖)
+      const flat = {};
+      treeFilter(this.state.data, d => {
+        flat[d[rowKeyField]] = d;
+        return true;
+      });
+      for (const k in next) {
+        const orig = flat[k];
+        if (orig && overlay[k] !== next[k] && !rowsMap[k]) {
+          rowsMap[k] = Object.assign({}, orig, next[k]);
+        }
+      }
+    } else {
+      const k = row[rowKeyField];
+      next = Object.assign({}, overlay);
+      next[k] = Object.assign({}, overlay[k], values);
+      rowsMap[k] = Object.assign({}, row, next[k]);
+    }
+
+    this.editValuesSignal.set(next);
+    this.addToChanged(rowsMap);
+
+    // validateTrigger=onChange 即时校验(与原 editChange 行为一致)
+    if (this.props.validateTrigger === "onChange") {
+      const modifiedData = [];
+      for (const k in rowsMap) {
+        modifiedData.push(rowsMap[k]);
+      }
+      this.validateRows(modifiedData);
+      this.updateComponent();
+    }
+  };
+
+  /**
+   * 覆盖层应用回数据(不可变替换，复用 replaceRowsInData)：
+   * 在保存/退出编辑时调用——高频输入走 signal 覆盖层，低频落盘走这里。
+   * 返回应用后的数据(同步可读)
+   */
+  applyEditValues = () => {
+    const overlay = this.editValuesSignal.get();
+    if (Object.keys(overlay).length === 0) {
+      return this.state.data;
+    }
+    const rowKey = this.state.rowKey;
+    const flat = {};
+    treeFilter(this.state.data, d => {
+      flat[d[rowKey]] = d;
+      return true;
+    });
+    const replacedMap = {};
+    for (const key in overlay) {
+      const orig = flat[key];
+      if (orig) {
+        replacedMap[key] = Object.assign({}, orig, overlay[key]);
+      }
+    }
+    const data = replaceRowsInData(this.state.data, replacedMap, rowKey);
+    this.nextData = data.slice();
+    this.editValuesSignal.set({});
+    this.setState({ data: data });
+    return data;
+  };
+
+  // signal 兜底同步：didMount 必须同步(受控editKeys/editAll的初次设置发生在
+  // mount的gDSFP，且React对相同element重渲会bail out无更新周期)，
+  // didUpdate 覆盖所有内部 setState 路径(beginEdit/endEdit/editAll等)
+  syncEditSignals() {
+    // 焦点行兜底同步(与编辑态同模式)
+    if (this.focusedRowKeysSignal.get() !== this.state.focusedRowKeys) {
+      this.focusedRowKeysSignal.set(this.state.focusedRowKeys || []);
+    }
+
+    const prev = this.editStateSignal.get();
+    const next = {
+      editKeys: this.state.editKeys || [],
+      editAll: this.state.isEditAll === true
+    };
+    // 编辑态退出(受控editAll/editKeys切换不经过endEdit)：应用未落盘的编辑值覆盖层。
+    // 内部endEdit路径已先行apply(overlay为空，此处幂等)
+    const wasEditing =
+      prev.editKeys.length > 0 || prev.editAll === true;
+    const isEditing = next.editKeys.length > 0 || next.editAll === true;
+    if (wasEditing && !isEditing) {
+      this.applyEditValues();
+    }
+    if (prev.editKeys !== next.editKeys || prev.editAll !== next.editAll) {
+      this.editStateSignal.set(next);
+    }
+  }
+
   static getDerivedStateFromProps(nextProps, prevState) {
     if (prevState.prevProps !== nextProps) {
       let rawColumnOptions = nextProps.columnOptions;
@@ -132,10 +361,10 @@ class EditableTable extends React.Component {
         nextState.selectedRowKeys = nextProps.selectedRowKeys;
       }
 
-      //perfCache开启时，列与columnOptions引用、内容指纹均未变化则跳过整树cloneDeep+treeFilter。
+      //perfCache开启(缺省)时，列与columnOptions引用、内容指纹均未变化则跳过整树cloneDeep+treeFilter。
       //指纹兜底保证"原地修改列配置但未更换引用"仍会被检测到，行为与旧版一致；
-      //perfCache关闭(缺省)时每次全量重算，即旧版行为
-      let perfCache = nextProps.perfCache === true;
+      //perfCache={false}时每次全量重算，即旧版行为
+      let perfCache = nextProps.perfCache !== false;
 
       let columnsChanged =
         !perfCache ||
@@ -221,14 +450,16 @@ class EditableTable extends React.Component {
         _data = cloneData(data);
       }
 
-      //perfCache开启时，数据引用、内容指纹均未变化则跳过treeToFlatten与cloneData(JSON深拷贝)。
+      //perfCache开启(缺省)时，数据引用未变化且逐行引用一致则跳过treeToFlatten与cloneData(JSON深拷贝)。
       //受控模式下旧版每次渲染都会对全量数据做cloneData深拷贝，是大数据量下的主要性能瓶颈。
-      //内容变化但引用未变时(原地修改行数据)，以slice生成新数组引用使下游正确失效，行为与旧版一致
+      //行级引用比较(O(n)指针比较，行对象替换/新增/删除/重排均可检测)替代旧版内容指纹
+      //(O(n×列)字符串构建，实测5万行时单次重渲11ms+，高于其避免的深拷贝，得不偿失)。
+      //同一行对象内字段原地修改不可检测——但行级memo按行引用比较本就无法感知该场景的重渲，
+      //上层拦截无实际意义，需要原地修改数据的调用方应传 perfCache={false}
       let dataChanged = !perfCache || prevState.rawData !== data;
 
       if (!dataChanged) {
-        dataChanged =
-          prevState.dataFingerprint !== computeDataFingerprint(data);
+        dataChanged = !rowsRefEqual(prevState.rawRows, data);
       }
 
       if (dataChanged) {
@@ -238,16 +469,18 @@ class EditableTable extends React.Component {
           _data === data &&
           prevState.rawData === data
         ) {
-          //引用未变但内容变了(原地修改)：生成新引用
+          //数组引用未变但行集合变了(替换/增删行)：生成新数组引用使下游正确失效
           nextData = data.slice();
         }
         nextState.rawData = data;
+        nextState.rawRows = data;
         nextState.flatData = treeToFlatten(_data).list;
         nextState.data = nextData;
-        nextState.sourceData = cloneData(data);
-        if (perfCache) {
-          nextState.dataFingerprint = computeDataFingerprint(data);
-        }
+        // 延迟快照：直接引用原始数据(reset 回滚时才 cloneData 一次)，
+        // 消除旧版每次数据变化的全量 JSON 深拷贝(5万行数百ms)。
+        // 语义差异：调用方原地修改行对象(引用不变)时 sourceData 随之可见——
+        // 该场景本就要求 perfCache={false}(行级引用比较无法感知)，属已声明限制
+        nextState.sourceData = data;
       }
 
       return nextState;
@@ -367,6 +600,14 @@ class EditableTable extends React.Component {
   setRowAttr = (row, attr = {}) => {
     let rowKey = this.props.rowKey;
     let key = row[rowKey];
+
+    // 校验状态写入时 bump 本行版本，驱动订阅行重渲以显示校验结果
+    if (attr && attr.validation) {
+      const versions = this.validationSignal.get();
+      this.validationSignal.set(
+        Object.assign({}, versions, { [key]: (versions[key] || 0) + 1 })
+      );
+    }
 
     let attrs = this.rowsAttribute || [];
 
@@ -778,58 +1019,16 @@ class EditableTable extends React.Component {
   };
 
   renderEditor = (value, row, index, column) => {
-    let fn = column.editor;
-    let rowKey = row[this.state.rowKey];
-    let columnDataIndex = column.dataIndex;
-    let columnKey = column.key;
-    let { valid, msg } = this.getValidate(row, columnDataIndex) || {};
-
-    let rendered = fn(
-      value,
-      row,
-      index,
-      values => {
-        this.editChange(values, row, index);
-      },
-      ins => { },
-      {
-        columnDataIndex: columnDataIndex,
-        columnKey: columnKey,
-        validate: this.validate
-      }
+    // 订阅组件：编辑值(覆盖层)变化仅重渲本单元格，输入不触发数据路径全量重算
+    return (
+      <EditorCell
+        grid={this}
+        value={value}
+        row={row}
+        index={index}
+        column={column}
+      />
     );
-
-    let ed = rendered;
-
-    let newRenderProps = {};
-
-    if (rendered instanceof Object && !React.isValidElement(rendered)) {
-      ed = rendered.children;
-      newRenderProps.props = rendered.props;
-    }
-
-    if (!ed) {
-      newRenderProps.children = null;
-    } else {
-      let c = (
-        <Editor
-          valid={valid}
-          message={msg}
-          onClick={this.onClick}
-          rowKey={rowKey}
-          columnKey={columnDataIndex}
-          onKeyUp={this.onKeyUp}
-          ref={ins => {
-            this.setEditorIns(row, column, ins);
-          }}
-        >
-          {ed}
-        </Editor>
-      );
-      newRenderProps.children = c;
-    }
-
-    return newRenderProps;
   };
 
   renderValidator = (value, row, index, columnKey, fn) => {
@@ -853,67 +1052,68 @@ class EditableTable extends React.Component {
   };
 
   getAutoRowSpanStore = () => {
-
     let data = this.state.data;
-    let columns = this.props.autoRowSpanColumns;
+    let spanColumns = this.props.autoRowSpanColumns;
 
     let store = {};
 
-    if (columns instanceof Array && columns.length > 0) {
+    if (spanColumns instanceof Array && spanColumns.length > 0) {
+      // 元素语义解析：按列定义(key/dataIndex 均可匹配)——store 键取列 key、
+      // 行值取列 dataIndex；未匹配到列定义时退化为旧版裸 dataIndex 行为。
+      // (旧版将元素同时当取值字段与列 key 使用，key≠dataIndex 的列静默失效)
+      let columnMap = {};
+      treeToFlatten(this.state.columns || []).leafs.forEach(d => {
+        if (d.key !== undefined && !(d.key in columnMap)) {
+          columnMap[d.key] = d;
+        }
+        if (d.dataIndex !== undefined && !(d.dataIndex in columnMap)) {
+          columnMap[d.dataIndex] = d;
+        }
+      });
+
+      let resolved = {};
+      spanColumns.forEach(item => {
+        let col = columnMap[item];
+        resolved[item] = col
+          ? {
+              storeKey: col.key,
+              valueField: col.dataIndex != null ? col.dataIndex : col.key
+            }
+          : { storeKey: item, valueField: item };
+      });
+
+      // 相邻等值 run-length：计数累加在 run 首行，被覆盖行无条目。
+      // 每列跟踪当前 run 起点，单趟线性扫描(旧实现为逐行向后回溯，最坏 O(n²))
+      let runStarts = {};
+      for (let j = 0; j < spanColumns.length; j++) {
+        runStarts[spanColumns[j]] = 0;
+      }
 
       for (let i = 0; i < data.length; i++) {
         const row = data[i];
         const prev = data[i - 1];
 
-        for (let j = 0; j < columns.length; j++) {
-          const columnKey = columns[j];
+        for (let j = 0; j < spanColumns.length; j++) {
+          const item = spanColumns[j];
+          const { storeKey, valueField } = resolved[item];
 
-
-          if (prev) {
-            if (prev[columnKey] === row[columnKey]) {
-              let spanIndex = i;
-              for (let k = i; k > -1; k--) {
-                if (store[k]?.[columnKey]) {
-                  spanIndex = k;
-                  break;
-                }
-              }
-
-              let prevSpan = store[spanIndex]?.[columnKey];
-
-
-              if (prevSpan) {
-                store[spanIndex][columnKey] = prevSpan + 1
-              } else {
-                if (store[i]) {
-                  store[i][columnKey] = 1
-                } else {
-                  store[i] = {
-                    [columnKey]: 1
-                  }
-                }
-              }
-            } else {
-              if (store[i]) {
-                store[i][columnKey] = 1
-              } else {
-                store[i] = {
-                  [columnKey]: 1
-                }
-              }
-            }
+          if (prev && prev[valueField] === row[valueField]) {
+            // 延续 run：计数累加在 run 首行
+            const s = runStarts[item];
+            store[s][storeKey] = store[s][storeKey] + 1;
           } else {
+            // 新 run：首行计数为 1
+            runStarts[item] = i;
             if (store[i]) {
-              store[i][columnKey] = 1
+              store[i][storeKey] = 1;
             } else {
               store[i] = {
-                [columnKey]: 1
-              }
+                [storeKey]: 1
+              };
             }
           }
         }
       }
-
     }
 
     return store;
@@ -924,7 +1124,7 @@ class EditableTable extends React.Component {
 
     //列树中是否存在editingVisible配置(存在时编辑态切换会改变列集合，需参与缓存key)。
     //perfCache关闭时保持旧版行为(无条件treeFilter)，不计算
-    let perfCache = this.props.perfCache === true;
+    let perfCache = this.props.perfCache !== false;
     let hasEditingVisible = perfCache
       ? columnsHaveEditingVisible(columns)
       : true;
@@ -960,10 +1160,9 @@ class EditableTable extends React.Component {
     //perfCache开启时浅拷贝列节点代替cloneDeep：render包装只改写节点自身属性，
     //children数组递归重建，其余属性(render/editor等函数与配置对象)按引用共享；
     //关闭时保持旧版cloneDeep，行为逐字节一致
-    let columnArr =
-      perfCache === true
-        ? cloneColumnsShallow(columns)
-        : cloneDeep(columns);
+    let columnArr = perfCache
+      ? cloneColumnsShallow(columns)
+      : cloneDeep(columns);
 
     let arr = columnArr;
 
@@ -1036,7 +1235,7 @@ class EditableTable extends React.Component {
 
     //perfCache关闭时保持旧版行为：返回前再整树cloneDeep；
     //开启时arr节点均为一次性浅拷贝副本，可直接返回
-    if (perfCache !== true) {
+    if (!perfCache) {
       return cloneDeep(arr);
     }
 
@@ -1060,6 +1259,9 @@ class EditableTable extends React.Component {
   };
 
   endEdit = callback => {
+    // 编辑值覆盖层落盘(不可变替换+清空overlay)，返回同步可读的新数据
+    let savedData = this.applyEditValues();
+
     let arr = [].concat(this.changedRows);
 
     let { keys, rows } = this.filterSelectedRowKeys();
@@ -1071,6 +1273,9 @@ class EditableTable extends React.Component {
     this.insertedData = [];
     this.nextData = [];
 
+    // 清空校验版本 map：行删除/编辑会话结束后条目不再增长(防长会话内存累积)
+    this.validationSignal.set({});
+
     let nextState = {
       editSaveLoading: false,
       isEditAll: false,
@@ -1078,7 +1283,9 @@ class EditableTable extends React.Component {
       isAddingRange: false,
       isEditing: false,
       editKeys: [],
-      sourceData: cloneData(this.state.data)
+      data: savedData,
+      // savedData 为不可变替换产物(replaceRowsInData 全新行对象)，直接引用
+      sourceData: savedData
     };
 
     nextState.selectedRowKeys = keys;
@@ -1086,7 +1293,7 @@ class EditableTable extends React.Component {
 
     if (typeof callback === "function") {
       this.setState(nextState, () => {
-        callback(arr, this.state.data, this.editType);
+        callback(arr, savedData, this.editType);
       });
     } else {
       this.setState(nextState);
@@ -1102,7 +1309,8 @@ class EditableTable extends React.Component {
     this.nextData = [];
 
     let nextState = {
-      sourceData: cloneData(this.state.data)
+      // 引用固定化：后续数据修改均为不可变替换(新数组引用)，不会污染此基线
+      sourceData: this.state.data
     };
 
     if (typeof callback === "function") {
@@ -1115,6 +1323,10 @@ class EditableTable extends React.Component {
   };
 
   reset = callback => {
+    //取消编辑：丢弃未保存的编辑值覆盖层(随sourceData回滚)，清空校验版本
+    this.editValuesSignal.set({});
+    this.validationSignal.set({});
+
     let nextState = {
       editSaveLoading: false,
       isEditAll: false,
@@ -1487,6 +1699,9 @@ class EditableTable extends React.Component {
   };
 
   getModifiedData = () => {
+    //保存合成前先将编辑值覆盖层落盘(同步更新 nextData 供下方使用)
+    this.applyEditValues();
+
     //修改的数据,平级数据
     let changedRows = this.changedRows;
     //添加的数据,平级数据
@@ -2285,7 +2500,7 @@ class EditableTable extends React.Component {
   };
 
   rowClassName = (row, index) => {
-    let { focusedRowKeys, rowKey } = this.state;
+    let { rowKey } = this.state;
     let arr = [];
 
     if (typeof this.props.rowClassName === "function") {
@@ -2293,6 +2508,8 @@ class EditableTable extends React.Component {
       cls && arr.push(cls);
     }
 
+    // 实时读取 signal：行组件订阅 focusedRowKeysSignal 触发重渲
+    let focusedRowKeys = this.focusedRowKeysSignal.get();
     if (focusedRowKeys.indexOf(row[rowKey]) > -1) {
       arr.push("tablex-row-focused");
     }
@@ -2597,18 +2814,26 @@ class EditableTable extends React.Component {
       addedRowsMap[k] = row;
     }
 
+    // 不可变替换集合：key → 新行对象
+    let replacedRowsMap = {};
+
     for (let i = 0; i < rows.length; i++) {
       const d = rows[i];
       let key = d[rowKey];
 
       let row = rowsMap[key];
       if (row) {
+        // 不可变更新：构建新行对象而非原地修改。
+        // 原地修改(row[k]=d[k])不改变行引用，行级memo(perfCache按行引用比较)
+        // 会跳过该行重渲染，导致受控编辑器(value)无法回传新值
+        let newRow = Object.assign({}, row);
         Object.keys(d).forEach(k => {
           if (k !== rowKey) {
-            row[k] = d[k];
+            newRow[k] = d[k];
           }
         });
-        modifiedDataKeyMap[key] = row;
+        replacedRowsMap[key] = newRow;
+        modifiedDataKeyMap[key] = newRow;
       }
 
       let addedRow = addedRowsMap[key];
@@ -2628,6 +2853,13 @@ class EditableTable extends React.Component {
       if (modifiedDataKeyMap.hasOwnProperty(k)) {
         modifiedData.push(modifiedDataKeyMap[k]);
       }
+    }
+
+    if (Object.keys(replacedRowsMap).length > 0) {
+      // state.data 不可变替换被编辑的行（平表数组/树形结构均支持），
+      // setState 触发渲染闭环：编辑行引用变化 → 仅该行重渲（其余行命中行级memo）
+      data = replaceRowsInData(data, replacedRowsMap, rowKey);
+      this.setState({ data: data });
     }
 
     this.nextData = data.slice();
@@ -2840,6 +3072,11 @@ class EditableTable extends React.Component {
         o[k] = actions[k];
       }
     }
+    this.syncEditSignals();
+  }
+
+  componentDidUpdate() {
+    this.syncEditSignals();
   }
 
   render() {
@@ -2849,27 +3086,17 @@ class EditableTable extends React.Component {
 
     let props = this.props;
 
-    //编辑行key映射：传递给底层列表，使编辑中的行key追加后缀单独重挂载，
-    //配合perfCache下的行级memo，编辑态切换时仅重渲染编辑行。
-    //仅perfCache开启时传递，关闭时不改变旧行为(原地重渲染)
-    let editKeysMap = null;
-    if (this.props.perfCache === true && this.state.isEditing === true) {
-      let keys = this.state.editKeys || [];
-      if (keys.length > 0 || this.state.isEditAll === true) {
-        editKeysMap = {};
-        keys.forEach(k => {
-          editKeysMap[k] = true;
-        });
-      }
-    }
-
+    // 编辑态经 signal 传递(实例属性，引用恒定)：行组件内部订阅，
+    // 编辑态切换(受控editKeys/editAll、beginEdit/endEdit)直达重渲，
+    // 不再依赖 __editing key后缀重挂载与 itemData 引用失效
     let newProps = {
       data: arr,
       flatData: this.state.flatData,
       shouldHoldPage: this.shouldHoldPage(),
       columns,
-      editKeysMap,
-      editAll: this.props.perfCache === true && this.state.isEditAll === true,
+      editStateSignal: this.editStateSignal,
+      validationSignal: this.validationSignal,
+      focusedRowKeysSignal: this.focusedRowKeysSignal,
       onExpandedRowsChange: this.onExpandedRowsChange,
       expandedRowKeys: this.state.expandedRowKeys,
       headerToolsBar: this.headerToolsBar,
@@ -3117,7 +3344,7 @@ EditableTable.propTypes = {
   /** 单行编辑模式时,进入编辑触发方式，单击还是双击 */
   singleRowEditTrigger: PropTypes.oneOf(["none", "onClick", "onDoubleClick"]),
   onEditRowChange: PropTypes.func,
-  /** 是否启用基于引用/内容指纹的性能缓存(跳过数据与列的重复深拷贝)，缺省false */
+  /** 是否启用基于引用/内容指纹的性能缓存(跳过数据与列的重复深拷贝)，缺省true；传false恢复旧版全量重算行为 */
   perfCache: PropTypes.bool,
   /** 相邻行的列值一致时自动进行合并 */
   autoRowSpanColumns: PropTypes.array

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Menu } from 'antd';
 import Table from 'tablex';
 
 class Demo extends React.Component {

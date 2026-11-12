@@ -6,8 +6,8 @@
   "scripts": {
     "start": "storybook dev -p 6006",
     "storybook": "storybook dev -p 6006",
-    "build": "storybook build",
-    "build-storybook": "storybook build"
+    "build": "storybook build --output-dir storybook-static --test && node scripts/inject-require-polyfill.js",
+    "build-storybook": "storybook build --output-dir storybook-static --test && node scripts/inject-require-polyfill.js"
   },
   "devDependencies": {
     "@storybook/react-vite": "10.6.7",

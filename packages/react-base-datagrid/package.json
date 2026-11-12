@@ -1,6 +1,6 @@
 {
   "name": "react-base-datagrid",
-  "version": "1.11.18",
+  "version": "2.1.0-beta.2",
   "description": "table virtualized tree-table ",
   "author": "nexx",
   "repository": {
@@ -10,7 +10,8 @@
   "homepage": "https://nexxluo.github.io/tablex",
   "scripts": {
     "build": "father build",
-    "dev": "father dev"
+    "dev": "father dev",
+    "test": "vitest run"
   },
   "main": "lib/index.js",
   "files": [
@@ -31,10 +32,16 @@
     "react-dom": "^16.8.6"
   },
   "dependencies": {
+    "@tanstack/react-virtual": "^3.14.0",
     "memoize-one": "^5.0.4",
     "prop-types": "^15.7.2",
     "react-resize-detector": "^9.1.0",
-    "react-window": "^1.8.9",
-    "resize-observer-polyfill": "^1.5.1"
+    "resize-observer-polyfill": "^1.5.1",
+    "use-sync-external-store": "^1.2.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^15",
+    "jsdom": "^24",
+    "vitest": "^2"
   }
 }
