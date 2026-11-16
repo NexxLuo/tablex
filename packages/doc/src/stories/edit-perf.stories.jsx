@@ -132,6 +132,9 @@ function EditPerfPlayground({ rows = 5000 }) {
 
   const onSave = (changedRows, newRows, editType) => {
     // 触发校验+保存链路，耗时由外层记录
+    if (typeof window !== "undefined") {
+      window.__onEditSaveFired = (window.__onEditSaveFired || 0) + 1;
+    }
     setEditAll(false);
     return false; // 保留数据不动，纯测性能
   };
@@ -163,9 +166,10 @@ function EditPerfPlayground({ rows = 5000 }) {
             rowKey="id"
             editable
             editAll={editAll}
-            editTools={["edit"]}
+            editTools={["edit", "add"]}
             onEditSave={onSave}
             onSelectChange={() => {}}
+            pagination={{ showSizeChanger: true, pageSizeOptions: ["10", "50", "100", "500"] }}
           />
         </div>
         <div

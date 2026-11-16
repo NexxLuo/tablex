@@ -1,0 +1,22 @@
+[17:21:55.649] [INFO] storybook v10.6.7
+[17:21:57.918] [DEBUG] Getting package.json info for /Users/my/WorkSpace/tablex/packages/doc/package.json...
+[17:21:57.979] [WARN] Using CommonJS in your main configuration file is deprecated with Vite.
+- Refer to the migration guide at https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#commonjs-with-vite-is-deprecated
+[17:21:58.043] [DEBUG] Could not determine @babel/preset-env version in use. In case of runtime errors with @babel/preset-env, you may need to set the babelRemoveBugfixes feature flag in your `main.ts` file.
+[17:21:58.135] [DEBUG] Serving static files from packages/doc/public at /
+[17:21:58.135] [INFO] Starting...
+[17:21:58.216] [DEBUG] Starting preview..
+[17:21:58.265] [DEBUG] Change detection enabled.
+[17:21:58.265] [DEBUG] Change detection: snapshotting Vite resolve config (restart required if vite.config.ts changes)
+[17:21:58.265] [DEBUG] Change detection: ignored 22 regex alias(es); related modules tracked as opaque-leaf.
+[17:21:58.265] [DEBUG] ChangeDetectionResolverFactory: skipped regex aliases [/^tablex$/, /^tablex\/lib$/, /^react-base-datagrid$/, /^react-base-datagrid\/lib$/, /^react-base-datagrid\/lib\//, /^@storybook\/global$/, /^storybook\/test$/, /^storybook\/actions$/, /^storybook\/preview-api$/, /^storybook\/internal\/channels$/, /^storybook\/internal\/client-logger$/, /^storybook\/internal\/core-events$/, /^storybook\/internal\/preview-errors$/, /^storybook\/internal\/types$/, /^storybook\/internal\/preview-api$/, /^tablex$/, /^tablex\/lib$/, /^react-base-datagrid$/, /^react-base-datagrid\/lib$/, /^react-base-datagrid\/lib\//, /^\/?@vite\/env/, /^\/?@vite\/client/]
+[17:21:58.266] [ERROR] [38;2;241;97;97mError: listen EADDRINUSE: address already in use 127.0.0.1:6006[39m
+    at Server.setupListenHandle [as _listen2] (node:net:2008:16)
+    at listenInCluster (node:net:2065:12)
+    at node:net:2274:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[17:21:58.267] [WARN] Broken build, fix the error above.
+You may need to refresh the browser.
+[17:21:58.340] [DEBUG] ChangeDetectionResolverFactory: '@tanstack/react-virtual' from '/Users/my/WorkSpace/tablex/packages/react-base-datagrid/lib/base/RowsProvider.js' unresolved ("." is not exported under the conditions ["storybook", "stories", "test", "module", "browser", "development|production"] from package /Users/my/WorkSpace/tablex/node_modules/@tanstack/react-virtual (see exports field in /Users/my/WorkSpace/tablex/node_modules/@tanstack/react-virtual/package.json))
+[17:21:58.340] [DEBUG] Could not resolve @tanstack/react-virtual from /Users/my/WorkSpace/tablex/packages/react-base-datagrid/lib/base/RowsProvider.js
+[17:21:58.348] [DEBUG] Change detection graph built: 9 stories, 113 deps tracked, 82ms

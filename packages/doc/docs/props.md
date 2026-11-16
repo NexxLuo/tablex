@@ -112,7 +112,17 @@ table th:nth-of-type(4) {
 | dataControled | `boolean` | `true` | `N/A` | 数据是否完全受控，如若受控，请在onEditSave、onCancel中自行更新数据源 |
 | onEditSave | `(changedRows: object[], newRows: object[], editType: "add" \| "edit" \| "delete") => void \| Promise<any>` | `true` | `N/A` | 内置编辑按钮保存事件 |
 | onBeforeSave | `() => boolean` | `true` | `N/A` | 默认确定按钮保存前置事件,返回false取消保存 |
-| onComplete | `(modifiedData: { changed: any[]; inserted: any[]; deleted: any[]; data: any[]; }) => void` | `true` | `N/A` | api.completeEdit 触发此事件 |
+| onComplete | `(modifiedData: { changed: any[]; inserted: any[]; deleted: any[]; data: any[]; }) => void` | `true` | `N/A` | api.completeEdit 触发此事件；未配置时回退触发 onEditSave（参数按 editSave 语义对齐） |
+
+#### 新增与分页
+
+开启分页的表格进入新增（工具栏新增/`api.addRows`/`api.addRange`）时自动采用**追加语义**：显示全部数据 + 新增行追加在末尾，并自动跳转到新增行所在页——编辑会话中翻页/调整每页大小均正常可用。未开启分页时保持**隔离语义**（编辑视口只显示新增行，专注录入）；显式传 `isAppend` 时以传入值为准。
+
+#### 编辑器与数据上报
+
+- editor 返回的编辑器组件**必须挂 onChange 上报**：`(value, row, index, onchange, ref, extra) => <Input onChange={e => onchange({ [extra.columnDataIndex]: e.target.value })} />`——组件的数据层依赖 `onchange` 获知输入
+- 使用 `defaultValue`（非受控）风格的编辑器同样需要挂 onChange 上报，否则输入不进入数据层：完成/保存时该行被判定为"未修改"（新增行还会被按空行过滤），数据不落盘
+- `completeEdit`（完成按钮/api）触发 `onComplete`；未配置 `onComplete` 时回退触发 `onEditSave`
 | onValidate | `(bl: boolean) => void` | `true` | `N/A` | 验证事件 |
 | actions | `any` | `true` | `N/A` | actions注册 |
 | columnOptions | `{ [columnKey: string]: { visible?: boolean; disabled?: boolean; required?: boolean; }; }` | `true` | `N/A` | 编辑器属性控制 |
@@ -195,6 +205,7 @@ render: (value, row, index) => {
 | role | `string` | `true` | `N/A` |  |
 | showLessItems | `boolean` | `true` | `N/A` |  |
 | showRefresh | `boolean` | `true` | `N/A` |  |
+| serverSide | `boolean` | `true` | `false` | 服务端分页：`data` 即外部提供的当前页数据（`total` 为总数），表格不做客户端切片，翻页由 `onChange/onPageChange` 通知外部换数据。不开启时 `data` 应为全量数据，翻页在客户端切片 |
 
 
 ### summary
