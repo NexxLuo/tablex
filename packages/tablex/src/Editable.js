@@ -288,6 +288,10 @@ class EditableTable extends React.Component {
       }
     }
     const data = replaceRowsInData(this.state.data, replacedMap, rowKey);
+    this.insertedData = this.insertedData.map(row => {
+      const values = overlay[row[rowKey]];
+      return values ? Object.assign({}, row, values) : row;
+    });
     this.nextData = data.slice();
     this.editValuesSignal.set({});
     this.setState({ data: data });
@@ -1838,6 +1842,14 @@ class EditableTable extends React.Component {
 
     if (typeof fn === "function") {
       fn(changedState);
+    } else if (typeof this.props.onEditSave === "function") {
+      let changedRows = changedState.changed;
+      if (this.editType === "add") {
+        changedRows = changedRows.concat(changedState.inserted);
+      } else if (this.editType === "delete") {
+        changedRows = changedState.deleted;
+      }
+      this.props.onEditSave(changedRows, changedState.data, this.editType);
     }
 
     this.endEdit(callBack);
