@@ -604,9 +604,8 @@ class Table extends React.Component {
       // 当数据量少于等于每页数量时，直接设置数据
       // 否则进行读取分页数据
       if (data.length > pageSize) {
-        data = data.filter((_, i) => {
-          return i >= (current - 1) * pageSize && i < current * pageSize;
-        });
+        const start = (current - 1) * pageSize;
+        data = data.slice(start, start + pageSize);
       }
     }
 
