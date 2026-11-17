@@ -52,7 +52,6 @@ class Demo extends React.PureComponent {
         width: 150,
         dataIndex: 'name',
         title: '姓名',
-        width: 150,
         validator: (value, row) => {
           if (!value) {
             return { valid: false, message: '' }
