@@ -165,6 +165,7 @@ function EditPerfPlayground({ rows = 5000 }) {
             data={data}
             rowKey="id"
             editable
+            perfCache
             editAll={editAll}
             editTools={["edit", "add"]}
             onEditSave={onSave}

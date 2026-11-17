@@ -54,7 +54,7 @@ class BaseDataGrid extends React.Component {
       //保持left/middle/right身份稳定，使下游itemData(memoize-one)与行级memo可以命中
       let formattedColumns;
       if (
-        nextProps.perfCache !== false &&
+        nextProps.perfCache === true &&
         prevState.sourceColumns === columns &&
         prevState.sourcePrependColumns === prependColumns
       ) {

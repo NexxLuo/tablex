@@ -365,10 +365,10 @@ class EditableTable extends React.Component {
         nextState.selectedRowKeys = nextProps.selectedRowKeys;
       }
 
-      //perfCache开启(缺省)时，列与columnOptions引用、内容指纹均未变化则跳过整树cloneDeep+treeFilter。
+      //perfCache显式开启时，列与columnOptions引用、内容指纹均未变化则跳过整树cloneDeep+treeFilter。
       //指纹兜底保证"原地修改列配置但未更换引用"仍会被检测到，行为与旧版一致；
-      //perfCache={false}时每次全量重算，即旧版行为
-      let perfCache = nextProps.perfCache !== false;
+      //默认及perfCache={false}时每次全量重算，即旧版行为
+      let perfCache = nextProps.perfCache === true;
 
       let columnsChanged =
         !perfCache ||
@@ -454,12 +454,12 @@ class EditableTable extends React.Component {
         _data = cloneData(data);
       }
 
-      //perfCache开启(缺省)时，数据引用未变化且逐行引用一致则跳过treeToFlatten与cloneData(JSON深拷贝)。
+      //perfCache显式开启时，数据引用未变化且逐行引用一致则跳过treeToFlatten与cloneData(JSON深拷贝)。
       //受控模式下旧版每次渲染都会对全量数据做cloneData深拷贝，是大数据量下的主要性能瓶颈。
       //行级引用比较(O(n)指针比较，行对象替换/新增/删除/重排均可检测)替代旧版内容指纹
       //(O(n×列)字符串构建，实测5万行时单次重渲11ms+，高于其避免的深拷贝，得不偿失)。
       //同一行对象内字段原地修改不可检测——但行级memo按行引用比较本就无法感知该场景的重渲，
-      //上层拦截无实际意义，需要原地修改数据的调用方应传 perfCache={false}
+      //上层拦截无实际意义，需要原地修改数据的调用方应保持perfCache默认关闭
       let dataChanged = !perfCache || prevState.rawData !== data;
 
       if (!dataChanged) {
@@ -483,7 +483,7 @@ class EditableTable extends React.Component {
         // 延迟快照：直接引用原始数据(reset 回滚时才 cloneData 一次)，
         // 消除旧版每次数据变化的全量 JSON 深拷贝(5万行数百ms)。
         // 语义差异：调用方原地修改行对象(引用不变)时 sourceData 随之可见——
-        // 该场景本就要求 perfCache={false}(行级引用比较无法感知)，属已声明限制
+        // 该场景应保持perfCache默认关闭(行级引用比较无法感知)，属已声明限制
         nextState.sourceData = data;
       }
 
@@ -1128,7 +1128,7 @@ class EditableTable extends React.Component {
 
     //列树中是否存在editingVisible配置(存在时编辑态切换会改变列集合，需参与缓存key)。
     //perfCache关闭时保持旧版行为(无条件treeFilter)，不计算
-    let perfCache = this.props.perfCache !== false;
+    let perfCache = this.props.perfCache === true;
     let hasEditingVisible = perfCache
       ? columnsHaveEditingVisible(columns)
       : true;
@@ -3185,6 +3185,7 @@ EditableTable.defaultProps = {
   addAsChanged: false,
   validateNoEditting: false,
   dataControled: false,
+  perfCache: false,
   editorNoBorder: false,
   keyboardNavigation: true,
   editorClickBubble: false,
@@ -3356,7 +3357,7 @@ EditableTable.propTypes = {
   /** 单行编辑模式时,进入编辑触发方式，单击还是双击 */
   singleRowEditTrigger: PropTypes.oneOf(["none", "onClick", "onDoubleClick"]),
   onEditRowChange: PropTypes.func,
-  /** 是否启用基于引用/内容指纹的性能缓存(跳过数据与列的重复深拷贝)，缺省true；传false恢复旧版全量重算行为 */
+  /** 是否启用基于引用/内容指纹的性能缓存(跳过数据与列的重复深拷贝)，缺省false；显式传true开启，关闭时保持旧版全量重算行为 */
   perfCache: PropTypes.bool,
   /** 相邻行的列值一致时自动进行合并 */
   autoRowSpanColumns: PropTypes.array

@@ -265,7 +265,7 @@ class SelectionGrid extends Component {
       //prependColumns(含选择列拼接)引用缓存：perfCache开启且相关输入未变化时复用，
       //避免concat产生的新数组使下游(base index分列缓存/itemData/行级memo)失效
       let prependColumnsChanged =
-        nextProps.perfCache === false ||
+        nextProps.perfCache !== true ||
         prevState.sourcePrependColumns !== rawPrependColumns ||
         prevState.hasSelectionColumn !== !!selectionColumn ||
         prevState.sourceRowSelectionKey !==
@@ -305,7 +305,7 @@ class SelectionGrid extends Component {
       //selectedRowKeys/checkedKeys引用、clearPrevSelections、rowKey，
       //以及内部选中行集合——内部选择操作会使state.selectedRows引用变化，正确触发重算
       let selectionFilterStale =
-        nextProps.perfCache === false ||
+        nextProps.perfCache !== true ||
         prevState.filterInputFlatData !== flatData ||
         prevState.filterInputSelectedRows !== prevState.selectedRows ||
         prevState.filterInputRowKey !== rowKey ||

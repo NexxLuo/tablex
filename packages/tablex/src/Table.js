@@ -199,10 +199,10 @@ class Table extends React.Component {
         prevProps: nextProps
       };
 
-      //perfCache开启(缺省)且列引用未变化时，跳过treeFilter+cloneDeep，避免每次渲染深拷贝整棵列树。
+      //perfCache显式开启且列引用未变化时，跳过treeFilter+cloneDeep，避免每次渲染深拷贝整棵列树。
       //列引用由上层(Editable.formatColumns缓存)保证：内容变化必然产生新引用
       if (
-        nextProps.perfCache === false ||
+        nextProps.perfCache !== true ||
         prevState.sourceColumns !== columns
       ) {
         //给列key、width设置缺省值
@@ -238,7 +238,7 @@ class Table extends React.Component {
         nextProps.intl && nextProps.intl.orderNumberTitle;
 
       if (
-        nextProps.perfCache === false ||
+        nextProps.perfCache !== true ||
         prevState.sourcePrependColumns !== rawPrependColumns ||
         prevState.sourceOrderNumber !== nextProps.orderNumber ||
         prevState.sourceOrderNumberTitle !== _orderNumberTitle
@@ -621,7 +621,7 @@ class Table extends React.Component {
     let _pagination = pagination || {};
     let cache = this._getDataCache;
     if (
-      this.props.perfCache !== false &&
+      this.props.perfCache === true &&
       cache &&
       cache.data === data &&
       cache.sortedColumns === sortedColumns &&
@@ -913,7 +913,7 @@ class Table extends React.Component {
     let _hasDropMenu = this.hasDropMenu();
     let _cache = this._formatColumnsCache;
     if (
-      this.props.perfCache !== false &&
+      this.props.perfCache === true &&
       _cache &&
       _cache.columns === columns &&
       _cache.columnsConfig === columnsConfig &&

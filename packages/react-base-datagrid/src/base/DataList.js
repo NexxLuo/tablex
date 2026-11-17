@@ -373,8 +373,8 @@ function listItemEquals(prev, next) {
   if (
     prev.data &&
     next.data &&
-    prev.data.perfCache !== false &&
-    next.data.perfCache !== false
+    prev.data.perfCache === true &&
+    next.data.perfCache === true
   ) {
     if (prev.data.columns !== next.data.columns) return false;
     if (prev.data.data[prev.index] !== next.data.data[next.index]) {
@@ -934,7 +934,7 @@ class DataList extends Component {
     let itemData = createItemData(data, columns, rowKey);
 
     itemData.placeholders = placeholders;
-    itemData.perfCache = this.props.perfCache !== false;
+    itemData.perfCache = this.props.perfCache === true;
     // 编辑态 signal(Editable层实例属性，引用恒定)：ListItem 内部订阅，
     // 编辑态切换直达重渲(不经过memo比较)
     itemData.editStateSignal =

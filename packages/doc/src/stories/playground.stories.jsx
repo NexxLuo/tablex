@@ -1,6 +1,6 @@
 /**
  * Playground：大数据量性能测试场
- * 用于验证虚拟滚动 / perfCache（缺省开启）在不同数据规模下的表现。
+ * 用于验证虚拟滚动 / perfCache（缺省关闭，可显式开启）在不同数据规模下的表现。
  * 可通过工具栏(Controls)切换：数据量、perfCache、行高、列数。
  */
 import React, { useMemo, useState } from "react";
@@ -69,7 +69,7 @@ function Playground({ rows = 50000, columns = 7, perfCache, rowHeight = 40 }) {
           触发父组件重渲（测 perfCache）(tick={tick})
         </button>
         <span style={{ marginLeft: 12, color: "#888", fontSize: 12 }}>
-          {rows} 行 × {columns} 列 · perfCache={String(perfCache)}（缺省开启）
+          {rows} 行 × {columns} 列 · perfCache={String(perfCache === true)}（缺省关闭）
         </span>
       </div>
       <div style={{ flex: 1, minHeight: 0 }}>
@@ -108,8 +108,8 @@ export const HundredThousandRows = {
   render: (args) => <Playground {...args} />,
 };
 
-export const PerfCacheOff = {
-  name: "perfCache关闭对照（旧版全量重算）",
-  args: { rows: 50000, columns: 7, perfCache: false, rowHeight: 40 },
+export const PerfCacheOn = {
+  name: "perfCache开启对照（引用缓存优化）",
+  args: { rows: 50000, columns: 7, perfCache: true, rowHeight: 40 },
   render: (args) => <Playground {...args} />,
 };
